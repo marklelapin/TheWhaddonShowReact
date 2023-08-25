@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Progress, Alert } from 'reactstrap';
+//import { Progress, Alert } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
 import { dismissAlert } from '../../actions/alerts';
 import s from './Sidebar.module.scss';
@@ -33,7 +33,7 @@ class Sidebar extends React.Component {
 
     static defaultProps = {
         sidebarStatic: false,
-        sidebarOpened: false,
+        sidebarOpened: true,
         activeItem: '',
     };
 
