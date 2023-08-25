@@ -75,7 +75,7 @@ class Layout extends React.Component {
     };
 
     static defaultProps = {
-        sidebarStatic: true,
+        sidebarStatic: false,
         sidebarOpened: true,
         dashboardTheme: DashboardThemes.DARK
     };
@@ -242,7 +242,7 @@ class Layout extends React.Component {
                         </main>
                     </Hammer>
                 </div>
-            </div>
+                </div>
         );
     }
 }
