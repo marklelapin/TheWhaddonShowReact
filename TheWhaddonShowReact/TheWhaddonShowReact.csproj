@@ -14,6 +14,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MarkCarter.MyApiMonitorClassLibrary" Version="1.0.0" />
+    <PackageReference Include="MarkCarter.MyClassLibrary" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.20" />
   </ItemGroup>
 
@@ -25,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\mysrc\" />
     <Folder Include="ClientApp\src\components\NewFolder\" />
   </ItemGroup>
 

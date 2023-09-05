@@ -209,7 +209,7 @@ class Sidebar extends React.Component {
 
                         <LinksGroup
                             header="Documentation"
-                            link="/admin/api/documentation"
+                            link="/api/documentation"
                             isHeader
                             iconElement={<Stack />}
                             iconName="flaticon-stack"
@@ -218,7 +218,7 @@ class Sidebar extends React.Component {
                         />
                         <LinksGroup
                             header="Monitor"
-                            link="/admin/api/monitor"
+                            link="/api/monitor"
                             isHeader
                             iconElement={<Settings />}
                             label=""
@@ -227,7 +227,7 @@ class Sidebar extends React.Component {
                         />
                         <LinksGroup
                             header="Test Results"
-                            link="/admin/api/testsresults"
+                            link="/api/testResults"
                             isHeader
                             iconElement={<List />}
                             label=""
