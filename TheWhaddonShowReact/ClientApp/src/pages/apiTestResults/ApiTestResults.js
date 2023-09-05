@@ -22,6 +22,8 @@ import Widget from '../../components/Widget';
 import s from './ApiTestResults.modules.scss';
 import Datetime from 'react-datetime';
 
+import { Query, fetchData } from '../../components/DataAccess/DataAccess';
+
 class ApiTestResults extends React.Component {
 
     constructor(props) {
@@ -114,6 +116,7 @@ class ApiTestResults extends React.Component {
                     <p>
                         The test results below are a record of the on going monitoring of  <a href="/api/documentation" rel="noopener noreferrer">The Whaddon Show Api</a>
                     </p>
+                </Widget>
                     <Row>
                         <Col md={1} xs={12} className="text-end">
                             From
@@ -139,36 +142,43 @@ class ApiTestResults extends React.Component {
                     </Row>
 
 
-
-                    <BootstrapTable
-                        data={this.state.reactBootstrapTable}
-                        version="4"
-                        pagination
-                        options={options}
-                        search
-                        bordered={false}
-                        tableContainerClass={`table-striped table-hover ${s.bootstrapTable}`}
-                    >
-                        <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="id" isKey>
-                            <span className="fs-sm">ID</span>
-                        </TableHeaderColumn>
-                        <TableHeaderColumn className={`${s.columnHead}`} dataField="name" dataSort>
-                            <span className="fs-sm">Name</span>
-                        </TableHeaderColumn>
-                        <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="info" dataFormat={infoFormatter}>
-                            <span className="fs-sm">Info</span>
-                        </TableHeaderColumn>
-                        <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="description" dataFormat={descriptionFormatter}>
-                            <span className="fs-sm">Description</span>
-                        </TableHeaderColumn>
-                        <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="date" dataSort sortFunc={dateSortFunc}>
-                            <span className="fs-sm">Date</span>
-                        </TableHeaderColumn>
-                        <TableHeaderColumn className={`width-150 ${s.columnHead}`} columnClassName="width-150" dataField="status" dataSort dataFormat={progressFormatter} sortFunc={progressSortFunc}>
-                            <span className="fs-sm">Status</span>
-                        </TableHeaderColumn>
-                    </BootstrapTable>
-                </Widget>
+                    <Query queryKey={["apiTestResults"]} queryFn = {() => fetchData('apimonitor')} queryOptions = {{}}>
+                        {({ data, error, isLoading }) => {
+                            if (isLoading) return <span>Loading...</span>;
+                            if (error) return <span>Error: {error.message}</span>;
+                        return (
+                            <pre>{JSON.stringify(data, null, 2)}</pre>
+                                //<BootstrapTable
+                                //    data={JSON.stringify(data, null, 2)}
+                                //    version="4"
+                                //    pagination
+                                //    options={options}
+                                //    search
+                                //    bordered={false}
+                                //    tableContainerClass={`table-striped table-hover ${s.bootstrapTable}`}
+                                //>
+                                //    <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="id" isKey>
+                                //        <span className="fs-sm">ID</span>
+                                //    </TableHeaderColumn>
+                                //    <TableHeaderColumn className={`${s.columnHead}`} dataField="name" dataSort>
+                                //        <span className="fs-sm">Name</span>
+                                //    </TableHeaderColumn>
+                                //    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="info" dataFormat={infoFormatter}>
+                                //        <span className="fs-sm">Info</span>
+                                //    </TableHeaderColumn>
+                                //    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="description" dataFormat={descriptionFormatter}>
+                                //        <span className="fs-sm">Description</span>
+                                //    </TableHeaderColumn>
+                                //    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="status" dataFormat={progressFormatter} dataSort sortFunc={progressSortFunc}>
+                                //        <span className="fs-sm">Status</span>
+                                //    </TableHeaderColumn>
+                                //    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="date" dataSort sortFunc={dateSortFunc}>
+                                //        <span className="fs-sm">Date</span>
+                                //    </TableHeaderColumn>
+                                //</BootstrapTable>
+                            );
+                        }}
+                    </Query>
 
 
 

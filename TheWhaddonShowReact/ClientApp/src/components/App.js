@@ -19,14 +19,13 @@ import Verify from '../pages/auth/verify';
 import Register from '../pages/auth/register';
 import Reset from '../pages/auth/reset';
 import Forgot from '../pages/auth/forgot';
+
+
+
 import {
-    useQuery,
-    useMutation,
-    useQueryClient,
     QueryClient,
     QueryClientProvider,
-} from 'react-query'
-
+} from '@tanstack/react-query'
 // Create a client
 const queryClient = new QueryClient()
 
