@@ -142,7 +142,7 @@ class ApiTestResults extends React.Component {
                     </Row>
 
 
-                    <Query queryKey={["apiTestResults"]} queryFn = {() => fetchData('apimonitor')} queryOptions = {{}}>
+                    <Query queryKey={["apiTestResults"]} queryFn = {() => fetchData('/weatherforecast')} queryOptions = {{}}>
                         {({ data, error, isLoading }) => {
                             if (isLoading) return <span>Loading...</span>;
                             if (error) return <span>Error: {error.message}</span>;

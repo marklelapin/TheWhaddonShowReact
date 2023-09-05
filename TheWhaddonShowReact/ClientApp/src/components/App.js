@@ -67,7 +67,7 @@ class App extends React.PureComponent {
                             <AuthRoute path="/password-reset" exact component={Reset} />
                             <AuthRoute path="/forgot" exact component={Forgot} />
                             <Route path="/error" exact component={ErrorPage} />
-                            <Redirect from="*" to="/app/main/analytics" />
+                            <Redirect from="*" to="/app/main" />
                         </Switch>
                     </HashRouter>
                 </ConnectedRouter>

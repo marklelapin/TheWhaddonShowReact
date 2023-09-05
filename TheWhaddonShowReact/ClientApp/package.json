@@ -214,5 +214,6 @@
   "resolutions": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
-  }
+  },
+  "proxy": "https://localhost:7101"
 }
