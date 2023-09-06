@@ -22,8 +22,8 @@ namespace TheWhaddonShowReact.Controllers
 
 		public List<TableData> ApiTestTableData { get; set; } = new List<TableData>();
 
-		[HttpGet]
-		public async Task<IActionResult> Get(Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
+		[HttpGet("results")]
+		public async Task<IActionResult> Get([FromQuery] Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
 		{
 			testOrCollectionId = testOrCollectionId ?? Guid.Parse("05b0adac-6ee4-4390-a83b-092ca92b040d");
 			dateFrom = dateFrom ?? DateTime.UtcNow.AddDays(-1);
