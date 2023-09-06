@@ -23,6 +23,7 @@ import s from './ApiTestResults.modules.scss';
 import Datetime from 'react-datetime';
 
 import { Query, fetchData } from '../../components/DataAccess/DataAccess';
+import { TickCross } from '../../mycomponents/TickCross/TickCross';
 
 class ApiTestResults extends React.Component {
 
@@ -67,31 +68,42 @@ class ApiTestResults extends React.Component {
 
 
 
-        function infoFormatter(cell) {
-            return (
+        function resultsFormatter(cell) {
+            if (cell.expected == null) { return <small>Matched</small> }
+
+                return (
+                
                 <div>
                     <small>
-                        Type:&nbsp;<span className="fw-semi-bold">{cell.type}</span>
+                        Expected:&nbsp;<span className="fw-semi-bold">{cell.expected}</span>
                     </small>
                     <br />
                     <small>
-                        Dimensions:&nbsp;<span className="fw-semi-bold">{cell.dimensions}</span>
+                        Actual:&nbsp;<span className="fw-semi-bold">{cell.actual}</span>
                     </small>
                 </div>
+        
+                
             );
         }
 
-        function descriptionFormatter(cell) {
-            return (
-                <button className="btn-link">
-                    {cell}
-                </button>
-            );
-        }
+        //function descriptionFormatter(cell) {
+        //    return (
+        //        <button className="btn-link">
+        //            {cell}
+        //        </button>
+        //    );
+        //}
 
-        function progressFormatter(cell) {
+     
+
+        function timeToCompleteFormatter(cell) {
             return (
+                <>
+                <span>{cell.speed}ms</span>
                 <Progress style={{ height: '15px' }} color={cell.type} value={cell.progress} />
+                </>
+                
             );
         }
 
@@ -142,40 +154,43 @@ class ApiTestResults extends React.Component {
                     </Row>
 
 
-                    <Query queryKey={["apiTestResults"]} queryFn = {() => fetchData('/weatherforecast')} queryOptions = {{}}>
+                    <Query queryKey={["apiTestResults"]} queryFn = {() => fetchData('/apimonitor')} queryOptions = {{}}>
                         {({ data, error, isLoading }) => {
                             if (isLoading) return <span>Loading...</span>;
                             if (error) return <span>Error: {error.message}</span>;
                         return (
-                            <pre>{JSON.stringify(data, null, 2)}</pre>
-                                //<BootstrapTable
-                                //    data={JSON.stringify(data, null, 2)}
-                                //    version="4"
-                                //    pagination
-                                //    options={options}
-                                //    search
-                                //    bordered={false}
-                                //    tableContainerClass={`table-striped table-hover ${s.bootstrapTable}`}
-                                //>
-                                //    <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="id" isKey>
-                                //        <span className="fs-sm">ID</span>
-                                //    </TableHeaderColumn>
-                                //    <TableHeaderColumn className={`${s.columnHead}`} dataField="name" dataSort>
-                                //        <span className="fs-sm">Name</span>
-                                //    </TableHeaderColumn>
-                                //    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="info" dataFormat={infoFormatter}>
-                                //        <span className="fs-sm">Info</span>
-                                //    </TableHeaderColumn>
-                                //    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="description" dataFormat={descriptionFormatter}>
-                                //        <span className="fs-sm">Description</span>
-                                //    </TableHeaderColumn>
-                                //    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="status" dataFormat={progressFormatter} dataSort sortFunc={progressSortFunc}>
-                                //        <span className="fs-sm">Status</span>
-                                //    </TableHeaderColumn>
-                                //    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell" dataField="date" dataSort sortFunc={dateSortFunc}>
-                                //        <span className="fs-sm">Date</span>
-                                //    </TableHeaderColumn>
-                                //</BootstrapTable>
+                            /*<pre>{JSON.stringify(data, null, 2)}</pre>*/
+                            <BootstrapTable
+                                    data={data}
+                                    version="4"
+                                    pagination
+                                    options={options}
+                                    search
+                                    bordered={false}
+                                    tableContainerClass={`table-striped table-hover ${s.bootstrapTable}`}
+                            >
+                                <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="key" isKey hidden>
+                                    <span className="fs-sm">Title</span>
+                                </TableHeaderColumn>
+                                    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle" dataField="title" dataSort>
+                                        <span className="fs-sm">Title</span>
+                                    </TableHeaderColumn>
+                                <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle" dataField="dateTime" dataSort sortFunc={dateSortFunc}>
+                                        <span className="fs-sm">Date Time</span>
+                                    </TableHeaderColumn>
+                                <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle" dataField="success" dataFormat={TickCross}>
+                                        <span className="fs-sm">Success?</span>
+                                    </TableHeaderColumn>
+                                <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle" dataField="timeToComplete" dataFormat={timeToCompleteFormatter} dataSort sortFunc={progressSortFunc}>
+                                        <span className="fs-sm">Time to Complete</span>
+                                    </TableHeaderColumn>
+                                    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle" dataField="failureMessage">
+                                        <span className="fs-sm">Failure Message</span>
+                                    </TableHeaderColumn>
+                                <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle" dataField="results" dataFormat={resultsFormatter}>
+                                        <span className="fs-sm">Expected vs Actual</span>
+                                    </TableHeaderColumn>
+                                </BootstrapTable>
                             );
                         }}
                     </Query>

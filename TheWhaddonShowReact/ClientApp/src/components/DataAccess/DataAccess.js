@@ -14,11 +14,10 @@ export const Query = (props) => {
 
 //  
 export const fetchData = async (url) => { //TODO add ,errorMessage
-    const response = await fetch(url);
-    if (!response.ok) {
-        //TODO const finalErrorMessage = errorMessage ?? 'Network response was not ok';
-        throw new Error('Network response was not ok');
-    }
-    return response.json();
+    const response = await fetch(url)
+        .then(response => response.json())
+        .catch((error) => { throw new Error('Server request failed: ' + error) })
+    
+    return response;
 };
 

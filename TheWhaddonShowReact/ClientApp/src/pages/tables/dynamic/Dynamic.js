@@ -112,7 +112,7 @@ class Dynamic extends React.Component {
             bordered={ false }
             tableContainerClass={`table-striped table-hover ${s.bootstrapTable}`}
           >
-            <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="id" isKey>
+            <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="id" isKey hidden>
               <span className="fs-sm">ID</span>
             </TableHeaderColumn>
             <TableHeaderColumn className={`${s.columnHead}`} dataField="name" dataSort>
