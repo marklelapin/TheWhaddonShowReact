@@ -54,7 +54,7 @@ class App extends React.PureComponent {
                             
                           
                             <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent} />
-                            <UserRoute path="/api" dispatch={this.props.dispatch} component={LayoutComponent} />
+                            <UserRoute path="/apiMonitor" dispatch={this.props.dispatch} component={LayoutComponent} />
 
                             <AdminRoute path="/admin" currentUser={this.props.currentUser} dispatch={this.props.dispatch}
                                 component={LayoutComponent} />

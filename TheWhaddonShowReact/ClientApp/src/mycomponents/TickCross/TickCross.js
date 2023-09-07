@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 
 
-export function TickCross (value) {
+export default function TickCross (value) {
 
     if (value) { return <div className="icon-list-item danger"><span className="glyphicon glyphicon-ok" /></div> }
 

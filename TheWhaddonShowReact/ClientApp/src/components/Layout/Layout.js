@@ -64,7 +64,7 @@ import s from './Layout.module.scss';
 import { DashboardThemes } from '../../reducers/layout';
 //import ProductEdit from '../../pages/management/components/productEdit';
 import BreadcrumbHistory from '../BreadcrumbHistory';
-import ApiTestResults from '../../pages/apiTestResults';
+import ApiTestResults from '../../pages/apiMonitor/TestResults';
 //import { REGISTER_REQUEST } from '../../actions/auth';
 
 class Layout extends React.Component {
@@ -170,9 +170,9 @@ class Layout extends React.Component {
                                         <Route path="/admin/users/:id/edit" exact component={UserFormPage} />
                                         <Route path="/admin/users/:id" exact component={UserViewPage} />
 
-                                        <Route path="/api/documentation" exact render={() => <Redirect to="/app/grid" />} />
-                                        <Route path="/api/monitor" exact render={() => <Redirect to="/app/main/analytics" />} />
-                                        <Route path="/api/testResults" exact component={ApiTestResults} />
+                                        <Route path="/apiMonitor/documentation" exact render={() => <Redirect to="/app/grid" />} />
+                                        <Route path="/apiMonitor/dashboard" exact render={() => <Redirect to="/app/main/analytics" />} />
+                                        <Route path="/apiMonitor/testResults" exact component={ApiTestResults} />
 
                                        
                                                                                 

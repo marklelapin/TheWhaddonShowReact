@@ -1,4 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import updateFromTo from '../../actions/apiMonitor';
+
 import {
     Row,
     Col,
@@ -9,23 +13,20 @@ import Datetime from 'react-datetime';
 
 import ResultsTable from './components/ResultsTable';
 
-class ApiTestResults extends React.Component {
+class TestResults extends React.Component {
+ 
+    //static propTypes = {
+    //    dateFrom: PropTypes.instanceof(Date),
+    //    dateTo: PropTypes.instanceof(Date),
+    //    updateFromTo: PropTypes.func.isRequired,
+    //};
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            dateFrom: new Date("2023/09/01"),
-            dateTo: new Date("2023/09/06"),
-        };
+    state = {
+        isDatePickerOpen: false,
     }
 
-
-
-
-    
     render() {
-      
+
         return (
             <div>
                 <h2 className="page-title">Api Monitor - <span className="fw-semi-bold">Test Results</span></h2>
@@ -64,5 +65,16 @@ class ApiTestResults extends React.Component {
     }
 
 }
+    const mapStateToProps = (state) => {
+        return {
+            dateFrom: state.apiMonitor.dateFrom,
+            dateTo: state.apiMonitor.dateTo
+        };
+    }
+    const mapDispatchToProps = (dispatch) => {
+        return {
+            updateFromTo: (from,to) => dispatch(updateFromTo({ from, to }))
+        };
+    }
 
-export default ApiTestResults;
+export default connect(mapStateToProps,mapDispatchToProps)(TestResults);
