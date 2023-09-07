@@ -29,7 +29,12 @@ import TickCross from '../../../mycomponents/TickCross/TickCross'
 
 class ResultsTable extends React.Component {
 
-    //dateFrom and dateTo are passed in as props using react-redux connect function at the bottom of this file
+    //dateFrom, dateTo, originalData and updateData are passed in as props using react-redux connect function at the bottom of this file
+
+
+
+
+
 
     renderSizePerPageDropDown = (props) => {
 
@@ -77,8 +82,6 @@ class ResultsTable extends React.Component {
                         Actual:&nbsp;<span className="fw-semi-bold">{cell.actual}</span>
                     </small>
                 </div>
-
-
             );
         }
 
@@ -140,10 +143,33 @@ class ResultsTable extends React.Component {
             return new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime();
         }
 
+        
+
+        
+
+ 
+
+
+
+
+        function filteredData(data,search,showSuccess,showFailure) {
+
+            //filter the data based on the search and showSuccess props
+            data.filter(x => (search ?? '') === ''
+                || x.title.includes(search)
+                || x.failureMessage.includes(search)
+                || x.expected.includes(search)
+                || x.actual.includes(search))
+
+            data.filter(x => ((x.success === true) && showSuccess) 
+            || ((x.success === false) && showFailure))
+
+            return data;
+
+        }
+
         return (
-
-
-
+           
             <Query queryKey={["apiTestResults"]} queryFn={() => fetchData(fetchUrl)} queryOptions={{}}>
                 {({ data, error, isLoading }) => {
                     if (isLoading) return <span>Loading...</span>;
@@ -151,12 +177,11 @@ class ResultsTable extends React.Component {
                     return (
                         /*<pre>{JSON.stringify(data, null, 2)}</pre>*/
                         <BootstrapTable
-                            data={data}
+                            data={filteredData(data,this.props.search,this.props.showSuccess,this.props.showFailure)}
                             version="4"
                             pagination
                             options={options}
                             hover
-                            search
                             bordered={false}
                             tableContainerClass={`table-striped table-hover table-responsive ${s.bootstrapTable}`}
                         >
@@ -193,7 +218,10 @@ class ResultsTable extends React.Component {
 const mapStateToProps = (state) => {
         return {
             dateFrom: state.apiMonitor.dateFrom,
-            dateTo: state.apiMonitor.dateTo
+            dateTo: state.apiMonitor.dateTo,
+            showSuccess: state.apiMonitor.showSuccess,
+            showFailure: state.apiMonitor.showFailure,
+            search: state.apiMonitor.search,
         };
 
 }
