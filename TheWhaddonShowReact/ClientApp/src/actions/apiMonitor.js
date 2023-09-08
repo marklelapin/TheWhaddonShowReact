@@ -1,5 +1,7 @@
 export const UPDATE_FROM_TO = 'UPDATE_FROM_TO';
-export const UPDATE_FILTERS = 'UPDATE_FILTERS';
+export const TOGGLE_SHOW_SUCCESS = 'TOGGLE_SHOW_SUCCESS';
+export const TOGGLE_SHOW_FAILURE = 'TOGGLE_SHOW_FAILURE';
+export const UPDATE_SEARCH = 'UPDATE_SEARCH';
 
 export  function updateFromTo(payload) {
   return {
@@ -8,9 +10,21 @@ export  function updateFromTo(payload) {
   };
 }
 
-export function updateFilters(payload) {
+export function toggleShowSuccess() {
   return {
-    type: UPDATE_FILTERS,
-    payload
+    type: TOGGLE_SHOW_SUCCESS
   };
+}
+
+export function toggleShowFailure() {
+    return {
+        type: TOGGLE_SHOW_FAILURE,
+    };
+}
+
+export function updateSearch(payload) {
+    return {
+        type: UPDATE_SEARCH,
+        payload
+    };
 }

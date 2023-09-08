@@ -1,18 +1,20 @@
 import {
     UPDATE_FROM_TO
-    ,UPDATE_FILTERS
+    , TOGGLE_SHOW_SUCCESS
+    , TOGGLE_SHOW_FAILURE
+    , UPDATE_SEARCH
 } from '../actions/apiMonitor';
 
 let date = new Date();
 
-date.setDate(date.getDate()-7)
+date.setDate(date.getDate()-2)
 
 
 
 const defaultState = {
     dateFrom: date,
     dateTo: new Date(),
-    search: null,
+    search: '',
     showSuccess: true,
     showFailure: true,
 };
@@ -25,12 +27,19 @@ export default function apiMonitorReducer(state = defaultState, action) {
                     dateFrom: action.payload.dateFrom,
                     dateTo: action.payload.dateTo,
                 });
-        case UPDATE_FILTERS:
+        case TOGGLE_SHOW_SUCCESS:
             return Object.assign({}, state, {
-                search: action.payload.search,
-                showSuccess: action.payload.showSuccess,
-                showFailure: action.payload.showFailure,
+                showSuccess: !state.showSuccess
             }); 
+        case TOGGLE_SHOW_FAILURE:
+            return Object.assign({}, state, {
+                showFailure: !state.showFailure
+            });
+        case UPDATE_SEARCH:
+            return Object.assign({}, state, {
+                search: action.payload.search
+            });
+
         default:
             return state;
     }

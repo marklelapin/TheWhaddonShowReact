@@ -1,6 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { updateFromTo, updateFilters } from '../../actions/apiMonitor';
+import {
+    updateFromTo
+    , toggleShowSuccess
+    , toggleShowFailure
+    , updateSearch
+} from '../../actions/apiMonitor';
 import Datetime from 'react-datetime';
 
 
@@ -29,51 +34,53 @@ class TestResults extends React.Component {
             datePickedFrom: this.props.dateFrom,
             datePickedTo: this.props.dateTo,
             showUpdateButton: false,
-            successCheck: this.props.showSuccess,
-            failureCheck: this.props.showFailure,
-            search: this.props.search,
         }
 
     }
-    handleDatePickedFromChange = (date) => {
-        this.setState({ datePickedFrom: date });
+
+    //DatePicker functions
+    handleDatePickedFromChange = (newDate) => {
+        this.setState({ datePickedFrom: newDate });
+        this.setState({ showUpdateButton: true })
+
     };
-    handleDatePickedToChange = (date) => {
-        this.setState({ datePickedTo: date })
+    handleDatePickedToChange = (newDate) => {
+        this.setState({ datePickedTo: newDate })
+        this.setState({ showUpdateButton: true })
     };
+
+    //Update button functions
+
     handleUpdateButtonClick = () => {
-        updateFromTo(this.state.datePickedFrom, this.state.datePickedTo)
+        this.props.dispatch(updateFromTo({ dateFrom: this.state.datePickedFrom, dateTo: this.state.datePickedTo }))
+        this.setState({ showUpdateButton: false })
     }
 
+    //Show Success/Failure checkbox functions
     handleSuccessCheckClick = () => {
-        this.setState({ successCheck: !this.state.successCheck })
-        this.updateAllFilters()
-    }
+        this.props.dispatch(toggleShowSuccess());
 
+    }
     handleFailureCheckClick = () => {
-        this.setState({ failureCheck: !this.state.failureCheck })
-        this.updateAllFilters()
+        this.props.dispatch(toggleShowFailure())
     }
 
+    //Search box functions
     handleSearchChange = (e) => {
-        this.setState({ search: e.target.value })
-        this.updateAllFilters()
+        this.props.dispatch(updateSearch({ search: e.target.value }))
     }
 
-    updateAllFilters = () => {
-        updateFilters({ search: this.state.search, showSuccess: this.state.successCheck, showFailure: this.state.failureCheck })
-    }
 
     render() {
 
-
+        console.log(`datePickedFrom: ${this.state.datePickedFrom} datePickedTo: ${this.state.datePickedTo} search: ${this.props.search} showSuccess: ${this.props.showSuccess} showFailure: ${this.props.showFailure}`)
         return (
 
             <div>
                 <h2 className="page-title">Api Monitor - <span className="fw-semi-bold">Test Results</span></h2>
 
                 <>
-                    <Widget title={<h5>Change Dates or Filter Data</h5>} collapse>
+                    <Widget title={<h5>Change Dates or Filter Data...</h5>} collapse>
                         <Row >
                             <Col>
                                 <legend>Show tests between following dates..</legend>
@@ -114,9 +121,12 @@ class TestResults extends React.Component {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col className="text-center">
-                                        <Button color="primary" className="mr-xs" onClick={this.handleUpdateButtonClick}>Confirm New Dates</Button>
-                                    </Col>
+
+                                    {(this.state.showUpdateButton &&
+                                        <Col className="text-center">
+                                            <Button color="primary" className="mr-xs" onClick={this.handleUpdateButtonClick}>Confirm New Dates</Button>
+                                        </Col>
+                                    )}
                                 </Row>
                             </Col>
                             <Col>
@@ -124,13 +134,13 @@ class TestResults extends React.Component {
                                 <Row>
                                     <Col>
                                         <Label for="search-field">Search</Label>
-                                        <Input type="text" id="search-field" placeholder="enter search text..."></Input>
+                                        <Input type="text" id="search-field" value={this.props.search} placeholder="enter search text..." onChange={this.handleSearchChange}></Input>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <FormGroup className="checkbox abc-checkbox abc-checkbox-success" check >
-                                            <Input id="checkbox-success" type="checkbox" checked={this.state.successCheck} onChange={this.handleSuccessCheckClick} />{' '}
+                                            <Input id="checkbox-success" type="checkbox" checked={this.props.showSuccess} onChange={this.handleSuccessCheckClick} />{' '}
                                             <Label for="checkbox-success" check>
                                                 Successfull Tests
                                             </Label>
@@ -138,7 +148,7 @@ class TestResults extends React.Component {
                                     </Col>
                                     <Col>
                                         <FormGroup className="checkbox abc-checkbox abc-checkbox-danger" check>
-                                            <Input id="checkbox-failure" type="checkbox" checked={this.state.failureCheck} onChange={this.handleFailureCheckClick} />{' '}
+                                            <Input id="checkbox-failure" type="checkbox" checked={this.props.showFailure} onChange={this.handleFailureCheckClick} />{' '}
                                             <Label for="checkbox-failure" check>
                                                 Failed Tests
                                             </Label>
@@ -171,11 +181,6 @@ const mapStateToProps = (state) => {
         showFailure: state.apiMonitor.showFailure,
     };
 }
-const mapDispatchToProps = (dispatch) => {
-    return {
-        updateFromTo: (from, to) => dispatch(updateFromTo({ from, to })),
-        updateFilters: (search, showSuccess, showFailure) => dispatch(updateFilters({ search, showSuccess, showFailure }))
-    };
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(TestResults);
+
+export default connect(mapStateToProps)(TestResults);
