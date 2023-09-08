@@ -20,6 +20,9 @@ import Person from '../../images/sidebar/Outline/Person';
 import Settings from '../../images/sidebar/basil/Settings';
 import List from '../../images/sidebar/Outline/List';
 
+import wslogo from '../../images/whaddon-show-logo-reversed.png'
+import wstitle from '../../images/the-whaddon-show.png'
+
 class Sidebar extends React.Component {
     static propTypes = {
         sidebarStatic: PropTypes.bool,
@@ -77,7 +80,11 @@ class Sidebar extends React.Component {
                     className={s.root}
                 >
                     <header className={s.logo}>
-                        <a href="https://demo.flatlogic.com/sing-app-react/"><span className={s.logoStyle}>Sing <span className={s.logoPart}>App</span></span> </a>
+                        <a href="https://demo.flatlogic.com/sing-app-react/">
+                            <img src={wslogo} height="60" alt="The Whaddon Show Logo of a cartoon cowboy playing the guitar" />
+             
+                            <img src={wstitle} height="40" alt="The Whaddon Show"/>
+                       </a>
                     </header>
 
                     <ul className={s.nav}>
@@ -209,7 +216,7 @@ class Sidebar extends React.Component {
 
                         <LinksGroup
                             header="Documentation"
-                            link="/admin/api/documentation"
+                            link="/apiMonitor/documentation"
                             isHeader
                             iconElement={<Stack />}
                             iconName="flaticon-stack"
@@ -218,7 +225,7 @@ class Sidebar extends React.Component {
                         />
                         <LinksGroup
                             header="Monitor"
-                            link="/admin/api/monitor"
+                            link="/apiMonitor/dashboard"
                             isHeader
                             iconElement={<Settings />}
                             label=""
@@ -227,7 +234,7 @@ class Sidebar extends React.Component {
                         />
                         <LinksGroup
                             header="Test Results"
-                            link="/admin/api/testsresults"
+                            link="/apiMonitor/testResults"
                             isHeader
                             iconElement={<List />}
                             label=""

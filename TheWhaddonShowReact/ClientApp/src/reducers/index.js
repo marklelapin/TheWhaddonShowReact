@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import apiMonitor from './apiMonitor';
 import auth from './auth';
 import navigation from './navigation';
 import alerts from './alerts';
@@ -12,7 +13,8 @@ import { connectRouter } from 'connected-react-router';
 export default (history) =>
   combineReducers({
     router: connectRouter(history),
-    alerts,
+      alerts,
+    apiMonitor,
     auth,
     navigation,
     layout,
