@@ -51,9 +51,8 @@ import Widgets from '../../pages/widgets';
 //import HighCharts from '../../pages/charts/highcharts';
 import DashboardAnalytics from '../../pages/analytics';
 import Dashboard from '../../pages/dashboard';
-import UserFormPage from '../Users/form/UsersFormPage';
-import UserListPage from '../Users/list/UsersListPage';
-import UserViewPage from '../Users/view/UsersViewPage';
+import UserFormPage from '../../pages/user/form/UsersFormPage';
+import UserListPage from '../../pages/user/list/UsersListPage';
 //import ChangePasswordFormPage from '../Users/changePassword/ChangePasswordFormPage';
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header';
@@ -168,7 +167,6 @@ class Layout extends React.Component {
                                         <Route path="/admin/users" exact component={UserListPage} />
                                         <Route path="/admin/users/new" exact component={UserFormPage} />
                                         <Route path="/admin/users/:id/edit" exact component={UserFormPage} />
-                                        <Route path="/admin/users/:id" exact component={UserViewPage} />
 
                                         <Route path="/apiMonitor/documentation" exact render={() => <Redirect to="/app/grid" />} />
                                         <Route path="/apiMonitor/dashboard" exact render={() => <Redirect to="/app/main/analytics" />} />

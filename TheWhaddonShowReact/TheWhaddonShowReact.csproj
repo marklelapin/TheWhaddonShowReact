@@ -22,14 +22,37 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp\src\components\Users\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\src\components\Users\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\Users\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="ClientApp\src\components\Users\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\src\components\Users\changePassword\ChangePasswordForm.js" />
+    <None Remove="ClientApp\src\components\Users\changePassword\ChangePasswordFormPage.js" />
+    <None Remove="ClientApp\src\components\Users\form\UsersForm.js" />
+    <None Remove="ClientApp\src\components\Users\form\UsersFormPage.js" />
+    <None Remove="ClientApp\src\components\Users\list\UsersDataFormatters.js" />
+    <None Remove="ClientApp\src\components\Users\list\UsersListPage.js" />
+    <None Remove="ClientApp\src\components\Users\list\UsersListTable.js" />
+    <None Remove="ClientApp\src\components\Users\Users.module.scss" />
+    <None Remove="ClientApp\src\components\Users\usersFields.js" />
+    <None Remove="ClientApp\src\components\Users\view\UsersView.js" />
+    <None Remove="ClientApp\src\components\Users\view\UsersViewItem.js" />
+    <None Remove="ClientApp\src\components\Users\view\UsersViewPage.js" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="ClientApp\mysrc\" />
     <Folder Include="ClientApp\src\images\NewFolder\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\TheWhaddonShowApp\TheWhaddonShowClassLibrary\TheWhaddonShowClassLibrary.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
