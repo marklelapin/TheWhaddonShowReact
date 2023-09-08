@@ -227,7 +227,7 @@ class ResultsTable extends React.Component {
 
 
                         </>
-                        /*<pre>{JSON.stringify(data, null, 2)}</pre>*/
+                        
 
                     );
                 }}

@@ -9,7 +9,8 @@ class UsersListPage extends Component {
         <div className="page-top-line">
           <h2 className="page-title">User - <span className="fw-semi-bold">Management</span></h2>
         </div>
-        <UsersListTable />
+            
+            <UsersListTable />
       	</div>
     );
   }

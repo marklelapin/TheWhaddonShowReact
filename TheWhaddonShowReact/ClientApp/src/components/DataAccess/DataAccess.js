@@ -21,3 +21,5 @@ export const fetchData = async (url) => { //TODO add ,errorMessage
     return response;
 };
 
+//Test code for Query component
+/*<pre>{JSON.stringify(data, null, 2)}</pre>*/
