@@ -14,15 +14,8 @@ namespace TheWhaddonShowReact.Controllers
 			_fileSystem = fileSystem;
 		}
 
-		[HttpGet]
-		public IActionResult Get()
-		{
-			return Ok("Test");
-		}
-
-
 		[HttpPost("upload")]
-		public async Task<IActionResult> Upload([FromForm] IFormFile file)
+		public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromForm] string folder = "uploads")
 		{
 			if (file == null || file.Length == 0)
 			{
@@ -31,7 +24,7 @@ namespace TheWhaddonShowReact.Controllers
 
 			try
 			{
-				var uploadsFolder = _fileSystem.Path.Combine("uploads");
+				var uploadsFolder = _fileSystem.Path.Combine(folder);
 				if (!_fileSystem.Directory.Exists(uploadsFolder))
 				{
 					_fileSystem.Directory.CreateDirectory(uploadsFolder);
@@ -45,7 +38,7 @@ namespace TheWhaddonShowReact.Controllers
 					await file.CopyToAsync(stream);
 				}
 
-				return Ok("File uploaded successfully.");
+				return Ok(uniqueFileName);
 			}
 			catch (Exception ex)
 			{
