@@ -52,7 +52,7 @@ import Widgets from '../../pages/widgets';
 import DashboardAnalytics from '../../pages/analytics';
 import Dashboard from '../../pages/dashboard';
 import UserFormPage from '../../pages/user/form/UsersFormPage';
-import UserListPage from '../../pages/user/list/UsersListPage';
+import User from '../../pages/user/User';
 //import ChangePasswordFormPage from '../Users/changePassword/ChangePasswordFormPage';
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header';
@@ -164,7 +164,7 @@ class Layout extends React.Component {
                                         <Route path="/app/gallery" exact component={ExtraGallery} />
 
                                         <Route path="/admin" exact render={() => <Redirect to="/admin/users" />} />
-                                        <Route path="/admin/users" exact component={UserListPage} />
+                                        <Route path="/admin/users" exact component={User} />
                                         <Route path="/admin/users/new" exact component={UserFormPage} />
                                         <Route path="/admin/users/:id/edit" exact component={UserFormPage} />
 

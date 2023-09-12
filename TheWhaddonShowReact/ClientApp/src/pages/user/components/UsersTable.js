@@ -3,8 +3,7 @@ import actions from '../../../actions/usersListActions';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'connected-react-router';
-
-import { Query, fetchData } from 'components/DataAccess/DataAccess';
+import axios from 'axios';
 
 import {
     Dropdown,
@@ -28,11 +27,21 @@ import Widget from 'components/Widget';
 
 import s from '../Users.module.scss';
 
-class UsersListTable extends Component {
+class UsersTable extends Component {
     state = {
         modalOpen: false,
         idToDelete: null,
     }
+
+
+    componentDidMount() {
+        
+    }
+
+
+
+
+
 
     handleDelete() {
         const userId = this.props.idToDelete;
@@ -199,11 +208,12 @@ class UsersListTable extends Component {
 
 function mapStateToProps(store) {
     return {
-        loading: store.users.list.loading,
-        rows: store.users.list.rows,
-        modalOpen: store.users.list.modalOpen,
-        idToDelete: store.users.list.idToDelete,
+        persons: store.persons
+        //loading: store.users.list.loading,
+        //rows: store.users.list.rows,
+        //modalOpen: store.users.list.modalOpen,
+        //idToDelete: store.users.list.idToDelete,
     };
 }
 
-export default connect(mapStateToProps)(UsersListTable);
+export default connect(mapStateToProps)(UsersTable);

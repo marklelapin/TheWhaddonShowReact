@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import UsersListTable from './UsersListTable';
+import UsersTable from './components/UsersTable';
 
 class UsersListPage extends Component {
 
@@ -10,7 +10,7 @@ class UsersListPage extends Component {
           <h2 className="page-title">User - <span className="fw-semi-bold">Management</span></h2>
         </div>
             
-            <UsersListTable />
+            <UsersTable />
       	</div>
     );
   }
