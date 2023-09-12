@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Identity.Web;
 using MyApiMonitorClassLibrary.Interfaces;
 using MyApiMonitorClassLibrary.Models;
@@ -5,6 +7,7 @@ using MyClassLibrary.DataAccessMethods;
 using MyClassLibrary.Extensions;
 using MyClassLibrary.LocalServerMethods.Interfaces;
 using MyClassLibrary.LocalServerMethods.Models;
+using System.IO.Abstractions;
 using TheWhaddonShowClassLibrary.DataAccess;
 
 
@@ -19,6 +22,26 @@ builder.RequireAuthorizationThroughoutAsFallbackPolicy();
 builder.ByPassAuthenticationIfInDevelopment();
 
 // Add services to the container.
+if (builder.Environment.IsDevelopment()) //allows file upload from localhost:44442 in development.
+{
+	builder.Services.AddCors(options =>
+	{
+		options.AddPolicy("AllowDevelopmentOrigin", builder =>
+	{
+		builder.WithOrigins("http://localhost:44442")
+			   .AllowAnyHeader()
+			   .AllowAnyMethod()
+			   .AllowCredentials();
+
+
+
+
+		//WithOrigins("http://localhost:44442")
+		//.AllowAnyHeader()
+		//	   .AllowAnyMethod();
+	});
+	});
+}
 
 builder.Services.AddDownstreamApi("TheWhaddonShowApi", builder.Configuration.GetSection("TheWhaddonShowApi"));
 
@@ -44,6 +67,12 @@ builder.Services.AddScoped(typeof(IServerDataAccess<>), typeof(APIServerDataAcce
 builder.Services.AddScoped(typeof(ILocalServerEngine<>), typeof(LocalServerEngine<>));
 builder.Services.AddScoped(typeof(ILocalServerModelFactory<,>), typeof(LocalServerModelFactory<,>));
 
+// File uploading services
+builder.Services.AddSingleton<IFileSystem, FileSystem>();
+builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+
+
+
 
 var app = builder.Build();
 
@@ -54,8 +83,24 @@ if (!app.Environment.IsDevelopment())
 	app.UseHsts();
 }
 
+//All file uploading from local host in development
+if (app.Environment.IsDevelopment())
+{
+	app.UseCors("AllowDevelopmentOrigin");
+}
+
+//Configuration for file uploading
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(
+				Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+	RequestPath = "/uploads"
+});
+
+
+
+//Configuration for routing
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
 app.UseCookiePolicy();
 

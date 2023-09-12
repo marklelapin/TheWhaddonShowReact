@@ -18,6 +18,7 @@
     <PackageReference Include="MarkCarter.MyApiMonitorClassLibrary" Version="1.0.0" />
     <PackageReference Include="MarkCarter.MyClassLibrary" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.20" />
+    <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,6 +50,7 @@
   <ItemGroup>
     <Folder Include="ClientApp\mysrc\" />
     <Folder Include="ClientApp\src\images\NewFolder\" />
+    <Folder Include="uploads\" />
   </ItemGroup>
 
   <ItemGroup>

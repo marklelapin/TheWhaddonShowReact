@@ -5,6 +5,8 @@ import {
 } from 'reactstrap';
 
 import Lightbox from 'react-images';
+import ImageUploader from 'components/ImageUploader/ImageUploader';
+
 import s from './Gallery.module.scss';
 
 import pic1 from '../../../images/pictures/1.jpg';
@@ -159,7 +161,7 @@ class Gallery extends React.Component {
     this.openLightbox = this.openLightbox.bind(this);
   }
 
-  openLightbox(index, event) {
+ openLightbox(index, event) {
     event.preventDefault();
     this.setState({
       currentImage: index,
@@ -227,10 +229,15 @@ class Gallery extends React.Component {
   }
 
   render() {
-    return (
+      return (
       <div className={s.root}>
         <h1 className="page-title">Media - <span className="fw-semi-bold">Images</span>
         </h1>
+
+
+        <ImageUploader></ImageUploader>
+
+
 
         <div className={s.galleryControls}>
           <ButtonGroup id="shuffle-buttons">
