@@ -7,7 +7,7 @@ namespace TheWhaddonShowReact.Controllers
 {
 	[ApiController]
 	[Route("[controller]")]
-	public class ApiMonitorController : Controller
+	public class ApiMonitorController : ControllerBase
 	{
 		private readonly IApiTestDataAccess _dataAccess;
 		public ApiMonitorController(IApiTestDataAccess dataAccess)

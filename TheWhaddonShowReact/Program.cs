@@ -1,10 +1,33 @@
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.FileProviders;
 using MyApiMonitorClassLibrary.Interfaces;
 using MyApiMonitorClassLibrary.Models;
 using MyClassLibrary.DataAccessMethods;
+using System.IO.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+if (builder.Environment.IsDevelopment()) //allows file upload from localhost:44442 in development.
+{
+	builder.Services.AddCors(options =>
+	{
+		options.AddPolicy("AllowDevelopmentOrigin", builder =>
+	{
+		builder.WithOrigins("http://localhost:44442")
+			   .AllowAnyHeader()
+			   .AllowAnyMethod()
+			   .AllowCredentials();
+
+
+
+
+		//WithOrigins("http://localhost:44442")
+		//.AllowAnyHeader()
+		//	   .AllowAnyMethod();
+	});
+	});
+}
 
 builder.Services.AddControllersWithViews();
 
@@ -12,6 +35,11 @@ builder.Services.AddTransient<IMongoDBDataAccess>(sp => new MongoDBDataAccess(bu
 																			 , builder.Configuration.GetValue<string>("MongoDatabase:ConnectionString")!));
 builder.Services.AddTransient<IApiTestDataAccess, ApiTestMongoDataAccess>();
 builder.Services.AddTransient<IChartDataProcessor, ChartDataProcessor>();
+
+
+// File uploading services
+builder.Services.AddSingleton<IFileSystem, FileSystem>();
+builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
 
 
 
@@ -25,11 +53,25 @@ if (!app.Environment.IsDevelopment())
 	app.UseHsts();
 }
 
+//All file uploading from local host in development
+if (app.Environment.IsDevelopment())
+{
+	app.UseCors("AllowDevelopmentOrigin");
+}
+
+//Configuration for file uploading
+app.UseStaticFiles(new StaticFileOptions
+{
+	FileProvider = new PhysicalFileProvider(
+				Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+	RequestPath = "/uploads"
+});
+
+
+
+//Configuration for routing
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 app.UseRouting();
-
-
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller}/{action=Index}/{id?}");

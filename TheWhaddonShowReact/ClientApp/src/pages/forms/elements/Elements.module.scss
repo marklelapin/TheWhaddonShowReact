@@ -254,7 +254,7 @@
   width: 100%;
   text-align: center;
   padding: 40px 10px;
-  height: 200px;
+  min-height: 200px;
   border: 2px dashed #ccc;
 
   @include border-radius($border-radius);
