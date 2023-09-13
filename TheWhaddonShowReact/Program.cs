@@ -9,9 +9,7 @@ using MyClassLibrary.LocalServerMethods.Interfaces;
 using MyClassLibrary.LocalServerMethods.Models;
 using System.IO.Abstractions;
 using TheWhaddonShowClassLibrary.DataAccess;
-
-
-
+using TheWhaddonShowReact.Models.LocalServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,10 +60,9 @@ builder.Services.AddTransient<IChartDataProcessor, ChartDataProcessor>();
 builder.Services.AddTransient<ILocalServerModelUpdate, LocalServerModelUpdate>();
 builder.Services.AddTransient(typeof(ILocalServerModel<>), typeof(LocalServerModel<>));
 builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
-builder.Services.AddScoped(typeof(ILocalDataAccess<>), typeof(LocalSQLConnector<>));
+builder.Services.AddScoped(typeof(ILocalDataAccess<>), typeof(ReactLocalDataAccess<>));
 builder.Services.AddScoped(typeof(IServerDataAccess<>), typeof(APIServerDataAccess<>));
 builder.Services.AddScoped(typeof(ILocalServerEngine<>), typeof(LocalServerEngine<>));
-builder.Services.AddScoped(typeof(ILocalServerModelFactory<,>), typeof(LocalServerModelFactory<,>));
 
 // File uploading services
 builder.Services.AddSingleton<IFileSystem, FileSystem>();

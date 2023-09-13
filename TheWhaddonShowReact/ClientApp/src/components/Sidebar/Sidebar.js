@@ -36,7 +36,7 @@ class Sidebar extends React.Component {
 
     static defaultProps = {
         sidebarStatic: false,
-        sidebarOpened: true,
+        sidebarOpened: false,
         activeItem: '',
     };
 

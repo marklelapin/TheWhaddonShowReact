@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyClassLibrary.LocalServerMethods.Interfaces;
+using System.Text.Json;
 using TheWhaddonShowClassLibrary.Models;
+using TheWhaddonShowReact.Models.LocalServer;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,48 +13,60 @@ namespace TheWhaddonShowReact.Controllers
 	public class PersonsController : ControllerBase
 	{
 
-		private readonly ILocalServerModelFactory<Person, PersonUpdate> _personFactory;
+		private readonly ReactLocalDataAccess<PersonUpdate> _localDataAccess;
+		private readonly ILocalServerEngine<PersonUpdate> _localServerEngine;
 
-		public PersonsController(ILocalServerModelFactory<Person, PersonUpdate> personFactory)
+		public PersonsController(ILocalDataAccess<PersonUpdate> localDataAccess, ILocalServerEngine<PersonUpdate> localServerEngine)
 		{
-			_personFactory = personFactory;
+			// Cast _localDataAccess to ReactLocalDataAccess<PersonUpdate>
+			if (localDataAccess is ReactLocalDataAccess<PersonUpdate> reactLocalDataAccess) //TODO: replace with IRemoteLocalDataAccess interface to avoid this hack.
+			{
+				_localDataAccess = reactLocalDataAccess;
+			}
+			else
+			{
+				throw new Exception("localDataAccess<T> specifiedin Dependency Injection is not of type ReactLocalDataAccess<T>." +
+					" This is required in order for the api controller to interact with React app correctly.");
+			}
+			_localServerEngine = localServerEngine;
 		}
 
 
-		// GET: api/<PersonsController>
-		[HttpGet]
-		public async Task<IActionResult> Get()
+
+
+		// POST api/persons/sync
+		[HttpPost("sync")]
+		public Task<IActionResult> Post([FromBody] LocalToServerSyncData<PersonUpdate> syncData)
 		{
-			List<Person> persons = await _personFactory.CreateModelList();
+			if (syncData == null) return Task.FromResult<IActionResult>(BadRequest());
 
-			List<PersonUpdate> personsLatest = persons.Select(x => x.Latest).ToList();
+			if (syncData != null)
+			{
 
-			return Ok(personsLatest.ToArray());
+				_localDataAccess.setLocalToServerSyncData(syncData);
+
+				(DateTime? syncedDataTime, bool success) = _localServerEngine.TrySync().Result; //Can localserverEngine TrySync() be made async? (not sure)
+
+
+				if (success)
+				{
+					var serverToLocalSyncData = _localDataAccess.getServerToLocalSyncData();
+
+					var serverToLocalSyncDataJson = JsonSerializer.Serialize(serverToLocalSyncData);
+
+					return Task.FromResult<IActionResult>(Ok(serverToLocalSyncDataJson));
+				}
+				else
+				{
+					return Task.FromResult<IActionResult>(BadRequest());
+				}
+
+			}
+
+			return Task.FromResult<IActionResult>(Content("syncData is null"));
+
 		}
 
-		// GET api/<PersonsController>/5
-		[HttpGet("{id}")]
-		public string Get(int id)
-		{
-			return "value";
-		}
 
-		// POST api/<PersonsController>
-		[HttpPost]
-		public void Post([FromBody] string value)
-		{
-		}
-
-		// PUT api/<PersonsController>/5
-		[HttpPut("{id}")]
-		public void Put(int id, [FromBody] string value)
-		{
-		}
-
-		// DELETE api/<PersonsController>/5
-		[HttpDelete("{id}")]
-		public void Delete(int id)
-		{
-		}
 	}
 }

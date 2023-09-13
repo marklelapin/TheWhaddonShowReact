@@ -9,6 +9,15 @@ export const Query = (props) => {
     return props.children(useQuery(props.queryKey, props.queryFn, props.queryOptions))
 }
 
+
+
+
+
+
+
+
+
+
 export const uploadFiles = async (files, targetFolder) => {
 
     if (files.length === 0) {
