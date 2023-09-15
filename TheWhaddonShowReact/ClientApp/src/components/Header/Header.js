@@ -38,38 +38,6 @@ import CalendarIcon from '../../images/sidebar/Outline/Calendar';
 import s from './Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
 
 
-//TODO add in sync here once working in user. then add modal to highlight offline/online status.
-////Data Access
-//import { useSync } from 'dataAccess/localServerUtils';
-//import { Person, ScriptItem, Part } from 'dataAccess/localServerModels';
-
-
-
-//const []
-
-
-//const dispatch = useDispatch();
-
-////Initial Sync of Data
-//const personSyncError = useSync(Person)
-////const scriptItemSyncError = useSync(ScriptItem)
-////const partSyncError = useSync(Part)
-
-//if (personSyncError === null
-//    //&& scriptItemSyncError === null
-//    //&& partSyncError === null) 
-//) {
-
-//}
-
-
-
-
-
-
-
-
-
 class Header extends React.Component {
     static propTypes = {
         sidebarOpened: PropTypes.bool.isRequired,
@@ -91,6 +59,10 @@ class Header extends React.Component {
 
         this.state = {
             menuOpen: false,
+
+            syncOpen: false,
+            syncTabSelected: 1,
+
             notificationsOpen: false,
             notificationsTabSelected: 1,
             focus: false,
@@ -155,6 +127,12 @@ class Header extends React.Component {
         });
     }
 
+    toggleSync() {
+        this.setState({
+            syncOpen: !this.state.syncOpen,
+        });
+    }
+
     doLogout() {
         this.props.dispatch(logoutUser());
     }
@@ -172,7 +150,7 @@ class Header extends React.Component {
         }
     }
 
-    // static/non-static
+    // static/non-static   //pinning sidebar
     toggleSidebar() {
         this.props.dispatch(toggleSidebar());
         if (this.props.sidebarStatic) {
@@ -203,68 +181,17 @@ class Header extends React.Component {
 
         return (
             <Navbar className={`${s.root} d-print-none ${navbarType === NavbarTypes.FLOATING ? s.navbarFloatingType : ''}`} style={{ zIndex: !openUsersList ? 100 : 0 }}>
-                <Joyride
-                    callback={this.handleJoyrideCallback}
-                    continuous={true}
-                    run={this.state.run}
-                    showSkipButton={true}
-                    steps={this.state.steps}
-                    spotlightPadding={-10}
-                    disableOverlay={true}
-                    disableScrolling
-                    styles={{
-                        options: {
-                            arrowColor: '#ffffff',
-                            backgroundColor: '#ffffff',
-                            overlayColor: 'rgba(79, 26, 0, 0.4)',
-                            primaryColor: '#000',
-                            textColor: '#495057',
-                            spotlightPadding: 0,
-                            zIndex: 1000,
-                            padding: 5,
-                            width: 240,
-                        },
-                        tooltip: {
-                            fontSize: 15,
-                            padding: 15,
-                        },
-                        tooltipContent: {
-                            padding: '20px 5px 0',
-                        },
-                        floater: {
-                            arrow: {
-                                padding: 10
-                            },
-                        },
-                        buttonClose: {
-                            display: 'none'
-                        },
-                        buttonNext: {
-                            backgroundColor: "#21AE8C",
-                            fontSize: 13,
-                            borderRadius: 4,
-                            color: "#ffffff",
-                            fontWeight: "bold",
-                            outline: "none"
-                        },
-                        buttonBack: {
-                            color: "#798892",
-                            marginLeft: 'auto',
-                            fontSize: 13,
-                            marginRight: 5,
-                        },
-                        buttonSkip: {
-                            color: "#798892",
-                            fontSize: 13,
-                        },
-                    }}
-                />
+                
                 <div className="d-flex flex-row justify-content-md-start flex-grow-1 align-content-center align-self-start">
+
+                
                     <Nav className="my-auto">
                         <NavItem>
                             <NavLink className={`d-md-down-none ${s.toggleSidebar}`} id="toggleSidebar" onClick={this.toggleSidebar}>
                                 <span className={s.headerSvgFlipColor}>
-                                    <Menu />
+
+                                    <span className="glyphicon glyphicon-menu-hamburger"></span>
+                                    {/*<Menu />*/}
                                 </span>
                             </NavLink>
                             <UncontrolledTooltip placement="bottom" target="toggleSidebar">
@@ -285,35 +212,9 @@ class Header extends React.Component {
                                 </span>
                             </NavLink>
                         </NavItem>
-                        <NavItem className="d-sm-down-none">
-                            <NavLink className="px-2">
-                                <span className={s.headerSvgFlipColor}>
-                                    <Exchange />
-                                </span>
-                            </NavLink>
-                        </NavItem>
-                        <NavItem className="d-sm-down-none">
-                            <NavLink className="px-2">
-                                <span className={s.headerSvgFlipColor}>
-                                    <Cross />
-                                </span>
-                            </NavLink>
-                        </NavItem>
                     </Nav>
 
-                    <Form className={`${s.headerSearchInput} d-sm-down-none`} inline>
-                        <FormGroup>
-                            <InputGroup onFocus={this.toggleFocus} onBlur={this.toggleFocus} className={
-                                cx('input-group-no-border', { 'focus': !!focus })
-                            }>
-
-                                <div className={`${s.headerSvgFlipColor} input-group-prepend-icon`}><Search /></div>
-                                <Input id="search-input" placeholder="Search Dashboard" className={cx({ 'focus': !!focus })} />
-                            </InputGroup>
-                        </FormGroup>
-                    </Form>
-
-                    <NavLink className={`${s.navbarBrand} d-md-none ${s.headerSvgFlipColor}`}>
+                       <NavLink className={`${s.navbarBrand} d-md-none ${s.headerSvgFlipColor}`}>
                         <i className="fa fa-circle text-primary me-n-sm" />
                         <i className="fa fa-circle text-danger" />
                         &nbsp;
@@ -322,10 +223,18 @@ class Header extends React.Component {
                         <i className="fa fa-circle text-danger me-n-sm" />
                         <i className="fa fa-circle text-primary" />
                     </NavLink>
-                </div>
-
-                <div>
+                
+               
                     <Nav className="ms-auto">
+                        <Dropdown nav isOpen={this.state.syncOpen} toggle={this.toggleSync} id="basic-nav-dropdown" className={`${s.notificationsMenu}`}> 
+                            <DropdownToggle nav caret className={s.headerSvgFlipColor}>
+                                <span className={`small m-2 d-sm-down-none ${s.headerTitle} ${this.props.sidebarStatic ? s.adminEmail : ''}`}>Sync Status:</span>
+                                <span className="m-1 circle bg-light-red text-white fw-semi-bold d-sm-down-none">13 mins</span>
+                            </DropdownToggle>
+                            <DropdownMenu end className={`${s.notificationsWrapper} py-0 animated animated-fast fadeInUp`}>
+                                <Notifications />
+                            </DropdownMenu>
+                        </Dropdown>
                         <Dropdown nav isOpen={this.state.notificationsOpen} toggle={this.toggleNotifications} id="basic-nav-dropdown" className={`${s.notificationsMenu}`}>
                             <DropdownToggle nav caret className={s.headerSvgFlipColor}>
                                 <span className={`${s.avatar} rounded-circle float-start me-3`}>

@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { dismissAlert } from '../../actions/alerts';
 import s from './Sidebar.module.scss';
 import LinksGroup from './LinksGroup/LinksGroup';
-import { openSidebar, closeSidebar, changeActiveSidebarItem } from '../../actions/navigation';
+import { toggleSidebar, openSidebar, closeSidebar, changeActiveSidebarItem } from '../../actions/navigation';
 import isScreen from '../../core/screenHelper';
 import { logoutUser } from '../../actions/auth';
 
@@ -22,6 +22,8 @@ import List from '../../images/sidebar/Outline/List';
 
 import wslogo from '../../images/whaddon-show-logo-reversed.png'
 import wstitle from '../../images/the-whaddon-show.png'
+
+import CaretPin from './LinksGroup/LinksGroup - Copy';
 
 class Sidebar extends React.Component {
     static propTypes = {
@@ -45,6 +47,7 @@ class Sidebar extends React.Component {
 
         this.onMouseEnter = this.onMouseEnter.bind(this);
         this.onMouseLeave = this.onMouseLeave.bind(this);
+        this.toggleSidebarPin = this.toggleSidebarPin.bind(this);
         this.doLogout = this.doLogout.bind(this);
     }
 
@@ -72,13 +75,32 @@ class Sidebar extends React.Component {
         this.props.dispatch(logoutUser());
     }
 
+    // static/non-static   //pinning sidebar
+    toggleSidebarPin() {
+        this.props.dispatch(toggleSidebar());
+        if (this.props.sidebarStatic) {
+            localStorage.setItem('staticSidebar', 'false');
+            this.props.dispatch(changeActiveSidebarItem(null));
+        } else {
+            localStorage.setItem('staticSidebar', 'true');
+            const paths = this.props.location.pathname.split('/');
+            paths.pop();
+            this.props.dispatch(changeActiveSidebarItem(paths.join('/')));
+        }
+    }
+
+
     render() {
         return (
+            
             <div className={`${(!this.props.sidebarOpened && !this.props.sidebarStatic) ? s.sidebarClose : ''} ${s.sidebarWrapper}`}>
-                <nav
+                
+            <nav
                     onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}
                     className={s.root}
                 >
+                    <CaretPin isPinned={this.props.sidebarStatic} onClick={this.toggleSidebarPin}></CaretPin>
+                    
                     <header className={s.logo}>
                         <a href="https://demo.flatlogic.com/sing-app-react/">
                             <img src={wslogo} height="60" alt="The Whaddon Show Logo of a cartoon cowboy playing the guitar" />
