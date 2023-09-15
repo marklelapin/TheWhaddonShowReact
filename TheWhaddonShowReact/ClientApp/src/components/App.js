@@ -4,34 +4,45 @@ import { Switch, Route, Redirect } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { ConnectedRouter } from 'connected-react-router';
-import { getHistory } from '../index';
+import { getHistory } from 'index';
 import { AdminRoute, UserRoute, AuthRoute } from './RouteComponents';
 
 /* eslint-disable */
-import ErrorPage from '../pages/error';
+import ErrorPage from 'pages/error';
 /* eslint-enable */
 
-import '../styles/theme.scss';
-import LayoutComponent from '../components/Layout';
-import DocumentationLayoutComponent from '../documentation/DocumentationLayout';
-import Login from '../pages/auth/login';
-import Verify from '../pages/auth/verify';
-import Register from '../pages/auth/register';
-import Reset from '../pages/auth/reset';
-import Forgot from '../pages/auth/forgot';
+import 'styles/theme.scss';
+import LayoutComponent from 'components/Layout';
+import DocumentationLayoutComponent from 'documentation/DocumentationLayout';
+import Login from 'pages/auth/login';
+import Verify from 'pages/auth/verify';
+import Register from 'pages/auth/register';
+import Reset from 'pages/auth/reset';
+import Forgot from 'pages/auth/forgot';
 
+import {useEffect} from 'react';
+import { useSync } from 'dataAccess/localServerUtils';
 
-
+}
 import {
     QueryClient,
-    QueryClientProvider,
+    QueryClientProvider
 } from '@tanstack/react-query'
+
+
+
+useSync()
+
+
+
 // Create a client
 const queryClient = new QueryClient()
 
 const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
 
 class App extends React.PureComponent {
+
+
 
     render() {
         if (this.props.loadingInit) {

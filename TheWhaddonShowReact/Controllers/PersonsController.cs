@@ -34,7 +34,7 @@ namespace TheWhaddonShowReact.Controllers
 
 
 
-		// POST api/persons/sync
+		// POST api/person/sync
 		[HttpPost("sync")]
 		public Task<IActionResult> Post([FromBody] LocalToServerSyncData<PersonUpdate> syncData)
 		{

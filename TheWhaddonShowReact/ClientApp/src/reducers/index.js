@@ -9,7 +9,7 @@ import analytics from './analytics';
 import chat from './chat';
 import users from './usersReducers';
 import persons from './persons';
-import sync from './sync';
+import localServer from './localServer';
 import { connectRouter } from 'connected-react-router';
 
 export default (history) =>
@@ -25,5 +25,5 @@ export default (history) =>
         users,
         chat,
         persons,
-        sync,
+        localServer,
     });

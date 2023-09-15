@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { uploadFiles } from '../DataAccess/DataAccess';
+import { uploadFiles } from 'dataAccess/generalUtils';
 
 import {
     FormGroup,
@@ -42,6 +42,8 @@ export default class ImageUploader extends React.Component {
 
 
     handleUploadClick = async () => {
+
+
         if (this.state.images.length === 0) {
             alert('Please select at least 1 file to upload.')
         } else {

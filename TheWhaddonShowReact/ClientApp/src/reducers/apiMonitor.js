@@ -2,7 +2,8 @@ import {
     UPDATE_FROM_TO
     , TOGGLE_SHOW_SUCCESS
     , TOGGLE_SHOW_FAILURE
-    , UPDATE_SEARCH
+    , UPDATE_SEARCH,
+    UPDATE_IS_LOADING
 } from '../actions/apiMonitor';
 
 let date = new Date();
@@ -17,6 +18,7 @@ const defaultState = {
     search: '',
     showSuccess: true,
     showFailure: true,
+    isLoading: false,
 };
 
 export default function apiMonitorReducer(state = defaultState, action) {
@@ -38,6 +40,11 @@ export default function apiMonitorReducer(state = defaultState, action) {
         case UPDATE_SEARCH:
             return Object.assign({}, state, {
                 search: action.payload.search
+            });
+        case UPDATE_IS_LOADING:
+
+            return Object.assign({}, state, {
+                isLoading: action.payload
             });
 
         default:
