@@ -9,6 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 
 //LocalServerModels and types
 import { LocalToServerSyncData } from './localServerModels';
+import {Person, ScriptItem, Part} from './localServerModels';
 
 //Redux Hooks
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +20,8 @@ import {
     processServerToLocalPostbacks,
     addUpdates,
     clearConflicts,
-    updateConnectionStatus
+    updateConnectionStatus,
+    endSync
 } from 'actions/localServer';
 
 
@@ -48,23 +50,23 @@ export async function useSync() {
             setType(persons.type)
         }
         //else do nothing
-    }, [persons.isSyncing])
+    }, [persons.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (scriptItems.isSyncing) { //if it is syncing alread then don't run another sync.
+        if (scriptItems.isSyncing) { 
             setData(scriptItems.history)
             setType(scriptItems.type)
         }
         //else do nothing
-    }, [scriptItems.isSyncing])
+    }, [scriptItems.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (parts.isSyncing) { //if it is syncing alread then don't run another sync.
+        if (parts.isSyncing) { 
             setData(parts.history)
             setType(parts.type)
         }
         //else do nothing
-    }, [parts.isSyncing])
+    }, [parts.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 
@@ -73,23 +75,20 @@ export async function useSync() {
     //-------------------------------------------------------------------------------
     useEffect(() => {
 
-        createSyncData(data, localCopyId)
+        createSyncData(data, localCopyId,type,dispatch)
 
-            .then((syncData) => postSyncData(syncData, dispatch))
+            .then((syncData) => postSyncData(syncData, type,dispatch))
 
-            .then((responseData) => {
-                if (responseData === 'Connection Error') { return { error: null } } //not reported as error as could be working offline.
-                processSyncResponse(responseData, dispatch)
+            .then((response) => {
+                /*if (response === 'Connection Error') { finishSync(type, null, dispatch) } //not reported as error as could be working offline.*/
+                if (response.status !== 200) { finishSync(`Error: ${response.message}`,type,dispatch) }
+                processSyncResponse(response.data,type, dispatch)
             })
 
-            .then(endSync(type,dispatch))
+            .then(() => finishSync(null,type,dispatch))
             .catch((error) => {
-                endSync(type,dispatch)
-                return { error: error.message }
+                finishSync(error,type,dispatch)
             })
-
-        return { error: null }
-
 
     }, [data, localCopyId, dispatch,type])
 
@@ -110,49 +109,56 @@ const createSyncData = async (data, copyId) => { //data = all the updates pertai
 
 }
 
-const postSyncData = async (type, syncData, dispatch) => {
+const postSyncData = async (syncData, type, dispatch) => {
 
     const url = `${type}s/sync`
 
-    try {
+ /*   try {*/
         console.log("Posting Sync Data: " + JSON.stringify(syncData));
         const response = await axios.post(url, syncData);
 
         console.log("Response from server:  " + JSON.stringify(response.data))
 
-        dispatch(updateConnectionStatus('Ok'))
+        //dispatch(updateConnectionStatus('Ok'))
 
-        return response.data;
-    }
-    catch (error) {
-        dispatch(updateConnectionStatus(`No Connection: ${error.message}`)) //TODO Think this functionality can be changed to use Reaction offline functionality.(in repo issues)
-        return 'Connection Error'
-    }
+        return response;
+    //}
+    //catch (error) {
+    //    //dispatch(updateConnectionStatus(`No Connection: ${error.message}`)) //TODO Think this functionality can be changed to use Reaction offline functionality.(in repo issues)
+    //    //return 'Connection Error'
+    //    return error
+    //}
 }
 
-const processSyncResponse = async (responseData, dispatch, type) => {
+const processSyncResponse = async (responseData,type, dispatch) => {
 
     console.log("Processing Sync Response: ")
 
     try {
         if (responseData.PostBacks.length === 0) {
             console.log('No Postback to process.')
+            console.log(type)
         }
         else {
             console.log('Processing postbacks.')
+            console.log(type)
             dispatch(processServerToLocalPostbacks(responseData.PostBacks, type))
         }
 
         if (responseData.Updates.length === 0) {
             console.log('No updates to process.')
+            console.log(type)
         }
         else {
             console.log('Processing updates.')
+            console.log(type)
             dispatch(addUpdates(responseData.Updates, type))
         }
 
         if (responseData.ConflictIdsToClear.length === 0) {
             console.log('No conflicts to clear.')
+            console.log(type)
+
         }
         else {
             console.log('Clearing conflicts.')
@@ -176,9 +182,9 @@ const processSyncResponse = async (responseData, dispatch, type) => {
 
 }
 
-const endSync = (type,dispatch) => {
+const finishSync = (error,type,  dispatch) => {
 
-    dispatch(endSync(type))
+    dispatch(endSync(error,type))
 }
 
 

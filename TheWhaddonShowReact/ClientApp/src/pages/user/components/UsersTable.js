@@ -46,22 +46,39 @@ export function UsersTable() {
     //Setup state internal to this component
     const [modalOpen, setModalOpen] = useState(false);
     const [idToDelete, setIdToDelete] = useState(null);
-
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-
     //Access state from redux store
-    const personsHistory = useSelector((state) => state.localServer.persons.history)
+    const persons = useSelector((state) => state.localServer.persons)
+
+
 
     //Access the dispatch function using useDispatch
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        setLoadingError();
+    },[])
 
- 
+    useEffect(() => {
+        setLoadingError();
+    }, [persons]
+    )
 
-
-
-
+    const setLoadingError = () => {
+        if (persons.history.length > 0) {
+            setIsLoading(false)
+            setError(null)
+        }
+        if (persons.isSyncing) {
+            setIsLoading(true);
+            setError(null);
+        }
+        else {
+            setIsLoading(false);
+            setError(persons.syncError);
+        }
+    }
 
     const handleDelete = () => {
         const userId = idToDelete;
@@ -136,7 +153,7 @@ export function UsersTable() {
     //}
 
 
-    const data = getLatest(personsHistory);
+    const data = getLatest(persons.history);
 
 
     const options = {

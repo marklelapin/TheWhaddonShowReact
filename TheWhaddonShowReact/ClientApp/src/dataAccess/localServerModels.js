@@ -12,6 +12,7 @@ export class LocalServerModel {
         this.conflicts = [];
         this.type = type;
         this.isSyncing = false;
+        this.syncError = null;
     }
 }
 

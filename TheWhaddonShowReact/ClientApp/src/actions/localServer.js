@@ -73,9 +73,11 @@ export function sync(payloadType) {
     }
 }
 
-export function endSync(payloadType) {
+export function endSync(payload,payloadType) {
     return {
         type: END_SYNC,
+        payload,
         payloadType
+
     }
 }

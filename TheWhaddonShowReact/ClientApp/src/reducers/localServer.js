@@ -161,9 +161,9 @@ export default function localServerReducer(state = defaultState, action) {
         case END_SYNC:
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, isSyncing: false } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, isSyncing: false } };
-                case Part: return { ...state, parts: { ...state.parts, isSyncing: false } };
+                case Person: return { ...state, persons: { ...state.persons, isSyncing: false,syncError: action.payload } };
+                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, isSyncing: false,syncError: action.payload } };
+                case Part: return { ...state, parts: { ...state.parts, isSyncing: false,syncError: action.payload } };
                 default: return state;
             }
         default:
