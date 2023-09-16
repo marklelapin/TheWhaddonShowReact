@@ -23,7 +23,7 @@ import List from '../../images/sidebar/Outline/List';
 import wslogo from '../../images/whaddon-show-logo-reversed.png'
 import wstitle from '../../images/the-whaddon-show.png'
 
-import CaretPin from './LinksGroup/LinksGroup - Copy';
+import CaretPin from './LinksGroup/CaretPin';
 
 class Sidebar extends React.Component {
     static propTypes = {

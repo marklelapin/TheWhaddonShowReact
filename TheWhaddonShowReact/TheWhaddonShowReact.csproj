@@ -48,7 +48,6 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\src\components\NewFolder\" />
-    <Folder Include="ClientApp\src\components\Sidebar\LinksGroup\NewFolder\" />
     <Folder Include="ClientApp\src\images\NewFolder1\" />
     <Folder Include="ClientApp\src\images\NewFolder\" />
     <Folder Include="ClientApp\src\pages\home\" />
