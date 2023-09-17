@@ -66,7 +66,7 @@ function SyncDropdown(props) {
 
     const timeSince = (date) => {
 
-        if (date === null) return { text: 'Never synced.', secondsPast: null }
+        if (date === null) return { text: 'Never synced.', seconds: null }
 
         const now = new Date();
         const secondsPast = Math.floor((now - date) / 1000);
@@ -109,9 +109,9 @@ function SyncDropdown(props) {
 
         if (target === null) return (<></>);
 
-        const { text, secondsPast } = timeSince(target.lastSyncDate)
+        const { text, seconds } = timeSince(target.lastSyncDate)
 
-        const morethan5mins = secondsPast > (60 * 5)
+        const morethan5mins = seconds > (60 * 5)
 
         if (target.isSyncing) {
             return <><Icon icon="sync" strapColor="secondary" />Syncing</>
@@ -121,7 +121,7 @@ function SyncDropdown(props) {
                 <><Icon icon="cross" strapColor="danger" /> Syncing error...</>
             )
         }
-        if (secondsPast === null) return <><Icon icon="cross" strapColor="danger" /> Never synced</>
+        if (seconds === null) return <><Icon icon="cross" strapColor="danger" /> Never synced</>
         return (
 
             <>{(morethan5mins) ? < Icon icon="warning" strapColor="warning" ></Icon >

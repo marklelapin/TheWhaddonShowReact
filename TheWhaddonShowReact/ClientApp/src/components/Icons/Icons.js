@@ -31,7 +31,7 @@ export function Icon(props) {
         "sync": "fa fa-cloud",
         "tick": "fa fa-check",
         "cross": "fa fa-times",
-        "warning": "fa fa-triangle-exclamation"
+        "warning": "fa fa-exclamation"
     };
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {
