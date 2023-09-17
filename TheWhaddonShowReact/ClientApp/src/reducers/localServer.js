@@ -7,7 +7,7 @@
     CLEAR_CONFLICTS,
     UPDATE_CONNECTION_STATUS,
     SYNC,
-END_SYNC
+    END_SYNC
 } from 'actions/localServer';
 
 import {
@@ -15,19 +15,23 @@ import {
     Person
     , ScriptItem
     , Part
-    ,LocalServerModel
+    , LocalServerModel
 } from 'dataAccess/localServerModels';
 import { v4 as uuidv4 } from 'uuid';
 
 const defaultState = {
     localCopyId: uuidv4(),
-    lastSyncData: null,
+    sync: {
+        isSyncing: false,
+        error: null,
+        lastSyncDate: null
+    },
     //**LSMTypeInCode**
     persons: new LocalServerModel(Person), //object holding all information with regard to persons
     scriptItems: new LocalServerModel(ScriptItem), //object holding all information with regard to scriptItems
     parts: new LocalServerModel(Part),//object holding all information with regard to parts
     connectionStatus: 'Ok'
-};  
+};
 
 
 
@@ -51,10 +55,8 @@ export default function localServerReducer(state = defaultState, action) {
             return Object.assign({}, state, {
                 connectionStatus: action.payload
             });
-
-
-
-        //Actions where a line needs to be added for each new LocalServerModel update type (e.g. persons, scriptItems, parts) **LSMTypeInCode**
+            
+      //Actions where a line needs to be added for each new LocalServerModel update type (e.g. persons, scriptItems, parts) **LSMTypeInCode**
         case RESET_LIST:
             switch (action.payloadType) {
                 case Person: return { ...state, persons: { ...state.persons, history: action.payload } };
@@ -69,9 +71,9 @@ export default function localServerReducer(state = defaultState, action) {
                 let searchArray = [];
                 switch (action.payloadType) {
                     //**LSMTypeInCode**
-                    case Person: searchArray = state.persons.history;break
-                    case ScriptItem: searchArray = state.scriptItems.history;break
-                    case Part:  searchArray = state.parts.history;break
+                    case Person: searchArray = state.persons.history; break
+                    case ScriptItem: searchArray = state.scriptItems.history; break
+                    case Part: searchArray = state.parts.history; break
                     default: searchArray = [];
                 }
 
@@ -81,7 +83,7 @@ export default function localServerReducer(state = defaultState, action) {
                 //creates array of updated items and unaffected items
                 const updatedArray = searchArray.map((item) => {
                     const matchingUpdate = action.payload.find(
-                        postBack => 
+                        postBack =>
                             postBack.id === item.id && postBack.created === item.created);
 
                     if (matchingUpdate) { //if there is a match return the updated item
@@ -105,7 +107,7 @@ export default function localServerReducer(state = defaultState, action) {
                 }
             }
 
-       case ADD_UPDATES:
+        case ADD_UPDATES:
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
                 case Person: return { ...state, persons: { ...state.persons, history: [...state.persons.history, ...action.payload] } };
@@ -120,7 +122,7 @@ export default function localServerReducer(state = defaultState, action) {
 
             let searchArray = [];
             switch (action.payloadType) {
-//**LSMTypeInCode** */
+                //**LSMTypeInCode** */
                 case Person: searchArray = state.persons.history; break
                 case ScriptItem: searchArray = state.scriptItems.history; break
                 case Part: searchArray = state.parts.history; break
@@ -144,26 +146,53 @@ export default function localServerReducer(state = defaultState, action) {
             })
 
             switch (action.payloadType) {
-                    //**LSMTypeInCode** */
+                //**LSMTypeInCode** */
                 case Person: return { ...state, persons: { ...state.persons, history: updatedArray } };
                 case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: updatedArray } };
                 case Part: return { ...state, parts: { ...state.parts, history: updatedArray } };
                 default: return state;
             };
         case SYNC:
+            console.log(`syncing ${action.payloadType}`)
             switch (action.payloadType) {
-                    //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, isSyncing: true } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, isSyncing: true } };
-                case Part: return { ...state, parts: { ...state.parts, isSyncing: true } };
+                
+                //**LSMTypeInCode** */
+                case Person: return { ...state, persons: { ...state.persons, sync: { ...state.persons.sync, isSyncing: true } } };
+                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, sync: { ...state.scriptItems.sync, isSyncing: true } } };
+                case Part: return { ...state, parts: { ...state.parts, sync: { ...state.parts.sync, isSyncing: true } } };
                 default: return state;
             };
         case END_SYNC:
+            console.log(`end syncing ${action.payloadType}`)
+            let lastSyncDate = null
+
+            if (action.payload === null) { lastSyncDate = new Date() }
+
             switch (action.payloadType) {
+
                 //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, isSyncing: false,syncError: action.payload } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, isSyncing: false,syncError: action.payload } };
-                case Part: return { ...state, parts: { ...state.parts, isSyncing: false,syncError: action.payload } };
+                case Person: return {
+                    ...state, persons: {
+                        ...state.persons, sync: {
+                            ...state.persons.sync, isSyncing: false, error: action.payload, lastSyncDate: lastSyncDate ?? state.persons.sync.lastSyncDate
+                        }
+                    }
+                };
+                case ScriptItem: return {
+                    ...state, scriptItems: {
+                        ...state.scriptItems, sync: {
+                            ...state.scriptItems.sync, isSyncing: false, error: action.payload, lastSyncDate: lastSyncDate ?? state.scriptItems.sync.lastSyncDate
+                        }
+                    }
+                };
+                case Part: return {
+                    ...state, parts: {
+                        ...state.parts, sync: {
+                            ...state.parts.sync, isSyncing: false, error: action.payload, lastSyncDate: lastSyncDate ?? state.parts.sync.lastSyncDate
+                        }
+                    }
+                }
+
                 default: return state;
             }
         default:

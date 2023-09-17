@@ -20,7 +20,7 @@ import {
     processServerToLocalPostbacks,
     addUpdates,
     clearConflicts,
-    updateConnectionStatus,
+    //updateConnectionStatus,
     endSync
 } from 'actions/localServer';
 
@@ -45,29 +45,28 @@ export async function useSync() {
     //Use Effect Hooks to assing the data and url to be used in the sync operation. **LSMTypeInCode**
     //-------------------------------------------------------------------------------  
     useEffect(() => {
-        if (persons.isSyncing) { //if it is syncing alread then don't run another sync.
+        if (persons.sync.isSyncing) { //if it is syncing alread then don't run another sync.
             setData(persons.history)
             setType(persons.type)
         }
         //else do nothing
-    }, [persons.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [persons.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (scriptItems.isSyncing) { 
+        if (scriptItems.sync.isSyncing) { 
             setData(scriptItems.history)
             setType(scriptItems.type)
         }
         //else do nothing
-    }, [scriptItems.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [scriptItems.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (parts.isSyncing) { 
+        if (parts.sync.isSyncing) { 
             setData(parts.history)
             setType(parts.type)
         }
         //else do nothing
-    }, [parts.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
-
+    }, [parts.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 
@@ -189,6 +188,7 @@ const finishSync = (error,type,  dispatch) => {
 
 
 export function getLatest(history) {
+
     const latestUpdates = history.reduce((acc, update) => {
         if (!acc[update.Id] || update.Created > acc[update.Id].Created) {
             acc[update.Id] = update;
@@ -196,7 +196,9 @@ export function getLatest(history) {
         return acc;
     }, {})
 
-    return Object.values(latestUpdates);
+    let latestUpdatesArray = Object.values(latestUpdates);
+
+    if (latestUpdatesArray === null || latestUpdatesArray === undefined) { latestUpdatesArray = [] }
+
+    return latestUpdatesArray; 
 }
-
-

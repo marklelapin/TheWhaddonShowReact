@@ -1,4 +1,4 @@
-﻿import {v4 as uuidv4} from 'uuid'; 
+﻿import { v4 as uuidv4 } from 'uuid';
 
 // Identifies the types of LocalServerModel updates (works similarly to redux actions)
 export const Person = 'Person';
@@ -11,8 +11,11 @@ export class LocalServerModel {
         this.history = [];
         this.conflicts = [];
         this.type = type;
-        this.isSyncing = false;
-        this.syncError = null;
+        this.sync = {
+            isSyncing: false,
+            error: null,
+            lastSyncDate: null
+        }
     }
 }
 
@@ -28,7 +31,7 @@ export class LocalToServerSyncData {
 }
 
 export class ServerToLocalPostBack {
-    constructor(id , created , updatedOnServer ) {
+    constructor(id, created, updatedOnServer) {
         this.id = id
         this.created = created;
         this.updatedOnServer = updatedOnServer;

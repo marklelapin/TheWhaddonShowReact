@@ -10,8 +10,6 @@ import * as dataFormat from './UsersDataFormatters';
 import actions from 'actions/usersListActions';
 
 //Data Access / Local Server Model
-import { useSync } from 'dataAccess/localServerUtils';
-import { Person } from 'dataAccess/localServerModels';
 import { getLatest } from 'dataAccess/localServerUtils';
 //Components
 import DataLoading from 'components/DataLoading/DataLoading';
@@ -70,13 +68,13 @@ export function UsersTable() {
             setIsLoading(false)
             setError(null)
         }
-        if (persons.isSyncing) {
+        if (persons.sync.isSyncing) {
             setIsLoading(true);
             setError(null);
         }
         else {
             setIsLoading(false);
-            setError(persons.syncError);
+            setError(persons.sync.error);
         }
     }
 
@@ -153,7 +151,7 @@ export function UsersTable() {
     //}
 
 
-    const data = getLatest(persons.history);
+    const data = () => getLatest(persons.history);
 
 
     const options = {
@@ -171,7 +169,7 @@ export function UsersTable() {
             <Widget title="Users" collapse close>
                 <DataLoading isLoading={isLoading} isError={error !== null} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
                     <>
-                        <BootstrapTable bordered={false} data={data} version="4" pagination options={options} search className="table-responsive" tableContainerClass={`table-responsive table-striped table-hover ${s.usersListTableMobile}`}>
+                        <BootstrapTable bordered={false} data={data()} version="4" pagination options={options} search className="table-responsive" tableContainerClass={`table-responsive table-striped table-hover ${s.usersListTableMobile}`}>
                             <TableHeaderColumn dataField="PictureRef" dataSort dataFormat={dataFormat.imageFormatter}>
                                 <span className="fs-sm">Avatar</span>
                             </TableHeaderColumn>

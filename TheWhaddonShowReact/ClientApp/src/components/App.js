@@ -14,7 +14,6 @@ import ErrorPage from 'pages/error';
 
 import 'styles/theme.scss';
 import LayoutComponent from 'components/Layout';
-import DocumentationLayoutComponent from 'documentation/DocumentationLayout';
 import Login from 'pages/auth/login';
 import Verify from 'pages/auth/verify';
 import Register from 'pages/auth/register';
@@ -47,6 +46,7 @@ const dispatch = useDispatch();
 useSync();
 
     useEffect(() => {
+    
         dispatch(sync(Person))
         //dispatch(sync(ScriptItem))
         //dispatch(sync(Part))
@@ -78,7 +78,7 @@ useSync();
                             component={LayoutComponent} />
                         <Route path="/documentation" exact
                             render={() => <Redirect to="/documentation/getting-started/overview" />} />
-                        <Route path="/documentation" component={DocumentationLayoutComponent} />
+                       
                         <AuthRoute path="/register" exact component={Register} />
                         <AuthRoute path="/login" exact component={Login} />
                         <AuthRoute path="/verify-email" exact component={Verify} />

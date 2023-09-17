@@ -8,7 +8,6 @@ import products from './products';
 import analytics from './analytics';
 import chat from './chat';
 import users from './usersReducers';
-import persons from './persons';
 import localServer from './localServer';
 import { connectRouter } from 'connected-react-router';
 
@@ -24,6 +23,5 @@ export default (history) =>
         analytics,
         users,
         chat,
-        persons,
         localServer,
     });

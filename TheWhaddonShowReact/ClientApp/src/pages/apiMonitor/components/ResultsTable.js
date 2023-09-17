@@ -23,7 +23,7 @@ import {
 
 import s from '../TestResults.modules.scss';
 
-import TickCross from '../../../mycomponents/TickCross/TickCross'
+import { TickOrCross } from 'components/Icons/Icons'
 
 
 
@@ -243,7 +243,7 @@ class ResultsTable extends React.Component {
                     <TableHeaderColumn className={`width-100 ${s.columnHead} text-center`} columnClassName="width-100 text-center align-middle" dataField="dateTime" dataFormat={dateFormatter} dataSort sortFunc={dateSortFunc}>
                         <span className="fs-sm">Date Time</span>
                     </TableHeaderColumn>
-                    <TableHeaderColumn className={`width-100 ${s.columnHead} text-end`} columnClassName="width-100 align-middle text-end" dataField="success" dataFormat={TickCross}>
+                    <TableHeaderColumn className={`width-100 ${s.columnHead} text-end`} columnClassName="width-100 align-middle text-end" dataField="success" dataFormat={TickOrCross}>
                         <span className="fs-sm">Success?</span>
                     </TableHeaderColumn>
                     <TableHeaderColumn className={`width-150 ${s.columnHead}`} columnClassName="width-150 align-middle" dataField="timeToComplete" dataFormat={timeToCompleteFormatter} dataSort sortFunc={progressSortFunc}>
