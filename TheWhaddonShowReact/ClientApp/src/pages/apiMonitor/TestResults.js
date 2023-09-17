@@ -5,7 +5,8 @@ import {
     , toggleShowSuccess
     , toggleShowFailure
     , updateSearch
-} from '../../actions/apiMonitor';
+    , updateIsLoading
+} from 'actions/apiMonitor';
 import Datetime from 'react-datetime';
 
 
@@ -19,7 +20,7 @@ import {
     FormGroup
 } from 'reactstrap';
 
-import Widget from '../../components/Widget';
+import Widget from 'components/Widget';
 
 
 import ResultsTable from './components/ResultsTable';
@@ -53,6 +54,7 @@ class TestResults extends React.Component {
 
     handleUpdateButtonClick = () => {
         this.props.dispatch(updateFromTo({ dateFrom: this.state.datePickedFrom, dateTo: this.state.datePickedTo }))
+        this.props.dispatch(updateIsLoading(true))
         this.setState({ showUpdateButton: false })
     }
 

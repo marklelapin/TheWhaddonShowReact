@@ -1,11 +1,23 @@
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Identity.Web;
 using MyApiMonitorClassLibrary.Interfaces;
 using MyApiMonitorClassLibrary.Models;
 using MyClassLibrary.DataAccessMethods;
+using MyClassLibrary.Extensions;
+using MyClassLibrary.LocalServerMethods.Interfaces;
+using MyClassLibrary.LocalServerMethods.Models;
 using System.IO.Abstractions;
+using TheWhaddonShowClassLibrary.DataAccess;
+using TheWhaddonShowReact.Models.LocalServer;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.ConfigureMicrosoftIdentityWebAuthenticationAndUI("AzureAdB2C");
+
+builder.RequireAuthorizationThroughoutAsFallbackPolicy();
+
+builder.ByPassAuthenticationIfInDevelopment();
 
 // Add services to the container.
 if (builder.Environment.IsDevelopment()) //allows file upload from localhost:44442 in development.
@@ -29,13 +41,28 @@ if (builder.Environment.IsDevelopment()) //allows file upload from localhost:444
 	});
 }
 
+builder.Services.AddDownstreamApi("TheWhaddonShowApi", builder.Configuration.GetSection("TheWhaddonShowApi"));
+
+
+
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddTransient<IMongoDBDataAccess>(sp => new MongoDBDataAccess(builder.Configuration.GetValue<string>("MongoDatabase:DatabaseName")!
-																			 , builder.Configuration.GetValue<string>("MongoDatabase:ConnectionString")!));
+
+//Api Monitor services
+builder.Services.AddTransient<IMongoDBDataAccess>(sp =>
+					new MongoDBDataAccess(builder.Configuration.GetValue<string>("ApiMonitorDatabase:DatabaseName")!
+					, builder.Configuration.GetValue<string>("ApiMonitorDatabase:ConnectionString")!)
+					);
 builder.Services.AddTransient<IApiTestDataAccess, ApiTestMongoDataAccess>();
 builder.Services.AddTransient<IChartDataProcessor, ChartDataProcessor>();
 
+//Main Data Access services
+builder.Services.AddTransient<ILocalServerModelUpdate, LocalServerModelUpdate>();
+builder.Services.AddTransient(typeof(ILocalServerModel<>), typeof(LocalServerModel<>));
+builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
+builder.Services.AddScoped(typeof(ILocalDataAccess<>), typeof(ReactLocalDataAccess<>));
+builder.Services.AddScoped(typeof(IServerDataAccess<>), typeof(APIServerDataAccess<>));
+builder.Services.AddScoped(typeof(ILocalServerEngine<>), typeof(LocalServerEngine<>));
 
 // File uploading services
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
@@ -71,7 +98,16 @@ app.UseStaticFiles(new StaticFileOptions
 
 //Configuration for routing
 app.UseHttpsRedirection();
+
+app.UseCookiePolicy();
+
 app.UseRouting();
+
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller}/{action=Index}/{id?}");

@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
+import axios from 'axios';
+import  DataLoading from 'components/DataLoading/DataLoading';
+import {updateIsLoading} from 'actions/apiMonitor' 
 
 import {
     Row,
@@ -21,14 +23,59 @@ import {
 
 import s from '../TestResults.modules.scss';
 
-import { Query, fetchData } from '../../../components/DataAccess/DataAccess';
-import TickCross from '../../../mycomponents/TickCross/TickCross'
+import { TickOrCross } from 'components/Icons/Icons'
 
 
 
 
 
 class ResultsTable extends React.Component {
+
+
+    constructor(props) {
+
+        super(props)
+
+        this.state = {
+            error: null,
+            data: []
+        }
+
+
+    }
+
+    componentDidMount() {
+        this.refreshTableData();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.isLoading && !prevProps.isLoading) {
+            this.refreshTableData();
+        }
+    }
+
+
+    refreshTableData = async () => {
+        const { dispatch } = this.props
+        const { dateFrom, dateTo } = this.props
+
+        dispatch(updateIsLoading(true))
+
+        const url = `/apimonitor/results/?dateFrom=${dateFrom.toISOString()}&dateTo=${dateTo.toISOString()}`
+
+        try {
+            const response = await axios.get(url)
+            this.setState({ data: response.data })
+            dispatch(updateIsLoading(false)) 
+        }
+        catch (err) {
+            this.setState({ error: `An error whilst loading data: ${err.message}` })
+            dispatch(updateIsLoading(false)) 
+        }
+
+    }
+
+
 
 
     renderSizePerPageDropDown = (props) => {
@@ -51,13 +98,13 @@ class ResultsTable extends React.Component {
         );
     }
 
-   
+
 
 
 
     render() {
 
-        const { showSuccess, showFailure, search, dateFrom,dateTo } = this.props
+
 
         const options = {
             sizePerPage: 10,
@@ -143,13 +190,6 @@ class ResultsTable extends React.Component {
         }
 
 
-
-
-
-
-
-        
-
         function filteredData(data) {
 
             console.log(`count: ${data.length}, search: ${search}, showSuccess: ${showSuccess}, showFailure: ${showFailure}`)
@@ -173,65 +213,54 @@ class ResultsTable extends React.Component {
 
         }
 
-        function generateUrl() {
-            return `/apimonitor/results/?dateFrom=${dateFrom.toISOString()}&dateTo=${dateTo.toISOString()}`
-        }
 
-        function generateKey() {
-            return [generateUrl()]
-        }
-       
+
+        const { showSuccess, showFailure, search } = this.props
+
+        const { data, isLoading, error } = this.state
+
+
+
 
         return (
+            <DataLoading isLoading={isLoading} error={error !== null} errorText={`Error on loading: ${error}`} labelText="Loading...">
 
-            < Query queryKey={generateKey()} //if queryKey changes, the query will be re-executed
-                queryFn={() => fetchData(generateUrl())}
-                queryOptions={{}}>
-
-                {({ data, error, isLoading }) => {
-                    if (isLoading) return <span>Loading...</span>;
-                    if (error) return <span>Error: {error.message}</span>;
-                    return (
-                        <>
-                            <BootstrapTable
-                                data={filteredData(data)}
-                                version="4"
-                                pagination
-                                options={options}
-                                hover
-                                bordered={false}
-                                tableContainerClass={`table-striped table-hover table-responsive ${s.bootstrapTable}`}
-                            >
-                                <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="key" isKey hidden>
-                                    <span className="fs-sm" >Id</span>
-                                </TableHeaderColumn>
-                                <TableHeaderColumn className={`d-sm-table-cell ${s.columnHead}`} columnClassName="d-sm-table-cell align-middle text-wrap" dataField="title" dataSort>
-                                    <span className="fs-sm">Title</span>
-                                </TableHeaderColumn>
-                                <TableHeaderColumn className={`width-100 ${s.columnHead} text-center`} columnClassName="width-100 text-center align-middle" dataField="dateTime" dataFormat={dateFormatter} dataSort sortFunc={dateSortFunc}>
-                                    <span className="fs-sm">Date Time</span>
-                                </TableHeaderColumn>
-                                <TableHeaderColumn className={`width-100 ${s.columnHead} text-end`} columnClassName="width-100 align-middle text-end" dataField="success" dataFormat={TickCross}>
-                                    <span className="fs-sm">Success?</span>
-                                </TableHeaderColumn>
-                                <TableHeaderColumn className={`width-150 ${s.columnHead}`} columnClassName="width-150 align-middle" dataField="timeToComplete" dataFormat={timeToCompleteFormatter} dataSort sortFunc={progressSortFunc}>
-                                    <span className="fs-sm">Time to Complete</span>
-                                </TableHeaderColumn>
-                                <TableHeaderColumn className={`d-xs-table-cell ${s.columnHead}`} columnClassName="d-xs-table-cell align-middle text-wrap" dataField="failureMessage">
-                                    <span className="fs-sm text-wrap">Failure Message</span>
-                                </TableHeaderColumn>
-                                <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle text-wrap" dataField="results" dataFormat={resultsFormatter}>
-                                    <span className="fs-sm">Expected vs Actual</span>
-                                </TableHeaderColumn>
-                            </BootstrapTable>
+                <BootstrapTable
+                    data={filteredData(data)}
+                    version="4"
+                    pagination
+                    options={options}
+                    hover
+                    bordered={false}
+                    tableContainerClass={`table-striped table-hover table-responsive ${s.bootstrapTable}`}
+                >
+                    <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="key" isKey hidden>
+                        <span className="fs-sm" >Id</span>
+                    </TableHeaderColumn>
+                    <TableHeaderColumn className={`d-sm-table-cell ${s.columnHead}`} columnClassName="d-sm-table-cell align-middle text-wrap" dataField="title" dataSort>
+                        <span className="fs-sm">Title</span>
+                    </TableHeaderColumn>
+                    <TableHeaderColumn className={`width-100 ${s.columnHead} text-center`} columnClassName="width-100 text-center align-middle" dataField="dateTime" dataFormat={dateFormatter} dataSort sortFunc={dateSortFunc}>
+                        <span className="fs-sm">Date Time</span>
+                    </TableHeaderColumn>
+                    <TableHeaderColumn className={`width-100 ${s.columnHead} text-end`} columnClassName="width-100 align-middle text-end" dataField="success" dataFormat={TickOrCross}>
+                        <span className="fs-sm">Success?</span>
+                    </TableHeaderColumn>
+                    <TableHeaderColumn className={`width-150 ${s.columnHead}`} columnClassName="width-150 align-middle" dataField="timeToComplete" dataFormat={timeToCompleteFormatter} dataSort sortFunc={progressSortFunc}>
+                        <span className="fs-sm">Time to Complete</span>
+                    </TableHeaderColumn>
+                    <TableHeaderColumn className={`d-xs-table-cell ${s.columnHead}`} columnClassName="d-xs-table-cell align-middle text-wrap" dataField="failureMessage">
+                        <span className="fs-sm text-wrap">Failure Message</span>
+                    </TableHeaderColumn>
+                    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle text-wrap" dataField="results" dataFormat={resultsFormatter}>
+                        <span className="fs-sm">Expected vs Actual</span>
+                    </TableHeaderColumn>
+                </BootstrapTable>
 
 
-                        </>
-                        /*<pre>{JSON.stringify(data, null, 2)}</pre>*/
 
-                    );
-                }}
-            </Query>
+            </DataLoading>
+
         );
     };
 
@@ -244,6 +273,7 @@ const mapStateToProps = (state) => {
         showSuccess: state.apiMonitor.showSuccess,
         showFailure: state.apiMonitor.showFailure,
         search: state.apiMonitor.search,
+        isLoading: state.apiMonitor.isLoading
     };
 
 }

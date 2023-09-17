@@ -16,22 +16,46 @@
 
   <ItemGroup>
     <PackageReference Include="MarkCarter.MyApiMonitorClassLibrary" Version="1.0.0" />
-    <PackageReference Include="MarkCarter.MyClassLibrary" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.20" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp\src\components\Users\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\src\components\Users\**" />
+    <EmbeddedResource Remove="ClientApp\src\components\Users\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="ClientApp\src\components\Users\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\mysrc\" />
+    <None Remove="ClientApp\src\components\Users\changePassword\ChangePasswordForm.js" />
+    <None Remove="ClientApp\src\components\Users\changePassword\ChangePasswordFormPage.js" />
+    <None Remove="ClientApp\src\components\Users\form\UsersForm.js" />
+    <None Remove="ClientApp\src\components\Users\form\UsersFormPage.js" />
+    <None Remove="ClientApp\src\components\Users\list\UsersDataFormatters.js" />
+    <None Remove="ClientApp\src\components\Users\list\UsersListPage.js" />
+    <None Remove="ClientApp\src\components\Users\list\UsersListTable.js" />
+    <None Remove="ClientApp\src\components\Users\Users.module.scss" />
+    <None Remove="ClientApp\src\components\Users\usersFields.js" />
+    <None Remove="ClientApp\src\components\Users\view\UsersView.js" />
+    <None Remove="ClientApp\src\components\Users\view\UsersViewItem.js" />
+    <None Remove="ClientApp\src\components\Users\view\UsersViewPage.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ClientApp\src\images\NewFolder1\" />
     <Folder Include="ClientApp\src\images\NewFolder\" />
+    <Folder Include="ClientApp\src\pages\home\" />
     <Folder Include="uploads\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MyClassLibrarySolution\MyClassLibrary\MyClassLibrary.csproj" />
+    <ProjectReference Include="..\..\TheWhaddonShowApp\TheWhaddonShowClassLibrary\TheWhaddonShowClassLibrary.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

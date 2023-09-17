@@ -133,6 +133,10 @@
   @include transition(transform 0.3s ease-in-out);
 }
 
+.caret-pin {
+    cursor: pointer;
+}
+
 .panel {
   border: none;
   box-shadow: none;
