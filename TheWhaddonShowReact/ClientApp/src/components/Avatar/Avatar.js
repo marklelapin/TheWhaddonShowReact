@@ -17,7 +17,7 @@ function Avatar(props) {
     const firstUserLetter = (person && person.firstName) ? person.firstName[0].toUpperCase() : '?'
 
     return (
-        <span className={`${s.avatar} rounded-circle float-start me-3`}>
+        <span className={`${s.avatar} rounded-circle float-start me-3 avatar`}>
             {
                 avatar ? (
                     <img src={avatar} onError={e => e.target.src = adminDefault} alt="..." title={person && (person.firstName || person.email)} />

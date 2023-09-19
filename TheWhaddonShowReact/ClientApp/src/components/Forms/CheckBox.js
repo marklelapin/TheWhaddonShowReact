@@ -12,10 +12,11 @@ function CheckBox(props) {
 
     return (
         <FormGroup className={`checkbox abc-checkbox abc-checkbox-${strapColor}`} check>
-            <Input id={checkboxId()} type="checkbox" checked={checked} onChange={onChange}/>{' '}
             <Label for={checkboxId()} check>
                 {label}
             </Label>
+            <Input  type="checkbox" checked={checked} onChange={onChange} />{' '}
+            
         </FormGroup>
     )
 }

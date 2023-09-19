@@ -2,5 +2,39 @@
 }
 
 .draft-border {
-    border: 2px dashed black;
+    border: 2px dashed red;
+}
+
+/*User Personal Details*/
+
+.personal-details {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+
+.tags-input{
+    display: flex;
+}
+
+.personal-details.full-name {
+flex: 1 0 100%;
+}
+
+.personal-details.email {
+flex: 2 0 100%;
+}
+
+.tag-button.dropdown {
+margin: 2px;
+
+}
+
+#user-modal {
+    max-width: 400px;
+}
+
+.above {
+    z-index: 10;
 }

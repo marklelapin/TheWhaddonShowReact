@@ -3,7 +3,10 @@
 function AvatarForm() {
 
     return (
-        <h1>AvatarForm</h1>
+        <div id="user-avatar" className="draft-border">">
+            <h1>AvatarForm</h1>
+        </div>
+        
     )
 
 }

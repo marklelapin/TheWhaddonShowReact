@@ -17,12 +17,12 @@ function InputText(props) {
     } else {
 
         return (
-            <FormGroup row>
+            <FormGroup row className="personal-details">
                 <Label for={inputId} md={labelCols} className="text-md-right">
                     {label}
                 </Label>
                 <Col md={textCols}>
-                    <Input type="text" id={inputId} placeholder={placeholder} />
+                    <Input type="text" id={inputId} placeholder={placeholder}/>
                 </Col>
             </FormGroup>
         )

@@ -9,12 +9,13 @@ function TagButton(props) {
     if (tag === null) {
 
         return (
-            < UncontrolledDropdown > {/*//classsName=tag?*/}
+            < UncontrolledDropdown className="tag-button"> {/*//classsName=tag?*/}
                 < DropdownToggle
-                    color={strapColor}
+                    className={`btn-outline-${strapColor}`}
+                    size="xs"
                     outline
                 >
-                    Add tag
+                    Add Tag
                 </DropdownToggle >
                 <DropdownMenu>
 
@@ -34,9 +35,10 @@ function TagButton(props) {
 
     }
     return (
-        < UncontrolledDropdown  >
+        < UncontrolledDropdown className="tag-button " >
             < DropdownToggle
                 color={strapColor}
+                size="xs"
             >
                 <div onClick={onClickRemove}>{tag}<Icon icon="cross"/></div>
             </DropdownToggle >

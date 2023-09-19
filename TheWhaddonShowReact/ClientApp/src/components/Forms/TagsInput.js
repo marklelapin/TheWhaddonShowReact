@@ -22,7 +22,7 @@ function TagsInput(props) {
 
         return (
 
-            <div id={dropdownId()} className="tag-input" >
+            <div id={dropdownId()} className="tags-input" >
 
                 {tags.map((tag) => {
                     return <TagButton key={`${dropdownId()}-${tag}`} tag={tag} strapColor={strapColor} onClickRemove={onClickRemove} onClickAdd={onClickAdd} />
