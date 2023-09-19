@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 
 //LocalServerModels and types
 import { LocalToServerSyncData } from './localServerModels';
-import {Person, ScriptItem, Part} from './localServerModels';
+import { Person, ScriptItem, Part } from './localServerModels';
 
 //Redux Hooks
 import { useDispatch, useSelector } from 'react-redux';
@@ -53,7 +53,7 @@ export async function useSync() {
     }, [persons.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (scriptItems.sync.isSyncing) { 
+        if (scriptItems.sync.isSyncing) {
             setData(scriptItems.history)
             setType(scriptItems.type)
         }
@@ -61,7 +61,7 @@ export async function useSync() {
     }, [scriptItems.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (parts.sync.isSyncing) { 
+        if (parts.sync.isSyncing) {
             setData(parts.history)
             setType(parts.type)
         }
@@ -74,22 +74,22 @@ export async function useSync() {
     //-------------------------------------------------------------------------------
     useEffect(() => {
 
-        createSyncData(data, localCopyId,type,dispatch)
+        createSyncData(data, localCopyId, type, dispatch)
 
-            .then((syncData) => postSyncData(syncData, type,dispatch))
+            .then((syncData) => postSyncData(syncData, type, dispatch))
 
             .then((response) => {
                 /*if (response === 'Connection Error') { finishSync(type, null, dispatch) } //not reported as error as could be working offline.*/
-                if (response.status !== 200) { finishSync(`Error: ${response.message}`,type,dispatch) }
-                processSyncResponse(response.data,type, dispatch)
+                if (response.status !== 200) { finishSync(`Error: ${response.message}`, type, dispatch) }
+                processSyncResponse(response.data, type, dispatch)
             })
 
-            .then(() => finishSync(null,type,dispatch))
+            .then(() => finishSync(null, type, dispatch))
             .catch((error) => {
-                finishSync(error,type,dispatch)
+                finishSync(error, type, dispatch)
             })
 
-    }, [data, localCopyId, dispatch,type])
+    }, [data, localCopyId, dispatch, type])
 
 
 }
@@ -112,15 +112,15 @@ const postSyncData = async (syncData, type, dispatch) => {
 
     const url = `${type}s/sync`
 
- /*   try {*/
-        console.log("Posting Sync Data: " + JSON.stringify(syncData));
-        const response = await axios.post(url, syncData);
+    /*   try {*/
+    console.log("Posting Sync Data: " + JSON.stringify(syncData));
+    const response = await axios.post(url, syncData);
 
-        console.log("Response from server:  " + JSON.stringify(response.data))
+    console.log("Response from server:  " + JSON.stringify(response.data))
 
-        //dispatch(updateConnectionStatus('Ok'))
+    //dispatch(updateConnectionStatus('Ok'))
 
-        return response;
+    return response;
     //}
     //catch (error) {
     //    //dispatch(updateConnectionStatus(`No Connection: ${error.message}`)) //TODO Think this functionality can be changed to use Reaction offline functionality.(in repo issues)
@@ -129,7 +129,7 @@ const postSyncData = async (syncData, type, dispatch) => {
     //}
 }
 
-const processSyncResponse = async (responseData,type, dispatch) => {
+const processSyncResponse = async (responseData, type, dispatch) => {
 
     console.log("Processing Sync Response: ")
 
@@ -177,17 +177,23 @@ const processSyncResponse = async (responseData,type, dispatch) => {
         throw new Error(`An error occured whilst processing sync response: ${err.message}`)
     }
 
-    
+
 
 }
 
-const finishSync = (error,type,  dispatch) => {
+const finishSync = (error, type, dispatch) => {
 
-    dispatch(endSync(error,type))
+    dispatch(endSync(error, type))
 }
 
 
 export function getLatest(history) {
+
+    if (history === undefined) {
+        throw new Error("getLatest passed undefined history property")
+    }
+
+    if (!Array.isArray(history) || history.length === 0  ) { return [] }
 
     const latestUpdates = history.reduce((acc, update) => {
         if (!acc[update.Id] || update.Created > acc[update.Id].Created) {
@@ -200,5 +206,7 @@ export function getLatest(history) {
 
     if (latestUpdatesArray === null || latestUpdatesArray === undefined) { latestUpdatesArray = [] }
 
-    return latestUpdatesArray; 
+    return latestUpdatesArray;
+
+
 }

@@ -19,6 +19,9 @@ import {
     DropdownMenu,
     DropdownToggle,
     DropdownItem,
+    Row,
+    Col,
+    Container,
     Button,
     Modal,
     ModalHeader,
@@ -49,14 +52,12 @@ export function UsersTable() {
     //Access state from redux store
     const persons = useSelector((state) => state.localServer.persons)
 
-
-
     //Access the dispatch function using useDispatch
     const dispatch = useDispatch();
 
     useEffect(() => {
         setLoadingError();
-    },[])
+    }, [])
 
     useEffect(() => {
         setLoadingError();
@@ -77,6 +78,37 @@ export function UsersTable() {
             setError(persons.sync.error);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     const handleDelete = () => {
         const userId = idToDelete;
@@ -162,10 +194,118 @@ export function UsersTable() {
     };
 
 
+    const borderStyle = {
+        border: '1px solid black',
+        padding: '0px', // Adjust the padding as needed
+    };
+
     return (
 
 
         <div>
+
+
+            {/*<Container fluid id="userGuid" style={borderStyle}>*/}
+            <Widget title="Users" collapse close>
+                <Row>
+                    <Col lg={1} md={1} sm={2} xs={12} style={borderStyle}>
+                        <Col lg={12} md={12} sm={12} xs={12} style={borderStyle}>
+                            Avatar
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            picture
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            FirstName
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            Mark
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            LastName
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            Carter
+                        </Col>
+                    </Col>
+                    <Col lg={2} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            Email
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            magcarter@hotmail.co.uk
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            IsAdmin
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            yes
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            ACtor
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            yes
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            Singer
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            Yes
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            Writer
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            Yes
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            Band
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            Yes
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            Technical
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            Yes
+                        </Col>
+                    </Col>
+                    <Col lg={1} md={12} sm={12} xs={12} style={borderStyle}>
+                        <Col xs={12} style={borderStyle}>
+                            Active
+                        </Col>
+                        <Col xs={12} style={borderStyle}>
+                            Yes
+                        </Col>
+                    </Col>
+
+                </Row>
+
+
+
+            </Widget>
+
+
+
+
             <Widget title="Users" collapse close>
                 <DataLoading isLoading={isLoading} isError={error !== null} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
                     <>
@@ -222,7 +362,7 @@ export function UsersTable() {
                 </ModalFooter>
             </Modal>
 
-        </div>
+        </div >
     );
 }
 

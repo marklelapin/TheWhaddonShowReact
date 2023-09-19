@@ -14,7 +14,7 @@ function Avatar(props) {
 
     const avatar = person && person.avatar && person.avatar.length && person.avatar[0].publicUrl;
 
-    const firstUserLetter = person && (person.firstName || person.email)[0].toUpperCase();
+    const firstUserLetter = (person && person.firstName) ? person.firstName[0].toUpperCase() : '?'
 
     return (
         <span className={`${s.avatar} rounded-circle float-start me-3`}>
@@ -23,7 +23,7 @@ function Avatar(props) {
                     <img src={avatar} onError={e => e.target.src = adminDefault} alt="..." title={person && (person.firstName || person.email)} />
                 )
                     : person && person.role === 'admin' ? (
-                        <img src={adminDefault} onError={e => e.target.src = adminDefault} alt="..." title={person && (person.firstName || person.email)} />
+                        <img src={adminDefault} alt="..." title={person && (person.firstName || person.email)} />
                     ) : <span title={person && (person.firstName || person.email)}>{firstUserLetter}</span>
             }
         </span>

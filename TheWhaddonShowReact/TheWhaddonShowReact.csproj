@@ -49,7 +49,6 @@
   <ItemGroup>
     <Folder Include="ClientApp\src\images\NewFolder1\" />
     <Folder Include="ClientApp\src\images\NewFolder\" />
-    <Folder Include="ClientApp\src\pages\home\" />
     <Folder Include="uploads\" />
   </ItemGroup>
 

@@ -18,6 +18,7 @@ import Widgets from '../../pages/widgets';
 import DashboardAnalytics from '../../pages/analytics';
 import Dashboard from '../../pages/dashboard';
 import UserFormPage from '../../pages/user/form/UsersFormPage';
+import Home from '../../pages/home/Home';
 import User from '../../pages/user/User';
 
 import { SidebarTypes } from '../../reducers/layout';
@@ -107,7 +108,7 @@ class Layout extends React.Component {
                                     timeout={200}
                                 >
                                     <Switch>
-                                        <Route path="/app/main" exact render={() => <Redirect to="/app/main/analytics" />} />
+                                        <Route path="/app/main" exact component={Home} />} />
                                         <Route path="/app/main/dashboard" exact component={Dashboard} />
                                         <Route path="/app/main/widgets" exact component={Widgets} />
                                         <Route path="/app/main/analytics" exact component={DashboardAnalytics} />
