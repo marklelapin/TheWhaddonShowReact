@@ -77,7 +77,7 @@ function User(props) {
             console.log('useModal set to true')
             switchRowBehaviour(true)
         } else {
-           switchRowBehaviour(false)
+            switchRowBehaviour(false)
         }
     }
 
@@ -141,7 +141,7 @@ function User(props) {
     }
 
     const handleIsActorChange = (event) => {
-   
+
         setUser({ ...user, isActor: event.target.checked })
     }
 
@@ -156,7 +156,7 @@ function User(props) {
     const handleIsBandChange = (event) => {
         console.log('handleIsBandChange')
         console.log('user' + user.isBand)
-        console.log('checked'+ event.target.checked)
+        console.log('checked' + event.target.checked)
         setUser({ ...user, isBand: event.target.checked })
     }
 
@@ -185,8 +185,8 @@ function User(props) {
     }
 
 
-    
 
+    //Sections...
     const personalDetails = (type) => {
         return (
 
@@ -209,7 +209,15 @@ function User(props) {
             />
         )
     }
+    const tags = (type, show = false) => {
+        return (
+            <Tags type={type} user={user} tagOptions={tagOptions} className={(show) ? '' : 'd-none d-lg-table-cell'}
+                onClickAdd={handleAddTag}
+                onClickRemove={handleRemoveTag}
+            />
+        )
 
+    }
     const update = (type, show = false) => {
         return (
             <Update type={type} user={user} userChanged={userChanged} className={(show) ? '' : 'd-none d-lg-table-cell'}
@@ -218,51 +226,69 @@ function User(props) {
         )
     }
 
-      
 
-    const tags = (type, show = false) => {
+
+    //Split out of Rows and Headers to allow for different layouts.
+
+    const tableHeaders = () => {
         return (
-            <Tags type={type} user={user} tagOptions={tagOptions} className={(show) ? '' : 'd-none d-lg-table-cell'}
-                onClickAdd={handleAddTag}
-                onClickRemove={handleRemoveTag}
-            />
+            <tr className="open-modal-when-small">
+                {personalDetails('headers')}
+                {roles('headers')}
+                {tags('headers')}
+                {update('headers')}
+            </tr>
+
+
         )
-     
+
+
     }
-   
 
-
-    return (
-        <>
-            <div id="user-modal" className="draft-border">
-                {personalDetails('table')}
-                {roles('table', true)}
-                {tags('table', true)}
-                {update('table', true)}
-            </div>
-
-
-
-            <div className="table-responsive" >
-                <Table className="table-hover">
-                    <thead>
-                        <tr className="open-modal-when-small">
-                            {personalDetails('headers')}
-                            {roles('headers')}
-                            {tags('headers')}
-                            {update('headers')}
-                        </tr>
-                    </thead>
-                    <tbody>
+    const tableRow = () => {
+        return (
                         <tr className="open-modal-when-small">
                             {personalDetails('row')}
                             {roles('row')}
                             {tags('row')}
                             {update('row')}
                         </tr>
+     
+        )
+    }
+
+
+   
+
+    const modalLayout = () => {
+        return (
+            <div id="user-modal" className="draft-border">
+                {personalDetails('table')}
+                {roles('table', true)}
+                {tags('table', true)}
+                {update('table', true)}
+            </div>
+        )
+
+    }
+
+
+    return (
+        <>
+
+        
+            <div className="table-responsive" >
+                <Table className="table-hover">
+                    <thead>
+                        {tableHeaders() }
+                    </thead>
+                    <tbody>
+                        {tableRow() }
                     </tbody>
                 </Table>
             </div>
+
+            
 
 
             <Modal isOpen={modalOpen} toggle={closeModal}>
