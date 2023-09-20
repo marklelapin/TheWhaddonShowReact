@@ -38,3 +38,9 @@ margin: 2px;
 .above {
     z-index: 10;
 }
+
+
+/*AvatarModule*/
+.avatar-image-upload {
+    display: none;
+}

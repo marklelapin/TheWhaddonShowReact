@@ -26,7 +26,7 @@ function User(props) {
     //Set state for internal component.
     //This is the default state for a new user setup.
     const [user, setUser] = useState({
-        id: null,
+        id: 'test',
         firstName: null,
         lastName: null,
         email: null,
@@ -38,7 +38,8 @@ function User(props) {
         isAdmin: false,
         tags: [],
         isActive: true,
-        pictureRef: null
+        pictureRef: null,
+        role: 'admin'
     })
     const [userChanged, setUserChanged] = useState(false)
 
@@ -135,7 +136,7 @@ function User(props) {
     }
 
     const handleAvatarChange = (pictureRef) => {
-        console.log(pictureRef)
+        console.log('handle Avatar Change:' + pictureRef)
         setUser({ ...user, pictureRef: pictureRef })
     }
 
