@@ -37,7 +37,8 @@ function User(props) {
         isTechnical: false,
         isAdmin: false,
         tags: [],
-        isActive: true
+        isActive: true,
+        pictureRef: null
     })
     const [userChanged, setUserChanged] = useState(false)
 
@@ -133,7 +134,13 @@ function User(props) {
         setUser({ ...user, email: event.target.value })
     }
 
+    const handleAvatarChange = (pictureRef) => {
+        console.log(pictureRef)
+        setUser({ ...user, pictureRef: pictureRef })
+    }
+
     const handleIsActorChange = (event) => {
+   
         setUser({ ...user, isActor: event.target.checked })
     }
 
@@ -146,6 +153,9 @@ function User(props) {
     }
 
     const handleIsBandChange = (event) => {
+        console.log('handleIsBandChange')
+        console.log('user' + user.isBand)
+        console.log('checked'+ event.target.checked)
         setUser({ ...user, isBand: event.target.checked })
     }
 
@@ -158,6 +168,9 @@ function User(props) {
     }
 
     const toggleActive = (event) => {
+        console.log('user' + user.isActive)
+        console.log('checked' + event.target.checked)
+        console.log(user.pictureRef)
         setUser({ ...user, isActive: !user.isActive })
     }
 
@@ -203,6 +216,7 @@ function User(props) {
             <PersonalDetails type={type} person={user}
                 onNameChange={handleNameChange}
                 onEmailChange={handleEmailChange}
+                onAvatarChange={handleAvatarChange}
             />
         )
     }
@@ -366,34 +380,19 @@ function User(props) {
                 </ModalFooter>
             </Modal>
                     
-            )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             <h5>Avatar</h5><p>user.avatar</p>
             <h5>firstname</h5><p>{user.firstName}</p>
             <h5>lastname</h5><p>{user.lastName}</p>
             <h5>email</h5><p>{user.email}</p>
-            <h5>isActor</h5><p>{user.isActor}</p>
-            <h5>isSinger</h5><p>{user.isSinger}</p>
-            <h5>isWriter</h5><p>{user.isWriter}</p>
-            <h5>isBand</h5><p>{user.isBand}</p>
-            <h5>isTechnical</h5><p>{user.isTechnical}</p>
-            <h5>isAdmin</h5><p>{user.isAdmin}</p>
-            <h5>tags</h5><p>{user.tags}</p>
-            <h5>isActive</h5><p>{user.isActive}</p>
+            <h5>isActor</h5><p>{user.isActor.toString()}</p>
+            <h5>isSinger</h5><p>{user.isSinger.toString()}</p>
+            <h5>isWriter</h5><p>{user.isWriter.toString()}</p>
+            <h5>isBand</h5><p>{user.isBand.toString()}</p>
+            <h5>isTechnical</h5><p>{user.isTechnical.toString()}</p>
+            <h5>isAdmin</h5><p>{user.isAdmin.toString()}</p>
+            <h5>tags</h5><p>{user.tags.toString()}</p>
+            <h5>isActive</h5><p>{user.isActive.toString()}</p> 
+            <h5>PictureRef</h5><p>{user.pictureRef}</p>
 
 
 

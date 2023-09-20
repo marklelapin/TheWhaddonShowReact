@@ -5,7 +5,7 @@ import {
 } from 'reactstrap';
 
 import Lightbox from 'react-images';
-import ImageUploader from 'components/ImageUploader/ImageUploader';
+import ImageDropzone from 'components/Uploaders/ImageDropzone';
 
 import s from './Gallery.module.scss';
 
@@ -235,7 +235,7 @@ class Gallery extends React.Component {
         </h1>
 
 
-        <ImageUploader></ImageUploader>
+        <ImageDropzone></ImageDropzone>
 
 
 

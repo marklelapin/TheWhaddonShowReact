@@ -6,7 +6,7 @@ import Avatar from 'components/Avatar/Avatar';
 
 function PersonalDetails(props) {
 
-    const { person, type, onNameChange, onEmailChange } = props
+    const { person, type, onNameChange, onEmailChange, onAvatarChange } = props
 
 
     const headers = () => {
@@ -24,7 +24,7 @@ function PersonalDetails(props) {
         return (
             <>
                 <td>
-                    <Avatar person={person} />
+                    <Avatar person={person} onChange={onAvatarChange} />
                 </td>
                 <td className="personal-details no-shrink" >
 
@@ -42,6 +42,8 @@ function PersonalDetails(props) {
             </>
         )
     }
+
+
 
     if (type === 'headers') return headers()
 
