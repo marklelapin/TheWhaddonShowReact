@@ -3,7 +3,7 @@ import CheckBox from '../../../components/Forms/CheckBox';
 
 function Roles(props) {
 
-    const { person, type, strapColor, onIsActorChange, onIsSingerChange, onIsWriterChange, onIsBandChange, onIsTechnicalChange, onIsAdminChange, className} = props
+    const { person, type, strapColor, onIsActorChange, onIsSingerChange, onIsWriterChange, onIsBandChange, onIsTechnicalChange, onIsAdminChange, className } = props
 
 
     const headers = () => {
@@ -20,16 +20,16 @@ function Roles(props) {
         )
     }
 
-   
+
 
     const row = () => {
 
         return (
             <>
-                <td className={className}><CheckBox id="isActor" strapColor={strapColor} checked={person.isActor} onChange={onIsActorChange}  /></td>
+                <td className={className}><CheckBox id="isActor" strapColor={strapColor} checked={person.isActor} onChange={onIsActorChange} /></td>
                 <td className={className}><CheckBox id="isSinger" strapColor={strapColor} checked={person.isSinger} onChange={onIsSingerChange} /></td>
-                <td className={className}><CheckBox id="isWriter" strapColor={strapColor} checked={person.isSinger} onChange={onIsSingerChange} /></td>
-                <td className={className}><CheckBox id="isBand" strapColor={strapColor} checked={person.isBand} onChange={onIsBandChange}/></td>
+                <td className={className}><CheckBox id="isWriter" strapColor={strapColor} checked={person.isWriter} onChange={onIsWriterChange} /></td>
+                <td className={className}><CheckBox id="isBand" strapColor={strapColor} checked={person.isBand} onChange={onIsBandChange} /></td>
                 <td className={className}><CheckBox id="isTechnical" strapColor={strapColor} checked={person.isTechnical} onChange={onIsTechnicalChange} /></td>
                 <td className={className}><CheckBox id="isAdmin" strapColor={strapColor} checked={person.isAdmin} onChange={onIsAdminChange} /></td>
             </>
@@ -46,17 +46,17 @@ function Roles(props) {
             <table>
                 <thead>
                     <tr>
-{headers()}
+                        {headers()}
                     </tr>
-                        
-                   
+
+
                 </thead>
                 <tbody>
                     <tr>
                         {row()}
                     </tr>
-                        
-                    
+
+
 
                 </tbody>
             </table>

@@ -4,9 +4,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import PersonalDetails from './PersonalDetails';
 import Roles from './Roles';
 import TagsInput from 'components/Forms/TagsInput'
-import AvatarForm from './AvatarForm';
-import s from '../Users.module.scss';
-import CheckBox from 'components/Forms/CheckBox';
+import Update from './Update';
+import Tags from './Tags';
+
 import {
     Button,
     Table,
@@ -118,7 +118,7 @@ function User(props) {
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
 
 
-    //handle internal and child component clicks etc to update internal state.
+    //Event Handlers
 
     const handleNameChange = (event) => {
 
@@ -168,11 +168,11 @@ function User(props) {
         setUser({ ...user, isAdmin: event.target.checked })
     }
 
-    const toggleActive = (event) => {
+    const handleIsActiveChange = (event) => {
         console.log('user' + user.isActive)
         console.log('checked' + event.target.checked)
         console.log(user.pictureRef)
-        setUser({ ...user, isActive: !user.isActive })
+        setUser({ ...user, isActive: event.target.checked })
     }
 
 
@@ -185,31 +185,7 @@ function User(props) {
     }
 
 
-    //Functionality for both table and modal.
-
-    const saveButtonConfig = () => {
-
-        if (!userChanged) {
-            return {
-                disabled: true,
-                text: 'No changes',
-                color: 'tertiary'
-            }
-        }
-        if (user.id === null) {
-            return {
-                disabled: false,
-                text: 'Add',
-                color: 'danger'
-            }
-        }
-
-        return {
-            disabled: false,
-            text: 'Update',
-            color: 'danger'
-        }
-    }
+    
 
     const personalDetails = (type) => {
         return (
@@ -233,94 +209,27 @@ function User(props) {
             />
         )
     }
-    const tags = (type, show) => {
 
-        const headers = () => {
-            return (<th className={(show) ? '' : 'd-none d-lg-table-cell'}>Tags</th>)
-        }
-
-        const row = () => {
-            return (
-
-                <td className={(show) ? '' : 'd-none d-lg-table-cell'}>
-                    <TagsInput tags={user.tags} strapColor="primary" tagOptions={tagOptions}
-                        onClickAdd={handleAddTag}
-                        onClickRemove={handleRemoveTag} />
-                </td>
-            )
-
-
-        }
-
-        if (type === "headers") return headers();
-
-        if (type === "row") return row();
-
-        if (type === "table") return (
-            <table>
-                <thead>
-                    <tr>
-                        {headers()}
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        {row()}
-                    </tr>
-
-                </tbody>
-            </table>
-
+    const update = (type, show = false) => {
+        return (
+            <Update type={type} user={user} userChanged={userChanged} className={(show) ? '' : 'd-none d-lg-table-cell'}
+                onChange={handleIsActiveChange}
+            />
         )
     }
-    const update = (type, show = false) => {
 
-        const button = saveButtonConfig()
+      
 
-        const headers = () => {
-            return (<th className={(show) ? '' : 'd-none d-lg-table-cell'}>Active</th>)
-        }
-
-        const row = () => {
-
-            return (
-                <td className={(show) ? '' : 'd-none d-lg-table-cell'}>
-                    < div className="user-update">
-
-                        <CheckBox id="isActive" strapColor="primary" checked={user.isActive} onChange={toggleActive} />
-
-                        <Button id="save" type="submit" color={button.color} size="xs" className={(button.disable) ? 'disabled' : ''}>{button.text}</Button>
-
-                    </div >
-                </td>
-            )
-
-        }
-
-        if (type === "headers") return headers();
-        if (type === "row") return row();
-        if (type === "table") {
-
-            return (
-                <table>
-                    <thead>
-                        <tr>
-                            {headers()}
-                        </tr>
-
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {row()}
-                        </tr>
-
-                    </tbody>
-                </table>
-            )
-        }
-
-
+    const tags = (type, show = false) => {
+        return (
+            <Tags type={type} user={user} tagOptions={tagOptions} className={(show) ? '' : 'd-none d-lg-table-cell'}
+                onClickAdd={handleAddTag}
+                onClickRemove={handleRemoveTag}
+            />
+        )
+     
     }
+   
 
 
     return (
@@ -331,16 +240,6 @@ function User(props) {
                 {tags('table', true)}
                 {update('table', true)}
             </div>
-
-
-
-            <br />
-            <br />
-            <br />
-            <br />
-            <br />
-
-
 
 
 
@@ -380,24 +279,6 @@ function User(props) {
                     {update('table', true)}
                 </ModalFooter>
             </Modal>
-                    
-            <h5>Avatar</h5><p>user.avatar</p>
-            <h5>firstname</h5><p>{user.firstName}</p>
-            <h5>lastname</h5><p>{user.lastName}</p>
-            <h5>email</h5><p>{user.email}</p>
-            <h5>isActor</h5><p>{user.isActor.toString()}</p>
-            <h5>isSinger</h5><p>{user.isSinger.toString()}</p>
-            <h5>isWriter</h5><p>{user.isWriter.toString()}</p>
-            <h5>isBand</h5><p>{user.isBand.toString()}</p>
-            <h5>isTechnical</h5><p>{user.isTechnical.toString()}</p>
-            <h5>isAdmin</h5><p>{user.isAdmin.toString()}</p>
-            <h5>tags</h5><p>{user.tags.toString()}</p>
-            <h5>isActive</h5><p>{user.isActive.toString()}</p> 
-            <h5>PictureRef</h5><p>{user.pictureRef}</p>
-
-
-
-
         </>
 
 
