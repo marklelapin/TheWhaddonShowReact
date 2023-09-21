@@ -53,7 +53,7 @@ function Roles(props) {
 
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr >
                         {row()}
                     </tr>
 

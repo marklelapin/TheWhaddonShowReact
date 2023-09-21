@@ -109,6 +109,7 @@ export function UsersTable() {
 
         <>
             <Widget title="Users" collapse close>
+            
                 <DataLoading isLoading={isLoading} isError={error !== null} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
 
                     <div className="table-responsive" >
@@ -117,12 +118,10 @@ export function UsersTable() {
                                <User type={headers} />
                             </thead>
                             <tbody>
-                                {personIds.map((x) => {
-                                    console.log(x)
-                                    return <User type={row} id={x} key={x} />
+                                {personIds.map((id) => {
+                                    console.log(id)
+                                    return <User type={row} id={id} key={id} openModal={(id === userModalToOpen)} closeModal={closeModal} />
                                 }
-
-                                    
                                 )}
                             </tbody>
                         </Table>
@@ -130,7 +129,6 @@ export function UsersTable() {
                 </DataLoading>
             </Widget>
 
-            {userModalToOpen && <User type={modal} id={userModalToOpen} closeModal={closeModal} />}
             
         </ >
     );

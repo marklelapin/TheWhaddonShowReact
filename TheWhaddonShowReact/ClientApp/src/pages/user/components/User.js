@@ -29,7 +29,7 @@ function User(props) {
 
     //console.log('user component props' + props)
 
-    const { id = null, type, closeModal } = props //type = modal, headers, row.
+    const { id = null, type, closeModal, openModal =false } = props //type = modal, headers, row.
 
     const storedUser = useSelector((state) => getLatest(state.localServer.persons.history).filter((person) => person.id === id)[0])
 
@@ -71,7 +71,7 @@ function User(props) {
 
         const nameParts = cleanedName.split(' ')
 
-        setUser({ ...user, firstName: nameParts[0] || '', lastName: nameParts[1] || ''})
+        setUser({ ...user, firstName: nameParts[0] || '', lastName: nameParts[1] || '' })
 
     }
 
@@ -91,6 +91,7 @@ function User(props) {
 
     const handleIsSingerChange = (event) => {
         setUser({ ...user, isSinger: event.target.checked })
+        console.log(user)
     }
 
     const handleIsWriterChange = (event) => {
@@ -176,49 +177,57 @@ function User(props) {
 
     if (type === headers) {
         return (
-           
+
             <tr >
                 {personalDetails('headers')}
                 {roles('headers')}
                 {tags('headers')}
                 {update('headers')}
-                </tr>
-            
+            </tr>
+
         )
     }
 
     if (type === row) {
         return (
-            (user &&
-            <tr id={id} key={id}>
-                {personalDetails('row')}
-                {roles('row')}
-                {tags('row')}
-                {update('row')}
-            </tr>)
+            <>
+
+                {(user &&
+                    <tr id={id} key={id}>
+                        {personalDetails('row')}
+                        {roles('row')}
+                        {tags('row')}
+                        {update('row')}
+                    </tr>)}
+
+                {(openModal &&
+                    <Modal isOpen={true} toggle={closeModal}>
+                        <ModalHeader toggle={closeModal}>Edit User</ModalHeader>
+                        <ModalBody className="bg-white">
+
+                            <div id="user-modal" className="draft-border">
+                                {personalDetails('table')}
+                                {roles('table', true)}
+                                {tags('table', true)}
+                                {update('table', true)}
+                            </div>
+
+                        </ModalBody>
+                        <ModalFooter>
+                            {update('table', true)}
+                        </ModalFooter>
+                    </Modal>)}
+
+            </>
+        
         )
     }
 
-    if (type === modal) {
-        return (
-            <Modal isOpen={true} toggle={closeModal}>
-                <ModalHeader toggle={closeModal}>Edit User</ModalHeader>
-                <ModalBody className="bg-white">
+    //if (type === modal) {
+    //    return (
 
-                    <div id="user-modal" className="draft-border">
-                        {personalDetails('table')}
-                        {roles('table', true)}
-                        {tags('table', true)}
-                        {update('table', true)}
-                    </div>
-
-                </ModalBody>
-                <ModalFooter>
-                    {update('table', true)}
-                </ModalFooter>
-            </Modal>
-        )
-    }
+    //    )
+    //}
 
 
 
