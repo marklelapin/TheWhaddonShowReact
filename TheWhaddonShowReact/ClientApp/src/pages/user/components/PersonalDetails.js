@@ -6,8 +6,12 @@ import Avatar from 'components/Avatar/Avatar';
 
 function PersonalDetails(props) {
 
-    const { person, type, onNameChange, onEmailChange, onAvatarChange } = props
+    const { person = {}, type, onNameChange, onEmailChange, onAvatarChange } = props
 
+    const { firstName = '', lastName ='', email ='' } = person 
+
+
+    console.log('PErsonal Details ' + firstName + lastName)
 
     const headers = () => {
         return (
@@ -29,10 +33,10 @@ function PersonalDetails(props) {
                 <td className="personal-details no-shrink" >
 
                     <div>
-                        <InputText className="full-name" placeholder="Enter first and last name" value={person.firstName+' '+person.lastName} onChange={onNameChange} />
+                        <InputText className="full-name" placeholder="Enter first and last name" value={firstName+' '+lastName} onChange={onNameChange} />
                     </div>
                     <div>
-                        <InputText className="email" placeholder="Enter email" value={person.email} onChange={onEmailChange} />
+                        <InputText className="email" placeholder="Enter email" value={email} onChange={onEmailChange} />
                     </div>
 
                 </td>

@@ -2,9 +2,10 @@
 import CheckBox from '../../../components/Forms/CheckBox';
 
 function Roles(props) {
+   
+    const { person = {}, type, strapColor, onIsActorChange, onIsSingerChange, onIsWriterChange, onIsBandChange, onIsTechnicalChange, onIsAdminChange, className } = props
 
-    const { person, type, strapColor, onIsActorChange, onIsSingerChange, onIsWriterChange, onIsBandChange, onIsTechnicalChange, onIsAdminChange, className } = props
-
+    const { isActor = false, isSinger = false, isWriter = false, isBand = false, isTechnical = false, isAdmin = false } = person
 
     const headers = () => {
 
@@ -26,12 +27,12 @@ function Roles(props) {
 
         return (
             <>
-                <td className={className}><CheckBox id="isActor" strapColor={strapColor} checked={person.isActor} onChange={onIsActorChange} /></td>
-                <td className={className}><CheckBox id="isSinger" strapColor={strapColor} checked={person.isSinger} onChange={onIsSingerChange} /></td>
-                <td className={className}><CheckBox id="isWriter" strapColor={strapColor} checked={person.isWriter} onChange={onIsWriterChange} /></td>
-                <td className={className}><CheckBox id="isBand" strapColor={strapColor} checked={person.isBand} onChange={onIsBandChange} /></td>
-                <td className={className}><CheckBox id="isTechnical" strapColor={strapColor} checked={person.isTechnical} onChange={onIsTechnicalChange} /></td>
-                <td className={className}><CheckBox id="isAdmin" strapColor={strapColor} checked={person.isAdmin} onChange={onIsAdminChange} /></td>
+                <td className={className}><CheckBox id="isActor" strapColor={strapColor} checked={isActor} onChange={onIsActorChange} /></td>
+                <td className={className}><CheckBox id="isSinger" strapColor={strapColor} checked={isSinger} onChange={onIsSingerChange} /></td>
+                <td className={className}><CheckBox id="isWriter" strapColor={strapColor} checked={isWriter} onChange={onIsWriterChange} /></td>
+                <td className={className}><CheckBox id="isBand" strapColor={strapColor} checked={isBand} onChange={onIsBandChange} /></td>
+                <td className={className}><CheckBox id="isTechnical" strapColor={strapColor} checked={isTechnical} onChange={onIsTechnicalChange} /></td>
+                <td className={className}><CheckBox id="isAdmin" strapColor={strapColor} checked={isAdmin} onChange={onIsAdminChange} /></td>
             </>
         )
     }

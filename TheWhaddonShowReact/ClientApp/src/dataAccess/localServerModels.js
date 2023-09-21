@@ -57,6 +57,27 @@ export class LocalServerModelUpdate {
     }
 }
 
+export class PersonUpdate extends LocalServerModelUpdate {
+    constructor() {
+        super();
+        this.firstName = null;
+        this.lastName = null;
+        this.email = null;
+        this.isActor = true;
+        this.isSinger = false;
+        this.isWriter = false;
+        this.isBand = true;
+        this.isTechnical = false;
+        this.isAdmin = false;
+        this.tags = [];
+        this.isActive = true;
+        this.pictureRef = null;
+    }
+
+
+}
+
+
 
 export class personUpdate extends LocalServerModelUpdate {
 

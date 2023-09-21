@@ -4,9 +4,9 @@ import TagButton from './TagButton';
 
 function TagsInput(props) {
 
-    let { tags, tagOptions, strapColor, onClickRemove, onClickAdd, id } = props
+    let { tags = [], tagOptions, strapColor, onClickRemove, onClickAdd, id } = props
 
-    try {
+    /*try {*/
 
         const dropdownId = () => {
             return `dropdown-${id}`
@@ -14,15 +14,13 @@ function TagsInput(props) {
 
         const remainingTagOptions = () => {
 
-            if (tags === undefined) return tagOptions
-
             return tagOptions.filter((tagOption) => !tags.includes(tagOption))//removes any tagOptions that are already in tags
 
         }
 
         return (
 
-            <div id={dropdownId()} className="tags-input" >
+            <div key={dropdownId()} className="tags-input" >
 
                 {tags.map((tag) => {
                     return <TagButton key={`${dropdownId()}-${tag}`} tag={tag} strapColor={strapColor} onClickRemove={onClickRemove} onClickAdd={onClickAdd} />
@@ -35,10 +33,10 @@ function TagsInput(props) {
             </div>
 
         )
-    }
-    catch (error) {
-        throw new Error('TagsInput Error: check tags and tagOptions are arrays and that onClickRemove an onClickAdd functions are present.',error)
-    }
+    //}
+    //catch (error) {
+    //    throw new Error('TagsInput Error: check tags and tagOptions are arrays and that onClickRemove an onClickAdd functions are present.',error)
+    //}
 
 
 }

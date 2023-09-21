@@ -134,43 +134,43 @@ const processSyncResponse = async (responseData, type, dispatch) => {
     console.log("Processing Sync Response: ")
 
     try {
-        if (responseData.PostBacks.length === 0) {
+        if (responseData.postBacks.length === 0) {
             console.log('No Postback to process.')
             console.log(type)
         }
         else {
             console.log('Processing postbacks.')
             console.log(type)
-            dispatch(processServerToLocalPostbacks(responseData.PostBacks, type))
+            dispatch(processServerToLocalPostbacks(responseData.postBacks, type))
         }
 
-        if (responseData.Updates.length === 0) {
+        if (responseData.updates.length === 0) {
             console.log('No updates to process.')
             console.log(type)
         }
         else {
             console.log('Processing updates.')
             console.log(type)
-            dispatch(addUpdates(responseData.Updates, type))
+            dispatch(addUpdates(responseData.updates, type))
         }
 
-        if (responseData.ConflictIdsToClear.length === 0) {
+        if (responseData.conflictIdsToClear.length === 0) {
             console.log('No conflicts to clear.')
             console.log(type)
 
         }
         else {
             console.log('Clearing conflicts.')
-            dispatch(clearConflicts(responseData.ConflictIdsToClear))
+            dispatch(clearConflicts(responseData.conflictIdsToClear))
         }
 
-        if (responseData.LastSyncDate == null) {
+        if (responseData.lastSyncDate == null) {
             console.log('No last sync date to update.')
         }
 
         else {
             console.log('Updating last sync date.')
-            dispatch(updateLastSyncDate(responseData.LastSyncDate))
+            dispatch(updateLastSyncDate(responseData.lastSyncDate))
         }
     }
     catch (err) {
@@ -196,8 +196,8 @@ export function getLatest(history) {
     if (!Array.isArray(history) || history.length === 0  ) { return [] }
 
     const latestUpdates = history.reduce((acc, update) => {
-        if (!acc[update.Id] || update.Created > acc[update.Id].Created) {
-            acc[update.Id] = update;
+        if (!acc[update.id] || update.created > acc[update.id].created) {
+            acc[update.id] = update;
         }
         return acc;
     }, {})

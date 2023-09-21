@@ -6,6 +6,7 @@ function Update(props) {
 
     const { user, type, userChanged, onChange, className } = props
 
+
     /*  const {userChanged,newUser } = props*/
 
 

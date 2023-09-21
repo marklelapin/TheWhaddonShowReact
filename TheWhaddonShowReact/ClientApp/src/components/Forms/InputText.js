@@ -3,7 +3,7 @@ import { FormGroup, Input, Label, Col } from 'reactstrap';
 
 
 function InputText(props) {
-    const { label, placeholder, onChange, id, labelCols, textCols} = props
+    const { label, placeholder, onChange, id, labelCols, textCols, value} = props
 
     const inputId = () => {
       return  `input-text-${id}`
@@ -11,7 +11,7 @@ function InputText(props) {
 
     if (label === undefined) {
         return (
-            <Input type="text" placeholder={placeholder} onChange={onChange} />
+            <Input type="text" placeholder={placeholder} value={value}  onChange={onChange} />
         )
 
     } else {
@@ -22,7 +22,7 @@ function InputText(props) {
                     {label}
                 </Label>
                 <Col md={textCols}>
-                    <Input type="text" id={inputId} placeholder={placeholder}/>
+                    <Input type="text" id={inputId} value={value} onChange={onChange} placeholder={placeholder}/>
                 </Col>
             </FormGroup>
         )

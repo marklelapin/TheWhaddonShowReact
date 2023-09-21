@@ -29,7 +29,7 @@ export function Avatar(props) {
     }
 
     const handleImageClick = (event) => {
-        console.log('handelImageClick')
+        
         if (person.id !== null) {
         const imageInput = document.getElementById(inputId)
 
@@ -73,12 +73,12 @@ export function Avatar(props) {
     const imageJSX = () => {
         return (
 
-            <span className={`${s.avatar} rounded-circle float-start me-3 avatar`}>
+            <span className={`${s.avatar} rounded-circle float-start me-3 avatar`} onClick={handleImageClick}>
                 {
-                    avatarImage ?
+                    avatarImage() ?
                         <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={handleImageClick} />
                         :
-                        < span title={avatarTitle} > {avatarText}</span>
+                        < span title={avatarTitle} > {avatarText} </span>
                 }
             </span>
         )
@@ -90,7 +90,7 @@ export function Avatar(props) {
 
         (onClick || onChange) ?
             //hidden image file upload element
-            <>
+            <div style={{ cursor: 'pointer' } }>
                 <input
                     accept="image/*" onChange={handleImageChange}
                     className="avatar-image-upload"
@@ -99,7 +99,7 @@ export function Avatar(props) {
                 
                 {imageJSX()}
    
-            </>
+            </div>
             : //if no onClick or onChange then just return the image
             imageJSX()
     )

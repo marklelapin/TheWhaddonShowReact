@@ -1,119 +1,62 @@
 ﻿import React from 'react';
 import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+
+
 import PersonalDetails from './PersonalDetails';
 import Roles from './Roles';
-import TagsInput from 'components/Forms/TagsInput'
 import Update from './Update';
 import Tags from './Tags';
 
 import {
-    Button,
-    Table,
     Modal,
     ModalHeader,
     ModalBody,
     ModalFooter,
 } from 'reactstrap';
+
 import { getLatest } from 'dataAccess/localServerUtils'
 import 'index.css'
-import isScreen from 'core/screenHelper';
+
+import { PersonUpdate } from 'dataAccess/localServerModels';
+
+export const headers = 'headers'
+export const row = 'row'
+export const modal = 'modal'
+
 
 function User(props) {
 
-    const { id, type, onClose } = props
+    //console.log('user component props' + props)
+
+    const { id = null, type, closeModal } = props //type = modal, headers, row.
+
+    const storedUser = useSelector((state) => getLatest(state.localServer.persons.history).filter((person) => person.id === id)[0])
 
     //Set state for internal component.
-    //This is the default state for a new user setup.
-    const [user, setUser] = useState({
-        id: 'test',
-        firstName: null,
-        lastName: null,
-        email: null,
-        isActor: true,
-        isSinger: false,
-        isWriter: false,
-        isBand: true,
-        isTechnical: false,
-        isAdmin: false,
-        tags: [],
-        isActive: true,
-        pictureRef: null,
-        role: 'admin'
-    })
+    //This user state is used to track changes to the user and is not synced with the redux store until dispatch.
+    const [user, setUser] = useState(storedUser || new PersonUpdate());
     const [userChanged, setUserChanged] = useState(false)
 
-    const [modalOpen, setModalOpen] = useState(false)
-
-    //useHooks..
-
-    //get the user from the Redux store.
-    const userHistory = useSelector(state => state.localServer.persons.history.find(person => person.id === id)) ?? []
-
-    const userPrev = getLatest(userHistory)
-
-    const dispatch = useDispatch();
+    //if storedUser changes then update the user state.
+    useEffect(() => {
+        setUser(storedUser)
+        setUserChanged(false)
+    }, [storedUser])
 
     useEffect(() => {
-
-        if (user == userPrev) {
+        if (user == storedUser) {
             setUserChanged(false)
         } else {
             setUserChanged(true)
         }
-
-    }, [user, userPrev])
-
-    //establish resize event listener to handle screen size changes.
-    useEffect(() => {
-        console.log('screen event listerner added')
-        window.addEventListener('resize', handleResize);
-        handleResize();
-        return () => { window.removeEventListener('resize', handleResize); }
-    }, []);
-
-    const handleResize = () => {
-        if (isScreen('xs') || isScreen('sm') || isScreen('md')) { //thes screen sized should match those in index.css for the .
-            console.log('useModal set to true')
-            switchRowBehaviour(true)
-        } else {
-            switchRowBehaviour(false)
-        }
-    }
+    }, [user]) //eslint-disable-line react-hooks/exhaustive-deps             
 
 
-    const switchRowBehaviour = (useModal) => {
 
-        const rows = document.querySelectorAll('.open-modal-when-small');
-        console.log(`${rows.length} rows found`)
-
-        rows.forEach(row => {
-            if (useModal) {
-                console.log('add open modal event listener')
-                row.addEventListener('click', openModal);
-            }
-            else {
-                console.log('remove open modal event listener')
-                row.removeEventListener('click', openModal);
-                //row.addEventListener('click', toggleEditing);
-            }
-        });
-    }
-
-    const openModal = (event) => {
-
-        console.log('openModal event fired')
-        event.preventDefault();
-        setModalOpen(true);
-    }
-
-    const closeModal = () => {
-        setModalOpen(false);
-    }
     //const saveChanges = () => {
     //    dispatch(localServerUpdate(user))
     //}
-
 
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
 
@@ -128,7 +71,8 @@ function User(props) {
 
         const nameParts = cleanedName.split(' ')
 
-        setUser({ ...user, firstName: nameParts[0], lastName: nameParts[1] })
+        setUser({ ...user, firstName: nameParts[0] || '', lastName: nameParts[1] || ''})
+
     }
 
     const handleEmailChange = (event) => {
@@ -228,87 +172,55 @@ function User(props) {
 
 
 
-    //Split out of Rows and Headers to allow for different layouts.
+    //Return split out header and rows and modal to allow for different layouts.
 
-    const tableHeaders = () => {
+    if (type === headers) {
         return (
-            <tr className="open-modal-when-small">
+           
+            <tr >
                 {personalDetails('headers')}
                 {roles('headers')}
                 {tags('headers')}
                 {update('headers')}
-            </tr>
-
-
-        )
-
-
-    }
-
-    const tableRow = () => {
-        return (
-                        <tr className="open-modal-when-small">
-                            {personalDetails('row')}
-                            {roles('row')}
-                            {tags('row')}
-                            {update('row')}
-                        </tr>
-     
-        )
-    }
-
-
-   
-
-    const modalLayout = () => {
-        return (
-            <div id="user-modal" className="draft-border">
-                {personalDetails('table')}
-                {roles('table', true)}
-                {tags('table', true)}
-                {update('table', true)}
-            </div>
-        )
-
-    }
-
-
-    return (
-        <>
-
-        
-            <div className="table-responsive" >
-                <Table className="table-hover">
-                    <thead>
-                        {tableHeaders() }
-                    </thead>
-                    <tbody>
-                        {tableRow() }
-                    </tbody>
-                </Table>
-            </div>
-
+                </tr>
             
+        )
+    }
 
+    if (type === row) {
+        return (
+            (user &&
+            <tr id={id} key={id}>
+                {personalDetails('row')}
+                {roles('row')}
+                {tags('row')}
+                {update('row')}
+            </tr>)
+        )
+    }
 
-            <Modal isOpen={modalOpen} toggle={closeModal}>
+    if (type === modal) {
+        return (
+            <Modal isOpen={true} toggle={closeModal}>
                 <ModalHeader toggle={closeModal}>Edit User</ModalHeader>
                 <ModalBody className="bg-white">
+
                     <div id="user-modal" className="draft-border">
                         {personalDetails('table')}
                         {roles('table', true)}
                         {tags('table', true)}
-
+                        {update('table', true)}
                     </div>
+
                 </ModalBody>
                 <ModalFooter>
                     {update('table', true)}
                 </ModalFooter>
             </Modal>
-        </>
+        )
+    }
 
 
-    )
 
 }
 
