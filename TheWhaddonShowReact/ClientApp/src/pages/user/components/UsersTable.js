@@ -12,9 +12,9 @@ import { getLatest } from 'dataAccess/localServerUtils';
 import DataLoading from 'components/DataLoading/DataLoading';
 
 import { headers, row, modal } from './User';
-import { Table } from 'reactstrap';
+import { Table,Button } from 'reactstrap';
 import User from './User';
-
+import { PersonUpdate } from 'dataAccess/localServerModels';
 import Widget from 'components/Widget';
 
 //SASS
@@ -27,11 +27,12 @@ export function UsersTable() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [userModalToOpen, setUserModalToOpen] = useState(null);
+    const [newUser, setNewUser] = useState(null);
     //Access state from redux store
     const personsSync = useSelector((state) => state.localServer.persons.sync)
     const personIds = useSelector((state) => [...new Set(state.localServer.persons.history.map(person => person.id))] || [] )
 
-    console.log('after useSelecter: ' +personIds.toString())
+  
     
     useEffect(() => {
         setLoadingError();
@@ -64,11 +65,14 @@ export function UsersTable() {
     const switchTableBehaviour = (useModal) => {
         const table = document.getElementById('user-table')
 
-        if (useModal) {
+        if (table && useModal) {
             table.addEventListener('click', openModal);
         }
         else {
-            table.removeEventListener('click', openModal);
+            if (table && table.removeEventListener) {
+                    table.removeEventListener('click', openModal);
+            }
+            
         }
     }
 
@@ -86,7 +90,14 @@ export function UsersTable() {
     const closeModal = () => {
         setUserModalToOpen(null);
     }
-   
+
+
+    const addNewUser = () => {
+        setNewUser({ ...new PersonUpdate(), newUser: true })
+    }
+    
+
+
 
 
     const setLoadingError = () => {
@@ -109,8 +120,11 @@ export function UsersTable() {
 
         <>
             <Widget title="Users" collapse close>
+
+                {/*<Button color="primary" onClick={addNewUser()}>Add User</Button>*/}
+                {/*(newUser && <User type={modal} newUser={newUser} openModal={true} closeModal={closeModal} />)*/}
             
-                <DataLoading isLoading={isLoading} isError={error !== null} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
+                <DataLoading isLoading={isLoading && (personIds.length === 0)} isError={error !== null && (personIds.length===0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
 
                     <div className="table-responsive" >
                         <Table id="user-table" className="table-hover">
@@ -119,7 +133,7 @@ export function UsersTable() {
                             </thead>
                             <tbody>
                                 {personIds.map((id) => {
-                                    console.log(id)
+                                    
                                     return <User type={row} id={id} key={id} openModal={(id === userModalToOpen)} closeModal={closeModal} />
                                 }
                                 )}

@@ -32,6 +32,7 @@ export const ADD_UPDATES = 'ADD_UPDATES';
 export const CLEAR_CONFLICTS = 'CLEAR_CONFLICTS';
 export const SYNC = 'SYNC';
 export const END_SYNC = 'END_SYNC';
+export const CLOSE_POSTBACK = 'CLOSE_POSTBACK';
 
 export function resetList(payload,payloadType) {
     return {
@@ -41,9 +42,17 @@ export function resetList(payload,payloadType) {
     };
 }
 
-export function processServerToLocalPostbacks(payload,payloadType) {
+export function processServerToLocalPostBacks(payload,payloadType) {
     return {
         type: PROCESS_LOCAL_TO_SERVER_POSTBACK,
+        payload,
+        payloadType
+    };
+}
+
+export function closePostBack(payload, payloadType) {
+    return {
+        type: CLOSE_POSTBACK,
         payload,
         payloadType
     };

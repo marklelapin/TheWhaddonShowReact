@@ -10,9 +10,6 @@ function PersonalDetails(props) {
 
     const { firstName = '', lastName ='', email ='' } = person 
 
-
-    console.log('PErsonal Details ' + firstName + lastName)
-
     const headers = () => {
         return (
             <>

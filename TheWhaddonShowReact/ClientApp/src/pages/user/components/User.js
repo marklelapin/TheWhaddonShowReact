@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 
 
 import PersonalDetails from './PersonalDetails';
@@ -19,6 +19,8 @@ import { getLatest } from 'dataAccess/localServerUtils'
 import 'index.css'
 
 import { PersonUpdate } from 'dataAccess/localServerModels';
+import { addUpdates } from 'actions/localServer';
+import { Person } from 'dataAccess/localServerModels';
 
 export const headers = 'headers'
 export const row = 'row'
@@ -29,19 +31,26 @@ function User(props) {
 
     //console.log('user component props' + props)
 
-    const { id = null, type, closeModal, openModal =false } = props //type = modal, headers, row.
+   
+
+    const { type, closeModal, openModal = false, newUser = { id: '' } } = props //type = modal, headers, row.
+
+    const {id = newUser.id} = props
 
     const storedUser = useSelector((state) => getLatest(state.localServer.persons.history).filter((person) => person.id === id)[0])
 
     //Set state for internal component.
     //This user state is used to track changes to the user and is not synced with the redux store until dispatch.
-    const [user, setUser] = useState(storedUser || new PersonUpdate());
+    const [user, setUser] = useState(newUser || storedUser || new PersonUpdate());
     const [userChanged, setUserChanged] = useState(false)
+
+    const dispatch = useDispatch()
 
     //if storedUser changes then update the user state.
     useEffect(() => {
         setUser(storedUser)
         setUserChanged(false)
+        console.log('storedUser changed')
     }, [storedUser])
 
     useEffect(() => {
@@ -52,11 +61,6 @@ function User(props) {
         }
     }, [user]) //eslint-disable-line react-hooks/exhaustive-deps             
 
-
-
-    //const saveChanges = () => {
-    //    dispatch(localServerUpdate(user))
-    //}
 
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
 
@@ -130,6 +134,17 @@ function User(props) {
     }
 
 
+    const handleClickUpdate = () => {
+        dispatch(addUpdates([user],Person))  //saves the user to the redux store where it will be synced separately.
+        setUserChanged(false)
+    }
+
+    const handleClickCancel = () => {
+        setUser(storedUser)
+    }
+
+
+
 
     //Sections...
     const personalDetails = (type) => {
@@ -165,7 +180,7 @@ function User(props) {
     }
     const update = (type, show = false) => {
         return (
-            <Update type={type} user={user} userChanged={userChanged} className={(show) ? '' : 'd-none d-lg-table-cell'}
+            <Update type={type} user={user} userChanged={userChanged} onClickCancel={handleClickCancel} onClickUpdate={handleClickUpdate} className={(show) ? '' : 'd-none d-lg-table-cell'}
                 onChange={handleIsActiveChange}
             />
         )

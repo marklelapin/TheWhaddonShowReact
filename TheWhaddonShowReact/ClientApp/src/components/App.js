@@ -39,18 +39,36 @@ const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la
 function App() {
 
 const currentUser = useSelector((state) => state.auth.currentUser)
-const loadingInit = useSelector((state) => state.auth.loadingInit)
+    const loadingInit = useSelector((state) => state.auth.loadingInit)
+
+    const isPersonSyncing = useSelector((state)=>state.localServer.persons.sync.isSyncing)
 
 const dispatch = useDispatch();
 
-useSync();
+    useSync();
 
     useEffect(() => {
-    
+        //syncWithServer()
+        const intervalId = setInterval(syncWithServer,1000 * 10) //every minute
+
+        return () => {
+            clearInterval(intervalId)
+        }
+
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+
+    const syncWithServer = () => {
+        console.log('isyncing prior to disapatch: '+isPersonSyncing) 
         dispatch(sync(Person))
         //dispatch(sync(ScriptItem))
         //dispatch(sync(Part))
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    }
+
+
+
+
+
 
     if (loadingInit) { //this.props.loadingInit this.props.dispatch in {} below
         return <div />;

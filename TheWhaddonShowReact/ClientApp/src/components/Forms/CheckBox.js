@@ -3,7 +3,7 @@ import { FormGroup, Input, Label } from 'reactstrap';
 
 
 function CheckBox(props) {
-    const { strapColor, label ,id, checked, onChange} = props
+    const { strapColor, label ,id, checked = false, onChange} = props
 
     const checkboxId = () => {
         return `checkbox-${id}`

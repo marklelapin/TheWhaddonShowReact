@@ -7,7 +7,8 @@
     CLEAR_CONFLICTS,
     UPDATE_CONNECTION_STATUS,
     SYNC,
-    END_SYNC
+    END_SYNC,
+CLOSE_POSTBACK
 } from 'actions/localServer';
 
 import {
@@ -55,8 +56,8 @@ export default function localServerReducer(state = defaultState, action) {
             return Object.assign({}, state, {
                 connectionStatus: action.payload
             });
-            
-      //Actions where a line needs to be added for each new LocalServerModel update type (e.g. persons, scriptItems, parts) **LSMTypeInCode**
+
+        //Actions where a line needs to be added for each new LocalServerModel update type (e.g. persons, scriptItems, parts) **LSMTypeInCode**
         case RESET_LIST:
             switch (action.payloadType) {
                 case Person: return { ...state, persons: { ...state.persons, history: action.payload } };
@@ -106,13 +107,61 @@ export default function localServerReducer(state = defaultState, action) {
                     default: return { state };
                 }
             }
+        case CLOSE_POSTBACK:
+            const { id, created } = action.payload;
 
-        case ADD_UPDATES:
+            //Get the correct array of data to update
+            let data = null;
+            switch (action.payloadType) {   
+                //**LSMTypeInCode** */
+                case Person: data = state.persons.history; break
+                case ScriptItem: data = state.scriptItems.history; break
+                case Part: data = state.parts.history; break
+                default: return state;
+            }
+
+            //find the index of the item to update
+            const dataIndex = data.findIndex((item) => item.id === id && item.created === created);
+
+            //if can't find the item then return the state unchanged
+            if (dataIndex === -1) { return state; }
+
+            //create a copy of the data array and ammend the item to be updated
+            const updatedHistory = [...data]
+            updatedHistory[dataIndex] = { ...updatedHistory[dataIndex], hasPostedBack: true }
+
+            //update the correct array of data
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, history: [...state.persons.history, ...action.payload] } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...action.payload] } };
-                case Part: return { ...state, parts: { ...state.parts, history: [...state.parts.history, ...action.payload] } };
+                case Person: return { ...state, persons: { ...state.persons, history: updatedHistory } };
+                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: updatedHistory } };
+                case Part: return { ...state, parts: { ...state.parts, history: updatedHistory } };
+                default: return state;
+            };
+
+
+        case ADD_UPDATES:
+
+            let history = [];
+            //pick correct data set to process
+            switch (action.payloadType) {
+                //**LSMTypeInCode** */
+                case Person: history = state.persons.history; break
+                case ScriptItem: history = state.scriptItems.history; break
+                case Part: history = state.parts.history; break
+                default: return state
+            };
+
+            //filter out any updates from payload that are already in the store. This can happen if postBacks have failed due to poor connection.
+
+            const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => existingUpdate.id === update.id && existingUpdate.created === update.created))
+
+            //update correct data set to update
+            switch (action.payloadType) {
+                //**LSMTypeInCode** */
+                case Person: return { ...state, persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] } };
+                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] } };
+                case Part: return { ...state, parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] } };
                 default: return state
             };
 
@@ -155,7 +204,7 @@ export default function localServerReducer(state = defaultState, action) {
         case SYNC:
             console.log(`syncing ${action.payloadType}`)
             switch (action.payloadType) {
-                
+
                 //**LSMTypeInCode** */
                 case Person: return { ...state, persons: { ...state.persons, sync: { ...state.persons.sync, isSyncing: true } } };
                 case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, sync: { ...state.scriptItems.sync, isSyncing: true } } };
@@ -165,30 +214,36 @@ export default function localServerReducer(state = defaultState, action) {
         case END_SYNC:
             console.log(`end syncing ${action.payloadType}`)
             let lastSyncDate = null
-
-            if (action.payload === null) { lastSyncDate = new Date() }
+            const error = action.payload
+            console.log('setting lastSyncDate')
+            if (error === null) { lastSyncDate = new Date() } 
 
             switch (action.payloadType) {
 
                 //**LSMTypeInCode** */
-                case Person: return {
+                case Person:
+
+                    console.log(`changing persons redux state: isSyncing: false , error: ${error}, ${lastSyncDate}`)
+
+
+                    return {
                     ...state, persons: {
                         ...state.persons, sync: {
-                            ...state.persons.sync, isSyncing: false, error: action.payload, lastSyncDate: lastSyncDate ?? state.persons.sync.lastSyncDate
+                            ...state.persons.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.persons.sync.lastSyncDate
                         }
                     }
                 };
                 case ScriptItem: return {
                     ...state, scriptItems: {
                         ...state.scriptItems, sync: {
-                            ...state.scriptItems.sync, isSyncing: false, error: action.payload, lastSyncDate: lastSyncDate ?? state.scriptItems.sync.lastSyncDate
+                            ...state.scriptItems.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.scriptItems.sync.lastSyncDate
                         }
                     }
                 };
                 case Part: return {
                     ...state, parts: {
                         ...state.parts, sync: {
-                            ...state.parts.sync, isSyncing: false, error: action.payload, lastSyncDate: lastSyncDate ?? state.parts.sync.lastSyncDate
+                            ...state.parts.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.parts.sync.lastSyncDate
                         }
                     }
                 }

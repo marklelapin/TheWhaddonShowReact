@@ -17,11 +17,12 @@ import { useDispatch, useSelector } from 'react-redux';
 //Redux Actions
 import {
     updateLastSyncDate,
-    processServerToLocalPostbacks,
+    processServerToLocalPostBacks,
     addUpdates,
     clearConflicts,
     //updateConnectionStatus,
-    endSync
+    endSync,
+    closePostBack
 } from 'actions/localServer';
 
 
@@ -31,6 +32,7 @@ export async function useSync() {
     //Set up state internal to this component
     const [data, setData] = useState(null)
     const [type, setType] = useState(null)
+    const [triggerSync, setTriggerSync] = useState(false)
 
     //Access state from redux store 
     const localCopyId = useSelector((state) => state.localServer.localCopyId);
@@ -39,15 +41,17 @@ export async function useSync() {
     const scriptItems = useSelector((state) => state.localServer.scriptItems)
     const parts = useSelector((state) => state.localServer.parts)
 
-
+    console.log('Use Sync: persons.sync.isSyncing: ' + persons.sync.isSyncing)
     const dispatch = useDispatch();
 
     //Use Effect Hooks to assing the data and url to be used in the sync operation. **LSMTypeInCode**
     //-------------------------------------------------------------------------------  
     useEffect(() => {
+        console.log('setting data and type')
         if (persons.sync.isSyncing) { //if it is syncing alread then don't run another sync.
             setData(persons.history)
             setType(persons.type)
+            setTriggerSync(!triggerSync)
         }
         //else do nothing
     }, [persons.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -56,6 +60,7 @@ export async function useSync() {
         if (scriptItems.sync.isSyncing) {
             setData(scriptItems.history)
             setType(scriptItems.type)
+            setTriggerSync(!triggerSync)
         }
         //else do nothing
     }, [scriptItems.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -64,6 +69,7 @@ export async function useSync() {
         if (parts.sync.isSyncing) {
             setData(parts.history)
             setType(parts.type)
+            setTriggerSync(!triggerSync)
         }
         //else do nothing
     }, [parts.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -74,33 +80,57 @@ export async function useSync() {
     //-------------------------------------------------------------------------------
     useEffect(() => {
 
-        createSyncData(data, localCopyId, type, dispatch)
+        console.log(data)
+        async function sync() {
 
-            .then((syncData) => postSyncData(syncData, type, dispatch))
+            try {
 
-            .then((response) => {
-                /*if (response === 'Connection Error') { finishSync(type, null, dispatch) } //not reported as error as could be working offline.*/
-                if (response.status !== 200) { finishSync(`Error: ${response.message}`, type, dispatch) }
-                processSyncResponse(response.data, type, dispatch)
-            })
+                const syncData = await createSyncData(data, localCopyId, type, dispatch)
 
-            .then(() => finishSync(null, type, dispatch))
-            .catch((error) => {
-                finishSync(error, type, dispatch)
-            })
+                const response = await postSyncData(syncData, type, dispatch)
 
-    }, [data, localCopyId, dispatch, type])
+                if (response.status === 200) { 
+                  const cbpSuccess =  await closePostBacks(syncData.postBacks, type, dispatch)
+
+                  const psrSuccess =  await processSyncResponse(response.data, type, dispatch)
+
+                    if (cbpSuccess && psrSuccess) {
+                        finishSync(null, type, dispatch)
+                    } else {
+                        finishSync('Error finishing sync.', null, type, dispatch)
+                    }
+
+                    
+                } else {
+ finishSync(`Error: ${response.message}`, type, dispatch)
+                    
+                }
+
+            } catch (error) {
+                console.log(error)
+                finishSync(error.message, type, dispatch)
+            }
+        }
+
+        sync()
+
+    }, [triggerSync]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 }
 
 const createSyncData = async (data, copyId) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
+
+    console.log(data)
+
     try {
         const syncData = new LocalToServerSyncData(
             copyId  //identifies the local copy that the data is coming from
-            , data.filter(x => x.updatedOnServer === false) //local data that hasn't yet been added to server
             , data.filter(x => x.hasPostedBack !== true) // confirmation back to server that updates in the post back have been added to Local.
+            , data.filter(x => x.updatedOnServer === false) //local data that hasn't yet been added to server
+
         )
+
         return syncData;
     } catch (error) {
         throw new Error(`Error creating sync data: ${error.message}`)
@@ -108,42 +138,61 @@ const createSyncData = async (data, copyId) => { //data = all the updates pertai
 
 }
 
+
+
+
 const postSyncData = async (syncData, type, dispatch) => {
 
     const url = `${type}s/sync`
 
-    /*   try {*/
+    try {
     console.log("Posting Sync Data: " + JSON.stringify(syncData));
     const response = await axios.post(url, syncData);
-
+    console.log("ResponseStatus from server:  " + response.status)
     console.log("Response from server:  " + JSON.stringify(response.data))
 
     //dispatch(updateConnectionStatus('Ok'))
 
-    return response;
-    //}
-    //catch (error) {
-    //    //dispatch(updateConnectionStatus(`No Connection: ${error.message}`)) //TODO Think this functionality can be changed to use Reaction offline functionality.(in repo issues)
-    //    //return 'Connection Error'
-    //    return error
-    //}
+    return (response)
+    }
+    catch (error) {
+        throw new Error("Error posting sync data: " + error.message)
+    }
+}
+
+const closePostBacks = (postBacks, type, dispatch) => {
+
+
+    try {
+        const postBacksArray = Object.values(postBacks)
+
+        postBacksArray.forEach(postBack => { dispatch(closePostBack(postBack, type)) })
+
+        return true;
+    }
+    catch (error) {
+        throw new Error("Error closing postBacks: " + error.message)
+    }
 }
 
 const processSyncResponse = async (responseData, type, dispatch) => {
 
+    let process = ''
     console.log("Processing Sync Response: ")
 
     try {
+        process ='postBacks'
         if (responseData.postBacks.length === 0) {
-            console.log('No Postback to process.')
+            console.log('No PostBack to process.')
             console.log(type)
         }
         else {
-            console.log('Processing postbacks.')
+            console.log('Processing postBacks.')
             console.log(type)
-            dispatch(processServerToLocalPostbacks(responseData.postBacks, type))
+            dispatch(processServerToLocalPostBacks(responseData.postBacks, type))
         }
 
+        process = 'updates'
         if (responseData.updates.length === 0) {
             console.log('No updates to process.')
             console.log(type)
@@ -154,6 +203,7 @@ const processSyncResponse = async (responseData, type, dispatch) => {
             dispatch(addUpdates(responseData.updates, type))
         }
 
+        process = 'conflicts'
         if (responseData.conflictIdsToClear.length === 0) {
             console.log('No conflicts to clear.')
             console.log(type)
@@ -164,6 +214,7 @@ const processSyncResponse = async (responseData, type, dispatch) => {
             dispatch(clearConflicts(responseData.conflictIdsToClear))
         }
 
+        process = 'lastSyncDate'
         if (responseData.lastSyncDate == null) {
             console.log('No last sync date to update.')
         }
@@ -172,9 +223,11 @@ const processSyncResponse = async (responseData, type, dispatch) => {
             console.log('Updating last sync date.')
             dispatch(updateLastSyncDate(responseData.lastSyncDate))
         }
+
+        return true;
     }
     catch (err) {
-        throw new Error(`An error occured whilst processing sync response: ${err.message}`)
+        throw new Error(`Error processing ${process} from server: ${err.message}`)
     }
 
 
@@ -193,7 +246,7 @@ export function getLatest(history) {
         throw new Error("getLatest passed undefined history property")
     }
 
-    if (!Array.isArray(history) || history.length === 0  ) { return [] }
+    if (!Array.isArray(history) || history.length === 0) { return [] }
 
     const latestUpdates = history.reduce((acc, update) => {
         if (!acc[update.id] || update.created > acc[update.id].created) {
