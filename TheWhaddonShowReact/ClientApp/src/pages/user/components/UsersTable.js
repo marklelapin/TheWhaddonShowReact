@@ -30,11 +30,14 @@ export function UsersTable() {
     const [error, setError] = useState(null);
     const [userModalToOpen, setUserModalToOpen] = useState(null);
     const [newUser, setNewUser] = useState(null);
+
+    const [showActive, setShowActive] = useState(null);
+
     //Access state from redux store
     const personsSync = useSelector((state) => state.localServer.persons.sync)
-    const personIds = useSelector((state) => [...new Set(state.localServer.persons.history.map(person => person.id))] || [])
+    const persons = useSelector((state) => getLatest(state.localServer.persons.history).map(person => ({id: person.id, isActive: person.isActive, isSample: person.isSample, firstName: person.firstName, lastName: person.lastName })) || [])
 
-
+    
 
     useEffect(() => {
         setLoadingError();
@@ -42,7 +45,7 @@ export function UsersTable() {
 
     useEffect(() => {
         setLoadingError();
-    }, [personIds]
+    }, [persons]
     )
 
 
@@ -106,7 +109,7 @@ export function UsersTable() {
 
 
     const setLoadingError = () => {
-        if (personIds.length > 0) {
+        if (persons.length > 0) {
             setIsLoading(false)
             setError(null)
         }
@@ -121,6 +124,26 @@ export function UsersTable() {
     }
 
 
+
+    const personIds = () => {
+
+       let filteredPersons = persons.filter((person) => person.isActive === (showActive || person.isActive))
+       filteredPersons = filteredPersons.filter((person) => !(person.isSample === true))
+
+       const sortedPersons = filteredPersons.sort((a, b) => {
+            const nameA = (a.firstName + a.lastName).toUpperCase(); // ignore upper and lowercase
+            const nameB = (b.firstName + b.lastName).toUpperCase(); // ignore upper and lowercase
+            if (nameA < nameB) {
+                return -1;
+            } 
+            return 1;
+        })
+
+        return sortedPersons.map((person) => person.id)
+
+    }
+
+
     return (
 
         <>
@@ -128,15 +151,16 @@ export function UsersTable() {
 
 
 
-                <DataLoading isLoading={isLoading && (personIds.length === 0)} isError={error !== null && (personIds.length === 0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
+                <DataLoading isLoading={isLoading && (personIds().length === 0)} isError={error !== null && (personIds().length === 0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
                     <Button color="primary" onClick={addNewUser}>Add New User</Button>
+                    
                     <div className="table-responsive" >
                         <Table id="user-table" className="table-hover">
                             <thead>
                                 <User type={headers} />
                             </thead>
                             <tbody>
-                                {personIds.map((id) => {
+                                {personIds().map((id) => {
 
                                     return <User type={row} id={id} key={id} openModal={(id === userModalToOpen)} closeModal={closeModal} />
                                 }
