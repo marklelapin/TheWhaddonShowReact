@@ -29,7 +29,7 @@ export const modal = 'modal'
 function User(props) {
 
 
-    const debug = false
+    const debug = true;
 
     const { type, closeModal, openModal = false, newUser = null, onCancelNewUser } = props //type = modal, headers, row.
 
@@ -47,15 +47,15 @@ function User(props) {
     const dispatch = useDispatch()
 
     //if storedUser changes then update the user state.
+    //useEffect(() => {
+
+    //    setUser((newUser !== null ? newUser : storedUser))
+    //    setUserChanged(false)
+
+    //}, [storedUser])
+
     useEffect(() => {
-
-        setUser((newUser !== null ? newUser : storedUser))
-        setUserChanged(false)
-
-    }, [storedUser])
-
-    useEffect(() => {
-        if (user == storedUser) {
+        if (user === storedUser) {
             setUserChanged(false)
         } else {
             setUserChanged(true)
@@ -95,6 +95,11 @@ function User(props) {
  }
 
     const handleEmailChange = (event) => {
+        console.log('EMail Change User:')
+        console.log({ user })
+        console.log('stored user')
+        console.log(storedUser)
+
         setUser({ ...user, email: event.target.value })
     }
 
@@ -133,9 +138,10 @@ function User(props) {
     }
 
     const handleIsActiveChange = (event) => {
-        console.log('user' + user.isActive)
-        console.log('checked' + event.target.checked)
-        console.log(user.pictureRef)
+        console.log('IsActiveChnage user:')
+        console.log(user)
+        console.log('stored user')
+        console.log(storedUser)
         setUser({ ...user, isActive: event.target.checked })
     }
 

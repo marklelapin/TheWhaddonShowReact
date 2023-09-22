@@ -3,19 +3,22 @@ import { FormGroup, Input, Label } from 'reactstrap';
 
 
 function CheckBox(props) {
-    const { strapColor, label ,id, checked = false, onChange} = props
+    const { strapColor, label ,id, key, checked = false, onChange} = props
 
     const checkboxId = () => {
-        return `checkbox-${id}`
+        return `checkbox-${id || key}`
     }
 
+    const checkboxKey = () => {
+        return `checkbox-${key || id}`
+    }
 
     return (
 
 
         <FormGroup className={`checkbox abc-checkbox abc-checkbox-success`} check> 
             <>
-                <Input type="checkbox" id={checkboxId()} checked={checked} onChange={onChange} />
+                <Input type="checkbox" id={checkboxId()} key={checkboxKey()}  checked={checked} onChange={onChange} />
                 <Label for={checkboxId()} check>
                     {label}
                 </Label>    

@@ -29,7 +29,7 @@ import {
 
 export async function useSync() {
 
-    const debug = true;
+    const debug = false;
 
 
     //Set up state internal to this component

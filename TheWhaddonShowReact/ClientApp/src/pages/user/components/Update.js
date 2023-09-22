@@ -50,10 +50,10 @@ function Update(props) {
             <td className={className}>
                 < div className="user-update">
 
-                    <CheckBox id="isActive" strapColor="primary" checked={user.isActive} onChange={onChange} />
+                    <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={onChange} />
 
                     <Button id="save" type="submit" color={button.color} size="xs" onClick={onClickUpdate} className={(button.disable) ? 'disabled' : ''}>{button.text}</Button>
-                    <Button id="cancel" type="button" color="secondary" size="xs" onClick={onClickCancel} >Cancel</Button>
+                    {userChanged && <Button id="cancel" type="button" color="secondary" size="xs" onClick={onClickCancel} >Cancel</Button>}
                 </div >
             </td>
         )
