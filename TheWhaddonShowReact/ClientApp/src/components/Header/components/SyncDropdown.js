@@ -118,7 +118,12 @@ function SyncDropdown(props) {
         }
         if (target.error !== null) {
             return (
-                <><Icon icon="cross" strapColor="danger" /> Syncing error...</>
+                <>
+                    <Icon icon="cross" strapColor="danger" /> Syncing error...
+                    
+                    {(type!=='Summary') ? <p><small>{target.error}</small></p> : null}
+                </>
+
             )
         }
         if (seconds === null) return <><Icon icon="cross" strapColor="danger" /> Never synced</>

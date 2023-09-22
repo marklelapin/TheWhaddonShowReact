@@ -16,6 +16,20 @@ namespace TheWhaddonShowReact.Controllers
 		private readonly ReactLocalDataAccess<PersonUpdate> _localDataAccess;
 		private readonly ILocalServerEngine<PersonUpdate> _localServerEngine;
 
+		// Create JsonSerializerOptions with CamelCaseNamingPolicy
+		private JsonSerializerOptions jsonOptions
+		{
+			get
+			{
+
+				return new JsonSerializerOptions()
+				{
+					PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+					WriteIndented = true // Optional: for pretty-printing
+				};
+			}
+		}
+
 		public PersonsController(ILocalDataAccess<PersonUpdate> localDataAccess, ILocalServerEngine<PersonUpdate> localServerEngine)
 		{
 			// Cast _localDataAccess to ReactLocalDataAccess<PersonUpdate>
@@ -52,7 +66,7 @@ namespace TheWhaddonShowReact.Controllers
 				{
 					var serverToLocalSyncData = _localDataAccess.getServerToLocalSyncData();
 
-					var serverToLocalSyncDataJson = JsonSerializer.Serialize(serverToLocalSyncData);
+					var serverToLocalSyncDataJson = JsonSerializer.Serialize(serverToLocalSyncData, jsonOptions);
 
 					return Task.FromResult<IActionResult>(Ok(serverToLocalSyncDataJson));
 				}

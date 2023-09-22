@@ -38,7 +38,7 @@ namespace TheWhaddonShowReact.Controllers
 					await file.CopyToAsync(stream);
 				}
 
-				return Ok(uniqueFileName);
+				return Content(uniqueFileName);
 			}
 			catch (Exception ex)
 			{

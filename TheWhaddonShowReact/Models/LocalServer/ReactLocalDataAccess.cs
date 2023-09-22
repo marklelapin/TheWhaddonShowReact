@@ -95,7 +95,7 @@ namespace TheWhaddonShowReact.Models.LocalServer
 
 			//send reduced list of updates to local server staging property
 			await Task.Run(() => _serverToLocalSyncData.Updates = updates);
-			//send postbacks to Server.
+			//send postBacks to Server.
 			return _localToServerSyncData.PostBacks ?? new List<LocalToServerPostBack>();
 		}
 

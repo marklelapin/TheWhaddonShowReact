@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 
 //LocalServerModels and types
 import { LocalToServerSyncData } from './localServerModels';
-import {Person, ScriptItem, Part} from './localServerModels';
+import { Person, ScriptItem, Part } from './localServerModels';
 
 //Redux Hooks
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,20 +17,25 @@ import { useDispatch, useSelector } from 'react-redux';
 //Redux Actions
 import {
     updateLastSyncDate,
-    processServerToLocalPostbacks,
+    processServerToLocalPostBacks,
     addUpdates,
     clearConflicts,
     //updateConnectionStatus,
-    endSync
+    endSync,
+    closePostBack
 } from 'actions/localServer';
 
 
 
 export async function useSync() {
 
+    const debug = false;
+
+
     //Set up state internal to this component
     const [data, setData] = useState(null)
     const [type, setType] = useState(null)
+    const [triggerSync, setTriggerSync] = useState(false)
 
     //Access state from redux store 
     const localCopyId = useSelector((state) => state.localServer.localCopyId);
@@ -39,31 +44,35 @@ export async function useSync() {
     const scriptItems = useSelector((state) => state.localServer.scriptItems)
     const parts = useSelector((state) => state.localServer.parts)
 
-
+    debug && console.log('Use Sync: persons.sync.isSyncing: ' + persons.sync.isSyncing)
     const dispatch = useDispatch();
 
     //Use Effect Hooks to assing the data and url to be used in the sync operation. **LSMTypeInCode**
     //-------------------------------------------------------------------------------  
     useEffect(() => {
+        debug && console.log('setting data and type')
         if (persons.sync.isSyncing) { //if it is syncing alread then don't run another sync.
             setData(persons.history)
             setType(persons.type)
+            setTriggerSync(!triggerSync)
         }
         //else do nothing
     }, [persons.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (scriptItems.sync.isSyncing) { 
+        if (scriptItems.sync.isSyncing) {
             setData(scriptItems.history)
             setType(scriptItems.type)
+            setTriggerSync(!triggerSync)
         }
         //else do nothing
     }, [scriptItems.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (parts.sync.isSyncing) { 
+        if (parts.sync.isSyncing) {
             setData(parts.history)
             setType(parts.type)
+            setTriggerSync(!triggerSync)
         }
         //else do nothing
     }, [parts.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -74,33 +83,58 @@ export async function useSync() {
     //-------------------------------------------------------------------------------
     useEffect(() => {
 
-        createSyncData(data, localCopyId,type,dispatch)
+        debug && console.log(data)
+        async function sync() {
 
-            .then((syncData) => postSyncData(syncData, type,dispatch))
+            try {
 
-            .then((response) => {
-                /*if (response === 'Connection Error') { finishSync(type, null, dispatch) } //not reported as error as could be working offline.*/
-                if (response.status !== 200) { finishSync(`Error: ${response.message}`,type,dispatch) }
-                processSyncResponse(response.data,type, dispatch)
-            })
+                const syncData = await createSyncData(data, localCopyId, type, dispatch, debug)
 
-            .then(() => finishSync(null,type,dispatch))
-            .catch((error) => {
-                finishSync(error,type,dispatch)
-            })
+                const response = await postSyncData(syncData, type, dispatch,debug)
 
-    }, [data, localCopyId, dispatch,type])
+                if (response.status === 200) { 
+                  const cbpSuccess =  await closePostBacks(syncData.postBacks, type, dispatch,debug)
+
+                  const psrSuccess =  await processSyncResponse(response.data, type, dispatch,debug)
+
+                    if (cbpSuccess && psrSuccess) {
+                        finishSync(null, type, dispatch)
+                    } else {
+                        finishSync('Error finishing sync.', null, type, dispatch, debug)
+                    }
+
+                    
+                } else {
+ finishSync(`Error: ${response.message}`, type, dispatch)
+                    
+                }
+
+            } catch (error) {
+                debug &&  console.log(error)
+                finishSync(error.message, type, dispatch)
+            }
+        }
+
+        sync()
+
+    }, [triggerSync]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 }
 
-const createSyncData = async (data, copyId) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
+const createSyncData = async (data, copyId, debug) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
+
+    debug && console.log('Redux store data: ')
+
+    debug && console.log(data)
+
     try {
         const syncData = new LocalToServerSyncData(
             copyId  //identifies the local copy that the data is coming from
-            , data.filter(x => x.updatedOnServer === false) //local data that hasn't yet been added to server
-            , data.filter(x => x.hasPostedBack !== true) // confirmation back to server that updates in the post back have been added to Local.
+            , data.filter(x => x.hasPostedBack !== true).map(x => ({ id: x.id, created: x.created, isConflicted: x.isConflicted })) // confirmation back to server that updates in the post back have been added to Local.
+            , data.filter(x => x.updatedOnServer === null) //local data that hasn't yet been added to server
         )
+
         return syncData;
     } catch (error) {
         throw new Error(`Error creating sync data: ${error.message}`)
@@ -108,90 +142,129 @@ const createSyncData = async (data, copyId) => { //data = all the updates pertai
 
 }
 
-const postSyncData = async (syncData, type, dispatch) => {
+
+
+
+const postSyncData = async (syncData, type, dispatch, debug) => {
 
     const url = `${type}s/sync`
 
- /*   try {*/
-        console.log("Posting Sync Data: " + JSON.stringify(syncData));
+    try {
+
+        debug && console.log("Posting Sync Data: " + JSON.stringify(syncData));
+
+        const json = JSON.stringify(syncData);
+
         const response = await axios.post(url, syncData);
 
-        console.log("Response from server:  " + JSON.stringify(response.data))
+        debug && console.log("ResponseStatus from server:  " + response.status)
+        debug && console.log("Response from server:  " + JSON.stringify(response.data))
 
-        //dispatch(updateConnectionStatus('Ok'))
+    //dispatch(updateConnectionStatus('Ok'))
 
-        return response;
-    //}
-    //catch (error) {
-    //    //dispatch(updateConnectionStatus(`No Connection: ${error.message}`)) //TODO Think this functionality can be changed to use Reaction offline functionality.(in repo issues)
-    //    //return 'Connection Error'
-    //    return error
-    //}
+    return (response)
+    }
+    catch (error) {
+        throw new Error("Error posting sync data: " + error.message)
+    }
 }
 
-const processSyncResponse = async (responseData,type, dispatch) => {
+const closePostBacks = (postBacks, type, dispatch) => {
 
-    console.log("Processing Sync Response: ")
 
     try {
-        if (responseData.PostBacks.length === 0) {
-            console.log('No Postback to process.')
-            console.log(type)
+        const postBacksArray = Object.values(postBacks)
+
+        postBacksArray.forEach(postBack => { dispatch(closePostBack(postBack, type)) })
+
+        return true;
+    }
+    catch (error) {
+        throw new Error("Error closing postBacks: " + error.message)
+    }
+}
+
+const processSyncResponse = async (responseData, type, dispatch,debug) => {
+
+    let process = ''
+    debug && console.log("Processing Sync Response: ")
+
+    try {
+        process ='postBacks'
+        if (responseData.postBacks.length === 0) {
+
+            debug && console.log('No PostBack to process.');
+            debug && console.log(type)
+
         }
         else {
-            console.log('Processing postbacks.')
-            console.log(type)
-            dispatch(processServerToLocalPostbacks(responseData.PostBacks, type))
+            debug && console.log('Processing postBacks.')
+            debug && console.log(type)
+
+            const postBacksArray = Object.values(responseData.postBacks) 
+
+            postBacksArray.forEach(postBack => { dispatch(processServerToLocalPostBacks(postBack, type)) })
         }
 
-        if (responseData.Updates.length === 0) {
-            console.log('No updates to process.')
-            console.log(type)
+        process = 'updates'
+        if (responseData.updates.length === 0) {
+            debug && console.log('No updates to process.');
+            debug &&  console.log(type)
         }
         else {
-            console.log('Processing updates.')
-            console.log(type)
-            dispatch(addUpdates(responseData.Updates, type))
+            debug && console.log('Processing updates.');
+            debug && console.log(type)
+            dispatch(addUpdates(responseData.updates, type))
         }
 
-        if (responseData.ConflictIdsToClear.length === 0) {
-            console.log('No conflicts to clear.')
-            console.log(type)
+        process = 'conflicts'
+        if (responseData.conflictIdsToClear.length === 0) {
+            debug && console.log('No conflicts to clear.');
+                debug && console.log(type)
 
         }
         else {
-            console.log('Clearing conflicts.')
-            dispatch(clearConflicts(responseData.ConflictIdsToClear))
+            debug && console.log('Clearing conflicts.')
+            dispatch(clearConflicts(responseData.conflictIdsToClear))
         }
 
-        if (responseData.LastSyncDate == null) {
-            console.log('No last sync date to update.')
+        process = 'lastSyncDate'
+        if (responseData.lastSyncDate == null) {
+            debug && console.log('No last sync date to update.')
         }
 
         else {
-            console.log('Updating last sync date.')
-            dispatch(updateLastSyncDate(responseData.LastSyncDate))
+           debug && console.log('Updating last sync date.')
+            dispatch(updateLastSyncDate(responseData.lastSyncDate))
         }
+
+        return true;
     }
     catch (err) {
-        throw new Error(`An error occured whilst processing sync response: ${err.message}`)
+        throw new Error(`Error processing ${process} from server: ${err.message}`)
     }
 
-    
+
 
 }
 
-const finishSync = (error,type,  dispatch) => {
+const finishSync = (error, type, dispatch) => {
 
-    dispatch(endSync(error,type))
+    dispatch(endSync(error, type))
 }
 
 
 export function getLatest(history) {
 
+    if (history === undefined) {
+        throw new Error("getLatest passed undefined history property")
+    }
+
+    if (!Array.isArray(history) || history.length === 0) { return [] }
+
     const latestUpdates = history.reduce((acc, update) => {
-        if (!acc[update.Id] || update.Created > acc[update.Id].Created) {
-            acc[update.Id] = update;
+        if (!acc[update.id] || update.created > acc[update.id].created) {
+            acc[update.id] = update;
         }
         return acc;
     }, {})
@@ -200,5 +273,31 @@ export function getLatest(history) {
 
     if (latestUpdatesArray === null || latestUpdatesArray === undefined) { latestUpdatesArray = [] }
 
-    return latestUpdatesArray; 
+    return latestUpdatesArray;
+
+
+}
+
+
+
+export function prepareUpdate(updates) {
+    return prepareUpdates(updates)
+}
+
+export function prepareUpdates(updates) {
+    let output = updates
+  
+    if (!Array.isArray(updates)) {
+        output = [updates]
+    }
+
+    output.forEach((update, index) => {
+
+        output[index] = { ...update, created: new Date().toISOString().replace('Z',''), updatedOnServer: null }
+    })
+
+
+    return output;
+
+
 }
