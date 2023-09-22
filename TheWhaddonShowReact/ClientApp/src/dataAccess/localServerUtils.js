@@ -29,7 +29,7 @@ import {
 
 export async function useSync() {
 
-    const debug = false;
+    const debug = true;
 
 
     //Set up state internal to this component
@@ -152,6 +152,8 @@ const postSyncData = async (syncData, type, dispatch, debug) => {
     try {
 
         debug && console.log("Posting Sync Data: " + JSON.stringify(syncData));
+
+        const json = JSON.stringify(syncData);
 
         const response = await axios.post(url, syncData);
 
@@ -290,6 +292,7 @@ export function prepareUpdates(updates) {
     }
 
     output.forEach((update, index) => {
+
         output[index] = { ...update, created: new Date().toISOString().replace('Z',''), updatedOnServer: null }
     })
 

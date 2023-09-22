@@ -7,6 +7,7 @@ function Update(props) {
 
     const {className, user, tagOptions, onClickAdd, onClickRemove, type } = props
 
+
     const headers = () => {
         return (<th className={className}>Tags</th>)
     }

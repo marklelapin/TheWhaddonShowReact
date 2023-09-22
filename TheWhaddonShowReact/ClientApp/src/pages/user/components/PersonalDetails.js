@@ -8,7 +8,14 @@ function PersonalDetails(props) {
 
     const { person = {}, type, onNameChange, onEmailChange, onAvatarChange } = props
 
-    const { firstName = '', lastName ='', email ='' } = person 
+    const { firstName = '', lastName = null, email = '' } = person
+
+    let fullName = ''
+
+    if (lastName === null) { fullName = firstName }
+    else if (lastName === '') { fullName = firstName + ' ' }
+    else {fullName = firstName + ' ' + lastName }
+
 
     const headers = () => {
         return (
@@ -30,7 +37,7 @@ function PersonalDetails(props) {
                 <td className="personal-details no-shrink" >
 
                     <div>
-                        <InputText className="full-name" placeholder="Enter first and last name" value={firstName+' '+lastName} onChange={onNameChange} />
+                        <InputText className="full-name" placeholder="Enter first and last name" value={fullName} onChange={onNameChange} />
                     </div>
                     <div>
                         <InputText className="email" placeholder="Enter email" value={email} onChange={onEmailChange} />

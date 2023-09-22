@@ -4,7 +4,7 @@ import CheckBox from 'components/Forms/CheckBox';
 
 function Update(props) {
 
-    const { user, type, userChanged, onChange, className ,onClickUpdate, onClickCancel} = props
+    const { user, type, userChanged, onChange, className ,onClickUpdate, onClickCancel, isNew} = props
 
 
     /*  const {userChanged,newUser } = props*/
@@ -21,10 +21,10 @@ function Update(props) {
                 color: 'tertiary'
             }
         }
-        if (user.id === null) {
+        if (isNew === true) {
             return {
                 disabled: false,
-                text: 'Add',
+                text: 'Add User',
                 color: 'danger'
             }
         }

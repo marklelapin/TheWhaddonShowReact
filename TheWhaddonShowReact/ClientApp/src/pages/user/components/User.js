@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useState, useEffect } from 'react'
-import { useSelector,useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 
 import PersonalDetails from './PersonalDetails';
@@ -31,9 +31,11 @@ function User(props) {
 
     const debug = false
 
-    const { type, closeModal, openModal = false, newUser = { id: '' } } = props //type = modal, headers, row.
+    const { type, closeModal, openModal = false, newUser = null, onCancelNewUser } = props //type = modal, headers, row.
 
-    const {id = newUser.id} = props
+    let { id } = props
+
+    if (newUser !== null) { id = newUser.id }
 
     const storedUser = useSelector((state) => getLatest(state.localServer.persons.history).filter((person) => person.id === id)[0])
 
@@ -46,9 +48,10 @@ function User(props) {
 
     //if storedUser changes then update the user state.
     useEffect(() => {
-        setUser(storedUser)
+
+        setUser((newUser !== null ? newUser : storedUser))
         setUserChanged(false)
-      
+
     }, [storedUser])
 
     useEffect(() => {
@@ -67,22 +70,36 @@ function User(props) {
 
     const handleNameChange = (event) => {
 
-        const fullName = event.target.value
+        let firstName = null
+        let lastName = null
 
-        const cleanedName = fullName.replace(/\s+/g, ' ').trim() //remove multiple spaces and trim
+        const originalText = event.target.value
 
-        const nameParts = cleanedName.split(' ')
+       let text = originalText
 
-        setUser({ ...user, firstName: nameParts[0] || '', lastName: nameParts[1] || '' })
+        text = text.replace(/^\s+/, '') //remove leading spaces
+        text = text.replace(/\s+/g, ' ') //remove multiple spaces
 
-    }
+        const spaceArray = text.split(' ')
+
+        firstName = spaceArray[0] || ''
+
+        if (spaceArray.length > 1) {
+            lastName = spaceArray[1] 
+        }
+
+
+
+        setUser({ ...user, firstName: firstName, lastName: lastName })
+
+ }
 
     const handleEmailChange = (event) => {
         setUser({ ...user, email: event.target.value })
     }
 
     const handleAvatarChange = (pictureRef) => {
-    
+
         setUser({ ...user, pictureRef: pictureRef })
     }
 
@@ -134,12 +151,21 @@ function User(props) {
 
     const handleClickUpdate = () => {
 
-        dispatch(addUpdates(prepareUpdate(user),Person))  //saves the user to the redux store where it will be synced separately.
+        const userUpdate = prepareUpdate(user)
+
+        dispatch(addUpdates(userUpdate, Person))  //saves the user to the redux store where it will be synced separately.
         setUserChanged(false)
+        closeModal()
     }
 
     const handleClickCancel = () => {
-        setUser(storedUser)
+        if (user.newUser === true) {
+            onCancelNewUser()
+        } else {
+            setUser(storedUser)
+        }
+        closeModal()
+
     }
 
 
@@ -179,7 +205,7 @@ function User(props) {
     }
     const update = (type, show = false) => {
         return (
-            <Update type={type} user={user} userChanged={userChanged} onClickCancel={handleClickCancel} onClickUpdate={handleClickUpdate} className={(show) ? '' : 'd-none d-lg-table-cell'}
+            <Update type={type} user={user} userChanged={userChanged} onClickCancel={handleClickCancel} onClickUpdate={handleClickUpdate} isNew={newUser!==null} className={(show) ? '' : 'd-none d-lg-table-cell'}
                 onChange={handleIsActiveChange}
             />
         )
@@ -223,7 +249,6 @@ function User(props) {
                                 {personalDetails('table')}
                                 {roles('table', true)}
                                 {tags('table', true)}
-                                {update('table', true)}
                             </div>
 
                         </ModalBody>
@@ -233,16 +258,9 @@ function User(props) {
                     </Modal>)}
 
             </>
-        
+
         )
     }
-
-    //if (type === modal) {
-    //    return (
-
-    //    )
-    //}
-
 
 
 }
