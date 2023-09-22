@@ -29,6 +29,9 @@ import {
 
 export async function useSync() {
 
+    const debug = false;
+
+
     //Set up state internal to this component
     const [data, setData] = useState(null)
     const [type, setType] = useState(null)
@@ -41,13 +44,13 @@ export async function useSync() {
     const scriptItems = useSelector((state) => state.localServer.scriptItems)
     const parts = useSelector((state) => state.localServer.parts)
 
-    console.log('Use Sync: persons.sync.isSyncing: ' + persons.sync.isSyncing)
+    debug && console.log('Use Sync: persons.sync.isSyncing: ' + persons.sync.isSyncing)
     const dispatch = useDispatch();
 
     //Use Effect Hooks to assing the data and url to be used in the sync operation. **LSMTypeInCode**
     //-------------------------------------------------------------------------------  
     useEffect(() => {
-        console.log('setting data and type')
+        debug && console.log('setting data and type')
         if (persons.sync.isSyncing) { //if it is syncing alread then don't run another sync.
             setData(persons.history)
             setType(persons.type)
@@ -80,24 +83,24 @@ export async function useSync() {
     //-------------------------------------------------------------------------------
     useEffect(() => {
 
-        console.log(data)
+        debug && console.log(data)
         async function sync() {
 
             try {
 
-                const syncData = await createSyncData(data, localCopyId, type, dispatch)
+                const syncData = await createSyncData(data, localCopyId, type, dispatch, debug)
 
-                const response = await postSyncData(syncData, type, dispatch)
+                const response = await postSyncData(syncData, type, dispatch,debug)
 
                 if (response.status === 200) { 
-                  const cbpSuccess =  await closePostBacks(syncData.postBacks, type, dispatch)
+                  const cbpSuccess =  await closePostBacks(syncData.postBacks, type, dispatch,debug)
 
-                  const psrSuccess =  await processSyncResponse(response.data, type, dispatch)
+                  const psrSuccess =  await processSyncResponse(response.data, type, dispatch,debug)
 
                     if (cbpSuccess && psrSuccess) {
                         finishSync(null, type, dispatch)
                     } else {
-                        finishSync('Error finishing sync.', null, type, dispatch)
+                        finishSync('Error finishing sync.', null, type, dispatch, debug)
                     }
 
                     
@@ -107,7 +110,7 @@ export async function useSync() {
                 }
 
             } catch (error) {
-                console.log(error)
+                debug &&  console.log(error)
                 finishSync(error.message, type, dispatch)
             }
         }
@@ -119,16 +122,17 @@ export async function useSync() {
 
 }
 
-const createSyncData = async (data, copyId) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
+const createSyncData = async (data, copyId, debug) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
 
-    console.log(data)
+    debug && console.log('Redux store data: ')
+
+    debug && console.log(data)
 
     try {
         const syncData = new LocalToServerSyncData(
             copyId  //identifies the local copy that the data is coming from
-            , data.filter(x => x.hasPostedBack !== true) // confirmation back to server that updates in the post back have been added to Local.
-            , data.filter(x => x.updatedOnServer === false) //local data that hasn't yet been added to server
-
+            , data.filter(x => x.hasPostedBack !== true).map(x => ({ id: x.id, created: x.created, isConflicted: x.isConflicted })) // confirmation back to server that updates in the post back have been added to Local.
+            , data.filter(x => x.updatedOnServer === null) //local data that hasn't yet been added to server
         )
 
         return syncData;
@@ -141,15 +145,18 @@ const createSyncData = async (data, copyId) => { //data = all the updates pertai
 
 
 
-const postSyncData = async (syncData, type, dispatch) => {
+const postSyncData = async (syncData, type, dispatch, debug) => {
 
     const url = `${type}s/sync`
 
     try {
-    console.log("Posting Sync Data: " + JSON.stringify(syncData));
-    const response = await axios.post(url, syncData);
-    console.log("ResponseStatus from server:  " + response.status)
-    console.log("Response from server:  " + JSON.stringify(response.data))
+
+        debug && console.log("Posting Sync Data: " + JSON.stringify(syncData));
+
+        const response = await axios.post(url, syncData);
+
+        debug && console.log("ResponseStatus from server:  " + response.status)
+        debug && console.log("Response from server:  " + JSON.stringify(response.data))
 
     //dispatch(updateConnectionStatus('Ok'))
 
@@ -175,52 +182,57 @@ const closePostBacks = (postBacks, type, dispatch) => {
     }
 }
 
-const processSyncResponse = async (responseData, type, dispatch) => {
+const processSyncResponse = async (responseData, type, dispatch,debug) => {
 
     let process = ''
-    console.log("Processing Sync Response: ")
+    debug && console.log("Processing Sync Response: ")
 
     try {
         process ='postBacks'
         if (responseData.postBacks.length === 0) {
-            console.log('No PostBack to process.')
-            console.log(type)
+
+            debug && console.log('No PostBack to process.');
+            debug && console.log(type)
+
         }
         else {
-            console.log('Processing postBacks.')
-            console.log(type)
-            dispatch(processServerToLocalPostBacks(responseData.postBacks, type))
+            debug && console.log('Processing postBacks.')
+            debug && console.log(type)
+
+            const postBacksArray = Object.values(responseData.postBacks) 
+
+            postBacksArray.forEach(postBack => { dispatch(processServerToLocalPostBacks(postBack, type)) })
         }
 
         process = 'updates'
         if (responseData.updates.length === 0) {
-            console.log('No updates to process.')
-            console.log(type)
+            debug && console.log('No updates to process.');
+            debug &&  console.log(type)
         }
         else {
-            console.log('Processing updates.')
-            console.log(type)
+            debug && console.log('Processing updates.');
+            debug && console.log(type)
             dispatch(addUpdates(responseData.updates, type))
         }
 
         process = 'conflicts'
         if (responseData.conflictIdsToClear.length === 0) {
-            console.log('No conflicts to clear.')
-            console.log(type)
+            debug && console.log('No conflicts to clear.');
+                debug && console.log(type)
 
         }
         else {
-            console.log('Clearing conflicts.')
+            debug && console.log('Clearing conflicts.')
             dispatch(clearConflicts(responseData.conflictIdsToClear))
         }
 
         process = 'lastSyncDate'
         if (responseData.lastSyncDate == null) {
-            console.log('No last sync date to update.')
+            debug && console.log('No last sync date to update.')
         }
 
         else {
-            console.log('Updating last sync date.')
+           debug && console.log('Updating last sync date.')
             dispatch(updateLastSyncDate(responseData.lastSyncDate))
         }
 
@@ -260,6 +272,29 @@ export function getLatest(history) {
     if (latestUpdatesArray === null || latestUpdatesArray === undefined) { latestUpdatesArray = [] }
 
     return latestUpdatesArray;
+
+
+}
+
+
+
+export function prepareUpdate(updates) {
+    return prepareUpdates(updates)
+}
+
+export function prepareUpdates(updates) {
+    let output = updates
+  
+    if (!Array.isArray(updates)) {
+        output = [updates]
+    }
+
+    output.forEach((update, index) => {
+        output[index] = { ...update, created: new Date().toISOString().replace('Z',''), updatedOnServer: null }
+    })
+
+
+    return output;
 
 
 }

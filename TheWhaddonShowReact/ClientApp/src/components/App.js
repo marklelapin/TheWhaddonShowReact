@@ -48,7 +48,8 @@ const dispatch = useDispatch();
     useSync();
 
     useEffect(() => {
-        //syncWithServer()
+        syncWithServer()
+
         const intervalId = setInterval(syncWithServer,1000 * 10) //every minute
 
         return () => {
@@ -59,7 +60,7 @@ const dispatch = useDispatch();
 
 
     const syncWithServer = () => {
-        console.log('isyncing prior to disapatch: '+isPersonSyncing) 
+
         dispatch(sync(Person))
         //dispatch(sync(ScriptItem))
         //dispatch(sync(Part))

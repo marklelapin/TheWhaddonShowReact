@@ -39,7 +39,7 @@ const defaultState = {
 
 export default function localServerReducer(state = defaultState, action) {
 
-
+    const debug = false;
 
     switch (action.type) {
 
@@ -67,45 +67,36 @@ export default function localServerReducer(state = defaultState, action) {
             }
         case PROCESS_LOCAL_TO_SERVER_POSTBACK:
             {
-                if (action.payload.length === 0) { return state }
+                const { id, created, updatedOnServer } = action.payload
 
-                let searchArray = [];
+                //select the correct data set to process
+                let searchArray = null;
                 switch (action.payloadType) {
                     //**LSMTypeInCode**
                     case Person: searchArray = state.persons.history; break
                     case ScriptItem: searchArray = state.scriptItems.history; break
                     case Part: searchArray = state.parts.history; break
-                    default: searchArray = [];
+                    default: return state;
                 }
 
-                if (searchArray.length === 0) { return state; }
+                //find the index of the item to update
+                const searchIndex = searchArray.findIndex((item) => item.id === id && item.created === created);
 
+                //if can't find the item then return the state unchanged
+                if (searchIndex === -1) { return state; }
 
-                //creates array of updated items and unaffected items
-                const updatedArray = searchArray.map((item) => {
-                    const matchingUpdate = action.payload.find(
-                        postBack =>
-                            postBack.id === item.id && postBack.created === item.created);
+                //create a copy of the data array and ammend the item to be updated
+                const updatedHistory = [...searchArray]
+                updatedHistory[searchIndex] = { ...updatedHistory[searchIndex], updatedOnServer: updatedOnServer }
 
-                    if (matchingUpdate) { //if there is a match return the updated item
-                        return {
-                            ...item,
-                            updatedOnServer: matchingUpdate.updatedOnServer,
-                            postBackSent: false
-                        };
-                    }
-                    //else return an unaffected item
-                    return item;
-
-                })//end of map.
-
+                //update the correct array of data
                 switch (action.payloadType) {
                     //**LSMTypeInCode** */
-                    case Person: return { ...state, persons: { ...state.persons, history: updatedArray } };
-                    case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: updatedArray } };
-                    case Part: return { ...state, parts: { ...state.parts, history: updatedArray } };
-                    default: return { state };
-                }
+                    case Person: return { ...state, persons: { ...state.persons, history: updatedHistory } };
+                    case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: updatedHistory } };
+                    case Part: return { ...state, parts: { ...state.parts, history: updatedHistory } };
+                    default: return state;
+                };
             }
         case CLOSE_POSTBACK:
             const { id, created } = action.payload;
@@ -202,7 +193,7 @@ export default function localServerReducer(state = defaultState, action) {
                 default: return state;
             };
         case SYNC:
-            console.log(`syncing ${action.payloadType}`)
+            debug && console.log(`syncing ${action.payloadType}`)
             switch (action.payloadType) {
 
                 //**LSMTypeInCode** */
@@ -212,10 +203,10 @@ export default function localServerReducer(state = defaultState, action) {
                 default: return state;
             };
         case END_SYNC:
-            console.log(`end syncing ${action.payloadType}`)
+            debug && console.log(`end syncing ${action.payloadType}`)
             let lastSyncDate = null
             const error = action.payload
-            console.log('setting lastSyncDate')
+            debug && console.log('setting lastSyncDate')
             if (error === null) { lastSyncDate = new Date() } 
 
             switch (action.payloadType) {
@@ -223,7 +214,7 @@ export default function localServerReducer(state = defaultState, action) {
                 //**LSMTypeInCode** */
                 case Person:
 
-                    console.log(`changing persons redux state: isSyncing: false , error: ${error}, ${lastSyncDate}`)
+                    debug && console.log(`changing persons redux state: isSyncing: false , error: ${error}, ${lastSyncDate}`)
 
 
                     return {

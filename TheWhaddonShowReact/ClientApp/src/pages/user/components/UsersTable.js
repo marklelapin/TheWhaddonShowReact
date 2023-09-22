@@ -47,7 +47,7 @@ export function UsersTable() {
 
     //establish resize event listener to handle screen size changes.
     useEffect(() => {
-        console.log('screen event listerner added')
+      
         window.addEventListener('resize', handleResize);
         handleResize();
         return () => { window.removeEventListener('resize', handleResize); }
@@ -55,7 +55,7 @@ export function UsersTable() {
 
     const handleResize = () => {
         if (isScreen('xs') || isScreen('sm') || isScreen('md')) { //thes screen sized should match those in index.css for the .
-            console.log('useModal set to true')
+         
             switchTableBehaviour(true)
         } else {
             switchTableBehaviour(false)

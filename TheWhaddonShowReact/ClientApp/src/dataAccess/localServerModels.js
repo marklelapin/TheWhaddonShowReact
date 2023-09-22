@@ -55,7 +55,9 @@ export class LocalServerModelUpdate {
         this.isActive = isActive;
         this.isSample = isSample;
     }
+
 }
+
 
 export class PersonUpdate extends LocalServerModelUpdate {
     constructor() {

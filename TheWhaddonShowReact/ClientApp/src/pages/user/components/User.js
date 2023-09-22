@@ -15,12 +15,11 @@ import {
     ModalFooter,
 } from 'reactstrap';
 
-import { getLatest } from 'dataAccess/localServerUtils'
+import { getLatest, prepareUpdate } from 'dataAccess/localServerUtils'
 import 'index.css'
 
-import { PersonUpdate } from 'dataAccess/localServerModels';
 import { addUpdates } from 'actions/localServer';
-import { Person } from 'dataAccess/localServerModels';
+import { Person, PersonUpdate } from 'dataAccess/localServerModels';
 
 export const headers = 'headers'
 export const row = 'row'
@@ -29,9 +28,8 @@ export const modal = 'modal'
 
 function User(props) {
 
-    //console.log('user component props' + props)
 
-   
+    const debug = false
 
     const { type, closeModal, openModal = false, newUser = { id: '' } } = props //type = modal, headers, row.
 
@@ -50,7 +48,7 @@ function User(props) {
     useEffect(() => {
         setUser(storedUser)
         setUserChanged(false)
-        console.log('storedUser changed')
+      
     }, [storedUser])
 
     useEffect(() => {
@@ -84,7 +82,7 @@ function User(props) {
     }
 
     const handleAvatarChange = (pictureRef) => {
-        console.log('handle Avatar Change:' + pictureRef)
+    
         setUser({ ...user, pictureRef: pictureRef })
     }
 
@@ -135,7 +133,8 @@ function User(props) {
 
 
     const handleClickUpdate = () => {
-        dispatch(addUpdates([user],Person))  //saves the user to the redux store where it will be synced separately.
+
+        dispatch(addUpdates(prepareUpdate(user),Person))  //saves the user to the redux store where it will be synced separately.
         setUserChanged(false)
     }
 
