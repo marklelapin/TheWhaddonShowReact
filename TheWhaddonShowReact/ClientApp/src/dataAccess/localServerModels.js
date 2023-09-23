@@ -76,10 +76,33 @@ export class PersonUpdate extends LocalServerModelUpdate {
         this.isActive = true;
         this.pictureRef = null;
     }
+}
 
+export class ScriptItemUpdate extends LocalServerModelUpdate {
+
+    constructor() {
+        super();
+        this.type = null;
+        this.text = null;
+        this.partIds = [];
+        this.tags = [];
+        this.previousId = null;
+        this.attachments = [];
+    }
 
 }
 
+
+export class PartUpdate extends LocalServerModelUpdate {
+
+    constructor() {
+        super();
+        this.name = null
+        this.personId = null;
+        this.tags = [];
+    }
+
+}
 
 
 
