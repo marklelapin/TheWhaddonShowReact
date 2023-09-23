@@ -17,9 +17,9 @@ import Widgets from '../../pages/widgets';
 
 import DashboardAnalytics from '../../pages/analytics';
 import Dashboard from '../../pages/dashboard';
-import UserFormPage from '../../pages/user/form/UsersFormPage';
 import Home from '../../pages/home/Home';
 import Users from '../../pages/user/Users';
+import Script from '../../pages/scriptEditor/Script';
 
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header';
@@ -113,8 +113,7 @@ class Layout extends React.Component {
                                         <Route path="/app/main/widgets" exact component={Widgets} />
                                         <Route path="/app/main/analytics" exact component={DashboardAnalytics} />
 
-                                        <Route path="/app/script/view" exact render={() => <Redirect to="/app/chat" />} /> 
-                                        <Route path="/app/script/edit" exact component={() => <Redirect to="/app/chat" />} />
+                                        <Route path="/app/script" exact component={Script} />
                                         <Route path="/app/script/import" exact component={() => <Redirect to="/app/chat" />} />
 
                                         <Route path="/app/planning/cast" exact render={() => <Redirect to="/app/tables/static" />} />
@@ -132,8 +131,6 @@ class Layout extends React.Component {
 
                                         <Route path="/admin" exact render={() => <Redirect to="/admin/users" />} />
                                         <Route path="/admin/users" exact component={Users} />
-                                        <Route path="/admin/users/new" exact component={UserFormPage} />
-                                        <Route path="/admin/users/:id/edit" exact component={UserFormPage} />
 
                                         <Route path="/apiMonitor/documentation" exact render={() => <Redirect to="/app/grid" />} />
                                         <Route path="/apiMonitor/dashboard" exact render={() => <Redirect to="/app/main/analytics" />} />

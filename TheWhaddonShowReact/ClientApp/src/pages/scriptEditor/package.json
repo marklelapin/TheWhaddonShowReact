@@ -1,0 +1,6 @@
+{
+  "name": "scriptEditor",
+  "version": "0.0.0",
+  "main": "./ScriptEditor.js",
+  "private": true
+}

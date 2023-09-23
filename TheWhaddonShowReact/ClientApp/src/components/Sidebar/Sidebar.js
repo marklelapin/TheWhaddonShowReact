@@ -161,11 +161,9 @@ function Sidebar() {
                         index=""
                         childrenLinks={[
                             {
-                                header: 'View', link: '/app/script/view',
+                                header: 'View', link: '/app/script',
                             },
-                            {
-                                header: 'Edit', link: '/app/script/edit',
-                            },
+      
                             {
                                 header: 'Import', link: '/app/script/import',
                             },
