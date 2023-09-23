@@ -254,7 +254,7 @@ const finishSync = (error, type, dispatch) => {
 }
 
 
-export function getLatest(history) {
+export function getLatest(history,undoDateTime = null) {
 
     if (history === undefined) {
         throw new Error("getLatest passed undefined history property")
@@ -262,7 +262,10 @@ export function getLatest(history) {
 
     if (!Array.isArray(history) || history.length === 0) { return [] }
 
-    const latestUpdates = history.reduce((acc, update) => {
+    const unDoneHistory = history.filter((update) => update.created <= (undoDateTime || update.created))
+
+
+    const latestUpdates = unDoneHistory.reduce((acc, update) => {
         if (!acc[update.id] || update.created > acc[update.id].created) {
             acc[update.id] = update;
         }
