@@ -5,6 +5,16 @@ export const Person = 'Person';
 export const ScriptItem = 'ScriptItem';
 export const Part = 'Part'
 
+export const Act = 'Act';
+export const Scene = 'Scene';
+export const Synopsis = 'Synopsis';
+export const Staging = 'Staging';
+export const Song = 'Song';
+export const Dialogue = 'Dialogue';
+export const Action = 'Action';
+export const Sound = 'Sound';
+export const Lighting = 'Lighting';
+export const Curtain = 'Curtain';
 
 export class LocalServerModel {
     constructor(type) {
@@ -80,12 +90,13 @@ export class PersonUpdate extends LocalServerModelUpdate {
 
 export class ScriptItemUpdate extends LocalServerModelUpdate {
 
-    constructor() {
+    constructor(type,text=null,partIds = [],tags =[]) {
         super();
-        this.type = null;
-        this.text = null;
-        this.partIds = [];
-        this.tags = [];
+        this.type = type;
+        this.text = text;
+        this.partIds = partIds;
+        this.tags = tags;
+        this.nextId = null;
         this.previousId = null;
         this.attachments = [];
     }

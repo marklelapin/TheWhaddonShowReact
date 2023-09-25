@@ -108,7 +108,7 @@ class Layout extends React.Component {
                                     timeout={200}
                                 >
                                     <Switch>
-                                        <Route path="/app/main" exact component={Home} />} />
+                                        <Route path="/app/main" exact component={Home} />
                                         <Route path="/app/main/dashboard" exact component={Dashboard} />
                                         <Route path="/app/main/widgets" exact component={Widgets} />
                                         <Route path="/app/main/analytics" exact component={DashboardAnalytics} />
