@@ -1,12 +1,14 @@
 ﻿import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { createSelector } from 'reselect';
 import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
 import Avatar from 'components/Avatar/Avatar';
-import { InputGroup, Input, Button, FormGroup } from 'reactstrap';
+import { InputGroup, Input, Button, FormGroup, Container, Col, Row } from 'reactstrap';
 import { PartUpdate } from 'dataAccess/localServerModels';
 import Update from 'components/Forms/Update';
 import { addUpdates } from 'actions/localServer';
+import TagsInput from '../../../components/Forms/TagsInput';
 
 function PartEditor(props) {
 
@@ -14,11 +16,59 @@ function PartEditor(props) {
 
     const dispatch = useDispatch();
 
-    const persons = useSelector((state) => getLatest(state.localServer.persons.history) || [])
-    const parts = useSelector((state) => getLatest(state.localServer.parts.history.filter(part => partIds.includes(part.id)) || []))
+    const storedPersons = useSelector((state) => state.localServer.persons.history || [])
+
+    const storedParts = useSelector((state) => state.localServer.parts.history || [])
+
+
+    //Refs
+    const addButtonRef = useRef();
+    const newInputRef = useRef();
+
+    //SETUP SCENE AND OTHER PARTS STATE
+    const joinPersonsToParts = (parts, persons) => {
+
+        let partsArray = [...parts]
+        const personsArray = [...persons]
+        //joins on person to get person information
+        partsArray = partsArray.map(part => part.allocation = personsArray.find(person => person.id === part.personId) || null)
+        return partsArray
+    }
 
 
 
+    const updateAvatarInfo = (part) => {
+
+        if (!part) return null
+        const updatedPart = {
+            ...part, firstName: part.name
+            , avatarInitials: (part.name) ? part.name.split(' ').map(word => word[0]).join('') : '?'
+            , pictureRef: (part.allocation) ? part.allocation.pictureRef : null
+        }
+
+        return updatedPart
+
+    }
+
+
+    const addAvatarInfo = (parts) => {
+
+        let partsArray = [...parts]
+        partsArray = partsArray.map(part => updateAvatarInfo(part))
+
+        return partsArray
+    }
+
+    const setupParts = (parts, persons) => {
+
+        const addPersons = joinPersonsToParts(parts, persons)
+
+        const partsWithAvatarInfo = addAvatarInfo(addPersons)
+
+        const sortedParts = partsWithAvatarInfo.sort((a, b) => a.name.localeCompare(b.name))
+
+        return sortedParts;
+    }
     // functions for useState hook for allocatedParts
     const addNewPart = (existingParts) => {
 
@@ -31,28 +81,28 @@ function PartEditor(props) {
         return parts
 
     }
+    const resetParts = () => {
+        const allParts = setupParts(storedParts, storedPersons)
 
-    const joinPersonsToParts = (parts, persons) => {
+        const currentParts = allParts.filter(part => partIds.includes(part.id))
+        const sceneParts = addNewPart(currentParts)
 
-        let partsArray = parts
-        const personsArray = persons
+        const otherParts = allParts.filter(part => !partIds.includes(part.id))
 
-        //joins on person to get person information
-        partsArray.map(part => part.allocation = personsArray.find(person => person.id === part.personId) || null)
-
-        //also adds in new part with no allocation to enable adding new parts
-        partsArray = addNewPart(partsArray)
-
-        return partsArray
-
+        setSceneParts(sceneParts)
+        setOtherParts(otherParts)
     }
 
-    const [allocatedParts, setAllocatedParts] = useState(joinPersonsToParts(parts, persons))
 
+    const [toggleReset, setToggleReset] = useState(false);
+    const [sceneParts, setSceneParts] = useState([])
+    const [otherParts, setOtherParts] = useState([])
     useEffect(() => {
-        console.log('use effect in PartEditor')
-        setAllocatedParts(joinPersonsToParts(parts, persons))
-    }, [parts, persons]) //eslint-disable-line react-hooks/exhaustive-deps
+        resetParts()
+    }, [])
+    useEffect(() => {
+        resetParts()
+    }, [partIds, storedParts, storedPersons, toggleReset])
 
 
 
@@ -61,64 +111,76 @@ function PartEditor(props) {
 
 
 
-
-
-
-
-
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter' && addButtonRef) {
+            addButtonRef.current.click();
+        }
+    }
     const handleNameChange = (event, partId) => {
 
-        const updatedParts = allocatedParts.map(part => {
+        const updatedParts = sceneParts.map(part => {
 
             if (part.id === partId) {
-                return { ...part, name: event.target.value, changed: true }
+
+                let updatedPart = { ...part, name: event.target.value, changed: true }
+                updatedPart = updateAvatarInfo(updatedPart)
+
+                return updatedPart
             }
-
-
-
             return part;
         })
 
-        setAllocatedParts(updatedParts);
+        setSceneParts(updatedParts);
     }
 
     const handleDelete = (partId) => {
-        const updatedParts = allocatedParts.map(part => {
+        const updatedParts = sceneParts.map(part => {
             if (part.id === partId) {
                 return { ...part, isActive: false, changed: true }
             }
             return part;
         })
 
-        setAllocatedParts(updatedParts);
+        setSceneParts(updatedParts);
 
     }
 
     const handleAdd = (event, partId) => {
 
-        const updatedParts = allocatedParts.map(part => {
+        const updatedParts = sceneParts.map(part => {
             if (part.id === partId) {
-                return { ...part, changed: true, new: false }
+
+                const partUpdate = { ...part }
+
+                delete partUpdate.new
+                part.changed = true
+
+                return partUpdate
             }
             return part;
         })
 
-        setAllocatedParts(addNewPart(updatedParts))
+        setSceneParts(addNewPart(updatedParts))
+
     }
 
     const hasChanged = () => {
 
-        return allocatedParts.some(part => part.changed === true)
+        return sceneParts.some(part => part.changed === true)
+
+    }
+
+    const handleSearch = (partId) => {
+
 
     }
     const handleUpdate = () => {
-      
-        const changesMade = allocatedParts.filter(part => part.changed === true)
+
+        const changesMade = sceneParts.filter(part => part.changed === true)
 
         changesMade.forEach(part => {
             delete part.changed
             delete part.new
-
         })
 
         const preparedUpdates = prepareUpdates(changesMade)
@@ -128,49 +190,113 @@ function PartEditor(props) {
     }
 
     const handleCancel = () => {
-        setAllocatedParts(joinPersonsToParts(parts, persons))
+        setToggleReset(!toggleReset)
     }
 
 
 
+    const handleAvatarClick = (person) => {
+
+        console.log("hello")
+
+    }
+
+
+
+    const handleAddTag = (tag, partId) => {
+
+        const updateParts = sceneParts.map(part => {
+
+            if (part.id === partId) {
+
+                return { ...part, tags: [...part.tags, tag] }
+            }
+            return part;
+
+        })
+
+        setSceneParts(updateParts)
+
+    }
+
+    const handleRemoveTag = (tag,partId) => {
+
+        const updateParts = sceneParts.map(part => {
+            if (part.id === partId) {
+
+                return { ...part, tags: part.tags.filter(partTag => partTag !== tag) }
+            }
+            return part;
+        })
+        setSceneParts(updateParts)
+    }
+
+
+    const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
+
+    const activeSceneParts = () => { return sceneParts.filter(part => part.isActive === true) }
+
 
     return (
 
-        <div className="part-editor draft-border">
+        <>
+            <div className="part-editor draft-border">
 
-            {allocatedParts.map(part => {
-
-                part.firstName = part.name || '';
-
-                (part.name) ? part.initials = part.name.split(' ').map(word => word[0]).join('')
-                    : part.initials = '?';
-
-                return (
-                    <div className="allocated-parts">
-
-                        <FormGroup>
-                            <InputGroup>
-                                < Avatar avatarInitials={part.initials} person={part} />
-
-                                {(part.new) ? (<Input type="text" placeholder="enter new part name" />)
-                                    : (<Input type="text" key={part.id} placeholder="enter name" value={part.name || ''} onChange={(e) => handleNameChange(e, part.id)} />)}
-
-                                {(part.new) ? <Button color="success"  onClick={(e) => handleAdd(e, part)}><i className="fa fa-plus" /></Button>
-                                    : <Button color="danger" onClick={(e) => handleDelete(part.id)}><i className="fa fa-remove" /></Button>}
-
-                            </InputGroup>
-                        </FormGroup>
+                {activeSceneParts().map(part => {
 
 
 
-                    </div>
-                )
-            })}
-            <FormGroup>
-                <Update id="save" hasChanged={hasChanged()} onClickUpdate={handleUpdate} onClickCancel={handleCancel} isNew={false} ></Update >
+                    return (
+                        <Container className="allocated-parts" key={part.id}>
 
-            </FormGroup>
-        </div>
+                            <Row>
+                                <Col>
+
+                                    < Avatar avatarInitials={part.avatarInitials} person={part} onClick={handleAvatarClick()} />
+
+                                    {(part.new) ?
+                                        <Input type="text" key={part.id} placeholder="enter name" value={part.name || ''} onKeyPress={handleKeyPress} onChange={(e) => handleNameChange(e, part.id)} ref={newInputRef} />
+                                        : <Input type="text" key={part.id} placeholder="enter name" value={part.name || ''} onKeyPress={handleKeyPress} onChange={(e) => handleNameChange(e, part.id)} />
+
+                                    }
+
+
+                                    {(part.new) ?
+                                        <>
+                                            <Button color="success" size="xs" onClick={(e) => handleAdd(e, part.id)}><i className="fa fa-plus" ref={addButtonRef} /></Button>
+                                            <Button color="warning" size="xs" onClick={(e) => handleSearch(part.id)}><i className="fa fa-search" /></Button>
+                                        </>
+
+                                        : <Button color="danger" sixe="xs" onClick={(e) => handleDelete(part.id)}><i className="fa fa-remove" /></Button>}
+
+
+                                </Col>
+
+                                <Col xs={6}>
+                                    <TagsInput strapColor="primary" tags={part.tags} tagOptions={tagOptions} onClickAdd={(tag) => handleAddTag(tag, part.id)} onClickRemove={(tag) => handleRemoveTag(tag, part.id)} />
+                                </Col>
+
+                            </Row>
+
+
+
+
+
+                        </Container>
+                    )
+                })}
+                <FormGroup>
+                    <Update id="save" hasChanged={hasChanged()} onClickUpdate={handleUpdate} onClickCancel={handleCancel} isNew={false} ></Update >
+
+                </FormGroup>
+            </div>
+
+
+
+
+        </>
+
+
 
     )
 

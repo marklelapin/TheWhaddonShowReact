@@ -29,7 +29,7 @@ export function Avatar(props) {
     }
 
     const handleImageClick = (event) => {
-        
+
         if (person.id !== null) {
         const imageInput = document.getElementById(inputId)
 
@@ -76,7 +76,7 @@ export function Avatar(props) {
             <span className={`${s.avatar} rounded-circle float-start me-3 avatar`} onClick={handleImageClick}>
                 {
                     avatarImage() ?
-                        <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={handleImageClick} />
+                        <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(onClick) ? onClick : handleImageClick} />
                         :
                         < span title={avatarTitle} > {avatarText} </span>
                 }

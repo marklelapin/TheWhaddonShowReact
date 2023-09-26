@@ -167,7 +167,7 @@ function Scene(props) {
                 <h1>{sceneHeader.title}</h1>
                 <h2>{sceneHeader.synopsis}</h2>
                 <h3>{sceneHeader.staging}</h3>
-                {/*<PartEditor partIds={sceneHeader.partIds} />*/}
+                <PartEditor partIds={sceneHeader.partIds} />
             </div>
 
             <div className="scene-body">

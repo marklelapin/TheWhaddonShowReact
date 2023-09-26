@@ -40,7 +40,7 @@ function TagButton(props) {
                 color={strapColor}
                 size="xs"
             >
-                <div onClick={onClickRemove}>{tag}<Icon icon="cross"/></div>
+                <div onClick={()=>onClickRemove(tag)}>{tag}<Icon icon="cross"/></div>
             </DropdownToggle >
         </UncontrolledDropdown >
     )
