@@ -6,15 +6,15 @@ function ScriptItem(props) {
 
     const { scriptItem } = props;
 
-    const {  partIds } = scriptItem; 
+    const {  partIds, type, text } = scriptItem; 
 
     return (
-        partIds.map((partId) => {
-            return (
-<h2>{partId}</h2>
-            )
-            
-        })
+        <>
+            <h5>{type}:</h5><h6>{text}</h6>
+
+        </>
+
+
     )
 }
 

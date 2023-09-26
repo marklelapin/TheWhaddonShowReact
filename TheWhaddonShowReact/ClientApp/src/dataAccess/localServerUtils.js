@@ -254,8 +254,8 @@ const finishSync = (error, type, dispatch) => {
 }
 
 
-export function getLatest(history, undoDateTime = null) {
-
+export function getLatest(history, undoDateTime = null,includeInActive = false) {
+    
     if (history === undefined) {
         throw new Error("getLatest passed undefined history property")
     }
@@ -264,8 +264,10 @@ export function getLatest(history, undoDateTime = null) {
 
     const unDoneHistory = history.filter((update) => update.created <= (undoDateTime || update.created))
 
+    const activeHistory = unDoneHistory.filter((update) => update.isActive === true || includeInActive === true)
 
-    const latestUpdates = unDoneHistory.reduce((acc, update) => {
+
+    const latestUpdates = activeHistory.reduce((acc, update) => {
         if (!acc[update.id] || update.created > acc[update.id].created) {
             acc[update.id] = update;
         }
@@ -275,6 +277,8 @@ export function getLatest(history, undoDateTime = null) {
     let latestUpdatesArray = Object.values(latestUpdates);
 
     if (latestUpdatesArray === null || latestUpdatesArray === undefined) { latestUpdatesArray = [] }
+
+    
 
     return latestUpdatesArray;
 
@@ -332,6 +336,7 @@ export function sortScriptItems(originalArray) {
         currentId = currentItem.nextId;
     }
 
+
     return sortedLinkedList;
 }
 
@@ -343,18 +348,4 @@ export function sortLatestScriptItems(scriptItems, undoDateTime) {
     return sortedScriptItems;
 
 }
-
-    export function useSortLatestScriptItems(initialScriptItems, undoDateTime) {
-        const [scriptItems, setScriptItems] = useState(initialScriptItems);
-
-        useEffect(() => {
-            // Assuming getLatest and sortScriptItems functions are defined elsewhere
-            const latestScriptItems = getLatest(scriptItems, undoDateTime);
-            const sortedScriptItems = sortScriptItems(latestScriptItems);
-            setScriptItems(sortedScriptItems);
-
-        }, [undoDateTime, initialScriptItems]); // eslint-disable-line react-hooks/exhaustive-deps
-
-        return [scriptItems];
-    };
 

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { useState, useEffect } from 'react';
+import {store} from 'index.js'; 
 import { useSelector, useDispatch } from 'react-redux';
+import { createSelector } from 'reselect';
+
 import { ScriptItemUpdate, Synopsis, Staging, Dialogue, ScriptItem } from 'dataAccess/localServerModels';
 import { prepareUpdates } from 'dataAccess/localServerUtils';
 import { addUpdates } from 'actions/localServer';
@@ -11,59 +14,61 @@ function Script() {
     const debug = true;
     const dispatch = useDispatch();
 
-    const storedScenes = useSelector((state) => state.localServer.scriptItems.history.filter(item => item.type === 'Scene' || item.type === 'Act' || item.type === 'Show') || []) 
+    //createSelector used for compled state selection to avoid unecessary rerenders
+    const getScriptItems = (state) => state.localServer.scriptItems.history
+    const storedScenesSelector = createSelector(
+        [getScriptItems],
+        (items) => items.filter(item => item.type === 'Scene' || item.type === 'Act' || item.type === 'Show')
+    );
+    const storedScenes = storedScenesSelector(store.getState())
 
-   const [scenes, setScenes] = useState(storedScenes) //eventually move this to useSortedLatestScriptItems
+     useEffect(() => {
 
-    useEffect(() => {
-        const testScene = new ScriptItemUpdate('Scene', 'New Scene Title')
-        const testSynopsis = new ScriptItemUpdate(Synopsis, 'A test scene to check that the system is working')
-        const testStaging = new ScriptItemUpdate(Staging, 'Curtains open and two chairs set opposite each other on a table')
-        const testDialogue1 = new ScriptItemUpdate(Dialogue, 'Hello World')
-        const testDialogue2 = new ScriptItemUpdate(Dialogue, 'Hello World Again')
+         const testScene = new ScriptItemUpdate('Scene', 'New Scene Title')
+         const testSynopsis = new ScriptItemUpdate(Synopsis, 'A test scene to check that the system is working')
+         const testStaging = new ScriptItemUpdate(Staging, 'Curtains open and two chairs set opposite each other on a table')
+         const testDialogue1 = new ScriptItemUpdate(Dialogue, 'Hello World')
+         const testDialogue2 = new ScriptItemUpdate(Dialogue, 'Hello World Again')
 
-        testScene.nextId = testSynopsis.id
-        testSynopsis.nextId = testStaging.id
-        testStaging.nextId = testDialogue1.id
-        testDialogue1.nextId = testDialogue2.id
+         testScene.nextId = testSynopsis.id
+         testSynopsis.nextId = testStaging.id
+         testStaging.nextId = testDialogue1.id
+         testDialogue1.nextId = testDialogue2.id
 
-        testScene.parentId = testScene.id
-        testSynopsis.parentId = testScene.id
-        testStaging.parentId = testScene.id
-        testDialogue1.parentId = testScene.id
-        testDialogue2.parentId = testScene.id
-        debug && console.log('testScene from Script.js')
-        debug && console.log(testScene)
+         testScene.parentId = testScene.id
+         testSynopsis.parentId = testScene.id
+         testStaging.parentId = testScene.id
+         testDialogue1.parentId = testScene.id
+         testDialogue2.parentId = testScene.id
+         debug && console.log('testScene from Script.js')
+         debug && console.log(testScene)
 
-        const preparedUpdates = prepareUpdates([testScene, testSynopsis, testStaging, testDialogue1, testDialogue2])
+         const preparedUpdates = prepareUpdates([testScene, testSynopsis, testStaging, testDialogue1, testDialogue2])
 
-        debug && console.log('Prepared Updates from Script.js')
-        debug && console.log(preparedUpdates)
+         debug && console.log('Prepared Updates from Script.js')
+         debug && console.log(preparedUpdates)
+
 
 
         dispatch(addUpdates(preparedUpdates, ScriptItem))
 
-    }, [])
+     }, [])
 
-    useEffect(() => {
-        setScenes(storedScenes) //eventually move this to useSortedLatestSCriptItems
-    }, [storedScenes]
-
-    )
-   
+ 
+     console.log(storedScenes)
 
     return (
         <>
-            {(scenes.length>0) && scenes.map(scene => (
-                <Scene key={scene.id} sceneId={scene.id} />
+            {(storedScenes && storedScenes.length > 0) && storedScenes.map(scene => (
+              <Scene key={scene.id} sceneId={scene.id} />
             )
 
             )}
 
         </>
-       
 
-        
+
+
     )
 
 
