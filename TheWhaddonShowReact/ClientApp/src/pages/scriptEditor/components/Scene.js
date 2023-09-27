@@ -22,10 +22,10 @@ function Scene(props) {
 
     //Get stored scriptItems from Redux Store
     const getScriptItems = (state) => state.localServer.scriptItems.history
-
+    const refreshStore = () => Math.random();
     const storedScriptItemsSelector = createSelector(
-        [getScriptItems],
-        (item) => item.filter((item) => (item.parentId === sceneId || item.id === sceneId)))
+        [getScriptItems,refreshStore],
+        (item,_) => item.filter((item) => (item.parentId === sceneId || item.id === sceneId)))
 
     const storedScriptItems = storedScriptItemsSelector(store.getState())
 
@@ -153,6 +153,13 @@ function Scene(props) {
 
     }
 
+    const handlePartEditorChange = () => {
+
+        //Part Editor updates partIds against ehe scene SCript Item within the component itself.
+        //This fucntion forces a refresh of the data from the REdux Story
+        refreshStore();
+
+    }
 
 
 
@@ -168,13 +175,13 @@ function Scene(props) {
                 <h1>{sceneHeader.title}</h1>
                 <h2>{sceneHeader.synopsis}</h2>
                 <h3>{sceneHeader.staging}</h3>
-                <PartEditor partIds={sceneHeader.partIds} />
+                <PartEditor partIds={sceneHeader.partIds} onChange={() => handlePartEditorChange()} />
             </div>
 
             <div className="scene-body">
                 {bodyScriptItems.map((scriptItem) => {
                     return (
-                       <ScriptItem key={scriptItem.id} scriptItem={scriptItem} />
+                        <ScriptItem key={scriptItem.id} scriptItem={scriptItem} parts={sceneHeader.partIds} />
                     )
                 })
                 }

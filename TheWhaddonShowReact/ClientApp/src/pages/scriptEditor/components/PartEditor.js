@@ -15,12 +15,12 @@ import { store } from 'index.js';
 function PartEditor(props) {
 
 
-    const debug = true;
+    const debug = false;
 
     debug && console.log('PartEditorProps')
     debug && console.log(props)
 
-    const { partIds = [] } = props;
+    const { partIds = [], onChange} = props;
 
     const dispatch = useDispatch();
 
@@ -160,6 +160,9 @@ function PartEditor(props) {
 
         dispatch(addUpdates(preparedUpdates, 'Part'))
 
+        //triggers the onChange event in the parent component
+        onChange();
+
     }
 
     const handleCancel = () => {
@@ -266,7 +269,6 @@ function PartEditor(props) {
                                     {(part.new) ?
                                         <Input type="text" key={part.id} placeholder="enter name" value={part.name || ''} onKeyPress={(e)=>handleKeyPress(e)} onChange={(e) => handleNameChange(e, part.id)} ref={newInputRef} />
                                         : <Input type="text" key={part.id} placeholder="enter name" value={part.name || ''} onKeyPress={(e)=>handleKeyPress(e)} onChange={(e) => handleNameChange(e, part.id)} />
-
                                     }
 
 

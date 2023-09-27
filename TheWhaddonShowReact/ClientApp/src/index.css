@@ -40,11 +40,13 @@ margin: 2px;
 }
 
 
-/*AvatarModule*/
+/*Avatar Component*/
 .avatar-image-upload {
     display: none;
 }
 
+
+/*PersonSelector Component*/
 .select-person-section {
     display: flex;
     flex-wrap: wrap;
@@ -58,3 +60,33 @@ margin: 2px;
     cursor: pointer;
 
 }
+
+/*Dialogue Component*/
+
+.dialogue-container {
+    position: relative;
+    width: 100%;
+    margin: 10px 0;
+}
+
+/* Style the chat input box */
+.dialogue-input {
+    border: 1px solid #ccc;
+    border-radius: 0px 20px 20px 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    width: 100%;
+    background-color: #f0f0f0;
+}
+/*
+
+.dialogue-triangle {
+    position: absolute;
+    top: 0;
+    left: -10px;
+    width: 10px;
+    height: 10px;
+    border-top: 1px solid #f0f0f0;
+    border-right: 10px solid #f0f0f0;
+    border-bottom: 10px solid transparent;
+}*/

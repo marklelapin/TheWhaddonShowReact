@@ -10,7 +10,7 @@ import {uploads_avatars} from 'dataAccess/uploadLocations';
 
 export function Avatar(props) {
 
-    const { person, onClick, onChange = null, avatarInitials = null } = props
+    const { person, onClick, onChange = null, avatarInitials = null, linkId = null } = props
 
     const {firstName=null,email=null,pictureRef = null }=person;
 
@@ -76,7 +76,7 @@ export function Avatar(props) {
             <span className={`${s.avatar} rounded-circle float-start me-3 avatar`} onClick={(onClick) ? onClick : handleImageClick}>
                 {
                     avatarImage() ?
-                        <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(onClick) ? onClick : handleImageClick} />
+                        <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(onClick) ? () => onClick(linkId) : handleImageClick} />
                         :
                         < span title={avatarTitle} > {avatarText} </span>
                 }
