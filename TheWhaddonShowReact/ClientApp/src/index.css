@@ -44,3 +44,17 @@ margin: 2px;
 .avatar-image-upload {
     display: none;
 }
+
+.select-person-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+
+}
+
+.person-button {
+    margin: 5px;
+    cursor: pointer;
+
+}

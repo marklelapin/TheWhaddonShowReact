@@ -157,7 +157,8 @@ function Scene(props) {
 
 
     //---------------------------------
-
+    console.log('SceneHeader.partIds from Scene.js')
+    console.log(sceneHeader.partIds)
 
     return (
         (sceneHeader) &&

@@ -254,7 +254,8 @@ const finishSync = (error, type, dispatch) => {
 }
 
 
-export function getLatest(history, undoDateTime = null,includeInActive = false) {
+
+export function getLatest(history, undoDateTime = null,includeInActive = false,includeSamples = false) {
     
     if (history === undefined) {
         throw new Error("getLatest passed undefined history property")
@@ -266,8 +267,9 @@ export function getLatest(history, undoDateTime = null,includeInActive = false) 
 
     const activeHistory = unDoneHistory.filter((update) => update.isActive === true || includeInActive === true)
 
+    const sampleHistory = activeHistory.filter((update) => update.isSample === false || includeSamples === true)
 
-    const latestUpdates = activeHistory.reduce((acc, update) => {
+    const latestUpdates = sampleHistory.reduce((acc, update) => {
         if (!acc[update.id] || update.created > acc[update.id].created) {
             acc[update.id] = update;
         }
