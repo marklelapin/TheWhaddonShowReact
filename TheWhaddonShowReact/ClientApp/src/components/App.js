@@ -7,7 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import { ConnectedRouter } from 'connected-react-router';
 import { getHistory } from 'index';
 import { AdminRoute, UserRoute, AuthRoute } from './RouteComponents';
-
+import LocalServerSyncing from 'dataAccess/LocalServerSyncing';
 /* eslint-disable */
 import ErrorPage from 'pages/error';
 /* eslint-enable */
@@ -20,14 +20,12 @@ import Register from 'pages/auth/register';
 import Reset from 'pages/auth/reset';
 import Forgot from 'pages/auth/forgot';
 
-import { useSync } from 'dataAccess/localServerUtils';
-import { sync } from 'actions/localServer';
-import { Person, ScriptItem, Part } from 'dataAccess/localServerModels';
 
 import {
     QueryClient,
     QueryClientProvider
 } from '@tanstack/react-query'
+
 
 
 
@@ -41,42 +39,15 @@ function App() {
 const currentUser = useSelector((state) => state.auth.currentUser)
     const loadingInit = useSelector((state) => state.auth.loadingInit)
 
-    const isPersonSyncing = useSelector((state)=>state.localServer.persons.sync.isSyncing)
-
-const dispatch = useDispatch();
-
-    useSync();
-
-    useEffect(() => {
-        syncWithServer()
-
-        const intervalId = setInterval(syncWithServer,1000 * 10) //every minute
-
-        return () => {
-            clearInterval(intervalId)
-        }
-
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-
-    const syncWithServer = () => {
-
-        dispatch(sync(Person))
-        //dispatch(sync(ScriptItem))
-        //dispatch(sync(Part))
-    }
-
-
-
-
-
-
+    const dispatch = useDispatch();
+  
     if (loadingInit) { //this.props.loadingInit this.props.dispatch in {} below
         return <div />;
     }
 
     return (
-
+        <>
+        <LocalServerSyncing/>
         <QueryClientProvider client={queryClient}>
             <ToastContainer
                 autoClose={5000}
@@ -109,6 +80,11 @@ const dispatch = useDispatch();
                 </HashRouter>
             </ConnectedRouter>
         </QueryClientProvider>
+        
+        
+        </>
+
+        
 
     );
 

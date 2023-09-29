@@ -158,10 +158,13 @@ function PartEditor(props) {
 
         const preparedUpdates = prepareUpdates(changesMade)
 
+        //update parts
         dispatch(addUpdates(preparedUpdates, 'Part'))
 
-        //triggers the onChange event in the parent component
-        onChange();
+        //updates scene by sending back data
+
+        const newScenePartIds = activeSceneParts().map(item=>item.id)
+        onChange(newScenePartIds);
 
     }
 

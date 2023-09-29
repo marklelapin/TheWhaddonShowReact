@@ -11,7 +11,7 @@ import s from 'pages/forms/elements/Elements.module.scss';
 function Dialogue(props) {
 
 
-    const { onChange, scriptItem, parts = [] } = props;
+    const { onChange, scriptItem, parts = [], onKeyDown } = props;
 
     const { id, text, partIds = [] } = scriptItem;
 
@@ -133,9 +133,10 @@ function Dialogue(props) {
             <TextareaAutosize
                 key={id}
                 placeholder="..."
-                className={`form-control ${s.autogrow} transition-height dialogue-input`}
+                className={`form-control ${s.autogrow} transition-height dialogue-input text-input`}
                 value={text}
                 onChange={(event) => onChange('text', event.target.value)}
+                onKeyDown={onKeyDown}
             />
         </div>
 

@@ -8,7 +8,7 @@
     UPDATE_CONNECTION_STATUS,
     SYNC,
     END_SYNC,
-CLOSE_POSTBACK
+    CLOSE_POSTBACK
 } from 'actions/localServer';
 
 import {
@@ -27,6 +27,7 @@ const defaultState = {
         error: null,
         lastSyncDate: null
     },
+    refresh: {},
     //**LSMTypeInCode**
     persons: new LocalServerModel(Person), //object holding all information with regard to persons
     scriptItems: new LocalServerModel(ScriptItem), //object holding all information with regard to scriptItems
@@ -73,9 +74,9 @@ export default function localServerReducer(state = defaultState, action) {
                 let searchArray = null;
                 switch (action.payloadType) {
                     //**LSMTypeInCode**
-                    case Person: searchArray = state.persons.history; break
-                    case ScriptItem: searchArray = state.scriptItems.history; break
-                    case Part: searchArray = state.parts.history; break
+                    case Person: searchArray = [...state.persons.history]; break
+                    case ScriptItem: searchArray = [...state.scriptItems.history]; break
+                    case Part: searchArray = [...state.parts.history]; break
                     default: return state;
                 }
 
@@ -103,11 +104,11 @@ export default function localServerReducer(state = defaultState, action) {
 
             //Get the correct array of data to update
             let data = null;
-            switch (action.payloadType) {   
+            switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: data = state.persons.history; break
-                case ScriptItem: data = state.scriptItems.history; break
-                case Part: data = state.parts.history; break
+                case Person: data = [...state.persons.history]; break
+                case ScriptItem: data = [...state.scriptItems.history]; break
+                case Part: data = [...state.parts.history]; break
                 default: return state;
             }
 
@@ -133,13 +134,15 @@ export default function localServerReducer(state = defaultState, action) {
 
         case ADD_UPDATES:
 
+            if (action.payload.length === 0) { return state }
+
             let history = [];
             //pick correct data set to process
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: history = state.persons.history; break
-                case ScriptItem: history = state.scriptItems.history; break
-                case Part: history = state.parts.history; break
+                case Person: history = [...state.persons.history]; break
+                case ScriptItem: history = [...state.scriptItems.history]; break
+                case Part: history = [...state.parts.history]; break
                 default: return state
             };
 
@@ -147,14 +150,31 @@ export default function localServerReducer(state = defaultState, action) {
 
             const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => existingUpdate.id === update.id && existingUpdate.created === update.created))
 
+
+            console.log('adding updates via ADD_UPDATE in localserver reducer')
             //update correct data set to update
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] } };
-                case Part: return { ...state, parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] } };
+                case Person: return {
+                    ...state,
+                    persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
+                    refresh: { ids: updatesToAdd.map(update => update.id), type: action.payloadType }
+                };
+                case ScriptItem: return {
+                    ...state,
+                    scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
+                    refresh: { ids: updatesToAdd.map(update => update.id), type: action.payloadType }
+                };
+                case Part: return {
+                    ...state,
+                    parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
+                    refresh: { ids: updatesToAdd.map(update => update.id), type: action.payloadType }
+                };
                 default: return state
             };
+
+
+
 
 
         case CLEAR_CONFLICTS: //TODO Complete Clear Conflicts
@@ -163,9 +183,9 @@ export default function localServerReducer(state = defaultState, action) {
             let searchArray = [];
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: searchArray = state.persons.history; break
-                case ScriptItem: searchArray = state.scriptItems.history; break
-                case Part: searchArray = state.parts.history; break
+                case Person: searchArray = [...state.persons.history]; break
+                case ScriptItem: searchArray = [...state.scriptItems.history]; break
+                case Part: searchArray = [...state.parts.history]; break
                 default: searchArray = [];
             }
 
@@ -207,7 +227,7 @@ export default function localServerReducer(state = defaultState, action) {
             let lastSyncDate = null
             const error = action.payload
             debug && console.log('setting lastSyncDate')
-            if (error === null) { lastSyncDate = new Date() } 
+            if (error === null) { lastSyncDate = new Date() }
 
             switch (action.payloadType) {
 
@@ -218,12 +238,12 @@ export default function localServerReducer(state = defaultState, action) {
 
 
                     return {
-                    ...state, persons: {
-                        ...state.persons, sync: {
-                            ...state.persons.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.persons.sync.lastSyncDate
+                        ...state, persons: {
+                            ...state.persons, sync: {
+                                ...state.persons.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.persons.sync.lastSyncDate
+                            }
                         }
-                    }
-                };
+                    };
                 case ScriptItem: return {
                     ...state, scriptItems: {
                         ...state.scriptItems, sync: {

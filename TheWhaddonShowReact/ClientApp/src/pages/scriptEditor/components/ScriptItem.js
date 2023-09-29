@@ -1,15 +1,15 @@
 ﻿import React from 'react';
-import {useState, useEffect} from 'react'; 
-import { useSelector, useDispatch } from 'react-redux'; 
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Dialogue from './Dialogue';
 
 function ScriptItem(props) {
 
     const dispatch = useDispatch()
 
-    const { scriptItem: storedScriptItem , onChange, alignRight = false, parts } = props;
+    const { scriptItem: storedScriptItem, onChange, alignRight = false, parts, onKeyDown } = props;
 
-    const { id, type } = storedScriptItem; 
+    const { id, type } = storedScriptItem;
 
 
     const [scriptItem, setScriptItem] = useState({})
@@ -17,7 +17,7 @@ function ScriptItem(props) {
 
     useEffect(() => {
         setScriptItem(storedScriptItem)
-    },[])
+    }, [])
 
     const handleDialogueChange = (type, value) => {
         switch (type) {
@@ -30,21 +30,23 @@ function ScriptItem(props) {
         }
     }
 
-
-    if (type === "Dialogue") {
-        return (
-            <Dialogue key={id} scriptItem={scriptItem} onChange={handleDialogueChange} alignRight={alignRight} parts={parts} />
-        )
-    }
-
     return (
-        <>
-            <h5>{type}:</h5><h6>{scriptItem.text}</h6>
+        <div id={id} className="script-item">
 
-        </>
+            {(type === "Dialogue") ? <Dialogue key={id} scriptItem={scriptItem} onChange={handleDialogueChange} alignRight={alignRight} parts={parts} onKeyDown={onKeyDown} />
 
+
+                : (
+                    <>
+                        <h5>{type}:</h5><h6>{scriptItem.text}</h6>
+                    </>)
+            }
+
+
+        </div>
 
     )
+
 }
 
 export default ScriptItem;

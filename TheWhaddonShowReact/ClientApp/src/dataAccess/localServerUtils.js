@@ -24,7 +24,7 @@ import {
     endSync,
     closePostBack
 } from 'actions/localServer';
-
+import log from 'helper.js';
 
 
 export async function useSync() {
@@ -300,52 +300,75 @@ export function prepareUpdates(updates) {
         output = [updates]
     }
 
+
+
     output.forEach((update, index) => {
 
         output[index] = { ...update, created: new Date().toISOString().replace('Z', ''), updatedOnServer: null }
     })
 
+    output.forEach((update) => {
+
+        delete update.new
+        delete update.changed
+
+    })
 
     return output;
 
 
 }
 
-export function sortScriptItems(originalArray) {
 
 
-    if (originalArray.length === 0) return [];
-    const head = originalArray.filter((item) => item.parentId === item.id)[0];
 
-    if (head === undefined) {
-        throw new Error('No head found in sortScriptItems')
-    }
+export function sortScriptItems(head, scriptItems) {
 
+    const debug = false
+
+    log(debug, 'Sort Head: ', head)
+    log(debug, 'Sort SCriptItems', scriptItems)
+
+    if (scriptItems.length === 0) return [];
+
+    let targetArray = [...scriptItems];
+   
+
+    //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Act linked list but also the head of the Scene linked list.
+    const headNextId = targetArray.filter((item) => item.previousId === head.id)[0].id;
+    targetArray = targetArray.map(item=> item.id === head.id ? {...item, nextId: headNextId} : item)
+
+       
+    //create objectMap of all items in the targetArray
     const idToObjectMap = {};
 
-    for (const item of originalArray) {
+    for (const item of targetArray) {
         idToObjectMap[item.id] = item;
     }
 
+    //Sort the targetArray by nextId
     const sortedLinkedList = [];
-
     let currentId = head.id
-
 
     while (currentId !== null) {
         const currentItem = idToObjectMap[currentId];
-        sortedLinkedList.push(currentItem);
-        currentId = currentItem.nextId;
+        if (currentItem) {
+            sortedLinkedList.push(currentItem);
+            currentId = currentItem.nextId;
+        } else {
+            currentId = null;
+        }
+        
     }
 
 
     return sortedLinkedList;
 }
 
-export function sortLatestScriptItems(scriptItems, undoDateTime) {
+export function sortLatestScriptItems(head, scriptItems, undoDateTime) {
 
     const latestScriptItems = getLatest(scriptItems, undoDateTime);
-    const sortedScriptItems = sortScriptItems(latestScriptItems);
+    const sortedScriptItems = sortScriptItems(head,latestScriptItems);
 
     return sortedScriptItems;
 
