@@ -92,10 +92,10 @@ function Script() {
                 {(storedScenes && storedScenes.length > 0) && storedScenes.map(scene => {
 
                     if (scene.type === 'Show') {
-                        return <h1>{scene.text}</h1>
+                        return <h1 key={scene.id}>{scene.text}</h1>
                     }
                     else if (scene.type === 'Act') {
-                        return <h2>{scene.text}</h2>
+                        return <h2 key={scene.id} >{scene.text}</h2>
                     }
                     else {
                         return <Scene key={scene.id} scene={scene} />

@@ -7,21 +7,26 @@ import { getLatest, prepareUpdates, useSortLatestScriptItems, sortLatestScriptIt
 import { addUpdates } from 'actions/localServer';
 import ScriptItem from 'pages/scriptEditor/components/ScriptItem.js';
 import PartEditor from 'pages/scriptEditor/components/PartEditor.js';
-import { ScriptItemUpdate } from 'dataAccess/localServerModels';
+
 import s from 'pages/forms/elements/Elements.module.scss';
 import { Input } from 'reactstrap';
 import TextareaAutosize from 'react-autosize-textarea';
 import BlurAndFocusListener from './BlurAndFocusListener';
+
+import { newScriptItemsForDelete, newScriptItemsForCreate } from '../scripts/crudScripts';
+import { findScriptItem, moveFocusToId } from '../scripts/utilityScripts';
+import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
 import log from 'helper'
 function Scene(props) {
 
     //utility constants
-    const debug = false;
+    const debug = true;
     const _ = require('lodash');
     const dispatch = useDispatch()
     const above = 'above'
-const below = 'below'
-
+    const below = 'below'
+    const up = 'up'
+    const down = 'down'
 
     //props
     const { scene } = props;
@@ -62,11 +67,10 @@ const below = 'below'
     //--------------------------------------------------------------------------------------------------------
 
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
-    const [currentScriptItems, setCurrentScriptItems] = useState([]); //the current scriptItem being worked that hasn't yet been added to store.
     const [scriptItems, setScriptItems] = useState([]); //
     const [reachedEndScriptItem, setReachedEndScriptItem] = useState(null); //if reached the end of the script]
     const [revertToStore, setRevertToStore] = useState(null); //if reached the end of the script]
-
+    const [focusAfterScriptItemChange, setFocusAfterScriptItemChange] = useState({}); //the id to focus on after script items have changed
 
     useEffect(() => {
         const scriptItemsUpdate = sortLatestScriptItems(scene, [...storedScriptItems], undoDateTime)
@@ -81,7 +85,9 @@ const below = 'below'
     }, [storedScriptItems, undoDateTime, revertToStore])
 
 
-
+    useEffect(() => {
+        moveFocusToId(focusAfterScriptItemChange.id, focusAfterScriptItemChange.direction)
+    }, [scriptItems])
 
     useEffect(() => {
 
@@ -108,101 +114,67 @@ const below = 'below'
 
 
 
-    const createNewScriptItem = (placement, existingScriptItem, type = 'Dialogue') => {
-
-        let scriptItemsUpdate = [...scriptItems]
-
-        if (!existingScriptItem) throw new Error ('ExistingScriptItem missing from createNewScriptItem. A new scriptItem must be created relative to an existing scriptItem.')
-
-        let previousScriptItemUpdate = scriptItemsUpdate.find(item => item.id === existingScriptItem.previousId)
-
-        let nextScriptItemUpdate = scriptItemsUpdate.find(item => item.id === existingScriptItem.nextId)
-
-        let existingScriptItemUpdate = existingScriptItem
-
-        let newScriptItem = new ScriptItemUpdate(type)
-        newScriptItem.new = true
-
-        if (placement === above) {
-
-            newScriptItem.previousId = previousScriptItemUpdate.id
-            newScriptItem.nextId = existingScriptItemUpdate.id
-
-            previousScriptItemUpdate.nextId = newScriptItem.id
-
-            existingScriptItemUpdate.previousId = newScriptItem.id
-
-            previousScriptItemUpdate.changed = true
-            existingScriptItemUpdate.changed = true
-        }
-
-        if (placement === below) {
-
-            newScriptItem.previousId = existingScriptItemUpdate.id
-            newScriptItem.nextId = nextScriptItemUpdate.id
-
-            existingScriptItemUpdate.nextId = newScriptItem.id
-
-            nextScriptItemUpdate.previousId = newScriptItem.id
-
-            existingScriptItemUpdate.changed = true
-            nextScriptItemUpdate.changed = true
-
-        }
 
 
-        scriptItemsUpdate = scriptItemsUpdate.map(item => {
-            if (item.id === previousScriptItemUpdate.id) return previousScriptItemUpdate
-            if (item.id === existingScriptItemUpdate.id) return existingScriptItemUpdate
-            if (item.id === nextScriptItemUpdate.id) return nextScriptItemUpdate
-            if (item.id === newScriptItem.id) return newScriptItem
-            else return item
+
+
+
+    //CRUD OPERATIONS 
+    //-------------------------------------------------------------------------------------------------
+
+    const createScriptItem = (placement, existingScriptItem, scriptItems, type = 'Dialogue') => {
+
+        const { newScriptItem, newScriptItems } = newScriptItemsForCreate(placement, existingScriptItem, scriptItems, type)
+
+        log(debug, 'createScriptItem', newScriptItem)
+        log(debug, 'newScriptItems', newScriptItems)
+
+
+        setFocusAfterScriptItemChange({
+            id: newScriptItem.id,
+            direction: (placement === above) ? up : down
         })
 
-        setScriptItems(scriptItemsUpdate)
+        const sortedScriptItems = sortLatestScriptItems(scene, newScriptItems, undoDateTime)
+        setScriptItems(sortedScriptItems)
 
         return newScriptItem
 
     }
 
+    const deleteScriptItem = (scriptItemToDelete, scriptItems) => {
 
 
-    const deleteScriptItem = (scriptItem) => {
+        
 
-        let scriptItemUpdate = {...scriptItem}
+        const newScriptItems = newScriptItemsForDelete(scriptItemToDelete, scriptItems)
+        const sortedScriptItems = sortLatestScriptItems(scene, newScriptItems, undoDateTime)
 
-        let scriptItemsUpdate = [...scriptItems]
-
-        let previousScriptItemUpdate = scriptItemsUpdate.find(item => item.id === scriptItem.previousId)
-        let nextScriptItemUpdate = scriptItemsUpdate.find(item => item.id === scriptItem.nextId)
-
-        if (previousScriptItemUpdate) {
-            previousScriptItemUpdate.nextId = nextScriptItemUpdate.id
-            previousScriptItemUpdate.changed = true
-        }
-
-        if (nextScriptItemUpdate) {
-            nextScriptItemUpdate.previousId = previousScriptItemUpdate.id
-            nextScriptItemUpdate.changed = true
-        }
-
-        scriptItemUpdate.isActive = false
-
-
-        scriptItemsUpdate = scriptItemsUpdate.map(item => {
-            if (item.id === previousScriptItemUpdate.id) return previousScriptItemUpdate
-            if (item.id === nextScriptItemUpdate.id) return nextScriptItemUpdate
-            if (item.id === scriptItemUpdate.id) return scriptItemUpdate
-            else return item
+        setFocusAfterScriptItemChange({
+            id: scriptItemToDelete.nextId || scriptItemToDelete.previousId,
+            direction: (scriptItemToDelete.nextId) ? down : up
         })
 
-        setScriptItems(scriptItemsUpdate)
+        setScriptItems(sortedScriptItems)
 
     }
 
+    const updateIfChanged = () => {
+        log(debug, 'updating in Scene.js')
 
+        let scriptItemsToUpdate = []
 
+        //use previous state in setState to ensure latest version of the scriptItems is used
+        setScriptItems((prevStoredScriptItems) => {
+            scriptItemsToUpdate = [...prevStoredScriptItems].filter(item => item.changed)
+            return prevStoredScriptItems
+        })
 
+        const preparedUpdates = prepareUpdates(scriptItemsToUpdate)
+
+        dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
+
+    }
 
 
 
@@ -214,31 +186,18 @@ const below = 'below'
 
     const handleUndo = () => {
 
-        const undoDate = undoDateTime || new Date();
+        const nextUndoDate = getNextUndoDate([...storedScriptItems, ...scriptItems], undoDateTime)
 
-        const dateArray = [...storedScriptItems, ...currentScriptItems].filter(item => item.created < undoDate).map(item => item.created)
-
-        let latestDateBeforeUndo = dateArray[0]
-
-        for (const date of dateArray) {
-            if (date > latestDateBeforeUndo)
-                latestDateBeforeUndo = date;
-        }
-
-        setUndoDateTime(latestDateBeforeUndo)
+        setUndoDateTime(nextUndoDate)
 
     }
 
     const handleRedo = () => {
 
-        const dateArray = [...storedScriptItems, ...currentScriptItems].filter(item => item.created > undoDateTime).map(item => item.created)
-        let earliestDateAfterRedo = dateArray[0]
+        const nextUndoDate = getNextRedoDate([...storedScriptItems, ...scriptItems], undoDateTime)
 
-        for (const date of dateArray) {
-            if (date < earliestDateAfterRedo)
-                earliestDateAfterRedo = date;
-        }
-        setUndoDateTime(earliestDateAfterRedo)
+        setUndoDateTime(nextUndoDate)
+
     }
 
 
@@ -264,8 +223,6 @@ const below = 'below'
 
 
 
-
-
     const handleKeyDown = (e, scriptItem) => {
 
         const up = 'up'
@@ -276,31 +233,15 @@ const below = 'below'
             const newId = overrideId || (direction === down) ? scriptItem.nextId : scriptItem.previousId
 
             if (newId) {
-                const newScriptItemElement = document.getElementById(newId)
-                if (newScriptItemElement) {
-                    const newScriptItemTextInput = newScriptItemElement.querySelector('.text-input') || newScriptItemElement
 
-                    if (newScriptItemTextInput) {
-
-                        newScriptItemTextInput.focus();
-
-                        if (direction === down) {
-                            newScriptItemTextInput.selectionStart = 0
-                            newScriptItemTextInput.selectionEnd = 0
-                        } else {
-                            newScriptItemTextInput.selectionStart = newScriptItemTextInput.value.length
-                        }
-
-                    } else { moveFocusError(direction, scriptItem.id, newId) }
-
-                } else { console.log('Cant find previous element') } //TODO extend this when more scenes available 
+                moveFocusToId(newId, direction)
 
             } else {
                 if (direction === up) {
                     //do nothing as reached the top of the script
                 } else {
                     //reached the bottom of the script
-                    log(true,'reached the bottom of the script')
+                    log(true, 'reached the bottom of the script')
                     setReachedEndScriptItem(scriptItem)
                     e.target.blur()
 
@@ -309,55 +250,76 @@ const below = 'below'
 
         }
 
-        const moveFocusError = (direction, id) => {
-            throw new Error(`Cant locate the ${direction} scriptItem: ${id}`)
-        }
 
-
-        if (reachedEndScriptItem) {
-
-            moveFocus(up, reachedEndScriptItem.id)
-            setReachedEndScriptItem(null)
+        if (e.key === 'ArrowDown' && scriptItem.nextId === null) {
+            updateIfChanged()
             return
         }
 
 
-
         if (e.shiftKey) { //create new chat bubble
 
+            let latestScriptItems = []
+
+            setScriptItems((prevScriptItems) => {
+                latestScriptItems = [...prevScriptItems]
+                return prevScriptItems
+            })
+
+
             if (e.key === 'ArrowUp') {
-                createNewScriptItem(up)
-                //move focus
+                e.preventDefault()
+                const newScriptItem = createScriptItem(above, scriptItem, latestScriptItems)
+                return
             }
 
             if (e.keyCode === 13 || e.key === 'ArrowDown') {
-                //create new scriptItemBelow
-                //move focus
-            }
-
-        } else if (e.ctrlKey) { //go to next chat bubble
-
-            if (e.key === 'ArrowUp') {
                 e.preventDefault()
-                log(debug, 'handleKeyPress - ctrl + arrowUp')
-                moveFocus(up)
+                const newScriptItem = createScriptItem(below, scriptItem, latestScriptItems)
+                return
             }
-            if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === '/n') {
-                e.preventDefault()
-                moveFocus(down)
-            }
-        } else if (e.key === 'Enter' && e.target.tagName.toLowerCase() !== 'textarea') {
+        }
+
+        if (e.key === 'Enter' && e.target.tagName.toLowerCase() !== 'textarea') {
             e.preventDefault()
             moveFocus(down)
-        } else if (e.key === 'ArrowUp' && e.target.selectionEnd === 0) {
-            moveFocus(up)
-        } else if (e.key === 'ArrowDown' && e.target.selectionStart === e.target.value.length) {
-            moveFocus(down)
-        } else if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length) {
-            moveFocus(down)
-        } else if (e.key === 'ArrowLeft' && e.target.selectionEnd === 0) {
-            moveFocus(up)
+            return
         }
+        if (e.key === 'ArrowUp' && e.target.selectionEnd === 0) {
+            e.preventDefault()
+            moveFocus(up)
+            return
+        }
+        if (e.key === 'ArrowDown' && e.target.selectionStart === e.target.value.length) {
+            e.preventDefault()
+            moveFocus(down)
+            return
+        }
+        if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length) {
+            e.preventDefault()
+            moveFocus(down)
+            return
+        }
+        if (e.key === 'ArrowLeft' && e.target.selectionEnd === 0) {
+            e.preventDefault()
+            moveFocus(up)
+            return
+        }
+
+
+        if (e.key === 'Backspace') {
+
+            if (!scriptItem.text || scriptItem.text === null) {
+                deleteScriptItem(scriptItem, scriptItems)
+               return
+            }
+
+            if (e.target.selectionEnd === 0) {
+                moveFocus(up)
+                return
+            }
+        }
+
     }
 
     const handleFocus = (e) => {
@@ -368,7 +330,7 @@ const below = 'below'
     const handleBlur = (e) => {
         log(debug, 'handleBlur')
 
-        const scriptItem = findScriptItem(e.target)
+        const scriptItem = findScriptItem(e.target, scriptItems)
 
         if (scriptItem) {
             log(debug, 'Sending update from blur:', scriptItem)
@@ -378,81 +340,6 @@ const below = 'below'
     }
 
 
-
-    const findScriptItem = (element) => {
-
-        let currentElement = element;
-        let scriptItemId = null;
-        let scriptItem = null;
-
-        //Search for scriptItem element and get its Id.
-        while (currentElement && scriptItemId === null) {
-
-            if (currentElement.classList.contains('script-item')) {
-
-                scriptItemId = currentElement.id;
-            }
-            currentElement = currentElement.parentElement;
-        }
-
-        if (scriptItemId) {
-            //using prevState in setState to ensure latest version of the scriptItems is used
-            setScriptItems((prevScriptItems) => {
-
-                (scriptItemId) ? scriptItem = prevScriptItems.find((item) => item.id === scriptItemId) : scriptItem = null;
-
-                return prevScriptItems;
-            })
-
-            return scriptItem;
-
-        } else {
-
-            throw new Error('Couldnt locate scriptItem from element.')
-        }
-
-    }
-
-    
-
-    const updateIfChanged = () => {
-        log(debug, 'updating in Scene.js')
-
-        let scriptItemsToUpdate = []
-
-        //use previous state in setState to ensure latest version of the scriptItems is used
-            setScriptItems((prevStoredScriptItems) => {
-                scriptItemsToUpdate = [...prevStoredScriptItems].filter(item=>item.new || item.changed)
-                return prevStoredScriptItems
-            })
-
-        const newScriptItem = scriptItemsToUpdate.find(item => item.new)
-
-        //special case for new scriptItem that hasnt been changed to avoid creation of lots of empty created scriptItems
-        if (newScriptItem && !newScriptItem.changed) {
-
-            setRevertToStore(Math.Random())
-            return
-
-        }
-        ///NEEDD TO THINK THROUGH THIS BIT - AM I GOING TO GET A LOOP IF DELETE SCRIPT ITEMS CHANGES SCRIPTITMES.
-
-
-        //delete the scriptItems if they contain no text.
-        scriptItemsToUpdate.forEach(item => {
-
-            if (item.text === '' || item.text === null) {
-
-                deleteScriptItem(item)
-            }
-
-        })
-
-        const preparedUpdates = prepareUpdates(scriptItemsToUpdate)
-
-        dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
-            
-    }
 
     const handleSceneHeaderChange = (type, id, value) => {
 

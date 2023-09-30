@@ -134,7 +134,7 @@ function Dialogue(props) {
                 key={id}
                 placeholder="..."
                 className={`form-control ${s.autogrow} transition-height dialogue-input text-input`}
-                value={text}
+                value={text || ''}
                 onChange={(event) => onChange('text', event.target.value)}
                 onKeyDown={onKeyDown}
             />
