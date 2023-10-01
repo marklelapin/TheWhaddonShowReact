@@ -16,11 +16,12 @@ import BlurAndFocusListener from './BlurAndFocusListener';
 import { newScriptItemsForDelete, newScriptItemsForCreate } from '../scripts/crudScripts';
 import { findScriptItem, moveFocusToId } from '../scripts/utilityScripts';
 import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
-import log from 'helper'
+import { log } from 'helper'
 function Scene(props) {
 
     //utility constants
-    const debug = true;
+    const debug = false;
+    const debugFocus = true;
     const _ = require('lodash');
     const dispatch = useDispatch()
     const above = 'above'
@@ -68,13 +69,19 @@ function Scene(props) {
 
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
     const [scriptItems, setScriptItems] = useState([]); //
-    const [reachedEndScriptItem, setReachedEndScriptItem] = useState(null); //if reached the end of the script]
-    const [revertToStore, setRevertToStore] = useState(null); //if reached the end of the script]
     const [focusAfterScriptItemChange, setFocusAfterScriptItemChange] = useState({}); //the id to focus on after script items have changed
 
     useEffect(() => {
+        log(debugFocus,'moveFocusToId',focusAfterScriptItemChange)
+        moveFocusToId(focusAfterScriptItemChange.id, focusAfterScriptItemChange.direction)
+    }, [scriptItems])
+
+
+    useEffect(() => {
+        log(debugFocus,'updateScriptItems')
         const scriptItemsUpdate = sortLatestScriptItems(scene, [...storedScriptItems], undoDateTime)
         setScriptItems(scriptItemsUpdate)
+
     }, [])
 
     useEffect(() => {
@@ -82,36 +89,7 @@ function Scene(props) {
         const scriptItemsUpdate = sortLatestScriptItems(scene, [...storedScriptItems], undoDateTime)
         setScriptItems(scriptItemsUpdate)
 
-    }, [storedScriptItems, undoDateTime, revertToStore])
-
-
-    useEffect(() => {
-        moveFocusToId(focusAfterScriptItemChange.id, focusAfterScriptItemChange.direction)
-    }, [scriptItems])
-
-    useEffect(() => {
-
-        const handleKeyDownAtEnd = (e) => {
-
-            handleKeyDown(e, reachedEndScriptItem)
-        }
-        log(true, 'useEffect - reachedEndScriptItem', reachedEndScriptItem)
-
-        if (reachedEndScriptItem !== null) {
-            document.addEventListener('keydown', handleKeyDownAtEnd)
-
-        } else {
-            document.removeEventListener('keydown', handleKeyDownAtEnd)
-        }
-
-        return () => {
-            document.removeEventListener('keydown', handleKeyDownAtEnd)
-        }
-    }, [reachedEndScriptItem])
-
-
-
-
+    }, [storedScriptItems, undoDateTime])
 
 
 
@@ -135,44 +113,36 @@ function Scene(props) {
             direction: (placement === above) ? up : down
         })
 
-        const sortedScriptItems = sortLatestScriptItems(scene, newScriptItems, undoDateTime)
-        setScriptItems(sortedScriptItems)
+        const preparedUpdates = prepareUpdates(newScriptItems)
 
-        return newScriptItem
+        dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
 
     }
 
     const deleteScriptItem = (scriptItemToDelete, scriptItems) => {
 
-
-        
-
         const newScriptItems = newScriptItemsForDelete(scriptItemToDelete, scriptItems)
-        const sortedScriptItems = sortLatestScriptItems(scene, newScriptItems, undoDateTime)
 
         setFocusAfterScriptItemChange({
             id: scriptItemToDelete.nextId || scriptItemToDelete.previousId,
             direction: (scriptItemToDelete.nextId) ? down : up
         })
 
-        setScriptItems(sortedScriptItems)
+        const preparedUpdates = prepareUpdates(newScriptItems)
+
+        dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
 
     }
 
-    const updateIfChanged = () => {
+    const updateIfChanged = (scriptItem) => {
         log(debug, 'updating in Scene.js')
 
-        let scriptItemsToUpdate = []
 
-        //use previous state in setState to ensure latest version of the scriptItems is used
-        setScriptItems((prevStoredScriptItems) => {
-            scriptItemsToUpdate = [...prevStoredScriptItems].filter(item => item.changed)
-            return prevStoredScriptItems
-        })
+        if (scriptItem.changed) {
+            const preparedUpdate = prepareUpdate(scriptItem)
+            dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
+        }
 
-        const preparedUpdates = prepareUpdates(scriptItemsToUpdate)
-
-        dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
 
     }
 
@@ -236,28 +206,19 @@ function Scene(props) {
 
                 moveFocusToId(newId, direction)
 
-            } else {
-                if (direction === up) {
-                    //do nothing as reached the top of the script
-                } else {
-                    //reached the bottom of the script
-                    log(true, 'reached the bottom of the script')
-                    setReachedEndScriptItem(scriptItem)
-                    e.target.blur()
-
-                }
             }
 
         }
 
 
         if (e.key === 'ArrowDown' && scriptItem.nextId === null) {
-            updateIfChanged()
+            updateIfChanged(scriptItem)
             return
         }
 
 
         if (e.shiftKey) { //create new chat bubble
+
 
             let latestScriptItems = []
 
@@ -269,13 +230,13 @@ function Scene(props) {
 
             if (e.key === 'ArrowUp') {
                 e.preventDefault()
-                const newScriptItem = createScriptItem(above, scriptItem, latestScriptItems)
+                createScriptItem(above, scriptItem, latestScriptItems)
                 return
             }
 
-            if (e.keyCode === 13 || e.key === 'ArrowDown') {
+            if (e.key === 'Enter' || e.key === 'ArrowDown') {
                 e.preventDefault()
-                const newScriptItem = createScriptItem(below, scriptItem, latestScriptItems)
+                createScriptItem(below, scriptItem, latestScriptItems)
                 return
             }
         }
@@ -307,11 +268,11 @@ function Scene(props) {
         }
 
 
-        if (e.key === 'Backspace') {
+       if (e.key === 'Backspace') {
 
-            if (!scriptItem.text || scriptItem.text === null) {
+            if (!scriptItem.text || scriptItem.text === null || scriptItem.text === '') {
                 deleteScriptItem(scriptItem, scriptItems)
-               return
+                return
             }
 
             if (e.target.selectionEnd === 0) {
@@ -322,26 +283,19 @@ function Scene(props) {
 
     }
 
-    const handleFocus = (e) => {
 
+    const handleBlur = (e, scriptItem = null) => {
 
-    }
-
-    const handleBlur = (e) => {
-        log(debug, 'handleBlur')
-
-        const scriptItem = findScriptItem(e.target, scriptItems)
+        /*const scriptItem = findScriptItem(e.target, scriptItems)*/  //May need to go back to global blur event listener if performance is an issue
 
         if (scriptItem) {
             log(debug, 'Sending update from blur:', scriptItem)
             updateIfChanged(scriptItem)
         }
-
     }
 
 
-
-    const handleSceneHeaderChange = (type, id, value) => {
+    const handleChange = (type, id, value) => {
 
         if (type === 'partIds') {
             let update = [...scriptItems].find(item => item.id === id)
@@ -351,7 +305,7 @@ function Scene(props) {
 
             dispatch(addUpdates(update)) //part Updates are confirmed in part editor so unlike other updates this automatically updates the store.
         }
-        if (type === 'Scene' || type === 'Synopsis' || type === 'Staging') {
+        if (type === 'text') {
             log(debug, 'handleSceneHeaderChange')
             let updateArray = [...scriptItems]
             updateArray = updateArray.map(item => {
@@ -362,10 +316,7 @@ function Scene(props) {
             //don't update whilst changing - update on loss of focus
         }
 
-
-
     }
-
 
 
     const currentScene = [...scriptItems].find(item => item.type === 'Scene') || {} //returns the synopsis scriptItem
@@ -374,15 +325,14 @@ function Scene(props) {
 
     const body = [...scriptItems].filter(item => item.type !== 'Scene' && item.type !== 'Synopsis' && item.type !== 'InitialStaging') || []//returns the body scriptItems
 
-    log(debug, 'scriptItems', scriptItems)
+    log(debugFocus, 'scriptItems', scriptItems)
     log(debug, 'storedSCriptItems', storedScriptItems)
+    log(debug, 'currentScene', currentScene)
 
     //---------------------------------
 
     return (
-
-        <BlurAndFocusListener onBlur={handleBlur} onFocus={handleFocus} >
-
+        <>
             <div className="scene-header">
                 {
                     (currentScene) &&
@@ -393,7 +343,8 @@ function Scene(props) {
                         key={currentScene.id}
                         placeholder="enter name"
                         value={currentScene.text || ''}
-                        onChange={(e) => handleSceneHeaderChange('Scene', currentScene.id, e.target.value)}
+                        onChange={(e) => handleChange('text', currentScene.id, e.target.value)}
+                        onBlur={() => handleBlur(currentScene)}
                         onKeyDown={(e) => handleKeyDown(e, currentScene)} />
 
                 }
@@ -404,7 +355,8 @@ function Scene(props) {
                         placeholder="..."
                         className={`form-control ${s.autogrow} transition-height scene-synopsis script-item text-input`}
                         value={synopsis.text || ''}
-                        onChange={(e) => handleSceneHeaderChange('Synopsis', synopsis.id, e.target.value)}
+                        onChange={(e) => handleChange('text', synopsis.id, e.target.value)}
+                        onBlur={() => handleBlur(currentScene)}
                         onKeyDown={(e) => handleKeyDown(e, synopsis)}
                     />
                 }
@@ -416,22 +368,25 @@ function Scene(props) {
                         placeholder="..."
                         className={`form-control ${s.autogrow} transition-height scene-staging script-item text-input`}
                         value={staging.text || ''}
-                        onChange={(e) => handleSceneHeaderChange('Staging', staging.id, e.target.value)}
+                        onChange={(e) => handleChange('text', staging.id, e.target.value)}
+                        onBlur={() => handleBlur(currentScene)}
                         onKeyDown={(e) => handleKeyDown(e, staging)}
                     />
                 }
-                <PartEditor partIds={scene.partIds} onChange={(partIds) => handleSceneHeaderChange('partIds', partIds)} />
+                <PartEditor partIds={scene.partIds} onChange={(partIds) => handleChange('partIds', scene.id, partIds)} />
             </div>
 
             <div className="scene-body">
                 {body.map((scriptItem) => {
                     return (
-                        <ScriptItem id={scriptItem.id} key={scriptItem.id} scriptItem={scriptItem} parts={currentScene.partIds} onKeyDown={(e) => handleKeyDown(e, scriptItem)} className="script-item" />
+                        <ScriptItem key={scriptItem.id} scriptItem={scriptItem} parts={currentScene.partIds} onKeyDown={handleKeyDown} />
                     )
                 })
                 }
             </div>
-        </BlurAndFocusListener>
+
+            {moveFocusToId(focusAfterScriptItemChange.id, focusAfterScriptItemChange.direction) }
+        </>
     )
 }
 

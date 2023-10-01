@@ -7,17 +7,22 @@ export const above = 'above'
 export const below = 'below'
 
 
-export function newScriptItemsForCreate(placement, existingScriptItem, scriptItems, type = 'Dialogue') {
+export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = 'Dialogue') {
 
-    let newScriptItems = [...scriptItems]
+    const currentScriptItems = [..._currentScriptItems] 
+    const existingScriptItem = { ..._existingScriptItem }
+
 
     if (!existingScriptItem) throw new Error('ExistingScriptItem missing from createNewScriptItem. A new scriptItem must be created relative to an existing scriptItem.')
 
-    let previousScriptItem = newScriptItems.find(item => item.id === existingScriptItem.previousId)
+    let previousScriptItem = currentScriptItems.find(item => item.id === existingScriptItem.previousId)
 
-    let nextScriptItem = newScriptItems.find(item => item.id === existingScriptItem.nextId)
+    let nextScriptItem = currentScriptItems.find(item => item.id === existingScriptItem.nextId)
 
     let newScriptItem = new ScriptItemUpdate(type)
+    newScriptItem.parentId = existingScriptItem.parentId
+
+    let newScriptItems = [];
 
     if (placement === above) {
 
@@ -31,6 +36,7 @@ export function newScriptItemsForCreate(placement, existingScriptItem, scriptIte
         existingScriptItem.previousId = newScriptItem.id
         existingScriptItem.changed = true
 
+        newScriptItems = [previousScriptItem, newScriptItem, existingScriptItem]
 
     }
 
@@ -48,17 +54,11 @@ export function newScriptItemsForCreate(placement, existingScriptItem, scriptIte
             nextScriptItem.changed = true
         }
 
+        newScriptItems = [existingScriptItem, newScriptItem, nextScriptItem]
+
     }
 
 
-    newScriptItems = newScriptItems.map(item => {
-        if (item.id === previousScriptItem.id) return previousScriptItem
-        if (item.id === existingScriptItem.id) return existingScriptItem
-        if (nextScriptItem && item.id === nextScriptItem.id) return nextScriptItem
-        else return item
-    })
-    
-    newScriptItems.push(newScriptItem)
 
     //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
     return { newScriptItem, newScriptItems }
@@ -73,10 +73,8 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) 
 
     let deleteScriptItem = { ...scriptItemToDelete }
 
-    let newScriptItems = [...currentScriptItems]
-
-    let previousScriptItem = newScriptItems.find(item => item.id === deleteScriptItem.previousId)
-    let nextScriptItem = newScriptItems.find(item => item.id === deleteScriptItem.nextId)
+    let previousScriptItem = currentScriptItems.find(item => item.id === deleteScriptItem.previousId)
+    let nextScriptItem = currentScriptItems.find(item => item.id === deleteScriptItem.nextId)
 
     if (previousScriptItem) {
 
@@ -98,14 +96,10 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) 
     deleteScriptItem.changed = true
 
 
-    newScriptItems = newScriptItems.map(item => {
-        if (previousScriptItem && item.id === previousScriptItem.id) return previousScriptItem
-        if (nextScriptItem && item.id === nextScriptItem.id) return nextScriptItem
-        if (item.id === deleteScriptItem.id) return deleteScriptItem
-        else return item
-    })
-
-    const sceneHead = newScriptItems.find(item => item.type === 'Scene')
+    const newScriptItems = [];
+    newScriptItems.push(previousScriptItem)
+    newScriptItems.push(nextScriptItem)
+    newScriptItems.push(deleteScriptItem)
 
     //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
     return newScriptItems

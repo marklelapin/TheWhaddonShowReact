@@ -24,7 +24,7 @@ import {
     endSync,
     closePostBack
 } from 'actions/localServer';
-import log from 'helper.js';
+import { log } from 'helper.js';
 
 
 export async function useSync() {

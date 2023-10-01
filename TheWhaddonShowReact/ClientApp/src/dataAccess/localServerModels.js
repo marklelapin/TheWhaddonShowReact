@@ -98,6 +98,7 @@ export class ScriptItemUpdate extends LocalServerModelUpdate {
         this.tags = tags;
         this.nextId = null;
         this.previousId = null;
+        this.parentId = null;
         this.attachments = [];
     }
 

@@ -8,7 +8,7 @@ import { ScriptItemUpdate, Synopsis, Staging, Dialogue, ScriptItem } from 'dataA
 import { prepareUpdates, sortLatestScriptItems } from 'dataAccess/localServerUtils';
 import { addUpdates } from 'actions/localServer';
 import Scene from 'pages/scriptEditor/components/Scene';
-import log from 'helper.js';
+import {log} from 'helper.js';
 function Script() {
 
 

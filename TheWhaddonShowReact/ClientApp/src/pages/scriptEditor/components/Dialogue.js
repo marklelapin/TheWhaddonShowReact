@@ -5,26 +5,28 @@ import { Input } from 'reactstrap';
 import TextareaAutosize from 'react-autosize-textarea';
 import Avatar from 'components/Avatar/Avatar';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from 'reactstrap';
+import { log } from 'helper';
 
 import s from 'pages/forms/elements/Elements.module.scss';
 
 function Dialogue(props) {
 
+    const debug = false;
 
-    const { onChange, scriptItem, parts = [], onKeyDown } = props;
+    const { onChange, onBlur, scriptItem, parts = [], onKeyDown } = props;
 
     const { id, text, partIds = [] } = scriptItem;
 
-    const [partsArray, setPartsArray] = useState([])
+    const [partsSelectorArray, setPartsSelectorArray] = useState([])
 
 
     useEffect(() => {
 
         const newPartsArray = parts.map(part => partIds.includes(part.id) ? { ...part, allocated: true } : { ...part, allocated: false })
 
-        setPartsArray(newPartsArray)
+        setPartsSelectorArray(newPartsArray)
 
-    }, [])
+    }, [parts,partIds])
 
 
 
@@ -41,7 +43,7 @@ function Dialogue(props) {
 
         if (event.shiftKey) {
 
-            const updatedPartsArray = partsArray.map(part => {
+            const updatedPartsArray = partsSelectorArray.map(part => {
                 if (part.id === partId) {
                     return { ...part, selected: !part.selected }
                 }
@@ -50,7 +52,7 @@ function Dialogue(props) {
                 }
             })
 
-            setPartsArray(updatedPartsArray)
+            setPartsSelectorArray(updatedPartsArray)
 
         } else {
 
@@ -63,7 +65,7 @@ function Dialogue(props) {
 
     const handlePartsSelectorConfirm = () => {
 
-        const newPartIds = partsArray.filter(part => part.selected).map(part => part.id)
+        const newPartIds = partsSelectorArray.filter(part => part.selected).map(part => part.id)
 
         onChange('partIds', newPartIds)
         setOpenPartSelector(false)
@@ -72,25 +74,25 @@ function Dialogue(props) {
 
     const isMultiSelect = () => {
 
-        return partsArray.some(part => part.selected === true)
+        return partsSelectorArray.some(part => part.selected === true)
     }
 
     const togglePartSelector = () => {
         setOpenPartSelector(!openPartSelector)
     }
 
-    console.log(openPartSelector)
+    log(debug,'Parts Array',partsSelectorArray)
     return (
 
         <div className="dialogue-container">
-            <Dropdown isOpen={openPartSelector} toggle={togglePartSelector} >  {/*className={`${s.notificationsMenu}`}*/}
+            <Dropdown isOpen={openPartSelector} toggle={()=>togglePartSelector()} >  {/*className={`${s.notificationsMenu}`}*/}
                 <DropdownToggle nav >  {/*className={s.headerSvgFlipColor}*/}
                     <>
-                        {partsArray.filter(part => part.allocated === true).map(part => {
+                        {partsSelectorArray.filter(part => part.allocated === true).map(part => {
                             return (<Avatar key={part.id} person={part} size="xs" avatarInitials={part.avatarInitials || null} />
                             )
                         })}
-                        {(partsArray.some(part => part.allocated === true)) === false &&
+                        {(partsSelectorArray.some(part => part.allocated === true)) === false &&
                             < Avatar person={{ id: 0, firstName: 'clear' }} size="xs" avatarInitials="X" />
 
                         }
@@ -104,9 +106,9 @@ function Dialogue(props) {
                             <DropdownItem divider />
                         </>
                     }
-                    {(partsArray.length === 0) && 
-                        <DropdownItem onClick={togglePartSelector} >No parts setup for this scene</DropdownItem>}
-                    {partsArray.map(part => {
+                    {(partsSelectorArray.length === 0) && 
+                        <DropdownItem onClick={()=>togglePartSelector()} >No parts setup for this scene</DropdownItem>}
+                    {partsSelectorArray.map(part => {
 
                         return (
                             <DropdownItem key={part.id} onClick={(event) => handlePartSelectorClick(event, part.id)} className={(part.selected === true) ? 'selected' : ''}>
@@ -136,7 +138,8 @@ function Dialogue(props) {
                 className={`form-control ${s.autogrow} transition-height dialogue-input text-input`}
                 value={text || ''}
                 onChange={(event) => onChange('text', event.target.value)}
-                onKeyDown={onKeyDown}
+                onBlur={onBlur}
+                onKeyDown={(e)=>onKeyDown(e,scriptItem)}
             />
         </div>
 

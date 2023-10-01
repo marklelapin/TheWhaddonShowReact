@@ -1,6 +1,6 @@
 
 
-function log(debug, message, object = null) {
+export function log(debug, message, object = null) {
     if (debug) {
         console.log(message)
 
@@ -9,4 +9,3 @@ function log(debug, message, object = null) {
         }
     }
 }
-export default log;

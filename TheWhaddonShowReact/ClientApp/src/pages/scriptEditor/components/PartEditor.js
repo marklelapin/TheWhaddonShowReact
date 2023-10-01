@@ -12,6 +12,8 @@ import TagsInput from '../../../components/Forms/TagsInput';
 import { setupParts, addNewPart, updatePersonInfo } from '../scripts/PartScripts'
 import PersonSelector from './PersonSelector';
 import { store } from 'index.js';
+import {log} from 'helper'
+
 function PartEditor(props) {
 
 
@@ -248,10 +250,9 @@ function PartEditor(props) {
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
 
     const activeSceneParts = () => { return sceneParts.filter(part => part.isActive === true) }
-    debug && console.log('Active Scene Parts')
-    debug && console.log(activeSceneParts())
-    debug && console.log('ModalPersons')
-    debug && console.log(modalPersons)
+    log(debug,'Active Scene Parts',activeSceneParts())
+   log(debug,'ModalPersons',modalPersons)
+
 
     return (
 
