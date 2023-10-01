@@ -1,10 +1,11 @@
 ﻿import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Dialogue from './Dialogue';
 import { log } from 'helper';
-import { addUpdates } from 'actions/localServer'; 
+import { addUpdates } from 'actions/localServer';
 import { prepareUpdate } from 'dataAccess/localServerUtils';
+import { moveFocusToId } from '../scripts/utilityScripts';
 
 function ScriptItem(props) {
 
@@ -12,15 +13,22 @@ function ScriptItem(props) {
     const debug = false;
     const dispatch = useDispatch()
 
-    // get specific props
-       const { scriptItem: storedScriptItem, alignRight = false, parts, onKeyDown } = props;
 
-        const [scriptItem, setScriptItem] = useState({})
+    // get specific props
+    const { scriptItem: storedScriptItem, alignRight = false, parts, onKeyDown, focus } = props;
+
+    const [scriptItem, setScriptItem] = useState({})
 
 
     useEffect(() => {
         setScriptItem(storedScriptItem)
-    }, [])
+    }, [storedScriptItem])
+
+    useEffect(() => {
+        if (focus) {
+           moveFocusToId(storedScriptItem.id, focus.position)
+        }
+    }, [focus])
 
 
     //changes are registered internally until onBlur is called
@@ -36,18 +44,18 @@ function ScriptItem(props) {
     }
 
     //Saves to Redux store when focus is taken off the scriptItem
-   const handleBlur = (scriptItem) => {
+    const handleBlur = (scriptItem) => {
 
-       if (scriptItem.changed) {
+        if (scriptItem.changed) {
 
-           const preparedUpdate = prepareUpdate([scriptItem])
+            const preparedUpdate = prepareUpdate([scriptItem])
 
-           dispatch(addUpdates([preparedUpdate],'ScriptItem'))
-       }
+            dispatch(addUpdates([preparedUpdate], 'ScriptItem'))
+        }
 
     }
 
-    
+
 
     log(debug, 'ScriptItemProps', props)
 
@@ -56,7 +64,14 @@ function ScriptItem(props) {
     return (
         <div id={id} className="script-item">
 
-            {(type === "Dialogue") ? <Dialogue key={id} onChange={handleChange} onBlur={handleBlur} onKeyDown={onKeyDown} scriptItem={scriptItem} alignRight={alignRight} parts={parts} /> : null}
+            {(type === "Dialogue") ? <Dialogue key={id}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                onKeyDown={onKeyDown}
+                scriptItem={scriptItem}
+                alignRight={alignRight}
+                parts={parts}
+                 /> : null}
 
         </div>
 

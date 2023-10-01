@@ -139,7 +139,7 @@ function Dialogue(props) {
                 value={text || ''}
                 onChange={(event) => onChange('text', event.target.value)}
                 onBlur={onBlur}
-                onKeyDown={(e)=>onKeyDown(e,scriptItem)}
+                onKeyDown={(e) => onKeyDown(e, scriptItem)}
             />
         </div>
 

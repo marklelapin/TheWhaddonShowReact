@@ -26,8 +26,8 @@ function Scene(props) {
     const dispatch = useDispatch()
     const above = 'above'
     const below = 'below'
-    const up = 'up'
-    const down = 'down'
+    const start = 'start'
+    const end = 'end'
 
     //props
     const { scene } = props;
@@ -69,13 +69,13 @@ function Scene(props) {
 
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
     const [scriptItems, setScriptItems] = useState([]); //
-    const [focusAfterScriptItemChange, setFocusAfterScriptItemChange] = useState({}); //the id to focus on after script items have changed
+    const [focusAfterScriptItemsChange, setFocusAfterScriptItemsChange] = useState(false); //the id to focus on after script items have changed]
+    const [focus, setFocus] = useState({}); //the id to focus on
+
 
     useEffect(() => {
-        log(debugFocus,'moveFocusToId',focusAfterScriptItemChange)
-        moveFocusToId(focusAfterScriptItemChange.id, focusAfterScriptItemChange.direction)
-    }, [scriptItems])
-
+        setFocus(focusAfterScriptItemsChange)
+    },[scriptItems])
 
     useEffect(() => {
         log(debugFocus,'updateScriptItems')
@@ -108,9 +108,9 @@ function Scene(props) {
         log(debug, 'newScriptItems', newScriptItems)
 
 
-        setFocusAfterScriptItemChange({
+        setFocusAfterScriptItemsChange({
             id: newScriptItem.id,
-            direction: (placement === above) ? up : down
+            position: (placement === above) ? start : end
         })
 
         const preparedUpdates = prepareUpdates(newScriptItems)
@@ -122,10 +122,10 @@ function Scene(props) {
     const deleteScriptItem = (scriptItemToDelete, scriptItems) => {
 
         const newScriptItems = newScriptItemsForDelete(scriptItemToDelete, scriptItems)
-
-        setFocusAfterScriptItemChange({
-            id: scriptItemToDelete.nextId || scriptItemToDelete.previousId,
-            direction: (scriptItemToDelete.nextId) ? down : up
+        
+        setFocusAfterScriptItemsChange({
+            id: scriptItemToDelete.previousId,
+            position: end
         })
 
         const preparedUpdates = prepareUpdates(newScriptItems)
@@ -204,7 +204,7 @@ function Scene(props) {
 
             if (newId) {
 
-                moveFocusToId(newId, direction)
+                setFocus({ id: newId, position: (direction === up) ? end : start })
 
             }
 
@@ -281,6 +281,20 @@ function Scene(props) {
             }
         }
 
+        if (e.key === 'Delete') {
+
+            if (e.target.selectionStart === e.target.value.length) {
+                
+                const nextScriptItem = scriptItems.find(item => item.id === scriptItem.nextId)
+
+               if (nextScriptItem) {
+                deleteScriptItem(nextScriptItem, scriptItems)
+                return
+               }
+                    
+            }
+
+        }
     }
 
 
@@ -328,6 +342,8 @@ function Scene(props) {
     log(debugFocus, 'scriptItems', scriptItems)
     log(debug, 'storedSCriptItems', storedScriptItems)
     log(debug, 'currentScene', currentScene)
+
+
 
     //---------------------------------
 
@@ -379,13 +395,12 @@ function Scene(props) {
             <div className="scene-body">
                 {body.map((scriptItem) => {
                     return (
-                        <ScriptItem key={scriptItem.id} scriptItem={scriptItem} parts={currentScene.partIds} onKeyDown={handleKeyDown} />
+                        <ScriptItem key={scriptItem.id} scriptItem={scriptItem} parts={currentScene.partIds} onKeyDown={handleKeyDown} focus={(scriptItem.id === focus.id) ? focus : null} />
                     )
                 })
                 }
             </div>
 
-            {moveFocusToId(focusAfterScriptItemChange.id, focusAfterScriptItemChange.direction) }
         </>
     )
 }

@@ -1,5 +1,5 @@
-﻿const down = 'down'
-const up = 'up'
+﻿const start = 'start'
+const end = 'end'
 
 export function findScriptItem(element, scriptItems) {
 
@@ -29,7 +29,7 @@ export function findScriptItem(element, scriptItems) {
 
 }
 
-export function moveFocusToId(id, direction = down) {
+export function moveFocusToId(id, position = start) {
     const newScriptItemElement = document.getElementById(id)
     if (newScriptItemElement) {
         const newScriptItemTextInput = newScriptItemElement.querySelector('.text-input') || newScriptItemElement
@@ -38,7 +38,7 @@ export function moveFocusToId(id, direction = down) {
 
             newScriptItemTextInput.focus();
 
-            if (direction === down) {
+            if (position === start) {
                 newScriptItemTextInput.selectionStart = 0
                 newScriptItemTextInput.selectionEnd = 0
             } else {
