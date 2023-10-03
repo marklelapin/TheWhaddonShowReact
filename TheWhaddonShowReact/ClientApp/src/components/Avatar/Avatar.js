@@ -2,7 +2,7 @@
 import s from './Avatar.module.scss'; // eslint-disable-line css-modules/no-unused-class
 import adminDefault from 'images/chat/chat2.png';
 import { uploadFiles } from 'dataAccess/generalUtils.js';
-import {uploads_avatars} from 'dataAccess/uploadLocations'; 
+import { uploads_avatars } from 'dataAccess/uploadLocations';
 
 //interface Props {
 //    person: {};
@@ -12,7 +12,7 @@ export function Avatar(props) {
 
     const { person, onClick, onChange = null, avatarInitials = null, linkId = null } = props
 
-    const {firstName=null,email=null,pictureRef = null }=person;
+    const { firstName = null, email = null, pictureRef = null } = person;
 
     const firstUserLetter = (person && firstName) ? firstName[0].toUpperCase() : '?'
 
@@ -23,19 +23,26 @@ export function Avatar(props) {
     const inputId = `avatar-image-upload-${person.id}`
 
     const avatarImage = () => {
-        if (pictureRef !== null) return `${uploads_avatars}/${person.pictureRef}` 
+        if (pictureRef !== null) return `${uploads_avatars}/${person.pictureRef}`
         if (person && person.role === 'admin') return adminDefault // TODO used to bring back default photo when testing. remove when live
         return false
     }
 
     const handleImageClick = (event) => {
 
-        if (person.id !== null) {
-        const imageInput = document.getElementById(inputId)
+        if (onClick) {
+            onClick(event, linkId)
+        } else {
+            if (person.id !== null) {
+                const imageInput = document.getElementById(inputId)
 
-        if (imageInput) imageInput.click(); //trigger click event on hidden file upload element
+                if (imageInput) imageInput.click(); //trigger click event on hidden file upload element
+
+            }
 
         }
+
+
     }
 
     const handleImageChange = async (event) => {
@@ -59,9 +66,9 @@ export function Avatar(props) {
                     console.log('picture ref within promises: ' + pictureRef)
                     return pictureRef
                 }
-                    )
+                )
                 .then(pictureRef => onChange(pictureRef))
- 
+
         }
 
         //otherwise do nothing.
@@ -73,10 +80,10 @@ export function Avatar(props) {
     const imageJSX = () => {
         return (
 
-            <span className={`${s.avatar} rounded-circle float-start me-3 avatar`} onClick={(onClick) ? onClick : handleImageClick}>
+            <span className={`${s.avatar} rounded-circle float-start me-3 avatar`} onClick={(e) => handleImageClick(e)}>
                 {
                     avatarImage() ?
-                        <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(onClick) ? () => onClick(linkId) : handleImageClick} />
+                        <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} />
                         :
                         < span title={avatarTitle} > {avatarText} </span>
                 }
@@ -87,18 +94,18 @@ export function Avatar(props) {
 
 
     return (
-
-        (onClick || onChange) ?
+        
+        (!onClick && onChange) ?
             //hidden image file upload element
-            <div style={{ cursor: 'pointer' } }>
+            <div style={{ cursor: 'pointer' }}>
                 <input
                     accept="image/*" onChange={handleImageChange}
                     className="avatar-image-upload"
                     id={inputId}
                     type="file" name="file" />
-                
+
                 {imageJSX()}
-   
+
             </div>
             : //if no onClick or onChange then just return the image
             imageJSX()

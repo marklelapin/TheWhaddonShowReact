@@ -1,20 +1,11 @@
 ﻿import {v4 as uuidv4} from 'uuid'; 
+import {  SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN } from './scriptItemTypes'; 
 
 // Identifies the types of LocalServerModel updates (works similarly to redux actions)
 export const Person = 'Person';
 export const ScriptItem = 'ScriptItem';
-export const Part = 'Part'
+export const Part = 'Part';
 
-export const Act = 'Act';
-export const Scene = 'Scene';
-export const Synopsis = 'Synopsis';
-export const Staging = 'Staging';
-export const Song = 'Song';
-export const Dialogue = 'Dialogue';
-export const Action = 'Action';
-export const Sound = 'Sound';
-export const Lighting = 'Lighting';
-export const Curtain = 'Curtain';
 
 export class LocalServerModel {
     constructor(type) {
@@ -90,12 +81,12 @@ export class PersonUpdate extends LocalServerModelUpdate {
 
 export class ScriptItemUpdate extends LocalServerModelUpdate {
 
-    constructor(type,text=null,partIds = [],tags =[]) {
+    constructor(type, text = null) {
         super();
         this.type = type;
         this.text = text;
-        this.partIds = partIds;
-        this.tags = tags;
+        this.partIds = (type===SCENE) ? [new PartUpdate().id] : [];
+        this.tags = [];
         this.nextId = null;
         this.previousId = null;
         this.parentId = null;

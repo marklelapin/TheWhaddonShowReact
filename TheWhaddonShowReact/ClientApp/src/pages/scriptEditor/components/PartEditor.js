@@ -9,96 +9,269 @@ import { PartUpdate } from 'dataAccess/localServerModels';
 import Update from 'components/Forms/Update';
 import { addUpdates } from 'actions/localServer';
 import TagsInput from '../../../components/Forms/TagsInput';
-import { setupParts, addNewPart, updatePersonInfo } from '../scripts/PartScripts'
+import { setupParts, addNewPart, addPersonInfo } from '../scripts/PartScripts'
 import PersonSelector from './PersonSelector';
+
 import { store } from 'index.js';
-import {log} from 'helper'
+import { log } from 'helper'
+import PartNameAndAvatar from './PartNameAndAvatar';
+import { moveFocusToId } from '../scripts/utilityScripts';
+import { setWith } from 'lodash';
+import { changeFocus } from 'actions/navigation';
 
 function PartEditor(props) {
 
-
-    const debug = false;
-
-    debug && console.log('PartEditorProps')
-    debug && console.log(props)
-
-    const { partIds = [], onChange} = props;
-
+    //utility consts
+    const debug = false
     const dispatch = useDispatch();
+    const up = 'up';
+    const down = 'down';
 
+    //props
+    const { partIds = [], onChange, previousFocusId, nextFocusId } = props;
 
-    const getStoredPersons = (state) => state.localServer.persons.history
-    const getStoredParts = (state) => state.localServer.parts.history
-
-    const storedPersonsSelector = createSelector(
-        [getStoredPersons],
-        (item) => getLatest(item))
-    const storedPartsSelector = createSelector(
-        [getStoredParts],
-        (item) => getLatest(item))
-    const storedPersons = storedPersonsSelector(store.getState())
-    const storedParts = storedPartsSelector(store.getState())
+    log(debug, 'PartEditorProps', props)
 
 
 
-    debug && console.log('storedParts from PartEditor.js')
-    debug && console.log(storedParts)
-    debug && console.log('storedPersons from PartEditor.js')
-    debug && console.log(storedPersons)
+    //Get persons and parts data from REdux Store
+    const storedPersons = useSelector(state => state.localServer.persons.history)
+    const storedParts = useSelector(state => state.localServer.parts.history)
 
-    //Refs
-    const addButtonRef = useRef();
-    const newInputRef = useRef();
+    const focus = useSelector(state => state.navigation.focus)
 
-
-
-
-    const resetParts = () => {
-
-        const storedPartsArray = [...storedParts]
-        const storedPersonsArray = [...storedPersons]
-
-        const allParts = setupParts(storedPartsArray, storedPersonsArray)
-
-        const currentParts = allParts.filter(part => partIds.includes(part.id))
-        const newSceneParts = addNewPart(currentParts)
-
-        const newOtherParts = allParts.filter(part => !partIds.includes(part.id))
-
-        setSceneParts(newSceneParts)
-        setOtherParts(newOtherParts)
-    }
-
-
-    const [toggleReset, setToggleReset] = useState(false);
-    const [modalPersons, setModalPersons] = useState(null); //if populated opens up selectperson modal
-
+    //copy them to internal state that then gets edited before saving on blur
     const [sceneParts, setSceneParts] = useState([])
-    const [otherParts, setOtherParts] = useState([])
-
 
     useEffect(() => {
-        resetParts()
+        resetSceneParts()
     }, [])
-    //useEffect(() => {
-    //    resetParts()
-    //}, [toggleReset,storedParts])
 
+    useEffect(() => {
+        resetSceneParts()
+    }, [storedParts, partIds])
 
+    log(debug, 'PartsEditor: storedParts', storedParts)
 
-    const handleKeyPress = (event) => {
-        if (event.key === 'Enter' && addButtonRef) {
-            addButtonRef.current.click();
-        }
+    const resetSceneParts = () => {
+        const newStoredParts = getLatest([...storedParts].filter(part => partIds.includes(part.id)))
+
+        const newSceneParts = activeSceneParts().map(item => newStoredParts.find(storedPart => storedPart.id === item.id) || item)
+
+        const newPartIds = partIds.filter(id => ![...storedParts].map(item=>item.id).includes(id)) //identifies partIds that have never been part of storedParts. (these are the new parts given to each script in its constructor)
+
+        const newParts = newPartIds.map(id => ({...new PartUpdate(), id: id}))
+            
+        setSceneParts([...newSceneParts,...newParts])
+
     }
-    const handleNameChange = (event, partId) => {
+
+
+    const [modalPersons, setModalPersons] = useState(null); //if populated opens up selectperson modal
+
+    //CRUD
+    const deletePart = (deletePart, direction = up) => {
+
+        if (activeSceneParts().length === 1) {
+            alert('cant delete last part')
+            return
+        }
+
+        const partIndex = sceneParts.findIndex(part => part.id === deletePart.id)
+        const previousPart = sceneParts[partIndex - 1] || null
+        const nextPart = sceneParts[partIndex + 1] || null
+        
+        const updatedParts = [...sceneParts].map(part => {
+            if (part.id === deletePart.id) {
+                return { ...part, isActive: false, changed: true }
+            } 
+            return part;
+        })
+                
+        const newFocusId = (direction === up) ? previousPart?.id || previousFocusId : nextPart?.id || previousPart?.id
+
+        
+
+        setSceneParts(updatedParts);
+
+        dispatch(changeFocus({ id: newFocusId, position: 'end' }))
+
+        updateIfChanged()
+    }
+
+    const createPart = (partBefore = {}) => {
+
+        const updatedParts = [...sceneParts]
+
+        const partBeforeIndex = updatedParts.findIndex(part => part.id === partBefore.id) || 0
+
+        const startArray = updatedParts.slice(0, partBeforeIndex + 1)
+        const endArray = updatedParts.slice(partBeforeIndex + 1)
+
+        const newPart = new PartUpdate()
+
+        const newParts = [...startArray, newPart, ...endArray]
+
+
+        setSceneParts(newParts)
+        dispatch(changeFocus({ id: newPart.id, position: 'end' }))
+    }
+
+    const updateIfChanged = () => {
+
+        const changesMade = [...sceneParts].filter(part => part.changed === true)
+
+        if (changesMade.length > 0) {
+
+            const preparedUpdates = prepareUpdates(changesMade)
+
+            //update parts
+            dispatch(addUpdates(preparedUpdates, 'Part'))
+
+        }
+
+        //Update partIds in scene scriptItem (only if list of active partIds has changed)
+        let changeToPartIds = false
+
+        const activeSceneParts = sceneParts.filter(item => item.name !== null & item.name !== '' & item.isActive === true)
+
+        if (activeSceneParts.length !== partIds.length) { changeToPartIds = true }
+
+        for (let i = 0; i < activeSceneParts.length; i++) {
+            if (activeSceneParts[i].id !== partIds[i]) {
+                changeToPartIds = true;
+            }
+        }
+
+        if (changeToPartIds && activeSceneParts.length > 0) {
+            //sends activeSceneParts to parent
+            onChange(activeSceneParts.map(item=>item.id));
+        }
+
+        ////Finally clear up newSceneParts so that parts made inActive and never got through to scriptItem don't reappear.
+
+        //const newSceneParts = sceneParts.filter(item => item.isActive === true)
+
+        //setSceneParts(newSceneParts)
+    }
+
+
+
+
+
+
+
+    //EVent Handlers
+
+    const handleKeyDown = (e, part) => {
+
+        const end = 'end'
+        const start = 'start'
+
+        const moveFocus = (direction) => {
+
+            const currentPartIndex = sceneParts.findIndex(item => item.id === part.id)
+
+            const nextPartId = sceneParts[currentPartIndex + 1]?.id
+            const previousPartId = sceneParts[currentPartIndex - 1]?.id
+
+            if (direction === up) {
+
+                if (previousPartId) {
+                    dispatch(changeFocus({ id: previousPartId, position: end }))
+                } else {
+                    dispatch(changeFocus({ id: previousFocusId, position: end }))
+                }
+
+            } else if (direction === down) {
+
+                if (nextPartId) {
+                    dispatch(changeFocus({ id: nextPartId, position: start }))
+                } else {
+                    dispatch(changeFocus({ id: nextFocusId, position: start }))
+                }
+
+            }
+
+
+        }
+
+
+        if (e.key === 'Enter') {
+            createPart(part);//will create a new part after (part)
+            return
+        }
+
+        if (e.key === 'Backspace') {
+
+            if (!part.name || part.name === null || part.name === '') {
+                e.preventDefault()
+                deletePart(part)
+                return
+            }
+
+            if (e.target.selectionEnd === 0) {
+                e.preventDefault()
+                moveFocus(up)
+                return
+            }
+
+        }
+
+        if (e.key === 'Delete') {
+
+            if (e.target.selectionStart === e.target.value.length) {
+
+                //find the partid below
+                const currentPartIndex = sceneParts.findIndex(item => item.id === part.id)
+                const nextPart = sceneParts[currentPartIndex + 1]
+
+                //if it is empty then delete
+                if (nextPart && (nextPart.name || '') === '') {
+                    deletePart(nextPart)
+                    return
+                }
+
+                if (nextPart && nextPart.name.length > 0) {
+                    moveFocus(down)
+                    return
+                }
+
+                if ((part.name || '') === '') {
+                    deletePart(part)
+                    return
+                }
+            }
+
+
+        }
+
+        if (e.key === 'ArrowUp' && e.target.selectionEnd === 0) {
+            e.preventDefault()
+            moveFocus(up)
+            return
+        }
+
+        if (e.key === 'ArrowDown' && e.target.selectionStart === e.target.value.length) {
+            e.preventDefault()
+            moveFocus(down)
+            return
+        }
+
+
+    }
+
+
+
+    const handleNameChange = (text, part) => {
+
+        const partId = part.id
 
         const updatedParts = sceneParts.map(part => {
 
             if (part.id === partId) {
 
-                let updatedPart = { ...part, name: event.target.value, changed: true }
-                updatedPart = updatePersonInfo(updatedPart,storedPersons)
+                let updatedPart = { ...part, name: text.trimStart(), changed: true }
 
                 return updatedPart
             }
@@ -108,82 +281,15 @@ function PartEditor(props) {
         setSceneParts(updatedParts);
     }
 
-    const handleDelete = (partId) => {
-        const updatedParts = sceneParts.map(part => {
-            if (part.id === partId) {
-                return { ...part, isActive: false, changed: true }
-            }
-            return part;
-        })
-
-        setSceneParts(updatedParts);
-
-    }
-
-    const handleAdd = (event, partId) => {
-
-        const updatedParts = sceneParts.map(part => {
-            if (part.id === partId) {
-
-                const partUpdate = { ...part }
-
-                delete partUpdate.new
-                part.changed = true
-
-                return partUpdate
-            }
-            return part;
-        })
-
-        setSceneParts(addNewPart(updatedParts))
-
-    }
-
-    const hasChanged = () => {
-
-        return sceneParts.some(part => part.changed === true)
-
-    }
-
-    const handleSearch = (partId) => {
-
-
-    }
-    const handleUpdate = () => {
-
-        const changesMade = sceneParts.filter(part => part.changed === true)
-
-        changesMade.forEach(part => {
-            delete part.changed
-            delete part.new
-        })
-
-        const preparedUpdates = prepareUpdates(changesMade)
-
-        //update parts
-        dispatch(addUpdates(preparedUpdates, 'Part'))
-
-        //updates scene by sending back data
-
-        const newScenePartIds = activeSceneParts().map(item=>item.id)
-        onChange(newScenePartIds);
-
-    }
-
-    const handleCancel = () => {
-        setToggleReset(!toggleReset)
-    }
-
-
 
     const handleAvatarClick = (part) => {
 
-        const allocatedPersonIds = sceneParts.filter(part => part.personId !== null).map(part => part.personId)
 
-        const unAllocatedPersons = storedPersons.filter(person => !allocatedPersonIds.includes(person.id))
+        const activeParts = sceneParts.filter(item=>item.isActive === true)
 
-        
+        const allocatedPersonIds = activeParts.filter(part => part.personId !== null).map(part => part.personId)
 
+        const unAllocatedPersons = getLatest(storedPersons).filter(person => !allocatedPersonIds.includes(person.id))
 
         setModalPersons({ unAllocatedPersons: unAllocatedPersons, part: part })
 
@@ -191,67 +297,119 @@ function PartEditor(props) {
 
 
 
-    const handleAddTag = (tag, partId) => {
+
+    const handleClickDelete = (part) => { //tODDO check part is passed back
+        deletePart(part)
+    }
+
+    const handleClickAdd = (part) => { //TODO checke part is passed back  
+        createPart(part)//will create a new part after (part)
+
+    }
+
+
+
+    const handleBlur = () => {
+
+        updateIfChanged()
+
+    }
+
+
+
+
+    const handleClickSearch = () => {
+        //TODO
+
+    }
+
+
+
+
+
+
+
+    const handleAddTag = (tag, part) => {
+
+        const partId = part.id
 
         const updateParts = sceneParts.map(part => {
 
             if (part.id === partId) {
 
-                return { ...part, tags: [...part.tags, tag] }
+                return { ...part, tags: [...part.tags, tag], changed: true }
             }
             return part;
 
         })
 
         setSceneParts(updateParts)
+        dispatch(changeFocus({ id: part.id, position: 'end' }))
 
     }
 
-    const handleRemoveTag = (tag, partId) => {
+    const handleRemoveTag = (tag, part) => {
+
+        const partId = part.id
 
         const updateParts = sceneParts.map(part => {
             if (part.id === partId) {
 
-                return { ...part, tags: part.tags.filter(partTag => partTag !== tag) }
+                return { ...part, tags: part.tags.filter(partTag => partTag !== tag), changed: true }
             }
             return part;
         })
         setSceneParts(updateParts)
+        dispatch(changeFocus({ id: part.id, position: 'end' }))
     }
 
 
-    const handleSelectPerson = (personId, partId) => {
+    const handleSelectPerson = (personId, part) => {
+
+        const partId = part.id
 
         const updatedParts = sceneParts.map(part => {
             if (part.id === partId) {
 
                 let partUpdate = { ...part, personId: personId, changed: true }
-                partUpdate = updatePersonInfo(partUpdate, storedPersons)
-                
+
+                const person = getLatest([...storedPersons].filter(person => person.id === personId))
+
+                partUpdate = addPersonInfo(partUpdate, person[0])
+
                 return partUpdate
             }
 
             return part;
         }
         )
+
+
         setModalPersons(null);
         setSceneParts(updatedParts);
+        dispatch(changeFocus({ id: part.id, position: 'end' }))
     }
+
 
 
     const closeModalPersons = () => {
 
+        moveFocusToId(modalPersons.part.id)
         setModalPersons(null);
-    }
 
+    }
 
 
 
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
 
-    const activeSceneParts = () => { return sceneParts.filter(part => part.isActive === true) }
-    log(debug,'Active Scene Parts',activeSceneParts())
-   log(debug,'ModalPersons',modalPersons)
+    const activeSceneParts = () => {
+
+        return sceneParts.filter(part => part.isActive === true)
+    
+    }
+    log(debug, 'Active Scene Parts', activeSceneParts())
+    log(debug, 'ModalPersons', modalPersons)
 
 
     return (
@@ -264,30 +422,44 @@ function PartEditor(props) {
                     return (
 
                         <Container className="allocated-parts" key={part.id}>
-
-                            <Row>
+                            <h5>Parts:</h5>
+                            <Row id={part.id}>
                                 <Col>
+                                    <div id={part.id} className="part">
 
-                                    < Avatar avatarInitials={part.avatarInitials} person={part} onClick={() => handleAvatarClick(part)} />
+                                        <PartNameAndAvatar avatar partName personName
 
-                                    {(part.new) ?
-                                        <Input type="text" key={part.id} placeholder="enter name" value={part.name || ''} onKeyPress={(e)=>handleKeyPress(e)} onChange={(e) => handleNameChange(e, part.id)} ref={newInputRef} />
-                                        : <Input type="text" key={part.id} placeholder="enter name" value={part.name || ''} onKeyPress={(e)=>handleKeyPress(e)} onChange={(e) => handleNameChange(e, part.id)} />
-                                    }
+                                            avatarInitials={part.avatarInitials}
+                                            part={part}
+                                            onAvatarClick={(e, linkId) => handleAvatarClick(part)}
+                                            onNameChange={(text) => handleNameChange(text, part)}
+                                            onKeyDown={(e) => handleKeyDown(e, part)}
+                                            onBlur={(e) => handleBlur(e, part)}
+                                            focus={(focus?.id === part.id) ? focus : null}
+                                        />
+
+                                        {(part.new) ?
+                                            <>
+                                                <Button color="success" size="xs" onClick={(e) => handleClickAdd(e, part)}><i className="fa fa-plus" /></Button>
+                                                <Button color="warning" size="xs" onClick={(e) => handleClickSearch(part)}><i className="fa fa-search" /></Button>
+                                            </>
+
+                                            : <Button color="danger" size="xs" onClick={(e) => handleClickDelete(part)}><i className="fa fa-remove" /></Button>}
 
 
-                                    {(part.new) ?
-                                        <>
-                                            <Button color="success" size="xs" onClick={(e) => handleAdd(e, part.id)}><i className="fa fa-plus" ref={addButtonRef} /></Button>
-                                            <Button color="warning" size="xs" onClick={(e) => handleSearch(part.id)}><i className="fa fa-search" /></Button>
-                                        </>
+                                    </div>
 
-                                        : <Button color="danger" size="xs" onClick={(e) => handleDelete(part.id)}><i className="fa fa-remove" /></Button>}
+
 
                                 </Col>
 
                                 <Col xs={6}>
-                                    <TagsInput strapColor="primary" tags={part.tags} tagOptions={tagOptions} onClickAdd={(tag) => handleAddTag(tag, part.id)} onClickRemove={(tag) => handleRemoveTag(tag, part.id)} />
+                                    <TagsInput
+                                        strapColor="primary"
+                                        tags={part.tags}
+                                        tagOptions={tagOptions}
+                                        onClickAdd={(tag) => handleAddTag(tag, part)}
+                                        onClickRemove={(tag) => handleRemoveTag(tag, part)} />
                                 </Col>
 
                             </Row>
@@ -295,15 +467,15 @@ function PartEditor(props) {
                         </Container>
                     )
                 })}
-                <FormGroup>
-                    <Update id="save" hasChanged={hasChanged()} onClickUpdate={()=>handleUpdate()} onClickCancel={() => handleCancel()} isNew={false} ></Update >
-
-                </FormGroup>
             </div>
 
 
             {(modalPersons) &&
-                <PersonSelector persons={modalPersons.unAllocatedPersons} tags={modalPersons.part.tags} closeModal={()=>closeModalPersons()} onClick={(personId) => handleSelectPerson(personId, modalPersons.part.id)} />
+                <PersonSelector
+                    persons={modalPersons.unAllocatedPersons}
+                    tags={modalPersons.part.tags}
+                    closeModal={() => closeModalPersons()}
+                    onClick={(personId) => handleSelectPerson(personId, modalPersons.part)} />
             }
 
         </>

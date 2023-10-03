@@ -4,7 +4,8 @@ import { store } from 'index.js';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { ScriptItemUpdate, Synopsis, Staging, Dialogue, ScriptItem } from 'dataAccess/localServerModels';
+import { ScriptItemUpdate, ScriptItem } from 'dataAccess/localServerModels';
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, DIALOGUE } from 'dataAccess/scriptItemTypes';
 import { prepareUpdates, sortLatestScriptItems } from 'dataAccess/localServerUtils';
 import { addUpdates } from 'actions/localServer';
 import Scene from 'pages/scriptEditor/components/Scene';
@@ -49,13 +50,13 @@ function Script() {
 
 
     useEffect(() => {
-        const testShow = new ScriptItemUpdate('Show', 'The Whaddon Show')
-        const testAct = new ScriptItemUpdate('Act', 'Act 1')
-        const testScene = new ScriptItemUpdate('Scene', 'New Scene Title')
-        const testSynopsis = new ScriptItemUpdate(Synopsis, 'A test scene to check that the system is working')
-        const testInitialStaging = new ScriptItemUpdate('InitialStaging', 'Curtains open and two chairs set opposite each other on a table')
-        const testDialogue1 = new ScriptItemUpdate(Dialogue, 'Hello World')
-        const testDialogue2 = new ScriptItemUpdate(Dialogue, 'Hello World Again')
+        const testShow = new ScriptItemUpdate(SHOW, 'The Whaddon Show')
+        const testAct = new ScriptItemUpdate(ACT, 'Act 1')
+        const testScene = new ScriptItemUpdate(SCENE, 'New Scene Title')
+        const testSynopsis = new ScriptItemUpdate(SYNOPSIS, 'A test scene to check that the system is working')
+        const testInitialStaging = new ScriptItemUpdate(INITIAL_STAGING, 'Curtains open and two chairs set opposite each other on a table')
+        const testDialogue1 = new ScriptItemUpdate(DIALOGUE, 'Hello World')
+        const testDialogue2 = new ScriptItemUpdate(DIALOGUE, 'Hello World Again')
 
         testScene.previousId = testAct.id
         testScene.nextId = testSynopsis.id
@@ -91,10 +92,10 @@ function Script() {
         <>
                 {(storedScenes && storedScenes.length > 0) && storedScenes.map(scene => {
 
-                    if (scene.type === 'Show') {
+                    if (scene.type === SHOW) {
                         return <h1 key={scene.id}>{scene.text}</h1>
                     }
-                    else if (scene.type === 'Act') {
+                    else if (scene.type === ACT) {
                         return <h2 key={scene.id} >{scene.text}</h2>
                     }
                     else {

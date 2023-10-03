@@ -2,16 +2,15 @@
 
 
 
-export const updatePersonInfo = (part,persons) => {
+export const addPersonInfo = (part, person) => {
 
-    const allocatedPerson = persons.find(person => person.id === part.personId) || null
 
-    const updatedPart = {
-        ...part, firstName: part.name
-        , avatarInitials: (part.name) ? part.name.split(' ').map(word => word[0]).join('') : '?'
-        , pictureRef: (allocatedPerson) ? allocatedPerson.pictureRef : null
-        , personName: (allocatedPerson) ? allocatedPerson.firstName : null
-    }
+    let updatedPart = { ...part }
+    updatedPart.firstName = part.name
+    updatedPart.avatarInitials = (part.name) ? part.name.split(' ').map(word => word[0]).join('') : '?';
+    updatedPart.pictureRef = person?.pictureRef
+    updatedPart.personName = person?.firstName
+
 
     return updatedPart
 
@@ -23,7 +22,7 @@ export const setupParts = (parts, persons) => {
 
     let updateParts = [...parts]
 
-    updateParts = updateParts.map(part => updatePersonInfo(part, persons))
+    updateParts = updateParts.map(part => addPersonInfo(part, persons))
 
     updateParts = updateParts.sort((a, b) => a.name.localeCompare(b.name))
 

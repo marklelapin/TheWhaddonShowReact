@@ -265,9 +265,7 @@ export function getLatest(history, undoDateTime = null,includeInActive = false,i
 
     const unDoneHistory = history.filter((update) => update.created <= (undoDateTime || update.created))
 
-    const activeHistory = unDoneHistory.filter((update) => update.isActive === true || includeInActive === true)
-
-    const sampleHistory = activeHistory.filter((update) => update.isSample === false || includeSamples === true)
+    const sampleHistory = unDoneHistory.filter((update) => update.isSample === false || includeSamples === true)
 
     const latestUpdates = sampleHistory.reduce((acc, update) => {
         if (!acc[update.id] || update.created > acc[update.id].created) {
@@ -276,13 +274,14 @@ export function getLatest(history, undoDateTime = null,includeInActive = false,i
         return acc;
     }, {})
 
-    let latestUpdatesArray = Object.values(latestUpdates);
+    const latestUpdatesArray = Object.values(latestUpdates);
 
-    if (latestUpdatesArray === null || latestUpdatesArray === undefined) { latestUpdatesArray = [] }
+    let latestActive = latestUpdatesArray.filter((update) => update.isActive === true || includeInActive === true)
 
-    
+    if (latestActive === null || latestActive === undefined) { latestActive = [] }
 
-    return latestUpdatesArray;
+
+    return latestActive;
 
 
 }

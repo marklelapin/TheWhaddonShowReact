@@ -6,16 +6,21 @@ import { log } from 'helper';
 import { addUpdates } from 'actions/localServer';
 import { prepareUpdate } from 'dataAccess/localServerUtils';
 import { moveFocusToId } from '../scripts/utilityScripts';
+import { changeFocus } from 'actions/navigation';
+import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN } from 'dataAccess/scriptItemTypes';
+import SceneHeader from './SceneHeader';
+import Synopsis from './Synopsis';
+import Staging from './Staging';
 
 function ScriptItem(props) {
 
     //utility consts
-    const debug = false;
+    const debug = true;
     const dispatch = useDispatch()
 
 
     // get specific props
-    const { scriptItem: storedScriptItem, alignRight = false, parts, onKeyDown, focus } = props;
+    const { scriptItem: storedScriptItem, alignRight = false, scenePartIds, onKeyDown, focus, previousFocusId = null, nextFocusId = null } = props;
 
     const [scriptItem, setScriptItem] = useState({})
 
@@ -26,9 +31,11 @@ function ScriptItem(props) {
 
     useEffect(() => {
         if (focus) {
-           moveFocusToId(storedScriptItem.id, focus.position)
+            moveFocusToId(storedScriptItem.id, focus.position)
+            dispatch(changeFocus(null))
         }
     }, [focus])
+
 
 
     //changes are registered internally until onBlur is called
@@ -44,7 +51,7 @@ function ScriptItem(props) {
     }
 
     //Saves to Redux store when focus is taken off the scriptItem
-    const handleBlur = (scriptItem) => {
+    const handleBlur = () => {
 
         if (scriptItem.changed) {
 
@@ -64,14 +71,43 @@ function ScriptItem(props) {
     return (
         <div id={id} className="script-item">
 
-            {(type === "Dialogue") ? <Dialogue key={id}
+            {(type === SCENE) ? <SceneHeader key={id}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                onKeyDown={onKeyDown}
+                onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
+                scriptItem={scriptItem}
+            /> : null
+            }
+
+            {(type === SYNOPSIS) ? <Synopsis key={id}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
+                scriptItem={scriptItem}
+            /> : null
+            }
+
+            {(type === INITIAL_STAGING) ?
+           
+
+                    <Staging key={id}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
+                        scriptItem={scriptItem}
+                /> : null
+                
+            }
+
+            {(type === DIALOGUE) ? <Dialogue key={id}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
                 scriptItem={scriptItem}
                 alignRight={alignRight}
-                parts={parts}
-                 /> : null}
+                scenePartIds={scenePartIds}
+            /> : null}
+
 
         </div>
 

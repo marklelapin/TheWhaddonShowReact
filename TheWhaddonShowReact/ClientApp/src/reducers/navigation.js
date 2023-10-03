@@ -3,7 +3,8 @@ import {
     OPEN_SIDEBAR,
     CLOSE_SIDEBAR,
     CHANGE_ACTIVE_SIDEBAR_ITEM,
-    CLOSE_SIDEBAR_AND_TOGGLE_STATIC
+    CLOSE_SIDEBAR_AND_TOGGLE_STATIC,
+    CHANGE_FOCUS
 } from '../actions/navigation';
 
 const initialState = {
@@ -37,6 +38,11 @@ export default function runtime(state = initialState, action) {
                 ...state,
                 activeItem: action.activeItem,
             };
+        case CHANGE_FOCUS:
+            return {
+                ...state,
+                focus: action.focus,
+            }
         default:
             return state;
     }

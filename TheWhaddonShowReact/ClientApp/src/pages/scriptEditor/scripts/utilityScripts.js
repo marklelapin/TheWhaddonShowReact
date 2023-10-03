@@ -30,25 +30,26 @@ export function findScriptItem(element, scriptItems) {
 }
 
 export function moveFocusToId(id, position = start) {
-    const newScriptItemElement = document.getElementById(id)
-    if (newScriptItemElement) {
-        const newScriptItemTextInput = newScriptItemElement.querySelector('.text-input') || newScriptItemElement
+    const newElement = document.getElementById(id)
+    if (newElement) {
+        const newTextInput = newElement.querySelector('.text-input') || newElement
 
-        if (newScriptItemTextInput) {
+        if (newTextInput) {
 
-            newScriptItemTextInput.focus();
+            newTextInput.focus();
 
             if (position === start) {
-                newScriptItemTextInput.selectionStart = 0
-                newScriptItemTextInput.selectionEnd = 0
+                newTextInput.selectionStart = 0
+                newTextInput.selectionEnd = 0
             } else {
-                newScriptItemTextInput.selectionStart = newScriptItemTextInput.value.length
+                newTextInput.selectionStart = newTextInput.value.length 
+                newTextInput.selectionEnd = newTextInput.value.length
             }
 
-        } else { throw new Error(`Move Focus Error: Cant locate the scriptItem text-input: ${id}`) }
+        } else { throw new Error(`Move Focus Error: Cant locate the text-input for id: ${id}`) }
 
     } else {
-        console.log(`Move Focus Error: Cant locate an element with id = ${id} and className="script-item"`) //TODO extend this when more scenes available 
+        console.log(`Move Focus Error: Cant locate an element with id = ${id}`) //TODO extend this when more scenes available 
     }
 
 }
