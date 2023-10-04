@@ -1,16 +1,31 @@
-﻿import React from 'react';
+﻿
+//React and Redux
+import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
+//Components
 import Dialogue from './Dialogue';
+import SceneTitle from './SceneTitle';
+import Synopsis from './Synopsis';
+import Staging from './Staging';
+import Comment from './Comment';
+import ScriptItemControls from './ScriptItemControls';
+import ScriptItemText from './ScriptItemText';
+
+
+import { Container, Row, Col } from 'reactstrap';
+
+//utilities
 import { log } from 'helper';
 import { addUpdates } from 'actions/localServer';
 import { prepareUpdate } from 'dataAccess/localServerUtils';
 import { moveFocusToId } from '../scripts/utilityScripts';
 import { changeFocus } from 'actions/navigation';
+
+//Constants
 import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN } from 'dataAccess/scriptItemTypes';
-import SceneHeader from './SceneHeader';
-import Synopsis from './Synopsis';
-import Staging from './Staging';
+
 
 function ScriptItem(props) {
 
@@ -24,6 +39,7 @@ function ScriptItem(props) {
 
     const [scriptItem, setScriptItem] = useState({})
 
+    const viewComments = useSelector(state => state.scriptEditor.viewComments)
 
     useEffect(() => {
         setScriptItem(storedScriptItem)
@@ -69,50 +85,42 @@ function ScriptItem(props) {
     const { id, type } = scriptItem;
 
     return (
-        <div id={id} className="script-item">
+        <Container className="script-item" draft-border>
+            <Row>
+                <Col className={`script-item-body ${(type === DIALOGUE) ? 'Dialogue' : ''}} draft-border`}>
 
-            {(type === SCENE) ? <SceneHeader key={id}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
-                scriptItem={scriptItem}
-            /> : null
-            }
+                    {/*  Element shared by all scriptItems*/}
 
-            {(type === SYNOPSIS) ? <Synopsis key={id}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
-                scriptItem={scriptItem}
-            /> : null
-            }
+                    <div className="script-item-controls">
+                        <ScriptItemControls />
+                    </div>
+                    <div className="script-item-text">
+                        <ScriptItemText
+                            key={id}
+                            scriptItem={scriptItem}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
+                        />
+                    </div>
 
-            {(type === INITIAL_STAGING) ?
-           
+                    {/*Elements specific for each scriptItem type*/}
 
-                    <Staging key={id}
+                    {(type === DIALOGUE) ? <Dialogue key={id}
                         onChange={handleChange}
-                        onBlur={handleBlur}
-                        onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
                         scriptItem={scriptItem}
-                /> : null
-                
-            }
+                        scenePartIds={scenePartIds}
+                    /> : null
+                    }
 
-            {(type === DIALOGUE) ? <Dialogue key={id}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
-                scriptItem={scriptItem}
-                alignRight={alignRight}
-                scenePartIds={scenePartIds}
-            /> : null}
+                </Col>
+                <Col md="3" className={`script-item-comment d-none ${(viewComments) ? 'd-md-block' : ''} draft-border`} >
+                    <Comment scriptItem={scriptItem} />
+                </Col>
+        </Row>
 
-
-        </div>
-
+        </Container >
     )
-
 }
 
 export default ScriptItem;

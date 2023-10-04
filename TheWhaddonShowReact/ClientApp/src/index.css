@@ -5,6 +5,18 @@
     border: 2px dashed red;
 }
 
+
+/*Icons*/
+
+.reverse-icon {
+    transform: scaleX(-1);
+}
+
+
+
+
+
+
 /*User Personal Details*/
 
 .personal-details {
@@ -100,3 +112,90 @@ margin: 2px;
 .part-selector .selected {
     background-color: #f0f0f0;
 }
+
+.part-avatar-col {
+    display: flex;
+    padding-right: 0px;
+    align-items: center;
+}
+
+
+/* The containger for the script page*/
+#script-page {
+
+}
+
+/* The container for the script-viewer component*/
+#script-viewer {
+    height: 100vh;
+    overflow-y: scroll;
+    background-color: #f0f0f0;
+}
+
+/* The container for scene-selector component*/
+#scene-selector {
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+
+
+
+.scene-header{
+    background-color: white;
+}
+
+.script-item{
+  
+}
+
+.script-item-comment{
+    
+}
+/*
+.script-item-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows:  1fr 1fr;
+    grid-template-areas:
+
+        "blank blank"
+        "blank  controls";
+}
+*/
+/*.script-item-body.dialogue.align-right{
+    display: grid;
+    grid-template-columns: 2fr 8fr 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    grid-template-areas:
+        "blank header avatar"
+        "blank text avatar"
+        "blank text controls";
+}
+
+.script-item-body.dialogue.align-left {
+    display: grid;
+    grid-template-columns: 1fr 8fr 2fr;
+    grid-template-rows: auto 1fr 1fr;
+    grid-template-areas:
+        "avatar header blank"
+        "avatar text controls"
+        "blank text controls";
+}*/
+/*
+
+.script-item-text {
+    grid-area: text;
+}
+
+.script-item-header {
+    grid-area: header;
+}
+
+.script-item-avatar{
+    grid-area: avatar;
+}
+
+.script-item-controls{
+    grid-area: controls;
+}*/

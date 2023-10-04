@@ -12,9 +12,9 @@ import TagsInput from '../../../components/Forms/TagsInput';
 import { addPersonInfo } from '../scripts/PartScripts'
 import PersonSelector from './PersonSelector';
 import { store } from 'index.js';
-import {moveFocusToId } from '../scripts/utilityScripts';
+import { moveFocusToId } from '../scripts/utilityScripts';
 import { log } from 'helper';
-import {changeFocus} from 'actions/navigation' 
+import { changeFocus } from 'actions/navigation'
 
 function PartNameAndAvatar(props) {
 
@@ -62,7 +62,7 @@ function PartNameAndAvatar(props) {
     //EVENT HANDLERS
     const handleAvatarClick = (e) => {
         if (props.onAvatarClick) {
-            
+
             onAvatarClick(e)
         }
 
@@ -82,36 +82,46 @@ function PartNameAndAvatar(props) {
 
     return (
 
-        <>
-            <div className="part-name-and-avatar">
+        <Row className="part-name-and-avatar">
 
-                {(avatar) ? < Avatar
-                    sixe="xs"
-                    avatarInitials={partPerson.avatarInitials}
-                    person={partPerson}
-                    onClick={(e) => handleAvatarClick(e)} /> : null}
-                {(partName) ? <Input
-                    type="text"
-                    key={part.id}
-                    placeholder="enter name"
-                    value={part.name || ''}
-                    onKeyDown={onKeyDown}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    onBlur={onBlur}
-                    readOnly={(onNameChange) ? false : true}
-                    className="text-input" /> : null
-
-                }
-                {(personName) ? <small>{part.personName}</small> : null}
-            </div>
+            {(avatar) &&
+                <Col  xs="auto" className="part-avatar-col">
+                    < Avatar
+                        size="10"
+                        avatarInitials={partPerson.avatarInitials}
+                        person={partPerson}
+                        onClick={(e) => handleAvatarClick(e)} />
+                </Col>
+            }
 
 
-        </>
+            {(partName) &&
+                <Col>
+                    <Row>
+                        <Input
+                            type="text"
+                            key={part.id}
+                            placeholder="enter name"
+                            value={part.name || ''}
+                            onKeyDown={onKeyDown}
+                            onChange={(e) => handleNameChange(e.target.value)}
+                            onBlur={onBlur}
+                            readOnly={(onNameChange) ? false : true}
+                            className="text-input" />
+
+                    </Row>
+                    {(personName) &&
+                        <Row>
+                            < small >{(part.personName) && `(${part.personName})`}</small>
+                        </Row>
+                    }
+                </Col>
+            }
 
 
+        </Row >
 
     )
-
 
 }
 

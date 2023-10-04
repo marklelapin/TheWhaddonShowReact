@@ -29,9 +29,13 @@ export function Icon(props) {
 
     const dictionary = {
         "sync": "fa fa-cloud",
+        "add": "fa fa-plus",
         "tick": "fa fa-check",
         "cross": "fa fa-times",
-        "warning": "fa fa-exclamation"
+        "warning": "fa fa-exclamation",
+        "undo": "fa fa-history",
+        "redo": "fa fa-history reverse-icon",
+        "menu": "fa fa-navicon"
     };
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {

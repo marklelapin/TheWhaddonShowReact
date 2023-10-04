@@ -4,16 +4,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import TextareaAutosize from 'react-autosize-textarea';
 import s from 'pages/forms/elements/Elements.module.scss';
 
-function Synopsis(props) {
+function SceneTitle(props) {
 
-    const {scriptItem: synopsis, onChange,onBlur,onKeyDown } = props;
+    const {scriptItem, onChange,onBlur,onKeyDown } = props;
 
     return (
 
-       null
-    )
+null
     
-
+    )
 }
 
-export default Synopsis;
+export default SceneTitle;

@@ -1,22 +1,21 @@
-﻿import React from 'react';
+﻿//React and Redux
+import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 import { store } from 'index.js';
-import { getLatest, prepareUpdates, useSortLatestScriptItems, sortLatestScriptItems, sortScriptItems, prepareUpdate } from 'dataAccess/localServerUtils';
-import { addUpdates } from 'actions/localServer';
+
+//Components
+import { Row,Col} from 'reactstrap';
 import ScriptItem from 'pages/scriptEditor/components/ScriptItem.js';
 import PartEditor from 'pages/scriptEditor/components/PartEditor.js';
 
-import s from 'pages/forms/elements/Elements.module.scss';
-import { Input } from 'reactstrap';
-import TextareaAutosize from 'react-autosize-textarea';
-import BlurAndFocusListener from './BlurAndFocusListener';
 
+//Utilities
+import { prepareUpdates, sortLatestScriptItems, prepareUpdate } from 'dataAccess/localServerUtils';
+import { addUpdates } from 'actions/localServer';
 import { newScriptItemsForDelete, newScriptItemsForCreate } from '../scripts/crudScripts';
-import { findScriptItem, moveFocusToId } from '../scripts/utilityScripts';
 import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
-import { PartUpdate } from 'dataAccess/localServerModels';
 import { log } from 'helper'
 import { changeFocus } from 'actions/navigation';
 
@@ -367,8 +366,10 @@ function Scene(props) {
 
     return (
         <>
-            <div className="scene-header">
-                {
+            <Row className="scene-header draft-border">
+                <Col>
+
+ {
                     (currentScene) &&
                     <ScriptItem scriptItem={currentScene}
                         onChange={handleChange}
@@ -409,7 +410,9 @@ function Scene(props) {
 
                 }
 
-            </div>
+                </Col>
+            </Row>
+               
 
             <div className="scene-body">
                 {body.map((scriptItem,index) => {

@@ -1,73 +1,51 @@
-﻿import React from 'react';
-import TextareaAutosize from 'react-autosize-textarea';
+﻿//react and redux
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-
-import { log } from 'helper';
+//Components
 import PartSelector from './PartSelector';
 
-import s from 'pages/forms/elements/Elements.module.scss';
+//utilities
+import { log } from 'helper';
+
 
 function Dialogue(props) {
 
     const debug = true;
 
-    const { onChange, onBlur, scriptItem,  scenePartIds = [], onKeyDown, } = props;
+    const { onChange, scriptItem, scenePartIds = [] } = props;
 
-    const { id, text, partIds: allocatedPartIds = [] } = scriptItem;
+    const { id, partIds: allocatedPartIds = [] } = scriptItem;
+
+
+    const dialogueRightId = useSelector(state => state.scriptEditor.dialogueRightId)
+
+    const partName = 'Test name'
+
+    const alignment = dialogueRightId === id ? 'align-right' : 'align-left'
 
     log(debug, 'DialogueProps', props)
     log(debug, 'Dialogue scriptItem', scriptItem)
 
+
     return (
 
-        <div className="dialogue">
-            
+        <>
+            <div className="script-item-header">
+                <small>{partName}</small>
+            </div>
+        <div className={`script-item-avatar ${alignment}`}>
             <PartSelector
                 scriptItem={scriptItem}
                 scenePartIds={scenePartIds}
                 allocatedPartIds={allocatedPartIds}
                 onChange={(partIds) => onChange('partIds', partIds)}
             /> 
-
-            <TextareaAutosize
-                key={id}
-                placeholder="..."
-                className={`form-control ${s.autogrow} transition-height dialogue-input text-input`}
-                value={text || ''}
-                onChange={(event) => onChange('text', event.target.value)}
-                onBlur={onBlur}
-                onKeyDown={(e) => onKeyDown(e)}
-            />
-
         </div>
-
+        
+        </>
+        
     )
-
-
-
-    //<div className={`${s.chatMessage} ${owner ? s.owner : ''}`}>
-    //    {showAvatar
-    //        ? <div className={`${s.messageAvatar}`}><Avatar user={user} size={size} showStatus={showStatus} /></div>
-    //        : null}
-    //    {message.text ?
-    //        <p className={s.messageBody}>
-    //            {message.text}
-    //        </p> : ''}
-
-    //    {message.attachments ? message.attachments.map(attachment => (
-    //        <p key={uuid()} className={`${s.messageBody} ${s.messageAttachment}`}>
-    //            {attachment.type === 'image' ?
-    //                <img src={attachment.src} alt="attachment" />
-    //                : null}
-    //        </p>
-    //    )) : null}
-
-    //    <small className="d-block text-muted">
-    //        {this.messageDate(message)}
-    //    </small>
-    //</div>
-
-
 
 }
 

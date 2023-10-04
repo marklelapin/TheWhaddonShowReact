@@ -1,21 +1,29 @@
-import React, { Component } from 'react';
-import { useState, useEffect } from 'react';
-import { store } from 'index.js';
-import { useSelector, useDispatch } from 'react-redux';
+//React & Redux
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { store } from 'index'
 
+//Components
+import SceneSelector from './components/SceneSelector';
+import ScriptViewer from './components/ScriptViewer';
+import { Container, Row, Col } from 'reactstrap'; 
+
+//localServerModels
 import { ScriptItemUpdate, ScriptItem } from 'dataAccess/localServerModels';
 import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, DIALOGUE } from 'dataAccess/scriptItemTypes';
 import { prepareUpdates, sortLatestScriptItems } from 'dataAccess/localServerUtils';
 import { addUpdates } from 'actions/localServer';
-import Scene from 'pages/scriptEditor/components/Scene';
-import {log} from 'helper.js';
+
+//Utils
+import { log } from 'helper.js';
+
 function Script() {
 
 
     const debug = false;
     const dispatch = useDispatch();
-
 
     //createSelector used for compled state selection to avoid unecessary rerenders
     const getScriptItems = (state) => state.localServer.scriptItems.history
@@ -29,26 +37,27 @@ function Script() {
 
     const refreshTrigger = useSelector((state) => state.localServer.refresh)
     const [storedScenes, setStoredScenes] = useState([])
-    const [testAct,setTestAct] = useState({})
+
+
+    const [testAct,setTestAct] = useState(null)
 
     useEffect(() => {
-        log(debug, 'refreshTrigger useEffect',refreshTrigger)
-     
+        log(debug, 'refreshTrigger useEffect', refreshTrigger)
+
         if (refreshTrigger.type === 'ScriptItem' && refreshTrigger.ids.length > 0) {
 
             const storedScenes = storedScenesSelector(store.getState())
             log(debug, 'storedScenes', storedScenes)
-            const sortedScenes = sortLatestScriptItems(testAct,storedScenes)
+            const sortedScenes = sortLatestScriptItems(testAct, storedScenes)
             log(debug, 'sortedScenes', sortedScenes)
             setStoredScenes(sortedScenes)
         }
     }, [refreshTrigger])
-   
 
 
 
-
-
+    //REMOVE WHEN TESTING FINISHED 
+    //-----------------------------------------------------------------------
     useEffect(() => {
         const testShow = new ScriptItemUpdate(SHOW, 'The Whaddon Show')
         const testAct = new ScriptItemUpdate(ACT, 'Act 1')
@@ -81,31 +90,38 @@ function Script() {
         const preparedUpdates = prepareUpdates([testShow, testAct, testScene, testSynopsis, testInitialStaging, testDialogue1, testDialogue2])
 
         log(debug, 'Disptach Test Script', preparedUpdates)
+
         setTestAct(testAct)
         dispatch(addUpdates(preparedUpdates, ScriptItem))
 
     }, [])
 
+    //-----------------------------------------------------------------------
+    return (
 
-    log(debug,'Script Re-Rendering',storedScenes)
-        return (
-        <>
-                {(storedScenes && storedScenes.length > 0) && storedScenes.map(scene => {
 
-                    if (scene.type === SHOW) {
-                        return <h1 key={scene.id}>{scene.text}</h1>
-                    }
-                    else if (scene.type === ACT) {
-                        return <h2 key={scene.id} >{scene.text}</h2>
-                    }
-                    else {
-                        return <Scene key={scene.id} scene={scene} />
-                    }
-                }
+               
 
-            )}
+        <div id="script-page" className="draft-border">
+            <Container fluid>
+                <h2>The Whaddon Show 2023</h2>
+                <Row>
+                    <Col md={3}>
+                        <SceneSelector scenes={storedScenes} />
+                    </Col>
+                    <Col md={9}>
+                        <ScriptViewer scenes={storedScenes} />
 
-        </>
+                    </Col>
+
+                </Row>
+
+            </Container>
+            
+           
+            
+
+        </div>
 
 
 
@@ -115,16 +131,3 @@ function Script() {
 }
 
 export default Script
-
-
-            //Old Chat Code
-    //render() {
-    //  const { mobileState } = this.props;
-    //  return (
-    //    <div className={`chat-page-wrapper ${s.chatPage} ${mobileState === MobileChatStates.LIST ? 'list-state' : ''} ${mobileState === MobileChatStates.CHAT ? 'chat-state' : ''} ${mobileState === MobileChatStates.INFO ? 'info-state' : ''}`}>
-    //      <ChatList />
-    //      <ChatDialog />
-    //      <ChatInfo />
-    //    </div>
-    //  )
-    //}

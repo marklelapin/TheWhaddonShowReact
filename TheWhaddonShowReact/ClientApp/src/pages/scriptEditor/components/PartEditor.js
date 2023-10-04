@@ -58,11 +58,11 @@ function PartEditor(props) {
 
         const newSceneParts = activeSceneParts().map(item => newStoredParts.find(storedPart => storedPart.id === item.id) || item)
 
-        const newPartIds = partIds.filter(id => ![...storedParts].map(item=>item.id).includes(id)) //identifies partIds that have never been part of storedParts. (these are the new parts given to each script in its constructor)
+        const newPartIds = partIds.filter(id => ![...storedParts].map(item => item.id).includes(id)) //identifies partIds that have never been part of storedParts. (these are the new parts given to each script in its constructor)
 
-        const newParts = newPartIds.map(id => ({...new PartUpdate(), id: id}))
-            
-        setSceneParts([...newSceneParts,...newParts])
+        const newParts = newPartIds.map(id => ({ ...new PartUpdate(), id: id }))
+
+        setSceneParts([...newSceneParts, ...newParts])
 
     }
 
@@ -80,17 +80,17 @@ function PartEditor(props) {
         const partIndex = sceneParts.findIndex(part => part.id === deletePart.id)
         const previousPart = sceneParts[partIndex - 1] || null
         const nextPart = sceneParts[partIndex + 1] || null
-        
+
         const updatedParts = [...sceneParts].map(part => {
             if (part.id === deletePart.id) {
                 return { ...part, isActive: false, changed: true }
-            } 
+            }
             return part;
         })
-                
+
         const newFocusId = (direction === up) ? previousPart?.id || previousFocusId : nextPart?.id || previousPart?.id
 
-        
+
 
         setSceneParts(updatedParts);
 
@@ -145,7 +145,7 @@ function PartEditor(props) {
 
         if (changeToPartIds && activeSceneParts.length > 0) {
             //sends activeSceneParts to parent
-            onChange(activeSceneParts.map(item=>item.id));
+            onChange(activeSceneParts.map(item => item.id));
         }
 
         ////Finally clear up newSceneParts so that parts made inActive and never got through to scriptItem don't reappear.
@@ -285,7 +285,7 @@ function PartEditor(props) {
     const handleAvatarClick = (part) => {
 
 
-        const activeParts = sceneParts.filter(item=>item.isActive === true)
+        const activeParts = sceneParts.filter(item => item.isActive === true)
 
         const allocatedPersonIds = activeParts.filter(part => part.personId !== null).map(part => part.personId)
 
@@ -406,7 +406,7 @@ function PartEditor(props) {
     const activeSceneParts = () => {
 
         return sceneParts.filter(part => part.isActive === true)
-    
+
     }
     log(debug, 'Active Scene Parts', activeSceneParts())
     log(debug, 'ModalPersons', modalPersons)
@@ -415,15 +415,14 @@ function PartEditor(props) {
     return (
 
         <>
-            <div className="part-editor draft-border">
+            <Row className="part-editor draft-border">
+                <Col>
+                    <h5>Parts:</h5>
+                    {activeSceneParts().map(part => {
 
-                {activeSceneParts().map(part => {
+                        return (
 
-                    return (
-
-                        <Container className="allocated-parts" key={part.id}>
-                            <h5>Parts:</h5>
-                            <Row id={part.id}>
+                            <Row key={part.id}>
                                 <Col>
                                     <div id={part.id} className="part">
 
@@ -437,23 +436,16 @@ function PartEditor(props) {
                                             onBlur={(e) => handleBlur(e, part)}
                                             focus={(focus?.id === part.id) ? focus : null}
                                         />
-
-                                        {(part.new) ?
-                                            <>
-                                                <Button color="success" size="xs" onClick={(e) => handleClickAdd(e, part)}><i className="fa fa-plus" /></Button>
-                                                <Button color="warning" size="xs" onClick={(e) => handleClickSearch(part)}><i className="fa fa-search" /></Button>
-                                            </>
-
-                                            : <Button color="danger" size="xs" onClick={(e) => handleClickDelete(part)}><i className="fa fa-remove" /></Button>}
-
-
                                     </div>
-
-
-
                                 </Col>
+                                <Col xs="auto">
 
-                                <Col xs={6}>
+                                    {(activeSceneParts().length > 1) &&
+                                        <Button color="danger" size="xs" onClick={(e) => handleClickDelete(part)}><i className="fa fa-remove" /></Button>
+                                    }
+                                    <Button color="warning" size="xs" onClick={(e) => handleClickSearch(part)}><i className="fa fa-search" /></Button>
+                                </Col>
+                                <Col xs="12" md="7">
                                     <TagsInput
                                         strapColor="primary"
                                         tags={part.tags}
@@ -461,13 +453,16 @@ function PartEditor(props) {
                                         onClickAdd={(tag) => handleAddTag(tag, part)}
                                         onClickRemove={(tag) => handleRemoveTag(tag, part)} />
                                 </Col>
-
                             </Row>
 
-                        </Container>
-                    )
-                })}
-            </div>
+
+                        )
+                    })}
+
+                    <Button color="success" size="xs" onClick={(e) => handleClickAdd(e, sceneParts[sceneParts.length-1])}><i className="fa fa-plus" /></Button>
+                </Col >
+
+            </Row >
 
 
             {(modalPersons) &&
