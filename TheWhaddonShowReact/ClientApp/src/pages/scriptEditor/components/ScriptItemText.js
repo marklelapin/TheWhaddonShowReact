@@ -7,7 +7,7 @@ import s from 'pages/forms/elements/Elements.module.scss';
 
 function ScriptItemText(props) {
 
-    const { scriptItem, onChange, onBlur, onKeyDown, placeholder = "..." } = props;
+    const { scriptItem, onChange, onBlur, onFocus, onKeyDown, placeholder = "..." } = props;
 
     const {id,text,type } = scriptItem
 
@@ -33,6 +33,7 @@ function ScriptItemText(props) {
             value={text || ''}
             onChange={(e) => onChange('text', e.target.value)}
             onBlur={onBlur}
+            onFocus={onFocus}
             onKeyDown={(e) => onKeyDown(e)}
  
         />

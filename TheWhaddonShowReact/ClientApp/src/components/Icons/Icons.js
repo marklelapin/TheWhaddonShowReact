@@ -32,6 +32,7 @@ export function Icon(props) {
         "add": "fa fa-plus",
         "tick": "fa fa-check",
         "cross": "fa fa-times",
+        "remove": "fa fa-times",
         "warning": "fa fa-exclamation",
         "undo": "fa fa-history",
         "redo": "fa fa-history reverse-icon",

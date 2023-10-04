@@ -36,10 +36,18 @@ function ScriptItem(props) {
 
     // get specific props
     const { scriptItem: storedScriptItem, alignRight = false, scenePartIds, onKeyDown, focus, previousFocusId = null, nextFocusId = null } = props;
+    
 
-    const [scriptItem, setScriptItem] = useState({})
-
+    //Redux state
     const viewComments = useSelector(state => state.scriptEditor.viewComments)
+    
+
+    //Internal State
+    const [scriptItem, setScriptItem] = useState({})
+    const [inFocus, setInFocus] = useState(null) 
+
+
+  
 
     useEffect(() => {
         setScriptItem(storedScriptItem)
@@ -66,6 +74,12 @@ function ScriptItem(props) {
 
     }
 
+
+    const handleFocus = () => {
+
+        setInFocus(true)
+    }
+
     //Saves to Redux store when focus is taken off the scriptItem
     const handleBlur = () => {
 
@@ -76,6 +90,7 @@ function ScriptItem(props) {
             dispatch(addUpdates([preparedUpdate], 'ScriptItem'))
         }
 
+        setInFocus(false)
     }
 
 
@@ -85,23 +100,26 @@ function ScriptItem(props) {
     const { id, type } = scriptItem;
 
     return (
-        <Container className="script-item" draft-border>
+        <Container id={id} className="script-item" draft-border>
             <Row>
                 <Col className={`script-item-body ${(type === DIALOGUE) ? 'Dialogue' : ''}} draft-border`}>
 
-                    {/*  Element shared by all scriptItems*/}
 
-                    <div className="script-item-controls">
-                        <ScriptItemControls />
-                    </div>
                     <div className="script-item-text">
                         <ScriptItemText
                             key={id}
                             scriptItem={scriptItem}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onFocus={handleFocus}
                             onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
                         />
+                        {(inFocus) &&
+                            <div className="script-item-controls">
+                                <ScriptItemControls />
+                            </div>
+                        }
+
                     </div>
 
                     {/*Elements specific for each scriptItem type*/}
@@ -117,7 +135,7 @@ function ScriptItem(props) {
                 <Col md="3" className={`script-item-comment d-none ${(viewComments) ? 'd-md-block' : ''} draft-border`} >
                     <Comment scriptItem={scriptItem} />
                 </Col>
-        </Row>
+            </Row>
 
         </Container >
     )
