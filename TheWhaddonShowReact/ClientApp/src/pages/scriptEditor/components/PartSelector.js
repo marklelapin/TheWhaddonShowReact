@@ -104,16 +104,16 @@ log(debug,'PartsSelector allocatedPartIds',allocatedPartIds)
             <DropdownToggle nav >  {/*className={s.headerSvgFlipColor}*/}
                 <>
                     {partsArray.filter(part => part.allocated === true).map(part => {
-                        return (<PartNameAndAvatar key={part.id} part={part} avatar />
+                        return (<PartNameAndAvatar size ="sm" key={part.id} part={part} avatar />
                         )
                     })}
                     {(partsArray.some(part => part.allocated === true)) === false &&
-                        < Avatar person={{ id: 0, firstName: 'clear' }} size="xs" avatarInitials="?" />
+                        < Avatar person={{ id: 0, firstName: 'clear' }} size="sm" avatarInitials="?" />
                     }
                 </>
 
             </DropdownToggle>
-            (<DropdownMenu className={`super-colors`}>   {/*${s.headerDropdownLinks} */}
+            <DropdownMenu className={`super-colors`}>   {/*${s.headerDropdownLinks} */}
                 {(partsArray.length > 0) &&
                     <>
                         < PartNameAndAvatar part={{ id: 0, name: 'Clear all parts',personId: null }} onClick={() => handlePartSelectorClick(null)} avatar partName/>

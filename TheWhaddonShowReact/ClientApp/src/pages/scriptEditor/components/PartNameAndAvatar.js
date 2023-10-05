@@ -21,7 +21,7 @@ function PartNameAndAvatar(props) {
     const debug = false;
     const dispatch = useDispatch()
 
-    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, focus, avatar, partName, personName } = props;
+    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, focus, avatar, partName, personName, size="sm" } = props;
 
 
     log(debug, 'PartNameAndAvatar Props', props)
@@ -87,7 +87,7 @@ function PartNameAndAvatar(props) {
             {(avatar) &&
                 <Col  xs="auto" className="part-avatar-col">
                     < Avatar
-                        size="10"
+                        size={size}
                         avatarInitials={partPerson.avatarInitials}
                         person={partPerson}
                         onClick={(e) => handleAvatarClick(e)} />

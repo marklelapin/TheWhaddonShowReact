@@ -10,7 +10,7 @@ import { uploads_avatars } from 'dataAccess/uploadLocations';
 
 export function Avatar(props) {
 
-    const { person, onClick, onChange = null, avatarInitials = null, linkId = null } = props
+    const { person, onClick, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
 
     const { firstName = null, email = null, pictureRef = null } = person;
 
@@ -74,13 +74,22 @@ export function Avatar(props) {
         //otherwise do nothing.
     }
 
+    const avatarSize = () => {
+
+        switch (size) {
+            case "md": return { height: '40px', width: '40px'}
+            case "sm": return { height: '30px', width: '30px' }
+            case "xs": return { height: '20px', width: '20px' }
+            default: return { height: '40px', width: '40px' }
+        }
+    }
 
 
 
     const imageJSX = () => {
         return (
 
-            <span className={`${s.avatar} rounded-circle float-start me-3 avatar`} onClick={(e) => handleImageClick(e)}>
+            <span className={`${s.avatar} rounded-circle float-start me-3 avatar`} onClick={(e) => handleImageClick(e)} style={avatarSize()}>
                 {
                     avatarImage() ?
                         <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} />
@@ -94,7 +103,7 @@ export function Avatar(props) {
 
 
     return (
-        
+
         (!onClick && onChange) ?
             //hidden image file upload element
             <div style={{ cursor: 'pointer' }}>

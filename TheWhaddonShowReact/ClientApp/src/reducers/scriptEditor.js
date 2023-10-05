@@ -1,7 +1,8 @@
 import { UPDATE_SEARCH_PARAMETERS } from 'actions/scriptEditor';
 import { UPDATE_VIEW_COMMENTS } from 'actions/scriptEditor';
 import { UPDATE_DIALOGUE_RIGHT_ID } from 'actions/scriptEditor';
-import {TOGGLE_SCENE_SELECTOR } from 'actions/scriptEditor'; 
+import { TOGGLE_SCENE_SELECTOR } from 'actions/scriptEditor';
+import { UPDATE_SHOW_COMMENTS } from 'actions/scriptEditor';
 
 const initialState = {
     searchParameters: {
@@ -9,7 +10,7 @@ const initialState = {
         characters: [],
         myScenes: false,
     },
-    viewComments: true,
+    showComments: true,
     dialogueRightId: null,
     showSceneSelector: true,
 
@@ -37,6 +38,11 @@ export default function runtime(state = initialState, action) {
                 ...state,
                 showSceneSelector: !state.showSceneSelector,
             };
+        case UPDATE_SHOW_COMMENTS:
+            return {
+                ...state,
+                showComments: action.showComments,
+};
         default:
             return state;
     }

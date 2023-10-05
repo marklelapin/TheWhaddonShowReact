@@ -101,7 +101,7 @@ function SceneSelector(props) {
 
                 if (scene.type === ACT) {
 
-                    return <h2>scene.text</h2>
+                    return <h2 key={scene.id}>scene.text</h2>
                 }
 
                 return <SceneSelectorRow

@@ -25,10 +25,10 @@ function SceneSelectorRow(props) {
                 <div className="information" onClick={()=>onClick('goto',scene.id) }>
                     <h5>{scene.text}</h5>
                     <small>synopsis.text</small>
-                    {scene.tags.map((tag) => <Button size='xs'>tag</Button>)}
+                    {scene.tags.map((tag) => <Button key={`${scene.id}-${tag}`} size='xs'>tag</Button>)}
                 </div>
 
-                <Icon icon="add" onClick={() => handleAddScene('add',scene.id)}/>
+                <Icon key={scene.id} icon="add" onClick={() => handleAddScene('add',scene.id)}/>
 
             </div>
         </div>

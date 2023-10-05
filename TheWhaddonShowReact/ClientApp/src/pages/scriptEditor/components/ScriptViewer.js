@@ -3,12 +3,15 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { toggleSceneSelector } from 'actions/scriptEditor';
+import { toggleSceneSelector, updateShowComments } from 'actions/scriptEditor';
 
 //Components
 import { Container, Row, Col, Nav, NavItem, NavLink } from 'reactstrap';
 import Scene from './Scene'
 import { Icon } from 'components/Icons/Icons'
+
+//utitilites
+import { isSmallerScreen } from 'components/Sidebar/Sidebar'
 
 //Constants
 import { SHOW, ACT } from 'dataAccess/scriptItemTypes';
@@ -23,10 +26,11 @@ function ScriptViewer(props) {
     //props
     const { scenes, onClick } = props;
 
+    //Redux
+    const showComments = useSelector(state => state.scriptEditor.showComments)
 
     //Internal State
     const [viewStyle, setViewStyle] = useState(CHAT)
-    const [showComments, setShowComments] = useState(true)
     const [undoDateTime, setUndoDateTime] = useState(null)
 
 
@@ -50,6 +54,10 @@ function ScriptViewer(props) {
     }
 
     const handleRedo = () => {
+    }
+
+    const toggleShowComments = () => {
+        dispatch(updateShowComments(!showComments))
     }
 
     return (
@@ -79,6 +87,12 @@ function ScriptViewer(props) {
                         </Nav >
                     </Col>
                     <Col xs="1" className="d-flex justify-content-end align-items-center">
+                        {(isSmallerScreen() === false) &&
+
+                            (showComments) ? <Icon icon="comment" onClick={() => toggleShowComments()}></Icon>
+                            : <Icon icon="comment-o" onClick={() => toggleShowComments()}></Icon>
+                        }
+
                         <Icon icon="undo" onClick={() => handleUndo()}></Icon>
                         {(undoDateTime !== null) &&
                             <Icon icon="redo" onClick={() => handleRedo()}></Icon>

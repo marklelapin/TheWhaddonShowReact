@@ -4,6 +4,7 @@ export const UPDATE_SEARCH_PARAMETERS = 'UPDATE_SEARCH_PARAMETERS';
 export const UPDATE_VIEW_COMMENTS = 'UPDATE_VIEW_COMMENTS';
 export const UPDATE_DIALOGUE_RIGHT_ID = 'UPDATE_DIALOGUE_RIGHT_ID'
 export const TOGGLE_SCENE_SELECTOR = 'TOGGLE_SCENE_SELECTOR';
+export const UPDATE_SHOW_COMMENTS = 'SET_SHOW_COMMENTS';
 
 export function updateSearchParameters(searchParameters) {
     return {
@@ -33,4 +34,11 @@ export function toggleSceneSelector() {
     return {
         type: TOGGLE_SCENE_SELECTOR,
     };
+}
+
+export function updateShowComments(showComments) {
+    return {
+        type: UPDATE_SHOW_COMMENTS,
+        showComments,
+    }
 }

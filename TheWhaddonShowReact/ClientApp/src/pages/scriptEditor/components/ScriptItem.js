@@ -12,7 +12,7 @@ import Staging from './Staging';
 import Comment from './Comment';
 import ScriptItemControls from './ScriptItemControls';
 import ScriptItemText from './ScriptItemText';
-
+import PartSelector from './PartSelector';
 
 import { Container, Row, Col } from 'reactstrap';
 
@@ -39,7 +39,7 @@ function ScriptItem(props) {
     
 
     //Redux state
-    const viewComments = useSelector(state => state.scriptEditor.viewComments)
+    const showComments = useSelector(state => state.scriptEditor.showComments)
     
 
     //Internal State
@@ -47,6 +47,7 @@ function ScriptItem(props) {
     const [inFocus, setInFocus] = useState(null) 
 
 
+    const textInputRef = useRef(null)
   
 
     useEffect(() => {
@@ -75,6 +76,32 @@ function ScriptItem(props) {
     }
 
 
+    //utility functions
+
+    const showParts = () => {
+        switch (scriptItem.type) {
+            case DIALOGUE: return true;
+            default: return false;
+        }
+    }
+
+    const header = () => {
+        switch (scriptItem.type) {
+            case DIALOGUE: return 'Test Name'
+            default: return null;
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
     const handleFocus = () => {
 
         setInFocus(true)
@@ -100,14 +127,15 @@ function ScriptItem(props) {
     const { id, type } = scriptItem;
 
     return (
-        <Container id={id} className="script-item" draft-border>
+        <Container id={id} className="script-item draft-border">
             <Row>
-                <Col className={`script-item-body ${(type === DIALOGUE) ? 'Dialogue' : ''}} draft-border`}>
+                <Col className={`script-item-body draft-border`}>
 
 
-                    <div className="script-item-text">
+                    <div ref={textInputRef} className="script-item-text">
                         <ScriptItemText
                             key={id}
+                            maxWidth={textInputRef.current?.offsetWidth}
                             scriptItem={scriptItem}
                             onChange={handleChange}
                             onBlur={handleBlur}
@@ -120,19 +148,30 @@ function ScriptItem(props) {
                             </div>
                         }
 
+                        {showParts() &&
+                            <div className="script-item-parts">
+                                <PartSelector
+                                    scenePartIds={scenePartIds}
+                                    allocatedPartIds={scriptItem.partIds}
+                                    onChange={(selectedPartIds) => handleChange('partIds', selectedPartIds)}
+                                />
+                            </div>
+                        }
+
+                        {header() &&
+
+                            <div className="script-item-header">
+                                <small>{header()}</small>
+                            </div>
+                        }
+
                     </div>
 
                     {/*Elements specific for each scriptItem type*/}
 
-                    {(type === DIALOGUE) ? <Dialogue key={id}
-                        onChange={handleChange}
-                        scriptItem={scriptItem}
-                        scenePartIds={scenePartIds}
-                    /> : null
-                    }
 
                 </Col>
-                <Col md="3" className={`script-item-comment d-none ${(viewComments) ? 'd-md-block' : ''} draft-border`} >
+                <Col md="3" className={`script-item-comment d-none ${(showComments) ? 'd-md-block' : ''} draft-border`} >
                     <Comment scriptItem={scriptItem} />
                 </Col>
             </Row>
