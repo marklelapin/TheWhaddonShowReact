@@ -138,13 +138,12 @@ margin: 2px;
     overflow-y: scroll;
 }
 
-
-
-
 .scene-header{
     background-color: white;
 }
 
+
+/* ScriptItem CSS*/
 .script-item{
   
 }
@@ -152,7 +151,6 @@ margin: 2px;
 .script-item-comment{
     
 }
-/**/
 .script-item-body {
     padding: 0px;
     display: grid;
@@ -220,3 +218,10 @@ margin: 2px;
     justify-content: end;
     z-index:2;
 }
+
+
+/* Script-viewer css*/
+.script-viewer-header * {
+    padding: 0px;
+}
+

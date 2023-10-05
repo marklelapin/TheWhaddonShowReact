@@ -8,7 +8,7 @@ import { store } from 'index'
 //Components
 import SceneSelector from './components/SceneSelector';
 import ScriptViewer from './components/ScriptViewer';
-import { Container, Row, Col } from 'reactstrap'; 
+import { Container, Row, Col } from 'reactstrap';
 
 //localServerModels
 import { ScriptItemUpdate, ScriptItem } from 'dataAccess/localServerModels';
@@ -18,6 +18,8 @@ import { addUpdates } from 'actions/localServer';
 
 //Utils
 import { log } from 'helper.js';
+import isScreen from 'core/screenHelper';
+import { changeFocus } from 'actions/navigation';
 
 function Script() {
 
@@ -36,10 +38,22 @@ function Script() {
     );
 
     const refreshTrigger = useSelector((state) => state.localServer.refresh)
+
+
+  
+    const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
+
+    //Internal State
     const [storedScenes, setStoredScenes] = useState([])
+    const [isLargerScreen, setIsLargerScreen] = useState(null)
+
+    useEffect(() => {
+        handleScriptScreenResize()
+
+    }, [])
 
 
-    const [testAct,setTestAct] = useState(null)
+    const [testAct, setTestAct] = useState(null)
 
     useEffect(() => {
         log(debug, 'refreshTrigger useEffect', refreshTrigger)
@@ -96,30 +110,59 @@ function Script() {
 
     }, [])
 
+
+
+
+    useEffect(() => {
+        window.addEventListener('resize', handleScriptScreenResize);
+
+        return () => { window.removeEventListener('resize', handleScriptScreenResize); }
+    }, []);
+
+
+    const handleScriptScreenResize = () => {
+        //console.log(`hadnle resize static: ${sidebarStatic} opened: ${sidebarOpened}`)
+        if (isSmallerScreen()) {
+            setIsLargerScreen(false)
+
+        } else
+            setIsLargerScreen(true)
+    }
+
+
+    const isSmallerScreen = () => {
+
+        return (isScreen('xs') || isScreen('sm'))
+
+    }
+
+
+
     //-----------------------------------------------------------------------
     return (
 
-
-               
-
         <div id="script-page" className="draft-border">
-            <Container fluid>
-                <h2>The Whaddon Show 2023</h2>
-                <Row>
-                    <Col md={3}>
-                        <SceneSelector scenes={storedScenes} />
-                    </Col>
-                    <Col md={9}>
-                        <ScriptViewer scenes={storedScenes} />
 
-                    </Col>
+            {(isLargerScreen) && <h1 className="page-title">Script - <span className="fw-semi-bold">Editor</span></h1>}
+            <Container fluid>
+                <Row>
+                    {(showSceneSelector || isLargerScreen) &&
+                        <Col xs="12" md="3">
+                            <SceneSelector scenes={storedScenes} />
+                        </Col>
+                    }
+
+                    {(!showSceneSelector || isLargerScreen) &&
+                        <Col xs="12" md="9">
+                            <ScriptViewer scenes={storedScenes} />
+
+                        </Col>
+                    }
 
                 </Row>
 
             </Container>
-            
-           
-            
+
 
         </div>
 

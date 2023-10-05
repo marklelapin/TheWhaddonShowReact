@@ -3,7 +3,8 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateSearchParameters } from 'actions/scriptEditor';
+import { updateSearchParameters, toggleSceneSelector } from 'actions/scriptEditor';
+import { changeFocus } from 'actions/navigation';
 
 //Components
 import ScriptSearch from './ScriptSearch'
@@ -12,10 +13,10 @@ import SceneSelectorRow from './SceneSelectorRow'
 //Utils
 import { ACT, SCENE } from 'dataAccess/scriptItemTypes'
 import { log } from 'helper';
-import { changeFocus } from 'actions/navigation';
 
 
 import { TestAct } from '../Script'
+
 
 function SceneSelector(props) {
     const debug = false;
@@ -26,6 +27,7 @@ function SceneSelector(props) {
 
 
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
+    const showSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
 
     const handleSearchParameterChange = (type, value) => {
         let searchParameters = { ...searchParameters }
@@ -75,6 +77,7 @@ function SceneSelector(props) {
         switch (type) {
             case 'goto':
                 dispatch(changeFocus({ id: id })) //TODO add in travel to scene functionality?
+                dispatch(toggleSceneSelector())
                 break;
             case 'add':
                 console.log('Add Scene Button Pressed') //TODO add in add scene functionality

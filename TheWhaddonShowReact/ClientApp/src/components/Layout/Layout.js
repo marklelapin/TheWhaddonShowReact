@@ -52,20 +52,6 @@ class Layout extends React.Component {
         this.handleSwipe = this.handleSwipe.bind(this);
     }
 
-    //componentDidMount() {
-    //    this.handleResize();
-    //    window.addEventListener('resize', this.handleResize.bind(this));
-    //}
-
-    //componentWillUnmount() {
-    //    window.removeEventListener('resize', this.handleResize.bind(this));
-    //}
-
-    //handleResize() {
-    //    if (window.innerWidth <= 768 && this.props.sidebarStatic) {
-    //        this.props.dispatch(toggleSidebar());
-    //    }
-    //}
 
     handleSwipe(e) {
         if ('ontouchstart' in window) {
@@ -100,7 +86,7 @@ class Layout extends React.Component {
 
                     <Hammer onSwipe={this.handleSwipe}>
                         <main className={s.content}>
-                            <BreadcrumbHistory url={this.props.location.pathname} />
+                            {/*<BreadcrumbHistory url={this.props.location.pathname} />*/}
                             <TransitionGroup>
                                 <CSSTransition
                                     key={this.props.location.key}

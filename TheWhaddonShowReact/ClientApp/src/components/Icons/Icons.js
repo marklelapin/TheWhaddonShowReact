@@ -36,7 +36,14 @@ export function Icon(props) {
         "warning": "fa fa-exclamation",
         "undo": "fa fa-history",
         "redo": "fa fa-history reverse-icon",
-        "menu": "fa fa-navicon"
+        "menu": "fa fa-navicon",
+        "arrow-left": "fa fa-arrow-left",
+        "chat-mode": "fa fa-comments-o",
+        "classic-mode": "fa fa-align-center",
+        "edit": "fa fa-edit",
+        "comment-o": "fa fa-comment-o",
+        "comment": "fa fa-comment",
+        "print": "fa fa-print",
     };
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {
