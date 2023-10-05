@@ -35,7 +35,7 @@ function ScriptItem(props) {
 
 
     // get specific props
-    const { scriptItem: storedScriptItem, alignRight = false, scenePartIds, onKeyDown, focus, previousFocusId = null, nextFocusId = null } = props;
+    const { scriptItem: storedScriptItem, alignRight = false, scenePartIds, onKeyDown, focus, previousFocus = null, nextFocus = null } = props;
     
 
     //Redux state
@@ -127,7 +127,7 @@ function ScriptItem(props) {
     const { id, type } = scriptItem;
 
     return (
-        <Container id={id} className="script-item draft-border">
+        <Container id={id} className={`script-item ${type?.toLowerCase()} draft-border`}>
             <Row>
                 <Col className={`script-item-body draft-border`}>
 
@@ -140,8 +140,9 @@ function ScriptItem(props) {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             onFocus={handleFocus}
-                            onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocusId, nextFocusId)}
+                            onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocus, nextFocus)}
                         />
+
                         {(inFocus) &&
                             <div className="script-item-controls">
                                 <ScriptItemControls />

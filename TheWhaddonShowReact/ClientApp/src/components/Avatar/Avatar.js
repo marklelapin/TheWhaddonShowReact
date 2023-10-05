@@ -10,7 +10,10 @@ import { uploads_avatars } from 'dataAccess/uploadLocations';
 
 export function Avatar(props) {
 
-    const { person, onClick, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
+    const { person: draftPerson, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
+
+    const person = draftPerson || {}
+
 
     const { firstName = null, email = null, pictureRef = null } = person;
 
@@ -33,7 +36,7 @@ export function Avatar(props) {
         if (onClick) {
             onClick(event, linkId)
         } else {
-            if (person.id !== null) {
+            if (person?.id !== null) {
                 const imageInput = document.getElementById(inputId)
 
                 if (imageInput) imageInput.click(); //trigger click event on hidden file upload element

@@ -15,7 +15,7 @@ function PartSelector(props) {
 
     log(debug,'PartSelectorProps',props)
 
-    const { scenePartIds = [], allocatedPartIds = [],onChange } = props;
+    const { scenePartIds = [], allocatedPartIds = [],onChange, size = "md" } = props;
 
 
     const storedParts = useSelector(state => state.localServer.parts.history)
@@ -104,11 +104,11 @@ log(debug,'PartsSelector allocatedPartIds',allocatedPartIds)
             <DropdownToggle nav >  {/*className={s.headerSvgFlipColor}*/}
                 <>
                     {partsArray.filter(part => part.allocated === true).map(part => {
-                        return (<PartNameAndAvatar size ="sm" key={part.id} part={part} avatar />
+                        return (<PartNameAndAvatar size={size} key={part.id} part={part} avatar />
                         )
                     })}
-                    {(partsArray.some(part => part.allocated === true)) === false &&
-                        < Avatar person={{ id: 0, firstName: 'clear' }} size="sm" avatarInitials="?" />
+                        {(partsArray.some(part => part.allocated === true)) === false &&
+                            < Avatar person={{ id: 0, firstName: 'clear' }} size={size} avatarInitials="?" />
                     }
                 </>
 

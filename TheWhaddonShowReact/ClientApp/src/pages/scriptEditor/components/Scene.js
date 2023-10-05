@@ -114,8 +114,7 @@ function Scene(props) {
 
 
         setFocusAfterScriptItemsChange({
-            id: newScriptItem.id,
-            position: (placement === above) ? start : end
+            ...newScriptItem, position: (placement === above) ? start : end
         })
 
         const preparedUpdates = prepareUpdates(newScriptItems)
@@ -130,6 +129,7 @@ function Scene(props) {
 
         setFocusAfterScriptItemsChange({
             id: scriptItemToDelete.previousId,
+            parentId: scriptItemToDelete.parentId,
             position: end
         })
 
@@ -198,18 +198,18 @@ function Scene(props) {
 
 
 
-    const handleKeyDown = (e, scriptItem, previousFocusIdOverride = null, nextFocusIdOverride = null) => {
+    const handleKeyDown = (e, scriptItem, previousFocusOverride = null, nextFocusOverride = null) => {
 
         const up = 'up'
         const down = 'down'
 
         const moveFocus = (direction, overrideId = null) => {
             e.preventDefault()
-            const newId = overrideId || (direction === down) ? nextFocusIdOverride || scriptItem.nextId : previousFocusIdOverride || scriptItem.previousId
+            const newId = overrideId || (direction === down) ? nextFocusOverride.id || scriptItem.nextId : previousFocusOverride.id || scriptItem.previousId
 
             if (newId) {
 
-                dispatch(changeFocus({ id: newId, position: (direction === up) ? end : start }))
+                dispatch(changeFocus({ id: newId, parentId: scriptItem.parentId, position: (direction === up) ? end : start }))
 
             }
 
@@ -380,30 +380,30 @@ function Scene(props) {
 
                 }
                 {synopsis &&
-                    <ScriptItem scriptItem={synopsis}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        onKeyDown={handleKeyDown}
-                        focus={getFocus(synopsis.id)}
-                        nextFocusId={scenePartIds[0]}
+                        <ScriptItem scriptItem={synopsis}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            onKeyDown={handleKeyDown}
+                            focus={getFocus(synopsis.id)}
+                            nextFocus={{ id: scenePartIds[0], parentId: currentScene.id, position: start }}
                     />
                 }
                 <PartEditor
-                    partIds={scenePartIds}
-                    onChange={(partIds) => handlePartIdChange(partIds)}
-                    previousFocusId={synopsis.id} //override the default focus ids
-                    nextFocusId={staging.id}
+                        partIds={scenePartIds}
+                        onChange={(partIds) => handlePartIdChange(partIds)}
+                        previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: end }} //override the default focus ids
+                        nextFocus={{ id: staging.id, parentId: currentScene.id, position: start }}
                 />
 
                 {staging &&
                     <>
                         <h5>Initial Staging</h5>
-                    <ScriptItem scriptItem={staging}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        onKeyDown={handleKeyDown}
-                        focus={getFocus(staging.id)}
-                        previousFocusId={scenePartIds[scenePartIds.length - 1]}
+                        <ScriptItem scriptItem={staging}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            onKeyDown={handleKeyDown}
+                            focus={getFocus(staging.id)}
+                            previousFocus={{ id: scenePartIds[scenePartIds.length - 1], parentId: currentScene.id, position: end }}
                        
                         />
                     </>

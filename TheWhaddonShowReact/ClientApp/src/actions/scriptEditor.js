@@ -5,6 +5,8 @@ export const UPDATE_VIEW_COMMENTS = 'UPDATE_VIEW_COMMENTS';
 export const UPDATE_DIALOGUE_RIGHT_ID = 'UPDATE_DIALOGUE_RIGHT_ID'
 export const TOGGLE_SCENE_SELECTOR = 'TOGGLE_SCENE_SELECTOR';
 export const UPDATE_SHOW_COMMENTS = 'SET_SHOW_COMMENTS';
+export const UPDATE_VIEW_AS_PERSON = 'UPDATE_VIEW_AS_PERSON';
+export const UPDATE_VIEW_AS_PART_ID = 'UPDATE_VIEW_AS_PART_ID';
 
 export function updateSearchParameters(searchParameters) {
     return {
@@ -40,5 +42,19 @@ export function updateShowComments(showComments) {
     return {
         type: UPDATE_SHOW_COMMENTS,
         showComments,
+    }
+}
+
+export function updateViewAsPerson(viewAsPerson) {
+    return {
+        type: UPDATE_VIEW_AS_PERSON,
+        viewAsPerson,
+    }
+}
+
+export function updateViewAsPartId(viewAsPartId) {
+    return {
+        type: UPDATE_VIEW_AS_PART_ID,
+        viewAsPartId,
     }
 }

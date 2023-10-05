@@ -1,29 +1,47 @@
-﻿import React from 'react';
+﻿//React and Redux
+import React from 'react';
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, ReactReduxContext } from 'react-redux';
+
+//Components
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { categorisePersons, addFriendlyName } from 'dataAccess/personScripts';
 import Avatar from 'components/Avatar/Avatar';
 import Widget from 'components/Widget';
 
+//utilities
+import { categorisePersons, addFriendlyName } from 'dataAccess/personScripts';
+import { getLatest } from 'dataAccess/localServerUtils';
 function PersonSelector(props) {
 
-    const { persons = [], tags = [], onClick, closeModal, deselect = true } = props;
+    //Props
+    const { persons = null, tags = [], onClick, closeModal, deselect = true } = props;
 
-    const personsWithFriendlyName = addFriendlyName(persons);
+    //Redux state
+    const storedPersons = useSelector(state => state.localServer.persons.history)
+
+
+
+    //calculations
+    const finalPersons = persons || getLatest(storedPersons) || []
+
+    const personsWithFriendlyName = addFriendlyName(finalPersons);
 
     const categorisedPersons = categorisePersons(personsWithFriendlyName, tags);
 
     const deselectPerson = { id: null, friendlyName: 'Deselect', avatarInitials: 'X', pictureRef: null }
 
+    
+    
 
+
+  
 
     const personJSX = (person) => {
 
         const { id, friendlyName } = person;
 
         return (
-            <div key={id}className="person-button" onClick={() => onClick(id)}>
+            <div key={id}className="person-button" onClick={() => onClick(person)}>
                 <Avatar person={person} avatarInitials={(person.avatarInitials) || null} />
                 <span >{friendlyName}</span>
             </div>

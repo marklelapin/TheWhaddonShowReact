@@ -28,7 +28,7 @@ function PartEditor(props) {
     const down = 'down';
 
     //props
-    const { partIds = [], onChange, previousFocusId, nextFocusId } = props;
+    const { partIds = [], onChange, previousFocus, nextFocus } = props;
 
     log(debug, 'PartEditorProps', props)
 
@@ -88,13 +88,13 @@ function PartEditor(props) {
             return part;
         })
 
-        const newFocusId = (direction === up) ? previousPart?.id || previousFocusId : nextPart?.id || previousPart?.id
+        const newFocus = (direction === up) ? previousPart || previousFocus : nextPart || previousPart
 
 
 
         setSceneParts(updatedParts);
 
-        dispatch(changeFocus({ id: newFocusId, position: 'end' }))
+        dispatch(changeFocus({ ...newFocus, position: 'end' }))
 
         updateIfChanged()
     }
@@ -114,7 +114,7 @@ function PartEditor(props) {
 
 
         setSceneParts(newParts)
-        dispatch(changeFocus({ id: newPart.id, position: 'end' }))
+        dispatch(changeFocus({ ...newPart, position: 'end' }))
     }
 
     const updateIfChanged = () => {
@@ -172,23 +172,23 @@ function PartEditor(props) {
 
             const currentPartIndex = sceneParts.findIndex(item => item.id === part.id)
 
-            const nextPartId = sceneParts[currentPartIndex + 1]?.id
-            const previousPartId = sceneParts[currentPartIndex - 1]?.id
+            const nextPart = sceneParts[currentPartIndex + 1]
+            const previousPart = sceneParts[currentPartIndex - 1]
 
             if (direction === up) {
 
-                if (previousPartId) {
-                    dispatch(changeFocus({ id: previousPartId, position: end }))
+                if (previousPart) {
+                    dispatch(changeFocus({ ...previousPart, position: end }))
                 } else {
-                    dispatch(changeFocus({ id: previousFocusId, position: end }))
+                    dispatch(changeFocus({ ...previousFocus, position: end }))
                 }
 
             } else if (direction === down) {
 
-                if (nextPartId) {
-                    dispatch(changeFocus({ id: nextPartId, position: start }))
+                if (nextPart) {
+                    dispatch(changeFocus({ ...nextPart, position: start }))
                 } else {
-                    dispatch(changeFocus({ id: nextFocusId, position: start }))
+                    dispatch(changeFocus({ ...nextFocus, position: start }))
                 }
 
             }
@@ -344,7 +344,7 @@ function PartEditor(props) {
         })
 
         setSceneParts(updateParts)
-        dispatch(changeFocus({ id: part.id, position: 'end' }))
+        dispatch(changeFocus({ ...part, position: 'end' }))
 
     }
 
@@ -360,20 +360,18 @@ function PartEditor(props) {
             return part;
         })
         setSceneParts(updateParts)
-        dispatch(changeFocus({ id: part.id, position: 'end' }))
+        dispatch(changeFocus({ ...part, position: 'end' }))
     }
 
 
-    const handleSelectPerson = (personId, part) => {
+    const handleSelectPerson = (person, part) => {
 
         const partId = part.id
 
         const updatedParts = sceneParts.map(part => {
             if (part.id === partId) {
 
-                let partUpdate = { ...part, personId: personId, changed: true }
-
-                const person = getLatest([...storedPersons].filter(person => person.id === personId))
+                let partUpdate = { ...part, personId: person.id, changed: true }
 
                 partUpdate = addPersonInfo(partUpdate, person[0])
 
@@ -387,14 +385,14 @@ function PartEditor(props) {
 
         setModalPersons(null);
         setSceneParts(updatedParts);
-        dispatch(changeFocus({ id: part.id, position: 'end' }))
+        dispatch(changeFocus({ ...part, position: 'end' }))
     }
 
 
 
     const closeModalPersons = () => {
 
-        moveFocusToId(modalPersons.part.id)
+        dispatch(changeFocus({ ...modalPersons.part, position: 'end' }))
         setModalPersons(null);
 
     }
@@ -470,7 +468,7 @@ function PartEditor(props) {
                     persons={modalPersons.unAllocatedPersons}
                     tags={modalPersons.part.tags}
                     closeModal={() => closeModalPersons()}
-                    onClick={(personId) => handleSelectPerson(personId, modalPersons.part)} />
+                    onClick={(person) => handleSelectPerson(person, modalPersons.part)} />
             }
 
         </>

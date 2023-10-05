@@ -3,6 +3,8 @@ import { UPDATE_VIEW_COMMENTS } from 'actions/scriptEditor';
 import { UPDATE_DIALOGUE_RIGHT_ID } from 'actions/scriptEditor';
 import { TOGGLE_SCENE_SELECTOR } from 'actions/scriptEditor';
 import { UPDATE_SHOW_COMMENTS } from 'actions/scriptEditor';
+import { UPDATE_VIEW_AS_PERSON } from 'actions/scriptEditor';
+import { UPDATE_VIEW_AS_PART_ID } from 'actions/scriptEditor';
 
 const initialState = {
     searchParameters: {
@@ -13,9 +15,11 @@ const initialState = {
     showComments: true,
     dialogueRightId: null,
     showSceneSelector: true,
+    viewAsPerson: null,
+    viewAsPartId: null,
 
 }
-    
+
 export default function runtime(state = initialState, action) {
     switch (action.type) {
         case UPDATE_SEARCH_PARAMETERS:
@@ -42,7 +46,17 @@ export default function runtime(state = initialState, action) {
             return {
                 ...state,
                 showComments: action.showComments,
-};
+            };
+        case UPDATE_VIEW_AS_PERSON:
+            return {
+                ...state,
+                viewAsPerson: action.viewAsPerson,
+            };
+        case UPDATE_VIEW_AS_PART_ID:
+            return {
+                ...state,
+                viewAsPartId: action.viewAsPartId,
+            };
         default:
             return state;
     }

@@ -21,7 +21,7 @@ function PartNameAndAvatar(props) {
     const debug = false;
     const dispatch = useDispatch()
 
-    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, focus, avatar, partName, personName, size="sm" } = props;
+    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, focus, avatar, partName, personName, size="md" } = props;
 
 
     log(debug, 'PartNameAndAvatar Props', props)

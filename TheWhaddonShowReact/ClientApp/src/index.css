@@ -145,39 +145,38 @@ margin: 2px;
 
 /* ScriptItem CSS*/
 .script-item{
-  
+  padding: 0px
 }
 
 .script-item-comment{
     
 }
 .script-item-body {
- 
+  padding: 25px;
 }
 
 
 .script-item-text {
     position: relative;
-    grid-area: text;
 }
 
 .script-item-text .text-input{
-
+   
 }
 
 .script-item-header {
     position: absolute;
     top: -20px;
+    left: 10px
 
 }
 
 .script-item-parts{
     
     position: absolute;
-top: -25px;
-left: -55px;
-overflow: visible
-    
+top: -35px;
+left: -45px;
+overflow: visible;    
 }
 
 .script-item-controls{
@@ -208,3 +207,14 @@ overflow: visible
     padding: 0px;
 }
 
+/* Style the chat input box */
+.script-item.dialogue .text-input {
+    position:absolute;
+    border: 1px solid #ccc;
+    border-radius: 0px 20px 20px 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    width: 100%;
+    z-index: 2;
+
+}
