@@ -1,18 +1,12 @@
 ﻿//React and REdux
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
-import { toggleSceneSelector, updateShowComments, updateViewAsPerson, updateViewAsPartId } from 'actions/scriptEditor';
 
 //Components
-import { Container, Row, Col, Nav, NavItem, NavLink } from 'reactstrap';
+import { Container } from 'reactstrap';
 import Scene from './Scene'
-import { Icon } from 'components/Icons/Icons'
-import  Avatar  from 'components/Avatar/Avatar'
-import PartSelector  from './PartSelector'
+
 //utitilites
-import { isSmallerScreen } from 'components/Sidebar/Sidebar'
+
 import { log } from 'helper';
 
 //Constants
@@ -25,7 +19,7 @@ function ScriptViewer(props) {
 
 
     //props
-    const { scenes, onClick } = props; 
+    const { scenes } = props; 
 
     log(debug,'ScriptViewer Rendering')
 

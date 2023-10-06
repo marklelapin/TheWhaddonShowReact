@@ -23,52 +23,19 @@ import { changeFocus } from 'actions/navigation';
 
 function Script() {
 
-
+    //constants
+    const [testAct, setTestAct] = useState(null)
     const debug = false;
     const dispatch = useDispatch();
 
-    //createSelector used for compled state selection to avoid unecessary rerenders
-    const getScriptItems = (state) => state.localServer.scriptItems.history
-    const storedScenesSelector = createSelector(
-        [getScriptItems],
-        (items) => {
-            log(debug, 'Script Selector')
-            return items.filter(item => item.type === 'Scene' || item.type === 'Act' || item.type === 'Show')
-        }
-    );
 
-    const refreshTrigger = useSelector((state) => state.localServer.refresh)
-
-
-  
+    //Redux State
     const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
-
+    const sceneHistory = useSelector((state) => state.scriptEditor.sceneHistory)
     //Internal State
-    const [storedScenes, setStoredScenes] = useState([])
     const [isLargerScreen, setIsLargerScreen] = useState(null)
 
-    useEffect(() => {
-        handleScriptScreenResize()
-
-    }, [])
-
-
-    const [testAct, setTestAct] = useState(null)
-
-    useEffect(() => {
-        log(debug, 'refreshTrigger useEffect', refreshTrigger)
-
-        if (refreshTrigger.type === 'ScriptItem' && refreshTrigger.ids.length > 0) {
-
-            const storedScenes = storedScenesSelector(store.getState())
-            log(debug, 'storedScenes', storedScenes)
-            const sortedScenes = sortLatestScriptItems(testAct, storedScenes)
-            log(debug, 'sortedScenes', sortedScenes)
-            setStoredScenes(sortedScenes)
-        }
-    }, [refreshTrigger])
-
-
+    log(debug, 'Script: sceneHistory', sceneHistory)
 
     //REMOVE WHEN TESTING FINISHED 
     //-----------------------------------------------------------------------
@@ -110,9 +77,7 @@ function Script() {
 
     }, [])
 
-
-
-
+    //UseEffect Hooks
     useEffect(() => {
         window.addEventListener('resize', handleScriptScreenResize);
 
@@ -120,6 +85,17 @@ function Script() {
     }, []);
 
 
+    useEffect(() => {
+        handleScriptScreenResize()
+    }, [])
+
+
+    //calculations
+
+    const scenes = sortLatestScriptItems(testAct,sceneHistory) //TODO add undoDateTime later
+
+
+    //eventHandlers
     const handleScriptScreenResize = () => {
         //console.log(`hadnle resize static: ${sidebarStatic} opened: ${sidebarOpened}`)
         if (isSmallerScreen()) {
@@ -136,7 +112,7 @@ function Script() {
 
     }
 
-
+    log(debug,'Scipt Rendering Scene',scenes)
 
     //-----------------------------------------------------------------------
     return (
@@ -148,13 +124,13 @@ function Script() {
                 <Row>
                     {(showSceneSelector || isLargerScreen) &&
                         <Col xs="12" md="3">
-                            <SceneSelector scenes={storedScenes} />
+                            <SceneSelector scenes={scenes} />
                         </Col>
                     }
 
                     {(!showSceneSelector || isLargerScreen) &&
                         <Col xs="12" md="9">
-                            <ScriptViewer scenes={storedScenes} />
+                            <ScriptViewer scenes={scenes} />
 
                         </Col>
                     }

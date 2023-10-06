@@ -158,17 +158,17 @@ export default function localServerReducer(state = defaultState, action) {
                 case Person: return {
                     ...state,
                     persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
-                    refresh: { ids: updatesToAdd.map(update => update.id), type: action.payloadType }
+                    refresh: { updates: updatesToAdd, type: action.payloadType }
                 };
                 case ScriptItem: return {
                     ...state,
                     scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
-                    refresh: { ids: updatesToAdd.map(update => update.id), type: action.payloadType }
+                    refresh: { updates: updatesToAdd, type: action.payloadType }
                 };
                 case Part: return {
                     ...state,
                     parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
-                    refresh: { ids: updatesToAdd.map(update => update.id), type: action.payloadType }
+                    refresh: { updates: updatesToAdd, type: action.payloadType }
                 };
                 default: return state
             };

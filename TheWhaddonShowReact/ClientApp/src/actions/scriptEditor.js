@@ -7,6 +7,10 @@ export const TOGGLE_SCENE_SELECTOR = 'TOGGLE_SCENE_SELECTOR';
 export const UPDATE_SHOW_COMMENTS = 'SET_SHOW_COMMENTS';
 export const UPDATE_VIEW_AS_PERSON = 'UPDATE_VIEW_AS_PERSON';
 export const UPDATE_VIEW_AS_PART_ID = 'UPDATE_VIEW_AS_PART_ID';
+export const UPDATE_PART_PERSONS = 'UPDATE_PART_PERSONS';
+export const ADD_UPDATES_SCENE_HISTORY = 'ADD_UPDATES_SCENE_HISTORY';
+export const ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY';
+export const UPDATE_SCENE_PART_PERSONS = 'UPDATE_SCENE_PART_PERSONS';
 
 export function updateSearchParameters(searchParameters) {
     return {
@@ -56,5 +60,35 @@ export function updateViewAsPartId(viewAsPartId) {
     return {
         type: UPDATE_VIEW_AS_PART_ID,
         viewAsPartId,
+    }
+}
+
+export function updatePartPersons(partPersons) {
+return {
+        type: UPDATE_PART_PERSONS,
+        partPersons,
+    }
+}
+
+export function addUpdatesToSceneHistory( updates) {
+return {
+        type: ADD_UPDATES_SCENE_HISTORY,
+        updates,
+    }
+}
+
+export function addUpdatesToSceneScriptItemHistory(sceneId, updates) {
+    return {
+type: ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY,
+        id: sceneId,
+        updates,
+    }
+}
+
+export function updateScenePartPersons(sceneId, partPersons) {
+    return {
+type: UPDATE_SCENE_PART_PERSONS,
+        id: sceneId,
+        partPersons,
     }
 }

@@ -11,43 +11,40 @@ import PartNameAndAvatar from './PartNameAndAvatar';
 function PartSelector(props) {
 
 
-    const debug = true;
+    const debug = false;
 
     log(debug,'PartSelectorProps',props)
     //Props
-    const { scenePartIds = [], allocatedPartIds = [],onChange, size = "md" } = props;
+    const { scene, allocatedPartIds = [],onChange, size = "md" } = props;
 
     //REdux
-    const storedParts = useSelector(state => state.localServer.parts.history)
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id] )
 
     //Internal State
     const [partsArray, setPartsArray] = useState([])
+    const [openPartSelector, setOpenPartSelector] = useState(false);
 
-    log(debug, 'PartsSelector scenePartIds', scenePartIds)
-    log(debug,'PartsSelector allocatedPartIds',allocatedPartIds)
+
+
+    const sceneParts = scenePartPersons?.PartPersons
+
+    //UseEffectHooks
 
     useEffect(() => {
 
         //setup partsArray
-        const sceneParts = getLatest(storedParts).filter(part => scenePartIds.includes(part.id))
-
-        const newPartsArray = sceneParts.map(part => allocatedPartIds.includes(part.id) ? { ...part, allocated: true } : { ...part, allocated: false })
+        const newPartsArray = sceneParts?.map(part => allocatedPartIds.includes(part.id) ? { ...part, allocated: true } : { ...part, allocated: false }) || []
 
         setPartsArray(newPartsArray)
 
         //add click event listener to document to close dropdown
         //TODOD
+    },[sceneParts,allocatedPartIds])
 
-
-    },[storedParts,scenePartIds,allocatedPartIds])
-
-
-    log(debug, 'PartSelector storedParts:', storedParts)
     log(debug, 'PartSelector partsArray:', partsArray)
 
 
-    const [openPartSelector, setOpenPartSelector] = useState(false);
-
+    
 
     //Event Handlers
 

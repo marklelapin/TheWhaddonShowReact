@@ -6,7 +6,7 @@ import { createSelector } from 'reselect';
 import { store } from 'index.js';
 
 //Components
-import { Row,Col} from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import ScriptItem from 'pages/scriptEditor/components/ScriptItem.js';
 import PartEditor from 'pages/scriptEditor/components/PartEditor.js';
 
@@ -19,14 +19,13 @@ import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
 import { log } from 'helper'
 import { changeFocus } from 'actions/navigation';
 
+
 function Scene(props) {
 
     //utility constants
-    const debug = false;
-    const debugRenderProps = false;
+    const debug = true;
+    const debugRenderProps = true;
 
-
-    const _ = require('lodash');
     const dispatch = useDispatch()
     const above = 'above'
     const below = 'below'
@@ -38,64 +37,32 @@ function Scene(props) {
 
     log(debug, 'Scene Passed into Scene', scene)
 
-
-    //UPDATE MECHANISM FOR SCRIPT ITEMS TO SYNC WITH REDUX STORE
-    //--------------------------------------------------------------------------------------------------------
-    //Create Selector for ScriptItems in Redux Store necessary due to filtering of state.
-    const getScriptItems = (state) => state.localServer.scriptItems.history
-    const selectorScriptItems = createSelector(
-        [getScriptItems],
-        (item, _) => {
-            log(debug, 'selectorScriptItems from Scene.js')
-            return item.filter((item) => (item.parentId === scene.id || item.id === scene.id)) || []
-        })
-
-    const refreshTrigger = useSelector((state) => state.localServer.refresh) //identifies when a change has been made to localserver redux store
-
+    //Redux state
+    const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory[scene.id])
     const focus = useSelector((state) => state.navigation.focus)
 
+    log(debug,'sceneScriptItemHistory',sceneScriptItemHistory)
 
-    const [storedScriptItems, setStoredScriptItems] = useState([]) //internal state copy of stored scriptItems
-
-    useEffect(() => { //without this manual refresh mechanism state was continually being updated from background dispatches such as sync and end sync + others.
-
-        log(debug, 'refreshTrigger from Scene.js', refreshTrigger)
-
-        if (refreshTrigger.type === 'ScriptItem' && refreshTrigger.ids.length > 0) {
-            const storedScriptItems = selectorScriptItems(store.getState())
-
-            setStoredScriptItems(storedScriptItems)
-        }
-    }, [refreshTrigger])
-    //--------------------------------------------------------------------------------------------------------
-
-
-
-    //Setup remaining internal state:
-    //--------------------------------------------------------------------------------------------------------
-
+    //Internal State
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
     const [scriptItems, setScriptItems] = useState([]); //
     const [focusAfterScriptItemsChange, setFocusAfterScriptItemsChange] = useState(false); //the id to focus on after script items have changed]
 
 
+    //Update of internal scriptItems. This is triggered by changes to the sceneScriptItemHistory or the undoDateTime
     useEffect(() => {
         resetScriptItems()
     }, [])
     useEffect(() => {
-
         resetScriptItems()
-
-    }, [storedScriptItems, undoDateTime])
+    }, [sceneScriptItemHistory, undoDateTime])
 
     const resetScriptItems = () => {
-
-        const scriptItemsUpdate = sortLatestScriptItems(scene, [...storedScriptItems], undoDateTime)
-
-        setScriptItems(scriptItemsUpdate)
-
+        const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
+        setScriptItems(scriptItems)
     }
 
+    //Update of focus after scriptItems have changed
     useEffect(() => {
         dispatch(changeFocus(focusAfterScriptItemsChange))
     }, [scriptItems])
@@ -161,7 +128,7 @@ function Scene(props) {
 
     const handleUndo = () => {
 
-        const nextUndoDate = getNextUndoDate([...storedScriptItems, ...scriptItems], undoDateTime)
+        const nextUndoDate = getNextUndoDate([...sceneScriptItemHistory, ...scriptItems], undoDateTime)
 
         setUndoDateTime(nextUndoDate)
 
@@ -169,12 +136,11 @@ function Scene(props) {
 
     const handleRedo = () => {
 
-        const nextUndoDate = getNextRedoDate([...storedScriptItems, ...scriptItems], undoDateTime)
+        const nextUndoDate = getNextRedoDate([...sceneScriptItemHistory, ...scriptItems], undoDateTime)
 
         setUndoDateTime(nextUndoDate)
 
     }
-
 
     const handleSetUndo = () => {
 
@@ -315,15 +281,15 @@ function Scene(props) {
 
     const handlePartIdChange = (partIds) => {
 
-        log(debug,'PArtIdChange',partIds)
+        log(debug, 'PartIdChange', partIds)
 
-            let scene = [...scriptItems].find(item => item.type === 'Scene') || {}
+        let scene = [...scriptItems].find(item => item.type === 'Scene') || {}
 
-            scene.partIds = partIds
+        scene.partIds = partIds
 
-            const preparedUpdate = prepareUpdate(scene)
+        const preparedUpdate = prepareUpdate(scene)
 
-            dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
+        dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
     }
 
     const handleChange = (type, id, value) => {
@@ -347,7 +313,6 @@ function Scene(props) {
 
     const body = [...scriptItems].filter(item => item.type !== 'Scene' && item.type !== 'Synopsis' && item.type !== 'InitialStaging') || []//returns the body scriptItems
 
-    const scenePartIds = currentScene.partIds || []
 
     log(debugRenderProps, 'Scene scriptItems', scriptItems)
     log(debugRenderProps, 'Scene currentScene', currentScene)
@@ -369,60 +334,70 @@ function Scene(props) {
             <Row className="scene-header draft-border">
                 <Col>
 
- {
-                    (currentScene) &&
-                    <ScriptItem scriptItem={currentScene}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        onKeyDown={handleKeyDown}
-                        focus={getFocus(currentScene.id)}
-                    />
+                    {
+                        (currentScene) &&
+                        <ScriptItem scriptItem={currentScene}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            onKeyDown={handleKeyDown}
+                            focus={getFocus(currentScene.id)}
+                        />
 
-                }
-                {synopsis &&
+                    }
+                    {synopsis &&
                         <ScriptItem scriptItem={synopsis}
                             onChange={handleChange}
                             onBlur={handleBlur}
                             onKeyDown={handleKeyDown}
                             focus={getFocus(synopsis.id)}
-                            nextFocus={{ id: scenePartIds[0], parentId: currentScene.id, position: start }}
-                    />
-                }
-                <PartEditor
-                        partIds={scenePartIds}
+                            nextFocus={
+                                {
+                                    id: (currentScene.partIds) ? currentScene.partIds[0] : null,
+                                    parentId: currentScene.id,
+                                    position: start
+                                }}
+                        />
+                    }
+                    <PartEditor
+                        scene={currentScene}
                         onChange={(partIds) => handlePartIdChange(partIds)}
                         previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: end }} //override the default focus ids
                         nextFocus={{ id: staging.id, parentId: currentScene.id, position: start }}
-                />
+                    />
 
-                {staging &&
-                    <>
-                        <h5>Initial Staging</h5>
-                        <ScriptItem scriptItem={staging}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            onKeyDown={handleKeyDown}
-                            focus={getFocus(staging.id)}
-                            previousFocus={{ id: scenePartIds[scenePartIds.length - 1], parentId: currentScene.id, position: end }}
-                       
-                        />
-                    </>
+                    {staging &&
+                        <>
+                            <h5>Initial Staging</h5>
+                            <ScriptItem scriptItem={staging}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                onKeyDown={handleKeyDown}
+                                focus={getFocus(staging.id)}
+                                previousFocus={
+                                    {
+                                        id: (currentScene.partIds) ? currentScene.partIds[currentScene.partIds.length - 1] : null,
+                                        parentId: currentScene.id,
+                                        position: end
+                                    }}
 
-                }
+                            />
+                        </>
+
+                    }
 
                 </Col>
             </Row>
-               
+
 
             <div className="scene-body">
-                {body.map((scriptItem,index) => {
+                {body.map((scriptItem, index) => {
                     return (
                         <ScriptItem key={scriptItem.id}
                             scriptItem={scriptItem}
-                            scenePartIds={scenePartIds}
+                            scene={currentScene}
                             onKeyDown={handleKeyDown}
-                            focus={getFocus(scriptItem.id)} 
-                           
+                            focus={getFocus(scriptItem.id)}
+
                         />
                     )
                 })

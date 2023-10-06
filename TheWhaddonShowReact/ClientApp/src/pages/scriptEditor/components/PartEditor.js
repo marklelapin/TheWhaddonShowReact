@@ -22,21 +22,27 @@ import { changeFocus } from 'actions/navigation';
 function PartEditor(props) {
 
     //utility consts
-    const debug = false
+    const debug = true
     const dispatch = useDispatch();
     const up = 'up';
     const down = 'down';
 
     //props
-    const { partIds = [], onChange, previousFocus, nextFocus } = props;
+    const { scene = null, onChange, previousFocus, nextFocus } = props;
 
     log(debug, 'PartEditorProps', props)
 
-
+    if (scene === null) {
+        throw new Error('PartEditor: scene prop is null')
+    }
+   
 
     //Get persons and parts data from REdux Store
+    //const storedPartPersons = useSelector(state => state.scriptEditor.partPersons)
+    const storedSceneParts = useSelector(state => state.scriptEditor.scenePartPersons[scene.id]) 
     const storedPersons = useSelector(state => state.localServer.persons.history)
-    const storedParts = useSelector(state => state.localServer.parts.history)
+
+    log(debug, 'storedSceneParts', storedSceneParts)
 
     const focus = useSelector(state => state.navigation.focus)
 
@@ -44,27 +50,29 @@ function PartEditor(props) {
     const [sceneParts, setSceneParts] = useState([])
 
     useEffect(() => {
-        resetSceneParts()
+        setSceneParts(storedSceneParts?.partPersons || [])
     }, [])
 
     useEffect(() => {
-        resetSceneParts()
-    }, [storedParts, partIds])
+        setSceneParts(storedSceneParts?.partPersons || [])
+    }, [storedSceneParts])
 
-    log(debug, 'PartsEditor: storedParts', storedParts)
+   
 
-    const resetSceneParts = () => {
-        const newStoredParts = getLatest([...storedParts].filter(part => partIds.includes(part.id)))
+    //const resetSceneParts = () => {
 
-        const newSceneParts = activeSceneParts().map(item => newStoredParts.find(storedPart => storedPart.id === item.id) || item)
+    //    const scenePartPerson
+    //    //const newStoredParts = getLatest([...storedParts].filter(part => partIds.includes(part.id)))
 
-        const newPartIds = partIds.filter(id => ![...storedParts].map(item => item.id).includes(id)) //identifies partIds that have never been part of storedParts. (these are the new parts given to each script in its constructor)
+    //    //const newSceneParts = activeSceneParts().map(item => newStoredParts.find(storedPart => storedPart.id === item.id) || item)
 
-        const newParts = newPartIds.map(id => ({ ...new PartUpdate(), id: id }))
+    //    //const newPartIds = partIds.filter(id => ![...storedParts].map(item => item.id).includes(id)) //identifies partIds that have never been part of storedParts. (these are the new parts given to each script in its constructor)
 
-        setSceneParts([...newSceneParts, ...newParts])
+    //    //const newParts = newPartIds.map(id => ({ ...new PartUpdate(), id: id }))
 
-    }
+    //    setSceneParts([...newSceneParts, ...newParts])
+
+    //}
 
 
     const [modalPersons, setModalPersons] = useState(null); //if populated opens up selectperson modal
@@ -135,10 +143,10 @@ function PartEditor(props) {
 
         const activeSceneParts = sceneParts.filter(item => item.name !== null & item.name !== '' & item.isActive === true)
 
-        if (activeSceneParts.length !== partIds.length) { changeToPartIds = true }
+        if (activeSceneParts.length !== scene.partIds.length) { changeToPartIds = true }
 
         for (let i = 0; i < activeSceneParts.length; i++) {
-            if (activeSceneParts[i].id !== partIds[i]) {
+            if (activeSceneParts[i].id !== scene.partIds[i]) {
                 changeToPartIds = true;
             }
         }
@@ -403,7 +411,7 @@ function PartEditor(props) {
 
     const activeSceneParts = () => {
 
-        return sceneParts.filter(part => part.isActive === true)
+        return sceneParts?.filter(part => part.isActive === true) || []
 
     }
     log(debug, 'Active Scene Parts', activeSceneParts())

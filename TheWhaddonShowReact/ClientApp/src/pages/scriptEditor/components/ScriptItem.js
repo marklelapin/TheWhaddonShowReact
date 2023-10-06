@@ -35,7 +35,7 @@ function ScriptItem(props) {
 
 
     // get specific props
-    const { scriptItem: storedScriptItem, alignRight = false, scenePartIds, onKeyDown, focus, previousFocus = null, nextFocus = null } = props;
+    const { scriptItem: storedScriptItem, scene, alignRight = false, onKeyDown, focus, previousFocus = null, nextFocus = null } = props;
 
 
     //Redux state
@@ -161,7 +161,7 @@ function ScriptItem(props) {
                         {showParts() &&
                             <div className="script-item-parts">
                                 <PartSelector
-                                    scenePartIds={scenePartIds}
+                                    scene={scene}
                                     allocatedPartIds={scriptItem.partIds}
                                     onChange={(selectedPartIds) => handleChange('partIds', selectedPartIds)}
                                 />

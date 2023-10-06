@@ -3,7 +3,12 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { toggleSceneSelector, updateShowComments, updateViewAsPerson, updateViewAsPartId } from 'actions/scriptEditor';
+import {
+    toggleSceneSelector,
+    updateShowComments,
+    updateViewAsPerson,
+    updateViewAsPartId,
+} from 'actions/scriptEditor';
 
 //Components
 import { Container, Row, Col, Nav, NavItem, NavLink } from 'reactstrap';
@@ -22,6 +27,7 @@ function ScriptViewer(props) {
     const debug = true;
 
     //utils
+    const _ = require('lodash');
     const dispatch = useDispatch();
     const CLASSIC = 'Classic'
     const CHAT = 'Chat'
@@ -29,7 +35,11 @@ function ScriptViewer(props) {
     //props
     const { scenes, onClick } = props;
 
-    //Redux
+
+
+   
+
+
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const focus = useSelector(state => state.navigation.focus)
     const viewAsPerson = useSelector(state => state.scriptEditor.viewAsPerson)
@@ -48,7 +58,7 @@ function ScriptViewer(props) {
 
 
     useEffect(() => {
-        log(debug, 'SCript Viewere UseEffect Focus:', focus, focussedScene)
+        log(debug, 'Script Viewer UseEffect Focus:', focus, focussedScene)
         if (focus && focus.parentId !== focussedScene?.Id) { //only if moved to a new scene.
 
             const focussedScene = scenes?.filter(scene => scene.id === focus.parentId)
@@ -58,6 +68,10 @@ function ScriptViewer(props) {
 
         }
     }, [focus])
+
+
+    
+
 
 
 
