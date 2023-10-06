@@ -36,11 +36,13 @@ function ScriptItem(props) {
 
     // get specific props
     const { scriptItem: storedScriptItem, alignRight = false, scenePartIds, onKeyDown, focus, previousFocus = null, nextFocus = null } = props;
-    
+
 
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments)
-    
+    const viewAsPerson = useSelector(state => state.scriptEditor.viewAsPerson)
+    const viewAsPartId = useSelector(state => state.scriptEditor.viewAsPartId)
+    const storedParts = useSelector(state => state.localServer.parts.history)
 
     //Internal State
     const [scriptItem, setScriptItem] = useState({})
@@ -49,6 +51,11 @@ function ScriptItem(props) {
 
     const textInputRef = useRef(null)
   
+
+
+    useEffect(() => {
+        
+    },[])
 
     useEffect(() => {
         setScriptItem(storedScriptItem)
@@ -76,7 +83,7 @@ function ScriptItem(props) {
     }
 
 
-    //utility functions
+    //calculations functions
 
     const showParts = () => {
         switch (scriptItem.type) {
@@ -93,9 +100,11 @@ function ScriptItem(props) {
 
     }
 
+    const dialogueAlignment = () => {
 
+ 
 
-
+    }
 
 
 

@@ -205,7 +205,7 @@ function Scene(props) {
 
         const moveFocus = (direction, overrideId = null) => {
             e.preventDefault()
-            const newId = overrideId || (direction === down) ? nextFocusOverride.id || scriptItem.nextId : previousFocusOverride.id || scriptItem.previousId
+            const newId = overrideId || (direction === down) ? nextFocusOverride?.id || scriptItem.nextId : previousFocusOverride?.id || scriptItem.previousId
 
             if (newId) {
 

@@ -14,16 +14,17 @@ function PartSelector(props) {
     const debug = true;
 
     log(debug,'PartSelectorProps',props)
-
+    //Props
     const { scenePartIds = [], allocatedPartIds = [],onChange, size = "md" } = props;
 
-
+    //REdux
     const storedParts = useSelector(state => state.localServer.parts.history)
 
+    //Internal State
     const [partsArray, setPartsArray] = useState([])
 
     log(debug, 'PartsSelector scenePartIds', scenePartIds)
-log(debug,'PartsSelector allocatedPartIds',allocatedPartIds)
+    log(debug,'PartsSelector allocatedPartIds',allocatedPartIds)
 
     useEffect(() => {
 
@@ -47,6 +48,8 @@ log(debug,'PartsSelector allocatedPartIds',allocatedPartIds)
 
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
+
+    //Event Handlers
 
     const handlePartSelectorClick = (event, partId) => {
 
