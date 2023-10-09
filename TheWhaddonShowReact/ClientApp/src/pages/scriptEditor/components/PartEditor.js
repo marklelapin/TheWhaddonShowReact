@@ -54,7 +54,14 @@ function PartEditor(props) {
     }, [])
 
     useEffect(() => {
-        setSceneParts(storedSceneParts?.partPersons || [])
+
+        const storedScenePartPersons =  storedSceneParts?.partPersons || []
+
+        const storedScenePartIds = storedScenePartPersons.map(part => part.id)
+
+        const newSceneParts = sceneParts.filter(part=>!storedScenePartIds.includes(part.id))
+
+        setSceneParts([...storedScenePartPersons,...newSceneParts])
     }, [storedSceneParts])
 
    
@@ -108,6 +115,7 @@ function PartEditor(props) {
     }
 
     const createPart = (partBefore = {}) => {
+
 
         const updatedParts = [...sceneParts]
 

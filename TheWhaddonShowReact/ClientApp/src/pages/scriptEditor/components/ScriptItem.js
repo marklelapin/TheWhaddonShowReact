@@ -43,19 +43,20 @@ function ScriptItem(props) {
     const viewAsPerson = useSelector(state => state.scriptEditor.viewAsPerson)
     const viewAsPartId = useSelector(state => state.scriptEditor.viewAsPartId)
     const storedParts = useSelector(state => state.localServer.parts.history)
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[storedScriptItem.parentId])
 
     //Internal State
     const [scriptItem, setScriptItem] = useState({})
-    const [inFocus, setInFocus] = useState(null) 
+    const [inFocus, setInFocus] = useState(null)
 
 
     const textInputRef = useRef(null)
-  
+
 
 
     useEffect(() => {
-        
-    },[])
+
+    }, [])
 
     useEffect(() => {
         setScriptItem(storedScriptItem)
@@ -94,7 +95,16 @@ function ScriptItem(props) {
 
     const header = () => {
         switch (scriptItem.type) {
-            case DIALOGUE: return 'Test Name'
+            case DIALOGUE:
+                if (scenePartPersons) {
+
+
+                    const partPersons = scriptItem.partIds.map(partId => scenePartPersons.partPersons.find(partPerson => partPerson.id === partId))
+
+                    const partNames = partPersons.map(partPersons => partPersons.name).join(',')
+
+                    return partNames;
+                }; break;
             default: return null;
         }
 
@@ -102,7 +112,7 @@ function ScriptItem(props) {
 
     const dialogueAlignment = () => {
 
- 
+
 
     }
 

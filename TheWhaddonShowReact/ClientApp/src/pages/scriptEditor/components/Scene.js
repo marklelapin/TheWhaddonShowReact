@@ -24,7 +24,7 @@ function Scene(props) {
 
     //utility constants
     const debug = true;
-    const debugRenderProps = true;
+    const debugRenderProps = false;
 
     const dispatch = useDispatch()
     const above = 'above'
@@ -40,6 +40,7 @@ function Scene(props) {
     //Redux state
     const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory[scene.id])
     const focus = useSelector((state) => state.navigation.focus)
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
 
     log(debug,'sceneScriptItemHistory',sceneScriptItemHistory)
 
@@ -47,7 +48,7 @@ function Scene(props) {
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
     const [scriptItems, setScriptItems] = useState([]); //
     const [focusAfterScriptItemsChange, setFocusAfterScriptItemsChange] = useState(false); //the id to focus on after script items have changed]
-
+    
 
     //Update of internal scriptItems. This is triggered by changes to the sceneScriptItemHistory or the undoDateTime
     useEffect(() => {
@@ -311,9 +312,12 @@ function Scene(props) {
     const synopsis = scriptItems.find(item => item.type === 'Synopsis') || {} //returns the synopsis scriptItem
     const staging = scriptItems.find(item => item.type === 'InitialStaging') || {}//returns the staging scriptItem')
 
-    const body = [...scriptItems].filter(item => item.type !== 'Scene' && item.type !== 'Synopsis' && item.type !== 'InitialStaging') || []//returns the body scriptItems
+    const body = () => {
 
+        const bodyScriptItems = [...scriptItems].filter(item => item.type !== 'Scene' && item.type !== 'Synopsis' && item.type !== 'InitialStaging') || []//returns the body scriptItems
 
+        return bodyScriptItems
+    }
     log(debugRenderProps, 'Scene scriptItems', scriptItems)
     log(debugRenderProps, 'Scene currentScene', currentScene)
     log(debugRenderProps, 'Scene synopsis', synopsis)
@@ -390,7 +394,7 @@ function Scene(props) {
 
 
             <div className="scene-body">
-                {body.map((scriptItem, index) => {
+                {body().map((scriptItem, index) => {
                     return (
                         <ScriptItem key={scriptItem.id}
                             scriptItem={scriptItem}

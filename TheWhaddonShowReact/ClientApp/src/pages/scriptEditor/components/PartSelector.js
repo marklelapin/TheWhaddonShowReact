@@ -26,7 +26,7 @@ function PartSelector(props) {
 
 
 
-    const sceneParts = scenePartPersons?.PartPersons
+    const sceneParts = scenePartPersons?.partPersons
 
     //UseEffectHooks
 
