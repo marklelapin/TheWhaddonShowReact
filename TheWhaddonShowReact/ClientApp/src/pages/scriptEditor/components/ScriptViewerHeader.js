@@ -18,6 +18,7 @@ import Avatar from 'components/Avatar/Avatar'
 //utitilites
 import { isSmallerScreen } from 'components/Sidebar/Sidebar'
 import { log } from 'helper';
+import { getLatest } from 'dataAccess/localServerUtils'
 
 //Constants
 import PersonSelector from './PersonSelector';
@@ -37,13 +38,14 @@ function ScriptViewer(props) {
 
 
 
-   
+
 
 
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const focus = useSelector(state => state.navigation.focus)
     const viewAsPerson = useSelector(state => state.scriptEditor.viewAsPerson)
-    const viewAsPart = useSelector(state => state.scriptEditor.viewAsPartId)
+    const partPersons = useSelector(state => state.scriptEditor.partPersons)
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons)
 
     log(debug, 'ScriptViewer: focus', focus)
 
@@ -59,22 +61,23 @@ function ScriptViewer(props) {
 
     useEffect(() => {
         log(debug, 'Script Viewer UseEffect Focus:', focus, focussedScene)
-        if (focus && focus.parentId !== focussedScene?.Id) { //only if moved to a new scene.
+        if (focus && focus.parentId !== focussedScene?.id) { //only if moved to a new scene.
 
-            const focussedScene = scenes?.filter(scene => scene.id === focus.parentId)
-            if (focussedScene) {
-                setFocussedScene(focussedScene[0])
+            const newFocussedScene = scenePartPersons[focus.parentId]
+            if (newFocussedScene) {
+                setFocussedScene(newFocussedScene)
             }
 
         }
     }, [focus])
 
+    useEffect(() => {
+        if (scenePartPersons && focussedScene) {
+            const updatedScene = scenePartPersons[focussedScene.parentId]
+            setFocussedScene(updatedScene)
+        }
 
-    
-
-
-
-
+    }, [scenePartPersons])
 
 
 
@@ -182,6 +185,7 @@ function ScriptViewer(props) {
 
             {(openPersonSelector) &&
                 <PersonSelector
+                    additionalCategory={{ name: 'Parts', persons: focussedScene?.partPersons }}
                     closeModal={() => togglePersonSelector()}
                     onClick={(person) => handleSelectPerson(person)} />
             }

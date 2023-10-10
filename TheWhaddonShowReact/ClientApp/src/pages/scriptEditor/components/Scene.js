@@ -23,7 +23,7 @@ import { changeFocus } from 'actions/navigation';
 function Scene(props) {
 
     //utility constants
-    const debug = true;
+    const debug = false;
     const debugRenderProps = false;
 
     const dispatch = useDispatch()
@@ -41,6 +41,8 @@ function Scene(props) {
     const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory[scene.id])
     const focus = useSelector((state) => state.navigation.focus)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
+    const viewAsId = useSelector(state => state.scriptEditor.viewAsId)
+
 
     log(debug,'sceneScriptItemHistory',sceneScriptItemHistory)
 
@@ -316,8 +318,17 @@ function Scene(props) {
 
         const bodyScriptItems = [...scriptItems].filter(item => item.type !== 'Scene' && item.type !== 'Synopsis' && item.type !== 'InitialStaging') || []//returns the body scriptItems
 
-        return bodyScriptItems
+        const partIdsOrder = [...new Set(bodyScriptItems.map(item => item.partIds[0]))]
+
+        const defaultRighthandPartId = partIdsOrder[1] //defaults the second part to come up as the default right hand part.
+
+        const righthandPartId = scenePartPersons?.partPersons?.find(partPerson => partPerson.id === viewAsId || partPerson.personId === viewAsId)?.id || defaultRighthandPartId
+
+        const alignedScriptItems = bodyScriptItems.map(item => ({...item, alignRight: item.partIds.includes(righthandPartId)  }))
+
+        return alignedScriptItems
     }
+    
     log(debugRenderProps, 'Scene scriptItems', scriptItems)
     log(debugRenderProps, 'Scene currentScene', currentScene)
     log(debugRenderProps, 'Scene synopsis', synopsis)
@@ -396,9 +407,11 @@ function Scene(props) {
             <div className="scene-body">
                 {body().map((scriptItem, index) => {
                     return (
-                        <ScriptItem key={scriptItem.id}
+                        <ScriptItem
+                            key={scriptItem.id}
                             scriptItem={scriptItem}
                             scene={currentScene}
+                            alignRight={scriptItem.alignRight}
                             onKeyDown={handleKeyDown}
                             focus={getFocus(scriptItem.id)}
 

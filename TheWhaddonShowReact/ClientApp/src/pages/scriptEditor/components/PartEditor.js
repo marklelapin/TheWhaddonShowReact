@@ -22,7 +22,7 @@ import { changeFocus } from 'actions/navigation';
 function PartEditor(props) {
 
     //utility consts
-    const debug = true
+    const debug = false;
     const dispatch = useDispatch();
     const up = 'up';
     const down = 'down';

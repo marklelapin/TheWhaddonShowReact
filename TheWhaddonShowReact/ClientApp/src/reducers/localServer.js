@@ -148,34 +148,37 @@ export default function localServerReducer(state = defaultState, action) {
 
             //filter out any updates from payload that are already in the store. This can happen if postBacks have failed due to poor connection.
 
-            const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => existingUpdate.id === update.id && existingUpdate.created === update.created))
+            const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => (existingUpdate.id === update.id && existingUpdate.created === update.created)))
 
 
-            console.log('adding updates via ADD_UPDATE in localserver reducer')
+             console.log('adding updates via ADD_UPDATE in localserver reducer')
             //update correct data set to update
-            switch (action.payloadType) {
-                //**LSMTypeInCode** */
-                case Person: return {
-                    ...state,
-                    persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
-                    refresh: { updates: updatesToAdd, type: action.payloadType }
+
+            if (updatesToAdd.length > 0) {
+                switch (action.payloadType) {
+                    //**LSMTypeInCode** *//
+                    case Person: return {
+                        ...state,
+                        persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
+                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                    };
+                    case ScriptItem: return {
+                        ...state,
+                        scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
+                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                    };
+                    case Part: return {
+                        ...state,
+                        parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
+                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                    };
+                    default: return state
                 };
-                case ScriptItem: return {
-                    ...state,
-                    scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
-                    refresh: { updates: updatesToAdd, type: action.payloadType }
-                };
-                case Part: return {
-                    ...state,
-                    parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
-                    refresh: { updates: updatesToAdd, type: action.payloadType }
-                };
-                default: return state
-            };
 
 
-
-
+            }
+            return state;
+  
 
         case CLEAR_CONFLICTS: //TODO Complete Clear Conflicts
             if (action.payload.length === 0) { return state }

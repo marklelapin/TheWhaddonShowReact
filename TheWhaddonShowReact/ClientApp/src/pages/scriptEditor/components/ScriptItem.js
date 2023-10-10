@@ -10,7 +10,7 @@ import SceneTitle from './SceneTitle';
 import Synopsis from './Synopsis';
 import Staging from './Staging';
 import Comment from './Comment';
-import ScriptItemControls from './ScriptItemControls';
+
 import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 
@@ -30,7 +30,7 @@ import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUN
 function ScriptItem(props) {
 
     //utility consts
-    const debug = true;
+    const debug = false;
     const dispatch = useDispatch()
 
 
@@ -40,9 +40,6 @@ function ScriptItem(props) {
 
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments)
-    const viewAsPerson = useSelector(state => state.scriptEditor.viewAsPerson)
-    const viewAsPartId = useSelector(state => state.scriptEditor.viewAsPartId)
-    const storedParts = useSelector(state => state.localServer.parts.history)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[storedScriptItem.parentId])
 
     //Internal State
@@ -59,6 +56,7 @@ function ScriptItem(props) {
     }, [])
 
     useEffect(() => {
+        log(debug,'SCripItem: useEffect: storedScriptItem', storedScriptItem)
         setScriptItem(storedScriptItem)
     }, [storedScriptItem])
 
@@ -76,7 +74,12 @@ function ScriptItem(props) {
 
         switch (type) {
             case 'text': setScriptItem({ ...scriptItem, text: value, changed: true }); break;
-            case 'partIds': setScriptItem({ ...scriptItem, partIds: value, changed: true }); break;
+            case 'partIds':
+
+                const newUpdate = { ...scriptItem, partIds: value }
+                const preparedUpdate = prepareUpdate(newUpdate)
+                dispatch(addUpdates(preparedUpdate, 'ScriptItem'));
+                break;
             case 'tags': setScriptItem({ ...scriptItem, tags: value, changed: true }); break;
             default: return;
         }
@@ -110,11 +113,6 @@ function ScriptItem(props) {
 
     }
 
-    const dialogueAlignment = () => {
-
-
-
-    }
 
 
 
@@ -122,8 +120,12 @@ function ScriptItem(props) {
 
 
     const handleFocus = () => {
-
+        if (focus?.id !== scriptItem.id) {
+            dispatch(changeFocus(scriptItem))
+        }
         setInFocus(true)
+
+
     }
 
     //Saves to Redux store when focus is taken off the scriptItem
@@ -133,7 +135,7 @@ function ScriptItem(props) {
 
             const preparedUpdate = prepareUpdate([scriptItem])
 
-            dispatch(addUpdates([preparedUpdate], 'ScriptItem'))
+            dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
         }
 
         setInFocus(false)
@@ -146,57 +148,41 @@ function ScriptItem(props) {
     const { id, type } = scriptItem;
 
     return (
-        <Container id={id} className={`script-item ${type?.toLowerCase()} draft-border`}>
-            <Row>
-                <Col className={`script-item-body draft-border`}>
+        <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} draft-border`}>
+
+            <div ref={textInputRef} className="script-item-text-area">
+                
+                <ScriptItemText
+                    key={id}
+                    maxWidth={textInputRef.current?.offsetWidth}
+                    scriptItem={scriptItem}
+                    header={header()}
+                    inFocus={inFocus}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    onFocus={handleFocus}
+                    onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocus, nextFocus)}
+                />
+
+            </div>
+            {showParts() &&
+                <div className="script-item-parts">
+                    <PartSelector
+                        scene={scene}
+                        allocatedPartIds={scriptItem.partIds}
+                        onChange={(selectedPartIds) => handleChange('partIds', selectedPartIds)}
+                    />
+                </div>
+            }
+            {/*Elements specific for each scriptItem type*/}
 
 
-                    <div ref={textInputRef} className="script-item-text">
-                        <ScriptItemText
-                            key={id}
-                            maxWidth={textInputRef.current?.offsetWidth}
-                            scriptItem={scriptItem}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            onFocus={handleFocus}
-                            onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocus, nextFocus)}
-                        />
-
-                        {(inFocus) &&
-                            <div className="script-item-controls">
-                                <ScriptItemControls />
-                            </div>
-                        }
-
-                        {showParts() &&
-                            <div className="script-item-parts">
-                                <PartSelector
-                                    scene={scene}
-                                    allocatedPartIds={scriptItem.partIds}
-                                    onChange={(selectedPartIds) => handleChange('partIds', selectedPartIds)}
-                                />
-                            </div>
-                        }
-
-                        {header() &&
-
-                            <div className="script-item-header">
-                                <small>{header()}</small>
-                            </div>
-                        }
-
-                    </div>
-
-                    {/*Elements specific for each scriptItem type*/}
+            {/*<div md="3" className={`script-item-comment d-none ${(showComments) ? 'd-md-block' : ''} draft-border`} >*/}
+            {/*    <Comment scriptItem={scriptItem} />*/}
+            {/*</div>*/}
 
 
-                </Col>
-                <Col md="3" className={`script-item-comment d-none ${(showComments) ? 'd-md-block' : ''} draft-border`} >
-                    <Comment scriptItem={scriptItem} />
-                </Col>
-            </Row>
-
-        </Container >
+        </div >
     )
 }
 

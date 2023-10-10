@@ -14,7 +14,7 @@ import { getLatest } from 'dataAccess/localServerUtils';
 function PersonSelector(props) {
 
     //Props
-    const { persons = null, tags = [], onClick, closeModal, deselect = true } = props;
+    const { persons = null, tags = [], onClick, closeModal, deselect = true, additionalCategory = null } = props;
 
     //Redux state
     const storedPersons = useSelector(state => state.localServer.persons.history)
@@ -26,7 +26,7 @@ function PersonSelector(props) {
 
     const personsWithFriendlyName = addFriendlyName(finalPersons);
 
-    const categorisedPersons = categorisePersons(personsWithFriendlyName, tags);
+   const categorisedPersons = categorisePersons(personsWithFriendlyName, tags);
 
     const deselectPerson = { id: null, friendlyName: 'Deselect', avatarInitials: 'X', pictureRef: null }
 
@@ -65,7 +65,20 @@ function PersonSelector(props) {
                     </div>}
                     bodyClass={"pt-3 px-0 py-0"}
                 >
+                    {(additionalCategory && additionalCategory.persons) &&
+                        <>
+                            <h5>{additionalCategory.name.toUpperCase()}</h5>
+                            <div className="select-person-section">
+                                {additionalCategory.persons.map(person => {
+                                    return personJSX(person)
+                                })}
 
+                            </div>
+
+                        </>
+
+                    }
+                        
                     {(tags.length > 0) &&
 
                         <>

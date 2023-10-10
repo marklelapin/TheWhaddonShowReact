@@ -1,5 +1,6 @@
 ﻿//React and REdux
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 //Components
 import { Container } from 'reactstrap';
@@ -19,34 +20,41 @@ function ScriptViewer(props) {
 
 
     //props
-    const { scenes } = props; 
+    const { scenes } = props;
 
-    log(debug,'ScriptViewer Rendering')
+    //Redux 
+    const showComments = useSelector(state => state.scriptEditor.showComments)
+
+    log(debug, 'ScriptViewer Rendering')
 
     return (
         <>
             <ScriptViewerHeader />
 
-            <Container fluid="md" id="script-viewer" className="draft-border">
+            <div id="script-viewer" className="draft-border">
 
+                <div id="script-body" className="draft-border">
+                    {(scenes && scenes.length > 0) && scenes.map(scene => {
 
-                {(scenes && scenes.length > 0) && scenes.map(scene => {
-
-                    if (scene.type === SHOW) {
-                        return <h1 key={scene.id}>{scene.text}</h1>
+                        if (scene.type === SHOW) {
+                            return <h1 key={scene.id}>{scene.text}</h1>
+                        }
+                        else if (scene.type === ACT) {
+                            return <h2 key={scene.id} >{scene.text}</h2>
+                        }
+                        else {
+                            return <Scene key={scene.id} scene={scene} />
+                        }
                     }
-                    else if (scene.type === ACT) {
-                        return <h2 key={scene.id} >{scene.text}</h2>
-                    }
-                    else {
-                        return <Scene key={scene.id} scene={scene} />
-                    }
-                }
 
-                )}
+                    )}
 
 
-            </Container>
+                </div>
+                <div id="script-comment" className={`${(showComments) ? "show-comments" : ''} draft-border`}>
+
+                </div>
+            </div>
 
         </>
 
