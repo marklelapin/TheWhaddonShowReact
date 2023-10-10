@@ -24,7 +24,7 @@ import { moveFocusToId } from '../scripts/utilityScripts';
 import { changeFocus } from 'actions/navigation';
 
 //Constants
-import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN } from 'dataAccess/scriptItemTypes';
+import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from 'dataAccess/scriptItemTypes';
 
 
 function ScriptItem(props) {
@@ -35,7 +35,7 @@ function ScriptItem(props) {
 
 
     // get specific props
-    const { scriptItem: storedScriptItem, scene, alignRight = false, onKeyDown, focus, previousFocus = null, nextFocus = null } = props;
+    const { scriptItem: storedScriptItem, scene, alignRight = false, onKeyDown, previousFocus = null, nextFocus = null } = props;
 
 
     //Redux state
@@ -44,7 +44,6 @@ function ScriptItem(props) {
 
     //Internal State
     const [scriptItem, setScriptItem] = useState({})
-    const [inFocus, setInFocus] = useState(null)
 
 
     const textInputRef = useRef(null)
@@ -56,16 +55,9 @@ function ScriptItem(props) {
     }, [])
 
     useEffect(() => {
-        log(debug,'SCripItem: useEffect: storedScriptItem', storedScriptItem)
+        log(debug, 'SCripItem: useEffect: storedScriptItem', storedScriptItem)
         setScriptItem(storedScriptItem)
     }, [storedScriptItem])
-
-    useEffect(() => {
-        if (focus) {
-            moveFocusToId(storedScriptItem.id, focus.position)
-            dispatch(changeFocus(null))
-        }
-    }, [focus])
 
 
 
@@ -80,7 +72,47 @@ function ScriptItem(props) {
                 const preparedUpdate = prepareUpdate(newUpdate)
                 dispatch(addUpdates(preparedUpdate, 'ScriptItem'));
                 break;
-            case 'tags': setScriptItem({ ...scriptItem, tags: value, changed: true }); break;
+            case 'tags':
+                setScriptItem({ ...scriptItem, tags: value, changed: true })
+                moveFocusToId(scriptItem.id, 'end'); break;
+            case 'type':
+                let newScriptItem = { ...scriptItem, type: value, changed: true }
+
+                if (value === INITIAL_CURTAIN || value === CURTAIN) {
+                    newScriptItem.tags.push('OpenCurtain')
+                    newScriptItem.text = 'Open Curtain'
+                }
+
+                setScriptItem(newScriptItem)
+              
+                moveFocusToId(scriptItem.id, 'end'); break;
+            case 'toggleCurtain':
+
+                let newTags = scriptItem.tags;
+
+                if (value === true) { //open curtain
+                    newTags = scriptItem.tags.filter(tag => tag !== 'CloseCurtain')
+                    newTags.push('OpenCurtain')
+                } else { //close curtain
+                    newTags = scriptItem.tags.filter(tag => tag !== 'OpenCurtain')
+                    newTags.push('CloseCurtain')
+                }
+
+                let newText;
+
+                (value === true) ? newText = 'Open Curtain' : newText = 'Close Curtain';
+
+                const update = {
+                    ...scriptItem
+                    , tags: newTags
+                    , text: newText
+                    , changed: true
+                }
+                dispatch(addUpdates(prepareUpdate(update), 'ScriptItem'))
+
+                moveFocusToId(scriptItem.id, 'end'); 
+
+              break;
             default: return;
         }
 
@@ -115,18 +147,7 @@ function ScriptItem(props) {
 
 
 
-
-
-
-
-    const handleFocus = () => {
-        if (focus?.id !== scriptItem.id) {
-            dispatch(changeFocus(scriptItem))
-        }
-        setInFocus(true)
-
-
-    }
+  
 
     //Saves to Redux store when focus is taken off the scriptItem
     const handleBlur = () => {
@@ -137,8 +158,6 @@ function ScriptItem(props) {
 
             dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
         }
-
-        setInFocus(false)
     }
 
 
@@ -148,20 +167,19 @@ function ScriptItem(props) {
     const { id, type } = scriptItem;
 
     return (
-        <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} draft-border`}>
+        <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : ''} draft-border`}>
 
             <div ref={textInputRef} className="script-item-text-area">
-                
+
                 <ScriptItemText
                     key={id}
                     maxWidth={textInputRef.current?.offsetWidth}
                     scriptItem={scriptItem}
                     header={header()}
-                    inFocus={inFocus}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    onFocus={handleFocus}
                     onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocus, nextFocus)}
+                    refresh={scriptItem.refresh}
                 />
 
             </div>

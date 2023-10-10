@@ -8,6 +8,7 @@ import { UPDATE_PART_PERSONS } from 'actions/scriptEditor';
 import { ADD_UPDATES_SCENE_HISTORY } from 'actions/scriptEditor';
 import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from 'actions/scriptEditor';
 import { UPDATE_SCENE_PART_PERSONS } from 'actions/scriptEditor';
+import { CHANGE_FOCUS } from 'actions/navigation';
 
 const initialState = {
     searchParameters: {
@@ -23,6 +24,7 @@ const initialState = {
     scenePartPersons: {},
     sceneHistory: [],
     sceneScriptItemHistory: {},
+focus: {},
 
 }
 
@@ -80,7 +82,14 @@ export default function runtime(state = initialState, action) {
                 ...state,
                 scenePartPersons: { ...state.scenePartPersons, [action.id]: action.partPersons }
             };
-        default:
+        case CHANGE_FOCUS:
+
+            return {
+                ...state,
+                focus: { [action.focus.id]: action.focus }
+            }
+            
+            default:
             return state;
     }
 }

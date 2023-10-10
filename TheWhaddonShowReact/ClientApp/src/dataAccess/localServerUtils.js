@@ -255,8 +255,8 @@ const finishSync = (error, type, dispatch) => {
 
 
 
-export function getLatest(history, undoDateTime = null,includeInActive = false,includeSamples = false) {
-    
+export function getLatest(history, undoDateTime = null, includeInActive = false, includeSamples = false) {
+
     if (history === undefined) {
         throw new Error("getLatest passed undefined history property")
     }
@@ -320,7 +320,7 @@ export function prepareUpdates(updates) {
 
 
 
-
+//Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
 export function sortScriptItems(head, scriptItems) {
 
     const debug = false
@@ -331,13 +331,13 @@ export function sortScriptItems(head, scriptItems) {
     if (scriptItems.length === 0) return [];
 
     let targetArray = [...scriptItems];
-   
+
 
     //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Act linked list but also the head of the Scene linked list.
     const headNextId = targetArray.filter((item) => item.previousId === head.id)[0].id;
-    targetArray = targetArray.map(item=> item.id === head.id ? {...item, nextId: headNextId} : item)
+    targetArray = targetArray.map(item => item.id === head.id ? { ...item, nextId: headNextId } : item)
 
-       
+
     //create objectMap of all items in the targetArray
     const idToObjectMap = {};
 
@@ -348,16 +348,22 @@ export function sortScriptItems(head, scriptItems) {
     //Sort the targetArray by nextId
     const sortedLinkedList = [];
     let currentId = head.id
+    let curtainOpen = false; //TODO need to be able to work out starting position of curtain from previous scene.
 
     while (currentId !== null) {
-        const currentItem = idToObjectMap[currentId];
+        let currentItem = idToObjectMap[currentId];
+
         if (currentItem) {
+            if (opensCurtain(currentItem)) { curtainOpen = true }
+            if (closesCurtain(currentItem)) { curtainOpen = false }
+            currentItem.curtainOpen = curtainOpen;
+
             sortedLinkedList.push(currentItem);
             currentId = currentItem.nextId;
         } else {
             currentId = null;
         }
-        
+
     }
 
 
@@ -367,9 +373,27 @@ export function sortScriptItems(head, scriptItems) {
 export function sortLatestScriptItems(head, scriptItems, undoDateTime) {
 
     const latestScriptItems = getLatest(scriptItems, undoDateTime);
-    const sortedScriptItems = sortScriptItems(head,latestScriptItems);
+    const sortedScriptItems = sortScriptItems(head, latestScriptItems);
 
     return sortedScriptItems;
 
 }
 
+
+const opensCurtain = (scriptItem) => {
+
+    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
+        return scriptItem.tags.includes('OpenCurtain')
+    }
+
+    return false
+}
+
+const closesCurtain = (scriptItem) => {
+
+    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
+        return scriptItem.tags.includes('CloseCurtain')
+    }
+
+    return false
+}

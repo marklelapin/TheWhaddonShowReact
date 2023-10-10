@@ -6,20 +6,40 @@ import { useSelector, useDispatch } from 'react-redux';
 import TextareaAutosize from 'react-autosize-textarea';
 import ScriptItemControls from './ScriptItemControls';
 import { log } from 'helper';
+
+
+//Utilities
+import { changeFocus } from 'actions/navigation';
+
 //css
 import s from 'pages/forms/elements/Elements.module.scss';
+import { INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS } from 'dataAccess/scriptItemTypes';
 
 function ScriptItemText(props) {
 
-    const debug=true
+    //utils
+    const debug = true
+    const dispatch = useDispatch()
 
-    const { scriptItem, header, inFocus, onChange, onBlur, onFocus, onKeyDown, placeholder = "...", maxWidth = null } = props;
+    //constants
+    const audioTypes = [SONG, SOUND]
+    const videoTypes = [SONG, SOUND, SCENE, SYNOPSIS]
 
-    const { id, text, type } = scriptItem
+
+
+    //Props
+    const { scriptItem, header, onChange, onBlur, onKeyDown, placeholder = "...", maxWidth = null } = props;
+
+    const { id, text, type, tags } = scriptItem
 
     log(debug, 'ScriptItemTextProps', props)
 
-   // const textareaRef = document.getElementById(`script-item-text-${id}`)
+    //Redux
+    const focus = useSelector(state => state.scriptEditor.focus[id])
+
+    //internal State
+    /*   const [textValue, setTextValue] = useState(null)*/
+
 
     let finalPlaceholder;
 
@@ -31,16 +51,6 @@ function ScriptItemText(props) {
         default: finalPlaceholder = placeholder;
     }
 
-
-    const handleChange = (e) => {
-
-        onChange('text', e.target.value)
-        const textareaRef = document.getElementById(`script-item-text-${id}`)
-        if (textareaRef) {
-            adjustTextareaWidth(textareaRef)
-        }
-    }
-
     useEffect(() => {
         const textareaRef = document.getElementById(`script-item-text-${id}`)
         if (textareaRef) {
@@ -48,6 +58,19 @@ function ScriptItemText(props) {
         }
 
     }, [])
+
+
+
+    //Calculations / Utitlity functions
+
+    const openCurtain = () => {
+
+        if (type === INITIAL_CURTAIN || type === CURTAIN) {
+            return tags.includes('OpenCurtain')
+        }
+
+        return null
+    }
 
     const adjustTextareaWidth = (element) => {
         if (element) {
@@ -78,33 +101,71 @@ function ScriptItemText(props) {
 
 
 
+
+
+
+
+    //Event Handlers
+
+    const handleChange = (e) => {
+
+        onChange('text', e.target.value)
+        const textareaRef = document.getElementById(`script-item-text-${id}`)
+        if (textareaRef) {
+            adjustTextareaWidth(textareaRef)
+        }
+    }
+
+    const handleControlsClick = (action, value) => {
+
+        switch (action) {
+            case 'changeType': onChange('type', value); break;
+            case 'toggleCurtain': onChange('toggleCurtain', value); break;
+            default: return;
+        }
+
+    }
+
+
+    const handleFocus = () => {
+
+        dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
+
+
+    }
+
+
     return (
-        <div id={`script-item-text-${id}` } className="script-item-text">
+        <div id={`script-item-text-${id}`} className="script-item-text">
 
-        { header &&
-
-        <div className="script-item-header">
+            {header &&
+                <div className="script-item-header">
                     <small>{header}</small>
-        </div>
-                }
+                </div>
+            }
 
 
-        <TextareaAutosize
+            <TextareaAutosize
                 key={id}
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
                 className={`form-control ${s.autogrow} transition-height text-input`}
-                value={text || ''}
+                value={text}
                 onChange={(e) => handleChange(e)}
                 onBlur={onBlur}
-                onFocus={onFocus}
+                onFocus={()=>handleFocus()}
                 onKeyDown={(e) => onKeyDown(e)}
-                style={{ width: '100%' }}            >
-        </TextareaAutosize>
+            >
+            </TextareaAutosize>
 
-            {(inFocus) &&
+            {(focus) &&
                 <div className="script-item-controls">
-                    <ScriptItemControls />
+                    <ScriptItemControls
+                        onClick={(action, value) => handleControlsClick(action, value)}
+                        addAudio={audioTypes.includes(type)}
+                        addVideo={videoTypes.includes(type)}
+                        openCurtain={openCurtain()}
+                    />
                 </div>
             }
         </div>

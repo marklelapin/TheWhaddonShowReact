@@ -26,6 +26,9 @@ function PartEditor(props) {
     const dispatch = useDispatch();
     const up = 'up';
     const down = 'down';
+    const end = 'end';
+    const start = 'start';
+
 
     //props
     const { scene = null, onChange, previousFocus, nextFocus } = props;
@@ -35,12 +38,13 @@ function PartEditor(props) {
     if (scene === null) {
         throw new Error('PartEditor: scene prop is null')
     }
-   
+
 
     //Get persons and parts data from REdux Store
     //const storedPartPersons = useSelector(state => state.scriptEditor.partPersons)
-    const storedSceneParts = useSelector(state => state.scriptEditor.scenePartPersons[scene.id]) 
+    const storedSceneParts = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
     const storedPersons = useSelector(state => state.localServer.persons.history)
+
 
     log(debug, 'storedSceneParts', storedSceneParts)
 
@@ -55,16 +59,16 @@ function PartEditor(props) {
 
     useEffect(() => {
 
-        const storedScenePartPersons =  storedSceneParts?.partPersons || []
+        const storedScenePartPersons = storedSceneParts?.partPersons || []
 
         const storedScenePartIds = storedScenePartPersons.map(part => part.id)
 
-        const newSceneParts = sceneParts.filter(part=>!storedScenePartIds.includes(part.id))
+        const newSceneParts = sceneParts.filter(part => !storedScenePartIds.includes(part.id))
 
-        setSceneParts([...storedScenePartPersons,...newSceneParts])
+        setSceneParts([...storedScenePartPersons, ...newSceneParts])
     }, [storedSceneParts])
 
-   
+
 
     //const resetSceneParts = () => {
 
@@ -109,7 +113,8 @@ function PartEditor(props) {
 
         setSceneParts(updatedParts);
 
-        dispatch(changeFocus({ ...newFocus, position: 'end' }))
+        //dispatch(changeFocus({ ...newFocus, position: 'end' }))
+        moveFocusToId(newFocus.id, 'end')
 
         updateIfChanged()
     }
@@ -194,17 +199,21 @@ function PartEditor(props) {
             if (direction === up) {
 
                 if (previousPart) {
-                    dispatch(changeFocus({ ...previousPart, position: end }))
+                    moveFocusToId(...previousPart.id, end)
+                    //dispatch(changeFocus({ ...previousPart, position: end }))
                 } else {
-                    dispatch(changeFocus({ ...previousFocus, position: end }))
+                    moveFocusToId(...previousFocus.id, end)
+                    //dispatch(changeFocus({ ...previousFocus, position: end }))
                 }
 
             } else if (direction === down) {
 
                 if (nextPart) {
-                    dispatch(changeFocus({ ...nextPart, position: start }))
+                    moveFocusToId(...nextPart.id, start)
+                   // dispatch(changeFocus({ ...nextPart, position: start }))
                 } else {
-                    dispatch(changeFocus({ ...nextFocus, position: start }))
+                    moveFocusToId(...nextFocus.id, start)
+                    //dispatch(changeFocus({ ...nextFocus, position: start }))
                 }
 
             }
@@ -323,7 +332,9 @@ function PartEditor(props) {
 
     }
 
-
+    //const handleFocus = (part) => {
+    //    dispatch(changeFocus({ ...part, parentId: scene.id }))
+    //}
 
     const handleBlur = () => {
 
@@ -360,7 +371,8 @@ function PartEditor(props) {
         })
 
         setSceneParts(updateParts)
-        dispatch(changeFocus({ ...part, position: 'end' }))
+        moveFocusToId(...part.id,end)
+        //dispatch(changeFocus({ ...part, position: 'end' }))
 
     }
 
@@ -376,7 +388,8 @@ function PartEditor(props) {
             return part;
         })
         setSceneParts(updateParts)
-        dispatch(changeFocus({ ...part, position: 'end' }))
+        moveFocusToId(...part.id,end)
+        //dispatch(changeFocus({ ...part, position: 'end' }))
     }
 
 
@@ -401,14 +414,16 @@ function PartEditor(props) {
 
         setModalPersons(null);
         setSceneParts(updatedParts);
-        dispatch(changeFocus({ ...part, position: 'end' }))
+moveFocusToId(...part.id,end)
+        //dispatch(changeFocus({ ...part, position: 'end' }))
     }
 
 
 
     const closeModalPersons = () => {
 
-        dispatch(changeFocus({ ...modalPersons.part, position: 'end' }))
+        moveFocusToId(...modalPersons.part.id,end)
+        //dispatch(changeFocus({ ...modalPersons.part, position: 'end' }))
         setModalPersons(null);
 
     }
@@ -473,7 +488,7 @@ function PartEditor(props) {
                         )
                     })}
 
-                    <Button color="success" size="xs" onClick={(e) => handleClickAdd(e, sceneParts[sceneParts.length-1])}><i className="fa fa-plus" /></Button>
+                    <Button color="success" size="xs" onClick={(e) => handleClickAdd(e, sceneParts[sceneParts.length - 1])}><i className="fa fa-plus" /></Button>
                 </Col >
 
             </Row >

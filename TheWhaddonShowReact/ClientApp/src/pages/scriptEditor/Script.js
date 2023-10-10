@@ -19,7 +19,7 @@ import { addUpdates } from 'actions/localServer';
 //Utils
 import { log } from 'helper.js';
 import isScreen from 'core/screenHelper';
-import { changeFocus } from 'actions/navigation';
+
 
 function Script() {
 

@@ -13,7 +13,7 @@ import SceneSelectorRow from './SceneSelectorRow'
 //Utils
 import { ACT, SCENE } from 'dataAccess/scriptItemTypes'
 import { log } from 'helper';
-
+import {moveFocusToId } from '../scripts/utilityScripts'
 
 import { TestAct } from '../Script'
 
@@ -76,7 +76,8 @@ function SceneSelector(props) {
 
         switch (type) {
             case 'goto':
-                dispatch(changeFocus({ id: id })) //TODO add in travel to scene functionality?
+                moveFocusToId(id)
+                //dispatch(changeFocus({ id: id })) //TODO add in travel to scene functionality?
                 dispatch(toggleSceneSelector())
                 break;
             case 'add':

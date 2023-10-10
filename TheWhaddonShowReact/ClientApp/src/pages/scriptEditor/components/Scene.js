@@ -17,14 +17,14 @@ import { addUpdates } from 'actions/localServer';
 import { newScriptItemsForDelete, newScriptItemsForCreate } from '../scripts/crudScripts';
 import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
 import { log } from 'helper'
-import { changeFocus } from 'actions/navigation';
+import { moveFocusToId } from '../scripts/utilityScripts';
 
 
 function Scene(props) {
 
     //utility constants
     const debug = false;
-    const debugRenderProps = false;
+    const debugRenderProps = true;
 
     const dispatch = useDispatch()
     const above = 'above'
@@ -39,7 +39,6 @@ function Scene(props) {
 
     //Redux state
     const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory[scene.id])
-    const focus = useSelector((state) => state.navigation.focus)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
 
@@ -67,7 +66,7 @@ function Scene(props) {
 
     //Update of focus after scriptItems have changed
     useEffect(() => {
-        dispatch(changeFocus(focusAfterScriptItemsChange))
+        moveFocusToId(focusAfterScriptItemsChange.id,focusAfterScriptItemsChange.position);
     }, [scriptItems])
 
 
@@ -178,7 +177,7 @@ function Scene(props) {
 
             if (newId) {
 
-                dispatch(changeFocus({ id: newId, parentId: scriptItem.parentId, position: (direction === up) ? end : start }))
+                moveFocusToId({ id: newId, position: (direction === up) ? end : start })
 
             }
 
@@ -318,6 +317,7 @@ function Scene(props) {
 
         const bodyScriptItems = [...scriptItems].filter(item => item.type !== 'Scene' && item.type !== 'Synopsis' && item.type !== 'InitialStaging') || []//returns the body scriptItems
 
+        //work out alignment
         const partIdsOrder = [...new Set(bodyScriptItems.map(item => item.partIds[0]))]
 
         const defaultRighthandPartId = partIdsOrder[1] //defaults the second part to come up as the default right hand part.
@@ -328,18 +328,14 @@ function Scene(props) {
 
         return alignedScriptItems
     }
-    
+
+
+    log(debugRenderProps, 'Scene bodyScriptItems', body())
     log(debugRenderProps, 'Scene scriptItems', scriptItems)
     log(debugRenderProps, 'Scene currentScene', currentScene)
     log(debugRenderProps, 'Scene synopsis', synopsis)
     log(debugRenderProps, 'Scene staging', staging)
 
-    const getFocus = (id) => {
-        if (id === focus?.id) {
-            return focus
-        }
-        return null
-    }
 
 
     //---------------------------------
@@ -355,7 +351,6 @@ function Scene(props) {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             onKeyDown={handleKeyDown}
-                            focus={getFocus(currentScene.id)}
                         />
 
                     }
@@ -364,7 +359,6 @@ function Scene(props) {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             onKeyDown={handleKeyDown}
-                            focus={getFocus(synopsis.id)}
                             nextFocus={
                                 {
                                     id: (currentScene.partIds) ? currentScene.partIds[0] : null,
@@ -387,7 +381,6 @@ function Scene(props) {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 onKeyDown={handleKeyDown}
-                                focus={getFocus(staging.id)}
                                 previousFocus={
                                     {
                                         id: (currentScene.partIds) ? currentScene.partIds[currentScene.partIds.length - 1] : null,
@@ -413,7 +406,6 @@ function Scene(props) {
                             scene={currentScene}
                             alignRight={scriptItem.alignRight}
                             onKeyDown={handleKeyDown}
-                            focus={getFocus(scriptItem.id)}
 
                         />
                     )

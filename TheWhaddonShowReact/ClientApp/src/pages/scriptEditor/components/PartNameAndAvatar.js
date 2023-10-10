@@ -1,18 +1,13 @@
 ﻿import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
+
+import { getLatest, } from 'dataAccess/localServerUtils';
 import Avatar from 'components/Avatar/Avatar';
-import { InputGroup, Input, Button, FormGroup, Container, Col, Row } from 'reactstrap';
-import { PartUpdate } from 'dataAccess/localServerModels';
-import Update from 'components/Forms/Update';
-import { addUpdates } from 'actions/localServer';
-import TagsInput from '../../../components/Forms/TagsInput';
+import { Col, Row, Input } from 'reactstrap';
+
 import { addPersonInfo } from '../scripts/PartScripts'
-import PersonSelector from './PersonSelector';
-import { store } from 'index.js';
-import { moveFocusToId } from '../scripts/utilityScripts';
+
 import { log } from 'helper';
 import { changeFocus } from 'actions/navigation'
 
@@ -21,7 +16,7 @@ function PartNameAndAvatar(props) {
     const debug = false;
     const dispatch = useDispatch()
 
-    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, focus, avatar, partName, personName, size="md" } = props;
+    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, avatar, partName, personName, size="md" } = props;
 
 
     log(debug, 'PartNameAndAvatar Props', props)
@@ -29,12 +24,12 @@ function PartNameAndAvatar(props) {
     const storedPersons = useSelector(state => state.localServer.persons.history)
 
 
-    useEffect(() => {
-        if (focus) {
-            moveFocusToId(part.id, focus.position)
-            dispatch(changeFocus(null))
-        }
-    }, [focus])
+    //useEffect(() => {
+    //    if (focus) {
+    //        moveFocusToId(part.id, focus.position)
+    //        dispatch(changeFocus(null))
+    //    }
+    //}, [focus])
 
 
 
@@ -75,6 +70,11 @@ function PartNameAndAvatar(props) {
         }
     }
 
+    const handleFocus = (part) => {
+
+        dispatch(changeFocus(part))
+    }
+
     const partPerson = createPartPerson()
 
     log(debug, 'PartNameAndAvatar partPerson', partPerson)
@@ -106,6 +106,7 @@ function PartNameAndAvatar(props) {
                             onKeyDown={onKeyDown}
                             onChange={(e) => handleNameChange(e.target.value)}
                             onBlur={onBlur}
+                            onFocus={() => handleFocus(part) }
                             readOnly={(onNameChange) ? false : true}
                             className="text-input" />
 

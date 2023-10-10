@@ -66,8 +66,8 @@ function ScriptViewer(props) {
             if (newFocussedScene) {
                 setFocussedScene(newFocussedScene)
             }
-
         }
+
     }, [focus])
 
     useEffect(() => {

@@ -44,13 +44,24 @@ export function Icon(props) {
         "comment-o": "fa fa-comment-o",
         "comment": "fa fa-comment",
         "print": "fa fa-print",
+        "audio-file": "fa fa-file-audio-o",
+        "video-file": "fa fa-file-video-o",
+
+
     };
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {
         icon = dictionary[icon.toLowerCase()];
     }
 
-    return <i className={`m-1 ${icon} ${(strapColor) ? 'text-' + strapColor : ''} ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}`} style={style} onClick={onClick} />
+    return <i className={`m-1 
+                        ${icon} 
+                        ${(strapColor) ? 'text-' + strapColor : ''} 
+                        ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}
+                        ${(onClick) ? 'clickable' : ''}
+                        `}
+        style={style}
+        onClick={onClick} />
 }
 
 
