@@ -6,8 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
     toggleSceneSelector,
     updateShowComments,
-    updateViewAsPerson,
-    updateViewAsPartId,
+    updateViewAsPartPerson,
 } from 'actions/scriptEditor';
 
 //Components
@@ -43,7 +42,7 @@ function ScriptViewer(props) {
 
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const focus = useSelector(state => state.navigation.focus)
-    const viewAsPerson = useSelector(state => state.scriptEditor.viewAsPerson)
+    const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const partPersons = useSelector(state => state.scriptEditor.partPersons)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons)
 
@@ -114,12 +113,10 @@ function ScriptViewer(props) {
     }
 
     const handleSelectPerson = (person) => {
-        dispatch(updateViewAsPerson(person))
+        log(debug,'viewAsPartPerson', viewAsPartPerson)
+        log(debug, 'handleSelectPerson', person)
+        dispatch(updateViewAsPartPerson(person))
         setOpenPersonSelector(false)
-    }
-
-    const handleSelectPartId = (partId) => {
-        dispatch(updateViewAsPartId(partId))
     }
 
 
@@ -152,8 +149,8 @@ function ScriptViewer(props) {
                     <Col xs="1">
                         <Avatar
                             size="sm"
-                            person={viewAsPerson}
-                            avatarInitials={(viewAsPerson === null) ? '?' : null}
+                            person={viewAsPartPerson}
+                            avatarInitials={(viewAsPartPerson === null) ? '?' : null}
                             onClick={() => togglePersonSelector()}
                         />
                         {/*<PartSelector*/}

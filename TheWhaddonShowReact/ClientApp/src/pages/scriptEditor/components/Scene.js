@@ -41,7 +41,7 @@ function Scene(props) {
     const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory[scene.id])
     const focus = useSelector((state) => state.navigation.focus)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
-    const viewAsId = useSelector(state => state.scriptEditor.viewAsId)
+    const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
 
 
     log(debug,'sceneScriptItemHistory',sceneScriptItemHistory)
@@ -322,7 +322,7 @@ function Scene(props) {
 
         const defaultRighthandPartId = partIdsOrder[1] //defaults the second part to come up as the default right hand part.
 
-        const righthandPartId = scenePartPersons?.partPersons?.find(partPerson => partPerson.id === viewAsId || partPerson.personId === viewAsId)?.id || defaultRighthandPartId
+        const righthandPartId = scenePartPersons?.partPersons?.find(partPerson => partPerson.id === viewAsPartPerson?.id || partPerson.personId === viewAsPartPerson?.id)?.id || defaultRighthandPartId
 
         const alignedScriptItems = bodyScriptItems.map(item => ({...item, alignRight: item.partIds.includes(righthandPartId)  }))
 

@@ -3,8 +3,7 @@ import { UPDATE_VIEW_COMMENTS } from 'actions/scriptEditor';
 import { UPDATE_DIALOGUE_RIGHT_ID } from 'actions/scriptEditor';
 import { TOGGLE_SCENE_SELECTOR } from 'actions/scriptEditor';
 import { UPDATE_SHOW_COMMENTS } from 'actions/scriptEditor';
-import { UPDATE_VIEW_AS_PERSON } from 'actions/scriptEditor';
-import { UPDATE_VIEW_AS_PART_ID } from 'actions/scriptEditor';
+import { UPDATE_VIEW_AS_PART_PERSON } from 'actions/scriptEditor';
 import { UPDATE_PART_PERSONS } from 'actions/scriptEditor';
 import { ADD_UPDATES_SCENE_HISTORY } from 'actions/scriptEditor';
 import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from 'actions/scriptEditor';
@@ -19,8 +18,7 @@ const initialState = {
     showComments: true,
     dialogueRightId: null,
     showSceneSelector: true,
-    viewAsPerson: null,
-    viewAsPartId: null,
+    viewAsPartPerson: null,
     partPersons: [],
     scenePartPersons: {},
     sceneHistory: [],
@@ -55,16 +53,12 @@ export default function runtime(state = initialState, action) {
                 ...state,
                 showComments: action.showComments,
             };
-        case UPDATE_VIEW_AS_PERSON:
+        case UPDATE_VIEW_AS_PART_PERSON:
             return {
                 ...state,
-                viewAsPerson: action.viewAsPerson,
+                viewAsPartPerson: action.partPerson,
             };
-        case UPDATE_VIEW_AS_PART_ID:
-            return {
-                ...state,
-                viewAsPartId: action.viewAsPartId,
-            };
+
         case UPDATE_PART_PERSONS:
             return {
                 ...state,
