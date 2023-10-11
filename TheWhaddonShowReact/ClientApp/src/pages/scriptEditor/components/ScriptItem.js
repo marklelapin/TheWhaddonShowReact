@@ -67,10 +67,9 @@ function ScriptItem(props) {
         switch (type) {
             case 'text': setScriptItem({ ...scriptItem, text: value, changed: true }); break;
             case 'partIds':
-
                 const newUpdate = { ...scriptItem, partIds: value }
-                const preparedUpdate = prepareUpdate(newUpdate)
-                dispatch(addUpdates(preparedUpdate, 'ScriptItem'));
+
+                saveChangeToStore(newUpdate)
                 break;
             case 'tags':
                 setScriptItem({ ...scriptItem, tags: value, changed: true })
@@ -79,28 +78,20 @@ function ScriptItem(props) {
                 let newScriptItem = { ...scriptItem, type: value, changed: true }
 
                 if (value === INITIAL_CURTAIN || value === CURTAIN) {
-                    newScriptItem.tags.push('OpenCurtain')
-                    newScriptItem.text = 'Open Curtain'
+                    newScriptItem.tags = getOpenCurtainTags(newScriptItem)
+                    newScriptItem.text = newCurtainText(true, scriptItem)
+                } else if (scriptItem.type === INITIAL_CURTAIN || scriptItem.type === CURTAIN) { //i.e. its coming from a curtain type
+                    newScriptItem.text = "";
                 }
-
-                setScriptItem(newScriptItem)
-              
+                saveChangeToStore(newScriptItem)
                 moveFocusToId(scriptItem.id, 'end'); break;
             case 'toggleCurtain':
 
-                let newTags = scriptItem.tags;
+                const open = value
 
-                if (value === true) { //open curtain
-                    newTags = scriptItem.tags.filter(tag => tag !== 'CloseCurtain')
-                    newTags.push('OpenCurtain')
-                } else { //close curtain
-                    newTags = scriptItem.tags.filter(tag => tag !== 'OpenCurtain')
-                    newTags.push('CloseCurtain')
-                }
+                const newTags = (open) ? getOpenCurtainTags(scriptItem) : getCloseCurtainTags(scriptItem)
 
-                let newText;
-
-                (value === true) ? newText = 'Open Curtain' : newText = 'Close Curtain';
+                const newText = newCurtainText(open, scriptItem)
 
                 const update = {
                     ...scriptItem
@@ -108,7 +99,7 @@ function ScriptItem(props) {
                     , text: newText
                     , changed: true
                 }
-                dispatch(addUpdates(prepareUpdate(update), 'ScriptItem'))
+                saveChangeToStore(update)
 
                 moveFocusToId(scriptItem.id, 'end'); 
 
@@ -116,6 +107,43 @@ function ScriptItem(props) {
             default: return;
         }
 
+    }
+
+
+    const saveChangeToStore = (newScriptItem) => {
+        const preparedUpdate = prepareUpdate(newScriptItem)
+        dispatch(addUpdates(preparedUpdate, 'ScriptItem'));
+    }
+
+    const newCurtainText = (open, scriptItem) => {
+
+        const previousCurtainOpen = scriptItem.previousCurtainOpen
+
+        if (open) { // curtain is opening
+            if (previousCurtainOpen === true) return 'Curtain remains open'
+            else return 'Curtain opens'
+        } else { //curtain is closing
+            if (previousCurtainOpen === false) return 'Curtain remains closed'
+            else return 'Curtain closes'
+        }
+    }
+
+    const getOpenCurtainTags = (scriptItem) => {
+        const tags = scriptItem.tags
+        
+        let newTags = tags.filter(tag => tag !== 'CloseCurtain')
+        newTags.push('OpenCurtain')
+
+        return newTags;
+    }
+
+    const getCloseCurtainTags = (scriptItem) => {
+        const tags = scriptItem.tags;
+
+        let newTags = tags.filter(tag => tag !== 'OpenCurtain')
+        newTags.push('CloseCurtain')
+
+        return newTags;
     }
 
 
@@ -167,7 +195,7 @@ function ScriptItem(props) {
     const { id, type } = scriptItem;
 
     return (
-        <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : ''} draft-border`}>
+        <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
 
             <div ref={textInputRef} className="script-item-text-area">
 

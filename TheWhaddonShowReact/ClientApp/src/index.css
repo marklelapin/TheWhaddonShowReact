@@ -102,7 +102,6 @@
 
 
 
-
 /* The container for the script-viewer component*/
 #script-viewer {
     display: flex;
@@ -131,20 +130,63 @@
     overflow-y: scroll;
 }
 
+
+
+/*SCENE HEADER*/
 .scene-header {
-    background-color: white;
+    padding: 10px;
 }
 
+    .scene-header .script-item {
+        background-color: white;
+    }
 
+/*PART EDITOR*/
 
+.part-editor {
+    padding: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+}
 
+.part {
+    display: flex;
+    flex-direction: row;
+    padding: 0px 0px 10px 0px;
+}
 
+.part-editor .part-avatar-name {
+    flex: 1;
+}
 
-/* ScriptItem CSS*/
+.part-controls {
+    text-align: start;
+}
+
+.part-tags {
+    flex: 1;
+    text-align: start;
+}
+
+/*PART AVATAR NAME*/
+.part-avatar-name {
+    display: flex;
+    flex-direction: row;
+}
+
+.part-avatar {
+}
+
+.part-name {
+    flex: 1;
+    text-align: start;
+}
+
+/*SCRIPT ITEM*/
 .script-item {
     position: relative;
     padding: 10px 40px 10px 40px;
-    background-color:   #ff5574  ;
 }
 
     .script-item.dialogue {
@@ -156,13 +198,20 @@
             padding-right: 40px;
         }
 
-        .script-item .text-input {
-            text-align: center;
-        }
+    .script-item .text-input {
+        text-align: center;
+    }
 
-.script-item.curtain-open {
+
+.curtain-open {
+    color: white;
     background-color: #30324c;
 }
+
+.curtain-closed {
+    background-color: #ff5574;
+}
+
 .script-item-text-area {
     display: flex;
     position: relative;
@@ -184,6 +233,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    position: relative;
 }
 
 .text-input {
@@ -222,24 +272,53 @@
     margin: 0px;
 }
 
-.script-item-controls {
-    width:100%;
+/*SCRIPT ITEM CONTROLS*/
+
+.header-controls {
+    position: absolute;
+    top: -20px;
+    right: 0px;
+    z-index: 10;
     display: flex;
     flex-direction: row;
-
-   
+    justify-content: end;
 }
 
-.script-item-type-controls{
-   flex: 1;
-    text-align: start;
+.header-controls.header-exists{
+    top:0px;
 }
 
-.script-item-control-buttons{
- flex:1;
+.header-right-controls {
+    flex: 1;
     text-align: end;
+    z-index: 10;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: row;
 }
 
+.header-left-controls {
+    flex: 1;
+    text-align: end;
+    z-index: 10;
+}
+
+.bottom-right-controls{
+    position: absolute;
+    bottom: 0px;
+right: -37px;
+z-index: 5;
+}
+
+.header-controls .checkbox-ios i{
+  height: 15px;
+  background-color: black;
+}
+
+.header-controls i::before{
+    height: 15px !important;
+    width: 15px !important;
+}
 
 
 /* Script-viewer css*/

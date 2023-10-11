@@ -199,20 +199,20 @@ function PartEditor(props) {
             if (direction === up) {
 
                 if (previousPart) {
-                    moveFocusToId(...previousPart.id, end)
+                    moveFocusToId(previousPart.id, end)
                     //dispatch(changeFocus({ ...previousPart, position: end }))
                 } else {
-                    moveFocusToId(...previousFocus.id, end)
+                    moveFocusToId(previousFocus.id, end)
                     //dispatch(changeFocus({ ...previousFocus, position: end }))
                 }
 
             } else if (direction === down) {
 
                 if (nextPart) {
-                    moveFocusToId(...nextPart.id, start)
+                    moveFocusToId(nextPart.id, start)
                    // dispatch(changeFocus({ ...nextPart, position: start }))
                 } else {
-                    moveFocusToId(...nextFocus.id, start)
+                    moveFocusToId(nextFocus.id, start)
                     //dispatch(changeFocus({ ...nextFocus, position: start }))
                 }
 
@@ -444,18 +444,16 @@ moveFocusToId(...part.id,end)
     return (
 
         <>
-            <Row className="part-editor draft-border">
-                <Col>
+            
+            <div className={`part-editor  draft-border`}>
+                
                     <h5>Parts:</h5>
                     {activeSceneParts().map(part => {
 
                         return (
 
-                            <Row key={part.id}>
-                                <Col>
-                                    <div id={part.id} className="part">
-
-                                        <PartNameAndAvatar avatar partName personName
+                            <div key={part.id} id={part.id}  className="part">
+                                       <PartNameAndAvatar avatar partName personName
 
                                             avatarInitials={part.avatarInitials}
                                             part={part}
@@ -465,33 +463,32 @@ moveFocusToId(...part.id,end)
                                             onBlur={(e) => handleBlur(e, part)}
                                             focus={(focus?.id === part.id) ? focus : null}
                                         />
-                                    </div>
-                                </Col>
-                                <Col xs="auto">
+                               
+                                <div className="part-controls">
 
                                     {(activeSceneParts().length > 1) &&
                                         <Button color="danger" size="xs" onClick={(e) => handleClickDelete(part)}><i className="fa fa-remove" /></Button>
                                     }
                                     <Button color="warning" size="xs" onClick={(e) => handleClickSearch(part)}><i className="fa fa-search" /></Button>
-                                </Col>
-                                <Col xs="12" md="7">
+                                </div>
+                                <div className="part-tags">
                                     <TagsInput
                                         strapColor="primary"
                                         tags={part.tags}
                                         tagOptions={tagOptions}
                                         onClickAdd={(tag) => handleAddTag(tag, part)}
                                         onClickRemove={(tag) => handleRemoveTag(tag, part)} />
-                                </Col>
-                            </Row>
+                                </div>
+                            </div>
 
 
                         )
                     })}
 
                     <Button color="success" size="xs" onClick={(e) => handleClickAdd(e, sceneParts[sceneParts.length - 1])}><i className="fa fa-plus" /></Button>
-                </Col >
+               
 
-            </Row >
+            </div >
 
 
             {(modalPersons) &&

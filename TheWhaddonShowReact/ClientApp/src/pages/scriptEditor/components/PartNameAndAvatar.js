@@ -16,7 +16,7 @@ function PartNameAndAvatar(props) {
     const debug = false;
     const dispatch = useDispatch()
 
-    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, avatar, partName, personName, size="md" } = props;
+    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, avatar, partName, personName, size = "md" } = props;
 
 
     log(debug, 'PartNameAndAvatar Props', props)
@@ -82,45 +82,47 @@ function PartNameAndAvatar(props) {
 
     return (
 
-        <Row className="part-name-and-avatar">
+        <div className="part-avatar-name">
 
             {(avatar) &&
-                <Col  xs="auto" className="part-avatar-col">
+                <div className="part-avatar">
                     < Avatar
                         size={size}
                         avatarInitials={partPerson.avatarInitials}
                         person={partPerson}
                         onClick={(e) => handleAvatarClick(e)} />
-                </Col>
+                </div>
             }
 
 
             {(partName) &&
-                <Col>
-                    <Row>
-                        <Input
-                            type="text"
-                            key={part.id}
-                            placeholder="enter name"
-                            value={part.name || ''}
-                            onKeyDown={onKeyDown}
-                            onChange={(e) => handleNameChange(e.target.value)}
-                            onBlur={onBlur}
-                            onFocus={() => handleFocus(part) }
-                            readOnly={(onNameChange) ? false : true}
-                            className="text-input" />
+                <div className="part-name">
 
-                    </Row>
-                    {(personName) &&
-                        <Row>
-                            < small >{(part.personName) && `(${part.personName})`}</small>
-                        </Row>
-                    }
-                </Col>
+                    <Input
+                        type="text"
+                        key={part.id}
+                        placeholder="enter name"
+                        value={part.name || ''}
+                        onKeyDown={onKeyDown}
+                        onChange={(e) => handleNameChange(e.target.value)}
+                        onBlur={onBlur}
+                        onFocus={() => handleFocus(part)}
+                        readOnly={(onNameChange) ? false : true}
+                        className="text-input" />
+                </div>
             }
 
 
-        </Row >
+            {/*{(personName) &&*/}
+            {/*    <Row>*/}
+            {/*        < small >{(part.personName) && `(${part.personName})`}</small>*/}
+            {/*    </Row>*/}
+            {/*}*/}
+              
+            
+
+
+        </div >
 
     )
 

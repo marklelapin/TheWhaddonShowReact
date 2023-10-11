@@ -43,13 +43,13 @@ function Scene(props) {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
 
 
-    log(debug,'sceneScriptItemHistory',sceneScriptItemHistory)
+    log(debug, 'sceneScriptItemHistory', sceneScriptItemHistory)
 
     //Internal State
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
     const [scriptItems, setScriptItems] = useState([]); //
     const [focusAfterScriptItemsChange, setFocusAfterScriptItemsChange] = useState(false); //the id to focus on after script items have changed]
-    
+
 
     //Update of internal scriptItems. This is triggered by changes to the sceneScriptItemHistory or the undoDateTime
     useEffect(() => {
@@ -66,7 +66,7 @@ function Scene(props) {
 
     //Update of focus after scriptItems have changed
     useEffect(() => {
-        moveFocusToId(focusAfterScriptItemsChange.id,focusAfterScriptItemsChange.position);
+        moveFocusToId(focusAfterScriptItemsChange.id, focusAfterScriptItemsChange.position);
     }, [scriptItems])
 
 
@@ -174,10 +174,11 @@ function Scene(props) {
         const moveFocus = (direction, overrideId = null) => {
             e.preventDefault()
             const newId = overrideId || (direction === down) ? nextFocusOverride?.id || scriptItem.nextId : previousFocusOverride?.id || scriptItem.previousId
+            const position = (direction === up) ? end : start
 
             if (newId) {
 
-                moveFocusToId({ id: newId, position: (direction === up) ? end : start })
+                moveFocusToId(newId, position)
 
             }
 
@@ -324,7 +325,7 @@ function Scene(props) {
 
         const righthandPartId = scenePartPersons?.partPersons?.find(partPerson => partPerson.id === viewAsPartPerson?.id || partPerson.personId === viewAsPartPerson?.id)?.id || defaultRighthandPartId
 
-        const alignedScriptItems = bodyScriptItems.map(item => ({...item, alignRight: item.partIds.includes(righthandPartId)  }))
+        const alignedScriptItems = bodyScriptItems.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) }))
 
         return alignedScriptItems
     }
@@ -342,59 +343,55 @@ function Scene(props) {
 
     return (
         <>
-            <Row className="scene-header draft-border">
-                <Col>
-
-                    {
-                        (currentScene) &&
-                        <ScriptItem scriptItem={currentScene}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            onKeyDown={handleKeyDown}
-                        />
-
-                    }
-                    {synopsis &&
-                        <ScriptItem scriptItem={synopsis}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            onKeyDown={handleKeyDown}
-                            nextFocus={
-                                {
-                                    id: (currentScene.partIds) ? currentScene.partIds[0] : null,
-                                    parentId: currentScene.id,
-                                    position: start
-                                }}
-                        />
-                    }
-                    <PartEditor
-                        scene={currentScene}
-                        onChange={(partIds) => handlePartIdChange(partIds)}
-                        previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: end }} //override the default focus ids
-                        nextFocus={{ id: staging.id, parentId: currentScene.id, position: start }}
+            <div className={`scene-header ${(scene.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
+                {
+                    (currentScene) &&
+                    <ScriptItem scriptItem={currentScene}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        onKeyDown={handleKeyDown}
                     />
 
-                    {staging &&
-                        <>
-                            <h5>Initial Staging</h5>
-                            <ScriptItem scriptItem={staging}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                onKeyDown={handleKeyDown}
-                                previousFocus={
-                                    {
-                                        id: (currentScene.partIds) ? currentScene.partIds[currentScene.partIds.length - 1] : null,
-                                        parentId: currentScene.id,
-                                        position: end
-                                    }}
+                }
+                {synopsis &&
+                    <ScriptItem scriptItem={synopsis}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        onKeyDown={handleKeyDown}
+                        nextFocus={
+                            {
+                                id: (currentScene.partIds) ? currentScene.partIds[0] : null,
+                                parentId: currentScene.id,
+                                position: start
+                            }}
+                    />
+                }
+                <PartEditor
+                    scene={currentScene}
+                    onChange={(partIds) => handlePartIdChange(partIds)}
+                    previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: end }} //override the default focus ids
+                    nextFocus={{ id: staging.id, parentId: currentScene.id, position: start }}
+                />
 
-                            />
-                        </>
+                {staging &&
+                    <>
+                        <ScriptItem scriptItem={staging}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            onKeyDown={handleKeyDown}
+                            previousFocus={
+                                {
+                                    id: (currentScene.partIds) ? currentScene.partIds[currentScene.partIds.length - 1] : null,
+                                    parentId: currentScene.id,
+                                    position: end
+                                }}
 
-                    }
+                        />
+                    </>
 
-                </Col>
-            </Row>
+                }
+
+            </div>
 
 
             <div className="scene-body">

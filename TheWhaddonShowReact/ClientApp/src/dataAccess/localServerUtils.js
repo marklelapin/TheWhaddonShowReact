@@ -326,7 +326,7 @@ export function sortScriptItems(head, scriptItems) {
     const debug = false
 
     log(debug, 'Sort Head: ', head)
-    log(debug, 'Sort SCriptItems', scriptItems)
+    log(debug, 'Sort ScriptItems', scriptItems)
 
     if (scriptItems.length === 0) return [];
 
@@ -349,14 +349,18 @@ export function sortScriptItems(head, scriptItems) {
     const sortedLinkedList = [];
     let currentId = head.id
     let curtainOpen = false; //TODO need to be able to work out starting position of curtain from previous scene.
+    let previousCurtainOpen;
 
     while (currentId !== null) {
         let currentItem = idToObjectMap[currentId];
 
         if (currentItem) {
-            if (opensCurtain(currentItem)) { curtainOpen = true }
+            if (opensCurtain(currentItem)) {curtainOpen = true}
             if (closesCurtain(currentItem)) { curtainOpen = false }
+
+            currentItem.previousCurtainOpen = previousCurtainOpen;
             currentItem.curtainOpen = curtainOpen;
+            previousCurtainOpen = curtainOpen;
 
             sortedLinkedList.push(currentItem);
             currentId = currentItem.nextId;

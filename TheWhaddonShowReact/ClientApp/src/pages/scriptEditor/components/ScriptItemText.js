@@ -159,14 +159,11 @@ function ScriptItemText(props) {
             </TextareaAutosize>
 
             {(focus) &&
-                <div className="script-item-controls">
-                    <ScriptItemControls
+                <ScriptItemControls
+                scriptItem={scriptItem}
+                header={header}
                         onClick={(action, value) => handleControlsClick(action, value)}
-                        addAudio={audioTypes.includes(type)}
-                        addVideo={videoTypes.includes(type)}
-                        openCurtain={openCurtain()}
                     />
-                </div>
             }
         </div>
     )

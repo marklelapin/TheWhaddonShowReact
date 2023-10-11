@@ -46,8 +46,15 @@ export function Icon(props) {
         "print": "fa fa-print",
         "audio-file": "fa fa-file-audio-o",
         "video-file": "fa fa-file-video-o",
-
-
+        "play": "fa fa-play",
+        "attach": "fa fa-paperclip",
+        "attachment": "fa fa-paperclip",
+        "link": "fa fa-link",
+        "circle-o": "fa fa-circle-o",
+        "circle": "fa fa-circle",
+        "search": "fa fa-search",
+        "tags": "fa fa-tags",
+        "trash": "fa fa-trash-o",
     };
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {
