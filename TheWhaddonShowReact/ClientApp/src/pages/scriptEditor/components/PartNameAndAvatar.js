@@ -16,7 +16,7 @@ function PartNameAndAvatar(props) {
     const debug = false;
     const dispatch = useDispatch()
 
-    const { part, onNameChange, onAvatarClick, onKeyDown, onBlur, avatar, partName, personName, size = "md" } = props;
+    const { part, onNameChange, onAvatarClick, onClick, onKeyDown, onBlur, onFocus, avatar, partName, personName, size = "md" ,selected = false} = props;
 
 
     log(debug, 'PartNameAndAvatar Props', props)
@@ -70,10 +70,6 @@ function PartNameAndAvatar(props) {
         }
     }
 
-    const handleFocus = (part) => {
-
-        dispatch(changeFocus(part))
-    }
 
     const partPerson = createPartPerson()
 
@@ -82,7 +78,7 @@ function PartNameAndAvatar(props) {
 
     return (
 
-        <div className="part-avatar-name">
+        <div className={`part-avatar-name ${onClick ? 'clickable' : ''} ${(selected)? 'selected' : ''}` } onClick={onClick} >
 
             {(avatar) &&
                 <div className="part-avatar">
@@ -97,8 +93,9 @@ function PartNameAndAvatar(props) {
 
             {(partName) &&
                 <div className="part-name">
-
-                    <Input
+                    {(onNameChange) &&
+                     
+                        <Input
                         type="text"
                         key={part.id}
                         placeholder="enter name"
@@ -106,9 +103,19 @@ function PartNameAndAvatar(props) {
                         onKeyDown={onKeyDown}
                         onChange={(e) => handleNameChange(e.target.value)}
                         onBlur={onBlur}
-                        onFocus={() => handleFocus(part)}
-                        readOnly={(onNameChange) ? false : true}
-                        className="text-input" />
+                        onFocus={onFocus}
+                        className="text-input"
+                            />               
+               
+                    }
+
+                    {(!onNameChange) && 
+                       
+
+                        <p>{part.name}</p>
+                      
+                        }
+                    
                 </div>
             }
 

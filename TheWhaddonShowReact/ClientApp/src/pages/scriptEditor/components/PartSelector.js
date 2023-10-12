@@ -13,12 +13,12 @@ function PartSelector(props) {
 
     const debug = false;
 
-    log(debug,'PartSelectorProps',props)
+    log(debug, 'PartSelectorProps', props)
     //Props
-    const { scene, allocatedPartIds = [],onChange, size = "md" } = props;
+    const { scene, allocatedPartIds = [], onChange, size = "md" } = props;
 
     //REdux
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id] )
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
 
     //Internal State
     const [partsArray, setPartsArray] = useState([])
@@ -39,12 +39,12 @@ function PartSelector(props) {
 
         //add click event listener to document to close dropdown
         //TODOD
-    },[sceneParts,allocatedPartIds])
+    }, [sceneParts, allocatedPartIds])
 
     log(debug, 'PartSelector partsArray:', partsArray)
 
 
-    
+
 
     //Event Handlers
 
@@ -52,11 +52,12 @@ function PartSelector(props) {
 
         if (partId === null) {
 
-            onChange('partIds', [])
-
+            onChange([])
+            setOpenPartSelector(false)
+            return;
         }
 
-        if (event.shiftKey) {
+        if (event.ctrlKey) {
 
             const updatedPartsArray = partsArray.map(part => {
                 if (part.id === partId) {
@@ -92,58 +93,57 @@ function PartSelector(props) {
         return partsArray.some(part => part.selected === true)
     }
 
-    const togglePartSelector = () => {
+    const toggleDropdown = () => {
         setOpenPartSelector(!openPartSelector)
     }
 
 
 
     return (
-        <div className="part-selector">
-        <Dropdown isOpen={openPartSelector} toggle={() => togglePartSelector()} >  {/*className={`${s.notificationsMenu}`}*/}
-            <DropdownToggle nav >  {/*className={s.headerSvgFlipColor}*/}
-                <>
-                    {partsArray.filter(part => part.allocated === true).map(part => {
-                        return (<PartNameAndAvatar size={size} key={part.id} part={part} avatar />
-                        )
-                    })}
-                        {(partsArray.some(part => part.allocated === true)) === false &&
-                            < Avatar person={{ id: 0, firstName: 'clear' }} size={size} avatarInitials="?" />
-                    }
-                </>
+        <div className="part-selector" >
+            <div className="part-selector-avatars" onClick={()=>toggleDropdown()}>
 
-            </DropdownToggle>
-            <DropdownMenu className={`super-colors`}>   {/*${s.headerDropdownLinks} */}
-                {(partsArray.length > 0) &&
-                    <>
-                        < PartNameAndAvatar part={{ id: 0, name: 'Clear all parts',personId: null }} onClick={() => handlePartSelectorClick(null)} avatar partName/>
-                        <DropdownItem divider />
-                    </>
+                {partsArray.filter(part => part.allocated === true).map(part => {
+                    return (<PartNameAndAvatar size={size} key={part.id} part={part} avatar />
+                    )
+                })}
+                {(partsArray.some(part => part.allocated === true)) === false &&
+                    < Avatar person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
                 }
+            </div>
+            <div  className={`part-selector-dropdown ${openPartSelector ? 'show' : 'hide'}`} >
+
                 {(partsArray.length === 0) &&
-                    <DropdownItem onClick={() => togglePartSelector()} >No parts setup for this scene</DropdownItem>}
+                    <h3 onClick={() => toggleDropdown()} >No parts setup for this scene</h3>}
+
+                {(partsArray.length > 0) &&
+                    < PartNameAndAvatar part={{ id: 0, name: 'Clear all parts', personId: null }} onClick={(e) => handlePartSelectorClick(e,null)} avatar partName />
+                }
+
                 {partsArray.map(part => {
 
                     return (
-                        <DropdownItem key={part.id} onClick={(event) => handlePartSelectorClick(event, part.id)} className={(part.selected === true) ? 'selected' : ''}>
-                            <PartNameAndAvatar part={part} avatar partName />
-                        </DropdownItem>
+                        <PartNameAndAvatar
+                            part={part}
+                            onClick={(event) => handlePartSelectorClick(event, part.id)}
+                            selected={part.selected}
+                            avatar
+                            partName />
                     )
 
                 })}
                 {isMultiSelect() &&
-                    <>
-                        <DropdownItem divider />
-                        <Button color="danger" sixe='xs' type="submit" onClick={() => handleConfirm()}>Confirm</Button>
-                    </>
-
+                        <Button color="danger" sixe='sm' type="submit" onClick={() => handleConfirm()}>Confirm</Button>
                 }
-            </DropdownMenu>
-            </Dropdown>
+                {!isMultiSelect() &&
+                        <small>(use Ctrl to multi-select)</small>
+                }
+            </div>
+
         </div>
 
-   )
-  
+    )
+
 }
 
 export default PartSelector;

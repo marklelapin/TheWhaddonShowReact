@@ -78,19 +78,7 @@
 
 
 
-/* Part Selector */
-.part-selector {
-}
 
-    .part-selector .selected {
-        background-color: #f0f0f0;
-    }
-
-.part-avatar-col {
-    display: flex;
-    padding-right: 0px;
-    align-items: center;
-}
 
 
 /* The containger for the script page*/
@@ -153,6 +141,7 @@
 .part {
     display: flex;
     flex-direction: row;
+    align-items: center;
     padding: 0px 0px 10px 0px;
 }
 
@@ -173,6 +162,8 @@
 .part-avatar-name {
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .part-avatar {
@@ -181,21 +172,29 @@
 .part-name {
     flex: 1;
     text-align: start;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
 }
+
+
+
 
 /*SCRIPT ITEM*/
 .script-item {
-    position: relative;
     padding: 10px 40px 10px 40px;
+    display: flex;
+    flex-direction: row;
 }
 
     .script-item.dialogue {
+        padding-left: 0px;
         padding-right: 70px;
     }
 
         .script-item.dialogue.align-right {
             padding-left: 70px;
-            padding-right: 40px;
+            padding-right: 0px;
         }
 
     .script-item .text-input {
@@ -213,6 +212,7 @@
 }
 
 .script-item-text-area {
+    flex:1;
     display: flex;
     position: relative;
     justify-content: center;
@@ -220,6 +220,7 @@
 
 
 .dialogue .script-item-text-area {
+    flex:1;
     display: flex;
     position: relative;
     justify-content: flex-start;
@@ -227,6 +228,7 @@
 
 .dialogue.align-right .script-item-text-area {
     justify-content: flex-end;
+    order: -1;
 }
 
 .script-item-text {
@@ -250,27 +252,10 @@
 }
 
 .script-item-parts {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    overflow: visible;
+    width: auto;
 }
 
-.align-right .script-item-parts {
-    position: absolute;
-    top: 0px;
-    left: unset;
-    right: 10px;
-    overflow: visible;
-}
 
-.script-item-parts .avatar {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    padding: 0px;
-    margin: 0px;
-}
 
 /*SCRIPT ITEM CONTROLS*/
 
@@ -284,9 +269,9 @@
     justify-content: end;
 }
 
-.header-controls.header-exists{
-    top:0px;
-}
+    .header-controls.header-exists {
+        top: 0px;
+    }
 
 .header-right-controls {
     flex: 1;
@@ -303,19 +288,19 @@
     z-index: 10;
 }
 
-.bottom-right-controls{
+.bottom-right-controls {
     position: absolute;
     bottom: 0px;
-right: -37px;
-z-index: 5;
+    right: -37px;
+    z-index: 5;
 }
 
-.header-controls .checkbox-ios i{
-  height: 15px;
-  background-color: black;
+.header-controls .checkbox-ios i {
+    height: 15px;
+    background-color: black;
 }
 
-.header-controls i::before{
+.header-controls i::before {
     height: 15px !important;
     width: 15px !important;
 }
@@ -331,7 +316,7 @@ z-index: 5;
 
 
 /* Style the chat input box */
-.script-item.dialogue .text-input {
+.script-item.dialogue .script-item-text .text-input {
     border: 1px solid #ccc;
     border-radius: 0px 20px 20px 20px;
     padding: 10px 15px;
@@ -341,11 +326,119 @@ z-index: 5;
 }
 
 /* Style the chat input box */
-.script-item.dialogue.align-right .text-input {
+.script-item.dialogue.align-right .script-item-text .text-input {
     border: 1px solid #ccc;
     border-radius: 20px 0px 20px 20px;
     font-size: 16px;
     width: 100%;
     z-index: 2;
     background-color: yellowgreen;
+}
+
+
+
+
+/*PART SELECTOR*/
+.part-selector {
+    z-index: 10;
+    position: relative;
+}
+
+.part-selector .avatar{
+    margin: 0px;
+}
+
+/*multiple avatars css_________*/
+.part-selector-avatars {
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    z-index: 10;
+    --overlap: -15px; /*overlap the avatars by this amount*/
+}
+
+.part-selector-avatars {
+}
+
+    .part-selector-avatars .part-avatar-name:nth-child(n) {
+        z-index: 10;
+        --n: calc(var(--overlap) * (var(--index) - 1));
+        transform: translateX(var(--n))
+    }
+
+
+.part-avatar-name:nth-child(1) {
+    --index: 1;
+}
+
+.part-avatar-name:nth-child(2) {
+    --index: 2;
+}
+
+.part-avatar-name:nth-child(3) {
+    --index: 3;
+}
+
+.part-avatar-name:nth-child(4) {
+    --index: 4;
+}
+
+.part-avatar-name:nth-child(5) {
+    --index: 5;
+}
+
+_____________________________
+
+
+.part-selector-dropdown .avatar {
+    position: unset;
+    z-index: 11;
+}
+
+.part-selector-dropdown {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 11;
+    background-color: white;
+    padding: 15px;
+}
+
+    .part-selector-dropdown .part-avatar-name {
+        white-space: nowrap;
+        z-index: 12;
+        margin-bottom: 10px;
+    }
+
+    .part-selector-dropdown :hover {
+    }
+
+    .part-selector-dropdown .part-avatar {
+        z-index: 11;
+    }
+
+    .part-selector-dropdown .avatar {
+        z-index: 11;
+    }
+
+
+    .part-selector-dropdown .part-name {
+        z-index: 11;
+    }
+
+    .part-selector-dropdown .part-avatar-name:hover {
+        background-color: #f0f0f0;
+    }
+
+    .part-selector-dropdown .part-avatar-name.selected {
+        background-color: #ffc107;
+    }
+
+    .part-selector-dropdown p {
+        margin: 0px;
+    }
+
+.form-control:disabled, .form-control[readonly] {
+    background-color: white;
 }

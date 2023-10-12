@@ -13,7 +13,8 @@ import { changeFocus } from 'actions/navigation';
 
 //css
 import s from 'pages/forms/elements/Elements.module.scss';
-import { INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS } from 'dataAccess/scriptItemTypes';
+import { INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE } from 'dataAccess/scriptItemTypes';
+import { moveFocusToId } from '../scripts/utilityScripts';
 
 function ScriptItemText(props) {
 
@@ -28,7 +29,7 @@ function ScriptItemText(props) {
 
 
     //Props
-    const { scriptItem, header, onChange, onBlur, onKeyDown, placeholder = "...", maxWidth = null } = props;
+    const { scriptItem, header, onChange, onClick, onBlur, onKeyDown, placeholder = "...", maxWidth = null } = props;
 
     const { id, text, type, tags } = scriptItem
 
@@ -59,18 +60,15 @@ function ScriptItemText(props) {
 
     }, [])
 
+    useEffect(() => {
+        if (focus && focus.id === id) {
+            moveFocusToId(id, 'end')
+        }
+
+    }, [focus])
 
 
     //Calculations / Utitlity functions
-
-    const openCurtain = () => {
-
-        if (type === INITIAL_CURTAIN || type === CURTAIN) {
-            return tags.includes('OpenCurtain')
-        }
-
-        return null
-    }
 
     const adjustTextareaWidth = (element) => {
         if (element) {
@@ -121,6 +119,21 @@ function ScriptItemText(props) {
         switch (action) {
             case 'changeType': onChange('type', value); break;
             case 'toggleCurtain': onChange('toggleCurtain', value); break;
+            case 'confirm': onClick('confirm'); break;
+            case 'add': onClick('add'); break;
+            case 'delete': onClick('delete'); break;
+            case 'undo': onClick('undo'); break;
+            case 'redo': onClick('redo'); break;
+            case 'attach':
+                //TODO open file
+                const filesToAdd = []
+                onChange('addFiles', filesToAdd);
+                break;
+            case 'link':
+                //TODO get linkg
+                const linksToAdd = []
+                onChange('addLinks', linksToAdd);
+                break;
             default: return;
         }
 
@@ -138,9 +151,9 @@ function ScriptItemText(props) {
     return (
         <div id={`script-item-text-${id}`} className="script-item-text">
 
-            {header &&
+            {(header || type === DIALOGUE) &&
                 <div className="script-item-header">
-                    <small>{header}</small>
+                    <small>{header || 'no part'}</small>
                 </div>
             }
 
@@ -153,17 +166,17 @@ function ScriptItemText(props) {
                 value={text}
                 onChange={(e) => handleChange(e)}
                 onBlur={onBlur}
-                onFocus={()=>handleFocus()}
+                onFocus={() => handleFocus()}
                 onKeyDown={(e) => onKeyDown(e)}
             >
             </TextareaAutosize>
 
             {(focus) &&
                 <ScriptItemControls
-                scriptItem={scriptItem}
-                header={header}
-                        onClick={(action, value) => handleControlsClick(action, value)}
-                    />
+                    scriptItem={scriptItem}
+                    header={header}
+                    onClick={(action, value) => handleControlsClick(action, value)}
+                />
             }
         </div>
     )

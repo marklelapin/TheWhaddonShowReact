@@ -11,6 +11,7 @@ export const ADD_UPDATES_SCENE_HISTORY = 'ADD_UPDATES_SCENE_HISTORY';
 export const ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY';
 export const UPDATE_SCENE_PART_PERSONS = 'UPDATE_SCENE_PART_PERSONS';
 
+
 export function updateSearchParameters(searchParameters) {
     return {
         type: UPDATE_SEARCH_PARAMETERS,
@@ -85,3 +86,4 @@ type: UPDATE_SCENE_PART_PERSONS,
         partPersons,
     }
 }
+

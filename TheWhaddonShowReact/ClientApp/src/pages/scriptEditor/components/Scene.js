@@ -18,7 +18,7 @@ import { newScriptItemsForDelete, newScriptItemsForCreate } from '../scripts/cru
 import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
 import { log } from 'helper'
 import { moveFocusToId } from '../scripts/utilityScripts';
-
+import {changeFocus } from 'actions/navigation'
 
 function Scene(props) {
 
@@ -66,7 +66,8 @@ function Scene(props) {
 
     //Update of focus after scriptItems have changed
     useEffect(() => {
-        moveFocusToId(focusAfterScriptItemsChange.id, focusAfterScriptItemsChange.position);
+        dispatch(changeFocus(focusAfterScriptItemsChange))
+        //moveFocusToId(focusAfterScriptItemsChange.id, focusAfterScriptItemsChange.position);
     }, [scriptItems])
 
 
@@ -164,6 +165,21 @@ function Scene(props) {
     }
 
 
+
+
+    const handleClick = (action, scriptItem) => {
+
+        switch (action) {
+            case 'add': createScriptItem(below, scriptItem, scriptItems); break;
+            case 'delete': deleteScriptItem(scriptItem, scriptItems); break;
+            case 'confirm': updateIfChanged(scriptItem); break;
+            case 'undo': handleUndo(); break;
+            case 'redo': handleRedo(); break;
+            case 'setUndo': handleSetUndo(); break;
+            case 'cancelUndo': setUndoDateTime(null); break;
+            default: return;
+        }
+    }
 
 
     const handleKeyDown = (e, scriptItem, previousFocusOverride = null, nextFocusOverride = null) => {
@@ -295,19 +311,19 @@ function Scene(props) {
         dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
     }
 
-    const handleChange = (type, id, value) => {
+    //const handleChange = (type, id, value) => {
 
-        if (type === 'partIds') {
-            let update = [...scriptItems].find(item => item.id === id)
-            update.partIds = value
+    //    if (type === 'partIds') {
+    //        let update = [...scriptItems].find(item => item.id === id)
+    //        update.partIds = value
 
-            update = prepareUpdate(update)
+    //        update = prepareUpdate(update)
 
-            dispatch(addUpdates(update, 'ScriptItem')) //part Updates are confirmed in part editor so unlike other updates this automatically updates the store.
-        }
+    //        dispatch(addUpdates(update, 'ScriptItem')) //part Updates are confirmed in part editor so unlike other updates this automatically updates the store.
+    //    }
 
 
-    }
+    //}
 
 
     const currentScene = scriptItems.find(item => item.type === 'Scene') || {} //returns the synopsis scriptItem
@@ -347,7 +363,7 @@ function Scene(props) {
                 {
                     (currentScene) &&
                     <ScriptItem scriptItem={currentScene}
-                        onChange={handleChange}
+                    onClick={(action) => handleClick(action, currentScene)}
                         onBlur={handleBlur}
                         onKeyDown={handleKeyDown}
                     />
@@ -355,7 +371,7 @@ function Scene(props) {
                 }
                 {synopsis &&
                     <ScriptItem scriptItem={synopsis}
-                        onChange={handleChange}
+                    onClick={(action) => handleClick(action, synopsis)}
                         onBlur={handleBlur}
                         onKeyDown={handleKeyDown}
                         nextFocus={
@@ -375,8 +391,9 @@ function Scene(props) {
 
                 {staging &&
                     <>
-                        <ScriptItem scriptItem={staging}
-                            onChange={handleChange}
+                    <ScriptItem
+                        scriptItem={staging}
+                        onClick={(action)=>handleClick(action,staging) }
                             onBlur={handleBlur}
                             onKeyDown={handleKeyDown}
                             previousFocus={
@@ -398,6 +415,7 @@ function Scene(props) {
                 {body().map((scriptItem, index) => {
                     return (
                         <ScriptItem
+                            onClick = {(action)=>handleClick(action,scriptItem) }
                             key={scriptItem.id}
                             scriptItem={scriptItem}
                             scene={currentScene}

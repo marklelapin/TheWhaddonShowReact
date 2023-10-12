@@ -124,8 +124,8 @@ function ScriptItemControls(props) {
             <div className="bottom-right-controls">
                 {scriptItem &&
                     <>
-                        <Icon icon="play" onClick={() => onClick('confirmScriptItem')} />
-                        <Icon icon="add" onClick={() => onClick('addScriptItem')} />
+                        <Icon icon="play" onClick={() => onClick('confirm')} />
+                        <Icon icon="add" onClick={() => onClick('add')} />
                     </>
                 }
             </div>
@@ -133,9 +133,9 @@ function ScriptItemControls(props) {
             <div className="outside-right-controls">
                 {part &&
                     <>
-                        <Icon icon="play" onClick={() => onClick('confirmPart')} />
-                        <Icon icon="search" onClick={() => onClick('searchParts')} />
-                        <Icon icon="trash" onClick={() => onClick('deletePart')} />
+                        <Icon icon="play" onClick={() => onClick('confirm',null)} />
+                        <Icon icon="search" onClick={() => onClick('search',null)} />
+                        <Icon icon="trash" onClick={() => onClick('delete',null)} />
                     </>
                 }
             </div>

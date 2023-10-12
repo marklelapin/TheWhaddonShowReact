@@ -35,7 +35,7 @@ function ScriptItem(props) {
 
 
     // get specific props
-    const { scriptItem: storedScriptItem, scene, alignRight = false, onKeyDown, previousFocus = null, nextFocus = null } = props;
+    const { scriptItem: storedScriptItem, scene, alignRight = false, onClick, onKeyDown, previousFocus = null, nextFocus = null } = props;
 
 
     //Redux state
@@ -197,21 +197,7 @@ function ScriptItem(props) {
     return (
         <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
 
-            <div ref={textInputRef} className="script-item-text-area">
-
-                <ScriptItemText
-                    key={id}
-                    maxWidth={textInputRef.current?.offsetWidth}
-                    scriptItem={scriptItem}
-                    header={header()}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocus, nextFocus)}
-                    refresh={scriptItem.refresh}
-                />
-
-            </div>
-            {showParts() &&
+             {showParts() &&
                 <div className="script-item-parts">
                     <PartSelector
                         scene={scene}
@@ -220,6 +206,22 @@ function ScriptItem(props) {
                     />
                 </div>
             }
+            <div ref={textInputRef} className="script-item-text-area">
+
+                <ScriptItemText
+                    key={id}
+                    maxWidth={textInputRef.current?.offsetWidth}
+                    scriptItem={scriptItem}
+                    header={header()}
+                    onClick={(action) => onClick(action, scriptItem)}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocus, nextFocus)}
+                    refresh={scriptItem.refresh}
+                />
+
+            </div>
+           
             {/*Elements specific for each scriptItem type*/}
 
 

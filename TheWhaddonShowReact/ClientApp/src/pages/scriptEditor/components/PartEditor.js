@@ -1,23 +1,22 @@
-﻿import React from 'react';
-import { useState, useEffect, useRef } from 'react';
+﻿//React and Redux
+import React from 'react';
+import { useState, useEffect, } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
-import Avatar from 'components/Avatar/Avatar';
-import { InputGroup, Input, Button, FormGroup, Container, Col, Row } from 'reactstrap';
-import { PartUpdate } from 'dataAccess/localServerModels';
-import Update from 'components/Forms/Update';
+
 import { addUpdates } from 'actions/localServer';
-import TagsInput from '../../../components/Forms/TagsInput';
-import { setupParts, addNewPart, addPersonInfo } from '../scripts/PartScripts'
+//Components
+
 import PersonSelector from './PersonSelector';
 
-import { store } from 'index.js';
+import PartEditorRow from './PartEditorRow';
+//Utilities
+import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
+import { PartUpdate } from 'dataAccess/localServerModels';
+import { addPersonInfo } from '../scripts/PartScripts'
 import { log } from 'helper'
-import PartNameAndAvatar from './PartNameAndAvatar';
 import { moveFocusToId } from '../scripts/utilityScripts';
-import { setWith } from 'lodash';
 import { changeFocus } from 'actions/navigation';
+
 
 function PartEditor(props) {
 
@@ -39,16 +38,13 @@ function PartEditor(props) {
         throw new Error('PartEditor: scene prop is null')
     }
 
-
-    //Get persons and parts data from REdux Store
-    //const storedPartPersons = useSelector(state => state.scriptEditor.partPersons)
+    //Redux
     const storedSceneParts = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
     const storedPersons = useSelector(state => state.localServer.persons.history)
 
-
     log(debug, 'storedSceneParts', storedSceneParts)
 
-    const focus = useSelector(state => state.navigation.focus)
+
 
     //copy them to internal state that then gets edited before saving on blur
     const [sceneParts, setSceneParts] = useState([])
@@ -67,7 +63,6 @@ function PartEditor(props) {
 
         setSceneParts([...storedScenePartPersons, ...newSceneParts])
     }, [storedSceneParts])
-
 
 
     //const resetSceneParts = () => {
@@ -210,7 +205,7 @@ function PartEditor(props) {
 
                 if (nextPart) {
                     moveFocusToId(nextPart.id, start)
-                   // dispatch(changeFocus({ ...nextPart, position: start }))
+                    // dispatch(changeFocus({ ...nextPart, position: start }))
                 } else {
                     moveFocusToId(nextFocus.id, start)
                     //dispatch(changeFocus({ ...nextFocus, position: start }))
@@ -288,22 +283,29 @@ function PartEditor(props) {
 
 
 
-    const handleNameChange = (text, part) => {
+    const handleChange = (type, value, part) => {
 
-        const partId = part.id
+        switch (type) {
+            case 'text':
+                const text = value;
 
-        const updatedParts = sceneParts.map(part => {
+                const partId = part.id
 
-            if (part.id === partId) {
+                const updatedParts = sceneParts.map(part => {
 
-                let updatedPart = { ...part, name: text.trimStart(), changed: true }
+                    if (part.id === partId) {
 
-                return updatedPart
-            }
-            return part;
-        })
+                        let updatedPart = { ...part, name: text.trimStart(), changed: true }
 
-        setSceneParts(updatedParts);
+                        return updatedPart
+                    }
+                    return part;
+                })
+
+                setSceneParts(updatedParts);
+                break;
+           default : return;
+        }
     }
 
 
@@ -321,42 +323,33 @@ function PartEditor(props) {
     }
 
 
-
-
-    const handleClickDelete = (part) => { //tODDO check part is passed back
-        deletePart(part)
-    }
-
-    const handleClickAdd = (part) => { //TODO checke part is passed back  
-        createPart(part)//will create a new part after (part)
-
-    }
-
-    //const handleFocus = (part) => {
-    //    dispatch(changeFocus({ ...part, parentId: scene.id }))
-    //}
-
     const handleBlur = () => {
 
         updateIfChanged()
 
     }
 
+    const handleClick = (action, value, part) => {
 
-
-
-    const handleClickSearch = () => {
-        //TODO
-
+        switch (action) {
+            case 'avatar': handleAvatarClick(part); break;
+            case 'addTag': addTag(value, part); break;
+            case 'removeTag': removeTag(value, part); break;
+            case 'delete': deletePart(part); break;
+            case 'add': createPart(part); break;
+            case 'confirm': updateIfChanged(); break;
+            case 'search': handleClickSearch(); break;
+            default: return;
+        }
     }
 
 
+    const handleClickSearch = () => {
+        alert('Search Clicked') //TODO add in search functionality
+    }
 
 
-
-
-
-    const handleAddTag = (tag, part) => {
+    const addTag = (tag, part) => {
 
         const partId = part.id
 
@@ -371,12 +364,12 @@ function PartEditor(props) {
         })
 
         setSceneParts(updateParts)
-        moveFocusToId(...part.id,end)
+        moveFocusToId(...part.id, end)
         //dispatch(changeFocus({ ...part, position: 'end' }))
 
     }
 
-    const handleRemoveTag = (tag, part) => {
+    const removeTag = (tag, part) => {
 
         const partId = part.id
 
@@ -388,8 +381,7 @@ function PartEditor(props) {
             return part;
         })
         setSceneParts(updateParts)
-        moveFocusToId(...part.id,end)
-        //dispatch(changeFocus({ ...part, position: 'end' }))
+        moveFocusToId(...part.id, end)
     }
 
 
@@ -414,23 +406,17 @@ function PartEditor(props) {
 
         setModalPersons(null);
         setSceneParts(updatedParts);
-moveFocusToId(...part.id,end)
-        //dispatch(changeFocus({ ...part, position: 'end' }))
+        moveFocusToId(...part.id, end)
     }
 
 
 
     const closeModalPersons = () => {
 
-        moveFocusToId(...modalPersons.part.id,end)
-        //dispatch(changeFocus({ ...modalPersons.part, position: 'end' }))
+        moveFocusToId(...modalPersons.part.id, end)
         setModalPersons(null);
 
     }
-
-
-
-    const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
 
     const activeSceneParts = () => {
 
@@ -444,52 +430,27 @@ moveFocusToId(...part.id,end)
     return (
 
         <>
-            
+
             <div className={`part-editor  draft-border`}>
-                
-                    <h5>Parts:</h5>
-                    {activeSceneParts().map(part => {
 
-                        return (
+                <h5>Parts:</h5>
+                {activeSceneParts().map(part => {
 
-                            <div key={part.id} id={part.id}  className="part">
-                                       <PartNameAndAvatar avatar partName personName
+                    return (
 
-                                            avatarInitials={part.avatarInitials}
-                                            part={part}
-                                            onAvatarClick={(e, linkId) => handleAvatarClick(part)}
-                                            onNameChange={(text) => handleNameChange(text, part)}
-                                            onKeyDown={(e) => handleKeyDown(e, part)}
-                                            onBlur={(e) => handleBlur(e, part)}
-                                            focus={(focus?.id === part.id) ? focus : null}
-                                        />
-                               
-                                <div className="part-controls">
-
-                                    {(activeSceneParts().length > 1) &&
-                                        <Button color="danger" size="xs" onClick={(e) => handleClickDelete(part)}><i className="fa fa-remove" /></Button>
-                                    }
-                                    <Button color="warning" size="xs" onClick={(e) => handleClickSearch(part)}><i className="fa fa-search" /></Button>
-                                </div>
-                                <div className="part-tags">
-                                    <TagsInput
-                                        strapColor="primary"
-                                        tags={part.tags}
-                                        tagOptions={tagOptions}
-                                        onClickAdd={(tag) => handleAddTag(tag, part)}
-                                        onClickRemove={(tag) => handleRemoveTag(tag, part)} />
-                                </div>
-                            </div>
+                        <PartEditorRow
+                            key={part.id}
+                            part={part}
+                            onChange={(type, value) => handleChange(type, value, part)}
+                            onBlur={() => handleBlur()}
+                            onClick={(action, value) => handleClick(action, value, part)}
+                            onKeyDown={(e, part) => handleKeyDown(e, part)}
+                        />
 
 
-                        )
-                    })}
-
-                    <Button color="success" size="xs" onClick={(e) => handleClickAdd(e, sceneParts[sceneParts.length - 1])}><i className="fa fa-plus" /></Button>
-               
-
+                    )
+                })}
             </div >
-
 
             {(modalPersons) &&
                 <PersonSelector
