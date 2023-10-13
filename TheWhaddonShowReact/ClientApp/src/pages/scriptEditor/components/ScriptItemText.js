@@ -1,6 +1,6 @@
 ﻿import React from 'react';
-import { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { useSelector, useDispatch} from 'react-redux';
 
 //Components
 import TextareaAutosize from 'react-autosize-textarea';
@@ -9,23 +9,22 @@ import { log } from 'helper';
 
 
 //Utilities
-import { changeFocus } from 'actions/navigation';
+import { changeFocus } from 'actions/scriptEditor';
 
 //css
 import s from 'pages/forms/elements/Elements.module.scss';
-import { INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE } from 'dataAccess/scriptItemTypes';
+import { INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from 'dataAccess/scriptItemTypes';
 import { moveFocusToId } from '../scripts/utilityScripts';
 
 function ScriptItemText(props) {
 
     //utils
-    const debug = true
+    const debug = false;
     const dispatch = useDispatch()
 
     //constants
     const audioTypes = [SONG, SOUND]
     const videoTypes = [SONG, SOUND, SCENE, SYNOPSIS]
-
 
 
     //Props
@@ -35,22 +34,22 @@ function ScriptItemText(props) {
 
     log(debug, 'ScriptItemTextProps', props)
 
-    //Redux
-    const focus = useSelector(state => state.scriptEditor.focus[id])
 
-    //internal State
-    /*   const [textValue, setTextValue] = useState(null)*/
+    //REdux
+    const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
 
-
+    
     let finalPlaceholder;
 
     switch (type) {
-        case 'scene': finalPlaceholder = 'enter title for scene'; break;
-        case 'synopsis': finalPlaceholder = 'enter brief synopsis for scene'; break;
-        case 'initialStaging': finalPlaceholder = 'enter initial staging for scene'; break;
-        case 'initialCurtain': finalPlaceholder = 'enter initial curtain for scene'; break;
+        case SCENE: finalPlaceholder = 'enter title for scene'; break;
+        case SYNOPSIS: finalPlaceholder = 'enter brief synopsis for scene'; break;
+        case INITIAL_STAGING: finalPlaceholder = 'enter initial staging for scene'; break;
+        case INITIAL_CURTAIN: finalPlaceholder = 'enter initial curtain for scene'; break;
         default: finalPlaceholder = placeholder;
     }
+
+   
 
     useEffect(() => {
         const textareaRef = document.getElementById(`script-item-text-${id}`)
@@ -58,14 +57,16 @@ function ScriptItemText(props) {
             adjustTextareaWidth(textareaRef)
         }
 
+        const textInputRef = textareaRef.querySelector('textarea')
+         
+        if (textInputRef) {
+            textInputRef.focus();
+        }
+        
+
+
     }, [])
 
-    useEffect(() => {
-        if (focus && focus.id === id) {
-            moveFocusToId(id, 'end')
-        }
-
-    }, [focus])
 
 
     //Calculations / Utitlity functions
@@ -141,10 +142,7 @@ function ScriptItemText(props) {
 
 
     const handleFocus = () => {
-
-        dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
-
-
+         dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
     }
 
 
@@ -163,7 +161,7 @@ function ScriptItemText(props) {
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
                 className={`form-control ${s.autogrow} transition-height text-input`}
-                value={text}
+                value={text || ''}
                 onChange={(e) => handleChange(e)}
                 onBlur={onBlur}
                 onFocus={() => handleFocus()}
@@ -171,7 +169,7 @@ function ScriptItemText(props) {
             >
             </TextareaAutosize>
 
-            {(focus) &&
+            {(focus) && 
                 <ScriptItemControls
                     scriptItem={scriptItem}
                     header={header}

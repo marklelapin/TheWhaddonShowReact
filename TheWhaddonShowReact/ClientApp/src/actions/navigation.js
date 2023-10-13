@@ -6,7 +6,6 @@ export const CLOSE_SIDEBAR = 'CLOSE_SIDEBAR';
 export const CLOSE_SIDEBAR_AND_TOGGLE_STATIC = 'CLOSE_SIDEBAR_AND_TOGGLE_STATIC';
 export const CHANGE_ACTIVE_SIDEBAR_ITEM = 'CHANGE_ACTIVE_SIDEBAR_ITEM';
 
-export const CHANGE_FOCUS = 'CHANGE_FOCUS'; //also used in scriptEditor
 
 export function toggleStaticSidebar() {
     return {
@@ -37,12 +36,4 @@ export function changeActiveSidebarItem(activeItem) {
         type: CHANGE_ACTIVE_SIDEBAR_ITEM,
         activeItem,
     };
-}
-
-//also used in scriptEditor
-export function changeFocus(focus) {
-    return {
-        type: CHANGE_FOCUS,
-        focus,
-    }
 }

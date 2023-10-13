@@ -2,7 +2,7 @@
 }
 
 .draft-border {
-    border: 2px dashed red;
+  /*  border: 2px dashed red;*/
 }
 
 
@@ -154,6 +154,7 @@
 }
 
 .part-tags {
+
     flex: 1;
     text-align: start;
 }
@@ -185,23 +186,45 @@
     padding: 10px 40px 10px 40px;
     display: flex;
     flex-direction: row;
+    position: relative;
 }
 
     .script-item.dialogue {
-        padding-left: 0px;
+        padding-left: 10px;
         padding-right: 70px;
     }
 
         .script-item.dialogue.align-right {
             padding-left: 70px;
-            padding-right: 0px;
+            padding-right: 10px;
         }
 
     .script-item .text-input {
         text-align: center;
     }
 
+.scene-controls {
+    position:absolute;
+    top: 0px;
+right: 0px;
+}
 
+/*Text Input Styles*/
+.text-input {
+    width: 100%;
+}
+
+.script-item .text-input:not(:focus) {
+    border: none;
+}
+
+.part .text-input:not(:focus) {
+    border: none;
+}
+
+
+
+/*Curtain background styles*/
 .curtain-open {
     color: white;
     background-color: #30324c;
@@ -211,6 +234,8 @@
     background-color: #ff5574;
 }
 
+
+/*Layout*/
 .script-item-text-area {
     flex:1;
     display: flex;
@@ -238,11 +263,114 @@
     position: relative;
 }
 
-.text-input {
-    width: 100%;
+.script-item-parts {
+    width: auto;
 }
 
+/*PART SELECTOR*/
+.part-selector {
+    position: relative;
+    color: rgb(41, 50, 58);
+  
+}
 
+    .part-selector .avatar {
+        margin: 0px;
+    }
+
+/*multiple avatars css_________*/
+.part-selector-avatars {
+    width: auto;
+    display: flex;
+    flex-direction: row;
+ 
+    --overlap: -15px; /*overlap the avatars by this amount*/
+}
+
+.part-selector-avatars {
+}
+
+    .part-selector-avatars .part-avatar-name:nth-child(n) {
+
+        --n: calc(var(--overlap) * (var(--index) - 1));
+        transform: translateX(var(--n))
+    }
+
+
+.part-avatar-name:nth-child(1) {
+    --index: 1;
+}
+
+.part-avatar-name:nth-child(2) {
+    --index: 2;
+}
+
+.part-avatar-name:nth-child(3) {
+    --index: 3;
+}
+
+.part-avatar-name:nth-child(4) {
+    --index: 4;
+}
+
+.part-avatar-name:nth-child(5) {
+    --index: 5;
+}
+
+_____________________________
+
+
+.part-selector-avatars .avatar {
+
+}
+
+.part-selector-dropdown {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 11;
+    background-color: white;
+    padding: 15px;
+}
+
+    .part-selector-dropdown .part-avatar-name {
+        white-space: nowrap;
+        z-index: 12;
+        margin-bottom: 10px;
+    }
+
+    .part-selector-dropdown :hover {
+    }
+
+    .part-selector-dropdown .part-avatar {
+        z-index: 11;
+    }
+
+    .part-selector-dropdown .avatar {
+        z-index: 11;
+    }
+
+
+    .part-selector-dropdown .part-name {
+        z-index: 11;
+    }
+
+    .part-selector-dropdown .part-avatar-name:hover {
+        background-color: #f0f0f0;
+    }
+
+    .part-selector-dropdown .part-avatar-name.selected {
+        background-color: #ffc107;
+    }
+
+    .part-selector-dropdown p {
+        margin: 0px;
+    }
+
+
+
+/*SCRIPT ITEM HEADER*/
 .script-item-header {
 }
 
@@ -251,13 +379,14 @@
     right: 10px;
 }
 
-.script-item-parts {
-    width: auto;
-}
+
 
 
 
 /*SCRIPT ITEM CONTROLS*/
+
+
+
 
 .header-controls {
     position: absolute;
@@ -314,10 +443,11 @@
 
 
 
+/*INDIVIDUAL STYLING OF SCRIPT ITEM TYPES*/
 
-/* Style the chat input box */
+/*DIALOGUE*/
 .script-item.dialogue .script-item-text .text-input {
-    border: 1px solid #ccc;
+   /* border: 1px solid #ccc;*/
     border-radius: 0px 20px 20px 20px;
     padding: 10px 15px;
     font-size: 16px;
@@ -325,9 +455,8 @@
     z-index: 2;
 }
 
-/* Style the chat input box */
 .script-item.dialogue.align-right .script-item-text .text-input {
-    border: 1px solid #ccc;
+  /*  border: 1px solid #ccc;*/
     border-radius: 20px 0px 20px 20px;
     font-size: 16px;
     width: 100%;
@@ -338,107 +467,9 @@
 
 
 
-/*PART SELECTOR*/
-.part-selector {
-    z-index: 10;
-    position: relative;
-}
-
-.part-selector .avatar{
-    margin: 0px;
-}
-
-/*multiple avatars css_________*/
-.part-selector-avatars {
-    width: auto;
-    display: flex;
-    flex-direction: row;
-    z-index: 10;
-    --overlap: -15px; /*overlap the avatars by this amount*/
-}
-
-.part-selector-avatars {
-}
-
-    .part-selector-avatars .part-avatar-name:nth-child(n) {
-        z-index: 10;
-        --n: calc(var(--overlap) * (var(--index) - 1));
-        transform: translateX(var(--n))
-    }
 
 
-.part-avatar-name:nth-child(1) {
-    --index: 1;
-}
-
-.part-avatar-name:nth-child(2) {
-    --index: 2;
-}
-
-.part-avatar-name:nth-child(3) {
-    --index: 3;
-}
-
-.part-avatar-name:nth-child(4) {
-    --index: 4;
-}
-
-.part-avatar-name:nth-child(5) {
-    --index: 5;
-}
-
-_____________________________
 
 
-.part-selector-dropdown .avatar {
-    position: unset;
-    z-index: 11;
-}
-
-.part-selector-dropdown {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    z-index: 11;
-    background-color: white;
-    padding: 15px;
-}
-
-    .part-selector-dropdown .part-avatar-name {
-        white-space: nowrap;
-        z-index: 12;
-        margin-bottom: 10px;
-    }
-
-    .part-selector-dropdown :hover {
-    }
-
-    .part-selector-dropdown .part-avatar {
-        z-index: 11;
-    }
-
-    .part-selector-dropdown .avatar {
-        z-index: 11;
-    }
 
 
-    .part-selector-dropdown .part-name {
-        z-index: 11;
-    }
-
-    .part-selector-dropdown .part-avatar-name:hover {
-        background-color: #f0f0f0;
-    }
-
-    .part-selector-dropdown .part-avatar-name.selected {
-        background-color: #ffc107;
-    }
-
-    .part-selector-dropdown p {
-        margin: 0px;
-    }
-
-.form-control:disabled, .form-control[readonly] {
-    background-color: white;
-}

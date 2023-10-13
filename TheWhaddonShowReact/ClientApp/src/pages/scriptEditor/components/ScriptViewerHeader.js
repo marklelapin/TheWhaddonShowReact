@@ -35,13 +35,9 @@ function ScriptViewer(props) {
     //props
     const { scenes, onClick } = props;
 
-
-
-
-
-
+    //Redux State
     const showComments = useSelector(state => state.scriptEditor.showComments)
-    const focus = useSelector(state => state.navigation.focus)
+    const focus = useSelector(state => state.scriptEditor.focus)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const partPersons = useSelector(state => state.scriptEditor.partPersons)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons)
@@ -60,20 +56,21 @@ function ScriptViewer(props) {
 
     useEffect(() => {
         log(debug, 'Script Viewer UseEffect Focus:', focus, focussedScene)
-        if (focus && focus.parentId !== focussedScene?.id) { //only if moved to a new scene.
+        let currentFocus = null;
+        for (var key in focus) {
+            if (focus.hasOwnProperty(key)) {
+                currentFocus = focus[key];
+            }
+        }
+        if (currentFocus && currentFocus.parentId && currentFocus.parentId !== focussedScene?.id) { //only if moved to a new scene.
 
-            const newFocussedScene = scenePartPersons[focus.parentId]
+            const newFocussedScene = scenePartPersons[currentFocus.parentId]
             if (newFocussedScene) {
                 setFocussedScene(newFocussedScene)
             }
-        }   
-
-
-
-
-
-
+        } 
     }, [focus])
+
 
     useEffect(() => {
         if (scenePartPersons && focussedScene) {
@@ -82,7 +79,6 @@ function ScriptViewer(props) {
         }
 
     }, [scenePartPersons])
-
 
 
 

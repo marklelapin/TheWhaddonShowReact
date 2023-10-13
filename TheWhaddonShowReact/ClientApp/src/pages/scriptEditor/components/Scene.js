@@ -12,19 +12,26 @@ import PartEditor from 'pages/scriptEditor/components/PartEditor.js';
 
 
 //Utilities
-import { prepareUpdates, sortLatestScriptItems, prepareUpdate } from 'dataAccess/localServerUtils';
+import { prepareUpdates, prepareUpdate } from 'dataAccess/localServerUtils';
+import { sortLatestScriptItems } from 'dataAccess/scriptItemScripts';
 import { addUpdates } from 'actions/localServer';
-import { newScriptItemsForDelete, newScriptItemsForCreate } from '../scripts/crudScripts';
+import { newScriptItemsForDelete, newScriptItemsForCreate, createHeaderScriptItems } from '../scripts/crudScripts';
+
 import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
 import { log } from 'helper'
-import { moveFocusToId } from '../scripts/utilityScripts';
-import {changeFocus } from 'actions/navigation'
+import { moveFocusToId, moveFocusToUndefinedScriptItem } from '../scripts/utilityScripts';
+import { changeFocus } from 'actions/navigation'
+import { create } from 'lodash';
 
+//Constants
+import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
+import { INITIAL_CURTAIN } from 'dataAccess/scriptItemTypes';
 function Scene(props) {
 
     //utility constants
     const debug = false;
     const debugRenderProps = true;
+    const debugKeys = true;
 
     const dispatch = useDispatch()
     const above = 'above'
@@ -33,7 +40,7 @@ function Scene(props) {
     const end = 'end'
 
     //props
-    const { scene } = props;
+    const { scene, onClick } = props;
 
     log(debug, 'Scene Passed into Scene', scene)
 
@@ -63,31 +70,38 @@ function Scene(props) {
         const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
         setScriptItems(scriptItems)
     }
-
-    //Update of focus after scriptItems have changed
-    useEffect(() => {
-        dispatch(changeFocus(focusAfterScriptItemsChange))
-        //moveFocusToId(focusAfterScriptItemsChange.id, focusAfterScriptItemsChange.position);
-    }, [scriptItems])
+    
+    //useEffect(() => {
+    //    if (focusAfterScriptItemsChange) {
+    //        moveFocusToId(focusAfterScriptItemsChange.id, focusAfterScriptItemsChange.position);
+    //        setFocusAfterScriptItemsChange(null)
+    //    }
+    //}, [scriptItems])
 
 
 
     //CRUD OPERATIONS 
     //-------------------------------------------------------------------------------------------------
 
-    const createScriptItem = (placement, existingScriptItem, scriptItems, type = 'Dialogue') => {
+    const createScriptItem = (placement, currentScriptItem, scriptItems, type = 'Dialogue') => {
 
-        const { newScriptItem, newScriptItems } = newScriptItemsForCreate(placement, existingScriptItem, scriptItems, type)
+        if (HEADER_TYPES.includes(currentScriptItem.type) && currentScriptItem.type !== INITIAL_CURTAIN) {
+            return;
+        }
+
+        let { newScriptItem, newScriptItems } = newScriptItemsForCreate(placement, currentScriptItem, scriptItems, type)
 
         log(debug, 'createScriptItem', newScriptItem)
         log(debug, 'newScriptItems', newScriptItems)
 
+        //setFocusAfterScriptItemsChange({
+        //    ...newScriptItem, position: (placement === above) ? start : end
+        //})
 
-        setFocusAfterScriptItemsChange({
-            ...newScriptItem, position: (placement === above) ? start : end
-        })
+        newScriptItem.setFocus = true
 
         const preparedUpdates = prepareUpdates(newScriptItems)
+
 
         dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
 
@@ -95,18 +109,22 @@ function Scene(props) {
 
     const deleteScriptItem = (scriptItemToDelete, scriptItems) => {
 
-        const newScriptItems = newScriptItemsForDelete(scriptItemToDelete, scriptItems)
+        if (HEADER_TYPES.includes(scriptItemToDelete.type)) {
+            alert('You cannot delete a header item.')
+            return;
+        }
 
-        setFocusAfterScriptItemsChange({
-            id: scriptItemToDelete.previousId,
-            parentId: scriptItemToDelete.parentId,
-            position: end
-        })
+        const newScriptItems = newScriptItemsForDelete(scriptItemToDelete, scriptItems)
 
         const preparedUpdates = prepareUpdates(newScriptItems)
 
         dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
 
+        setFocusAfterScriptItemsChange({
+            id: scriptItemToDelete.nextId || scriptItemToDelete.previousId,
+            parentId: scriptItemToDelete.parentId,
+            position: (scriptItemToDelete.nextId) ? start : end
+        })
     }
 
     const updateIfChanged = (scriptItem) => {
@@ -120,8 +138,6 @@ function Scene(props) {
 
 
     }
-
-
 
 
 
@@ -187,14 +203,25 @@ function Scene(props) {
         const up = 'up'
         const down = 'down'
 
-        const moveFocus = (direction, overrideId = null) => {
+        const closestPosition = () => {
+
+            const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
+            const closestPosition = (percentageAcoss > 0.5) ? end : start
+            return closestPosition
+
+        }
+
+
+        const moveFocus = (direction, position = null, overrideId = null) => {
+
             e.preventDefault()
             const newId = overrideId || (direction === down) ? nextFocusOverride?.id || scriptItem.nextId : previousFocusOverride?.id || scriptItem.previousId
-            const position = (direction === up) ? end : start
+            const currentClosestPosition = closestPosition()
+            let newPosition = position || currentClosestPosition //|| (direction === up) ? start : end
 
             if (newId) {
 
-                moveFocusToId(newId, position)
+                moveFocusToId(newId, newPosition)
 
             }
 
@@ -207,7 +234,9 @@ function Scene(props) {
         }
 
 
-        if (e.shiftKey) { //create new chat bubble
+
+
+        if (e.shiftKey) {
 
 
             let latestScriptItems = []
@@ -220,40 +249,79 @@ function Scene(props) {
 
             if (e.key === 'ArrowUp') {
                 e.preventDefault()
-                createScriptItem(above, scriptItem, latestScriptItems)
-                return
+
+                if (HEADER_TYPES.includes(scriptItem.type)) {
+                    moveFocus(up)
+                    return
+                } else {
+                    createScriptItem(above, scriptItem, latestScriptItems)
+                    return
+                }
             }
 
-            if (e.key === 'Enter' || e.key === 'ArrowDown') {
+            if (e.key === 'ArrowDown') {
                 e.preventDefault()
-                createScriptItem(below, scriptItem, latestScriptItems)
+                if (HEADER_TYPES.includes(scriptItem.type)) {
+                    moveFocus(down)
+                    return
+                } else {
+                    createScriptItem(below, scriptItem, latestScriptItems)
+                    return
+                }
+            }
+
+            if (e.key === 'Enter' && e.target.tagName.toLowerCase() === 'textarea') {
+                /*   log(debugKeys,'it got here')*/
+                e.preventDefault();
+                const start = e.target.selectionStart;
+                const end = e.target.selectionEnd;
+                const text = e.target.value;
+                const newText = text.substring(0, start) + '\n' + text.substring(end);
+                e.target.value = newText;
+                e.target.selectionStart = start + 1;
+                e.target.selectionEnd = start + 1;
                 return
+
             }
         }
 
-        if (e.key === 'Enter' && e.target.tagName.toLowerCase() !== 'textarea') {
+        if (e.key === 'Enter') {
             e.preventDefault()
-            moveFocus(down)
+
+            if (HEADER_TYPES.includes(scriptItem.type) && scriptItem.type !== INITIAL_CURTAIN) {
+                moveFocus(down)
+                return;
+            }
+
+            let latestScriptItems = []
+
+            setScriptItems((prevScriptItems) => {
+                latestScriptItems = [...prevScriptItems]
+                return prevScriptItems
+            })
+
+
+            createScriptItem(below, scriptItem, latestScriptItems)
             return
         }
-        if (e.key === 'ArrowUp' && e.target.selectionEnd === 0) {
+        if (e.key === 'ArrowUp') {
             e.preventDefault()
             moveFocus(up)
             return
         }
-        if (e.key === 'ArrowDown' && e.target.selectionStart === e.target.value.length) {
+        if (e.key === 'ArrowDown') {
             e.preventDefault()
             moveFocus(down)
             return
         }
         if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length) {
             e.preventDefault()
-            moveFocus(down)
+            moveFocus(down, start)
             return
         }
         if (e.key === 'ArrowLeft' && e.target.selectionEnd === 0) {
             e.preventDefault()
-            moveFocus(up)
+            moveFocus(up, end)
             return
         }
 
@@ -266,7 +334,7 @@ function Scene(props) {
             }
 
             if (e.target.selectionEnd === 0) {
-                moveFocus(up)
+                moveFocus(up, end)
                 return
             }
         }
@@ -276,10 +344,24 @@ function Scene(props) {
             if (e.target.selectionStart === e.target.value.length) {
 
                 const nextScriptItem = scriptItems.find(item => item.id === scriptItem.nextId)
+                const previousScriptItem = scriptItems.find(item => item.id === scriptItem.previousId)
 
-                if (nextScriptItem) {
+                if (scriptItem.text === null || scriptItem.text.length === 0) {
+                    deleteScriptItem(scriptItem, scriptItems)
+                    return
+                }
+
+
+
+                if (nextScriptItem && (nextScriptItem.text === null || nextScriptItem.text.length === 0)) {
                     deleteScriptItem(nextScriptItem, scriptItems)
                     return
+                }
+
+                if (nextScriptItem) {
+                    e.preventDefault();
+                    moveFocus(down, start);
+                    return;
                 }
 
             }
@@ -288,15 +370,7 @@ function Scene(props) {
     }
 
 
-    const handleBlur = (e, scriptItem = null) => {
 
-        /*const scriptItem = findScriptItem(e.target, scriptItems)*/  //May need to go back to global blur event listener if performance is an issue
-
-        if (scriptItem) {
-            log(debug, 'Sending update from blur:', scriptItem)
-            updateIfChanged(scriptItem)
-        }
-    }
 
     const handlePartIdChange = (partIds) => {
 
@@ -363,16 +437,15 @@ function Scene(props) {
                 {
                     (currentScene) &&
                     <ScriptItem scriptItem={currentScene}
-                    onClick={(action) => handleClick(action, currentScene)}
-                        onBlur={handleBlur}
+                        onClick={(action) => handleClick(action, currentScene)}
                         onKeyDown={handleKeyDown}
                     />
 
                 }
                 {synopsis &&
                     <ScriptItem scriptItem={synopsis}
-                    onClick={(action) => handleClick(action, synopsis)}
-                        onBlur={handleBlur}
+                        onClick={(action) => handleClick(action, synopsis)}
+
                         onKeyDown={handleKeyDown}
                         nextFocus={
                             {
@@ -391,10 +464,9 @@ function Scene(props) {
 
                 {staging &&
                     <>
-                    <ScriptItem
-                        scriptItem={staging}
-                        onClick={(action)=>handleClick(action,staging) }
-                            onBlur={handleBlur}
+                        <ScriptItem
+                            scriptItem={staging}
+                            onClick={(action) => handleClick(action, staging)}
                             onKeyDown={handleKeyDown}
                             previousFocus={
                                 {
@@ -415,7 +487,7 @@ function Scene(props) {
                 {body().map((scriptItem, index) => {
                     return (
                         <ScriptItem
-                            onClick = {(action)=>handleClick(action,scriptItem) }
+                            onClick={(action) => handleClick(action, scriptItem)}
                             key={scriptItem.id}
                             scriptItem={scriptItem}
                             scene={currentScene}
@@ -428,6 +500,11 @@ function Scene(props) {
                 }
             </div>
 
+            <div className={`scene-footer ${currentScene.finalCurtain ? 'curtain-open' : 'curtain-closed'}`}>
+                <div className="add-new-scene clickable" onClick={() => onClick('addNewScene', currentScene)}>
+                    (add new scene)
+                </div>
+            </div>
         </>
     )
 }

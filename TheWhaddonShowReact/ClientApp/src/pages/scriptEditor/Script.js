@@ -12,8 +12,9 @@ import { Container, Row, Col } from 'reactstrap';
 
 //localServerModels
 import { ScriptItemUpdate, ScriptItem } from 'dataAccess/localServerModels';
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, DIALOGUE } from 'dataAccess/scriptItemTypes';
-import { prepareUpdates, sortLatestScriptItems } from 'dataAccess/localServerUtils';
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from 'dataAccess/scriptItemTypes';
+import { prepareUpdates } from 'dataAccess/localServerUtils';
+import { sortLatestScriptItems } from 'dataAccess/scriptItemScripts';
 import { addUpdates } from 'actions/localServer';
 
 //Utils
@@ -25,7 +26,7 @@ function Script() {
 
     //constants
     const [testAct, setTestAct] = useState(null)
-    const debug = false;
+    const debug = true;
     const dispatch = useDispatch();
 
 
@@ -45,6 +46,7 @@ function Script() {
         const testScene = new ScriptItemUpdate(SCENE, 'New Scene Title')
         const testSynopsis = new ScriptItemUpdate(SYNOPSIS, 'A test scene to check that the system is working')
         const testInitialStaging = new ScriptItemUpdate(INITIAL_STAGING, 'Curtains open and two chairs set opposite each other on a table')
+        const testInitialCurtain = new ScriptItemUpdate(INITIAL_CURTAIN, 'Open')
         const testDialogue1 = new ScriptItemUpdate(DIALOGUE, 'Hello World')
         const testDialogue2 = new ScriptItemUpdate(DIALOGUE, 'Hello World Again')
 
@@ -55,9 +57,12 @@ function Script() {
         testSynopsis.nextId = testInitialStaging.id
 
         testInitialStaging.previousId = testSynopsis.id
-        testInitialStaging.nextId = testDialogue1.id
+        testInitialStaging.nextId = testInitialCurtain.id
 
-        testDialogue1.previousId = testInitialStaging.id
+        testInitialCurtain.previousId = testInitialStaging.id
+        testInitialCurtain.nextId = testDialogue1.id
+
+        testDialogue1.previousId = testInitialCurtain.id
         testDialogue1.nextId = testDialogue2.id
 
         testDialogue2.previousId = testDialogue1.id
@@ -65,10 +70,11 @@ function Script() {
         testScene.parentId = testAct.id
         testSynopsis.parentId = testScene.id
         testInitialStaging.parentId = testScene.id
+        testInitialCurtain.parentId = testScene.id
         testDialogue1.parentId = testScene.id
         testDialogue2.parentId = testScene.id
 
-        const preparedUpdates = prepareUpdates([testShow, testAct, testScene, testSynopsis, testInitialStaging, testDialogue1, testDialogue2])
+        const preparedUpdates = prepareUpdates([testShow, testAct, testScene, testSynopsis, testInitialStaging, testInitialCurtain,testDialogue1, testDialogue2])
 
         log(debug, 'Disptach Test Script', preparedUpdates)
 

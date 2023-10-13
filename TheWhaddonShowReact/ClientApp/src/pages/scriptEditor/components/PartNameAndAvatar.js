@@ -24,13 +24,7 @@ function PartNameAndAvatar(props) {
     const storedPersons = useSelector(state => state.localServer.persons.history)
 
 
-    //useEffect(() => {
-    //    if (focus) {
-    //        moveFocusToId(part.id, focus.position)
-    //        dispatch(changeFocus(null))
-    //    }
-    //}, [focus])
-
+  
 
 
 

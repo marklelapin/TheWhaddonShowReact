@@ -11,7 +11,7 @@ import PersonSelector from './PersonSelector';
 import PartEditorRow from './PartEditorRow';
 //Utilities
 import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
-import { PartUpdate } from 'dataAccess/localServerModels';
+import { Part, PartUpdate } from 'dataAccess/localServerModels';
 import { addPersonInfo } from '../scripts/PartScripts'
 import { log } from 'helper'
 import { moveFocusToId } from '../scripts/utilityScripts';
@@ -46,8 +46,11 @@ function PartEditor(props) {
 
 
 
+
     //copy them to internal state that then gets edited before saving on blur
     const [sceneParts, setSceneParts] = useState([])
+    const [modalPersons, setModalPersons] = useState(null); //if populated opens up selectperson modal
+    const [focusAfterCreate, setFocusAfterCreate] = useState(null)
 
     useEffect(() => {
         setSceneParts(storedSceneParts?.partPersons || [])
@@ -55,67 +58,53 @@ function PartEditor(props) {
 
     useEffect(() => {
 
+
         const storedScenePartPersons = storedSceneParts?.partPersons || []
 
         const storedScenePartIds = storedScenePartPersons.map(part => part.id)
 
-        const newSceneParts = sceneParts.filter(part => !storedScenePartIds.includes(part.id))
+        const newSceneParts = sceneParts.filter(part => !storedScenePartIds.includes(part.id) )
 
         setSceneParts([...storedScenePartPersons, ...newSceneParts])
     }, [storedSceneParts])
 
-
-    //const resetSceneParts = () => {
-
-    //    const scenePartPerson
-    //    //const newStoredParts = getLatest([...storedParts].filter(part => partIds.includes(part.id)))
-
-    //    //const newSceneParts = activeSceneParts().map(item => newStoredParts.find(storedPart => storedPart.id === item.id) || item)
-
-    //    //const newPartIds = partIds.filter(id => ![...storedParts].map(item => item.id).includes(id)) //identifies partIds that have never been part of storedParts. (these are the new parts given to each script in its constructor)
-
-    //    //const newParts = newPartIds.map(id => ({ ...new PartUpdate(), id: id }))
-
-    //    setSceneParts([...newSceneParts, ...newParts])
-
-    //}
-
-
-    const [modalPersons, setModalPersons] = useState(null); //if populated opens up selectperson modal
+    
 
     //CRUD
-    const deletePart = (deletePart, direction = up) => {
+    const deletePart = (partToDelete, direction = up,position=end) => {
 
         if (activeSceneParts().length === 1) {
             alert('cant delete last part')
             return
         }
 
-        const partIndex = sceneParts.findIndex(part => part.id === deletePart.id)
+        const partIndex = sceneParts.findIndex(part => part.id === partToDelete.id)
         const previousPart = sceneParts[partIndex - 1] || null
         const nextPart = sceneParts[partIndex + 1] || null
 
         const updatedParts = [...sceneParts].map(part => {
-            if (part.id === deletePart.id) {
+            if (part.id === partToDelete.id) {
                 return { ...part, isActive: false, changed: true }
             }
             return part;
         })
 
-        const newFocus = (direction === up) ? previousPart || previousFocus : nextPart || previousPart
+        let newFocus = (direction === up)
+            ? previousPart || previousFocus
+            : nextPart || previousPart
 
-
+        newFocus.position = (direction === up) ? 'end' : 'start'
 
         setSceneParts(updatedParts);
 
-        //dispatch(changeFocus({ ...newFocus, position: 'end' }))
-        moveFocusToId(newFocus.id, 'end')
+        moveFocusToId(newFocus.id, newFocus.position)
 
         updateIfChanged()
     }
 
     const createPart = (partBefore = {}) => {
 
+        updateIfChanged(); //ensure partBefore gets updated if changed
 
         const updatedParts = [...sceneParts]
 
@@ -128,14 +117,22 @@ function PartEditor(props) {
 
         const newParts = [...startArray, newPart, ...endArray]
 
-
         setSceneParts(newParts)
-        dispatch(changeFocus({ ...newPart, position: 'end' }))
+
+       // setFocusAfterCreate(newPart)
+
     }
 
     const updateIfChanged = () => {
 
-        const changesMade = [...sceneParts].filter(part => part.changed === true)
+        let latestSceneParts =[];
+
+        setSceneParts((prevSceneParts) => {
+            latestSceneParts = [...prevSceneParts]
+            return prevSceneParts
+        })
+
+        const changesMade = latestSceneParts.filter(part => part.changed === true)
 
         if (changesMade.length > 0) {
 
@@ -184,38 +181,24 @@ function PartEditor(props) {
         const end = 'end'
         const start = 'start'
 
-        const moveFocus = (direction) => {
+        const moveFocus = (direction, position = null) => {
 
-            const currentPartIndex = sceneParts.findIndex(item => item.id === part.id)
+            const currentPartIndex = sceneParts.findIndex(item => item.id === part.id && item.isActive)
 
             const nextPart = sceneParts[currentPartIndex + 1]
             const previousPart = sceneParts[currentPartIndex - 1]
 
-            if (direction === up) {
-
-                if (previousPart) {
-                    moveFocusToId(previousPart.id, end)
-                    //dispatch(changeFocus({ ...previousPart, position: end }))
-                } else {
-                    moveFocusToId(previousFocus.id, end)
-                    //dispatch(changeFocus({ ...previousFocus, position: end }))
-                }
-
-            } else if (direction === down) {
-
-                if (nextPart) {
-                    moveFocusToId(nextPart.id, start)
-                    // dispatch(changeFocus({ ...nextPart, position: start }))
-                } else {
-                    moveFocusToId(nextFocus.id, start)
-                    //dispatch(changeFocus({ ...nextFocus, position: start }))
-                }
-
+            const closestPosition = () => {
+                const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
+                const closestPosition = (percentageAcoss > 0.5) ? end : start
+                return closestPosition
             }
 
+            if (direction === up) { moveFocusToId(previousPart?.id || previousFocus?.id || part.id, position || closestPosition()); return }
+
+            if (direction === down) { moveFocusToId(nextPart?.id || nextFocus?.id || part.id, position || closestPosition()); return }
 
         }
-
 
         if (e.key === 'Enter') {
             createPart(part);//will create a new part after (part)
@@ -226,13 +209,13 @@ function PartEditor(props) {
 
             if (!part.name || part.name === null || part.name === '') {
                 e.preventDefault()
-                deletePart(part)
+                deletePart(part, up)
                 return
             }
 
             if (e.target.selectionEnd === 0) {
                 e.preventDefault()
-                moveFocus(up)
+                moveFocus(up,end)
                 return
             }
 
@@ -246,33 +229,34 @@ function PartEditor(props) {
                 const currentPartIndex = sceneParts.findIndex(item => item.id === part.id)
                 const nextPart = sceneParts[currentPartIndex + 1]
 
-                //if it is empty then delete
+                if ((part.name || '') === '') {
+                    deletePart(part, down, start)
+                    return
+                }
+
                 if (nextPart && (nextPart.name || '') === '') {
-                    deletePart(nextPart)
+                    deletePart(nextPart, up, end)
                     return
                 }
 
                 if (nextPart && nextPart.name.length > 0) {
-                    moveFocus(down)
+                    moveFocus(down, start)
                     return
                 }
 
-                if ((part.name || '') === '') {
-                    deletePart(part)
-                    return
-                }
+
             }
 
 
         }
 
-        if (e.key === 'ArrowUp' && e.target.selectionEnd === 0) {
+        if (e.key === 'ArrowUp') {
             e.preventDefault()
             moveFocus(up)
             return
         }
 
-        if (e.key === 'ArrowDown' && e.target.selectionStart === e.target.value.length) {
+        if (e.key === 'ArrowDown') {
             e.preventDefault()
             moveFocus(down)
             return
@@ -304,7 +288,7 @@ function PartEditor(props) {
 
                 setSceneParts(updatedParts);
                 break;
-           default : return;
+            default: return;
         }
     }
 
@@ -365,7 +349,7 @@ function PartEditor(props) {
 
         setSceneParts(updateParts)
         moveFocusToId(...part.id, end)
-        //dispatch(changeFocus({ ...part, position: 'end' }))
+
 
     }
 
@@ -444,7 +428,7 @@ function PartEditor(props) {
                             onChange={(type, value) => handleChange(type, value, part)}
                             onBlur={() => handleBlur()}
                             onClick={(action, value) => handleClick(action, value, part)}
-                            onKeyDown={(e, part) => handleKeyDown(e, part)}
+                            onKeyDown={(e) => handleKeyDown(e, part)}
                         />
 
 

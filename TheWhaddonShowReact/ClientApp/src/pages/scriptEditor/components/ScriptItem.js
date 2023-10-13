@@ -13,7 +13,7 @@ import Comment from './Comment';
 
 import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
-
+import { Icon } from 'components/Icons/Icons';
 import { Container, Row, Col } from 'reactstrap';
 
 //utilities
@@ -25,7 +25,7 @@ import { changeFocus } from 'actions/navigation';
 
 //Constants
 import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from 'dataAccess/scriptItemTypes';
-
+import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
 
 function ScriptItem(props) {
 
@@ -51,12 +51,18 @@ function ScriptItem(props) {
 
 
     useEffect(() => {
+        if (scriptItem.setFocus) {
+            moveFocusToId(scriptItem.id, 'end');
+            delete scriptItem.setFocus
+        }
 
     }, [])
 
     useEffect(() => {
         log(debug, 'SCripItem: useEffect: storedScriptItem', storedScriptItem)
+       
         setScriptItem(storedScriptItem)
+       
     }, [storedScriptItem])
 
 
@@ -70,6 +76,7 @@ function ScriptItem(props) {
                 const newUpdate = { ...scriptItem, partIds: value }
 
                 saveChangeToStore(newUpdate)
+                moveFocusToId(scriptItem.id, 'end');
                 break;
             case 'tags':
                 setScriptItem({ ...scriptItem, tags: value, changed: true })
@@ -77,14 +84,16 @@ function ScriptItem(props) {
             case 'type':
                 let newScriptItem = { ...scriptItem, type: value, changed: true }
 
-                if (value === INITIAL_CURTAIN || value === CURTAIN) {
+                if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
                     newScriptItem.tags = getOpenCurtainTags(newScriptItem)
                     newScriptItem.text = newCurtainText(true, scriptItem)
-                } else if (scriptItem.type === INITIAL_CURTAIN || scriptItem.type === CURTAIN) { //i.e. its coming from a curtain type
+                } else if (CURTAIN_TYPES.includes(scriptItem.type)) { //i.e. its coming from a curtain type
                     newScriptItem.text = "";
                 }
                 saveChangeToStore(newScriptItem)
-                moveFocusToId(scriptItem.id, 'end'); break;
+
+                moveFocusToId(scriptItem.id, 'end');
+                break;
             case 'toggleCurtain':
 
                 const open = value
@@ -101,14 +110,14 @@ function ScriptItem(props) {
                 }
                 saveChangeToStore(update)
 
-                moveFocusToId(scriptItem.id, 'end'); 
+                moveFocusToId(scriptItem.id, 'end');
 
-              break;
+                break;
             default: return;
         }
 
     }
-
+ 
 
     const saveChangeToStore = (newScriptItem) => {
         const preparedUpdate = prepareUpdate(newScriptItem)
@@ -130,7 +139,7 @@ function ScriptItem(props) {
 
     const getOpenCurtainTags = (scriptItem) => {
         const tags = scriptItem.tags
-        
+
         let newTags = tags.filter(tag => tag !== 'CloseCurtain')
         newTags.push('OpenCurtain')
 
@@ -161,12 +170,11 @@ function ScriptItem(props) {
             case DIALOGUE:
                 if (scenePartPersons) {
 
-
                     const partPersons = scriptItem.partIds.map(partId => scenePartPersons.partPersons.find(partPerson => partPerson.id === partId))
 
                     const partNames = partPersons.map(partPersons => partPersons.name).join(',')
 
-                    return partNames;
+                    return partNames || '-'
                 }; break;
             default: return null;
         }
@@ -174,8 +182,6 @@ function ScriptItem(props) {
     }
 
 
-
-  
 
     //Saves to Redux store when focus is taken off the scriptItem
     const handleBlur = () => {
@@ -197,7 +203,7 @@ function ScriptItem(props) {
     return (
         <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
 
-             {showParts() &&
+            {showParts() &&
                 <div className="script-item-parts">
                     <PartSelector
                         scene={scene}
@@ -215,22 +221,22 @@ function ScriptItem(props) {
                     header={header()}
                     onClick={(action) => onClick(action, scriptItem)}
                     onChange={handleChange}
-                    onBlur={handleBlur}
+                    onBlur={()=>handleBlur()}
                     onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocus, nextFocus)}
                     refresh={scriptItem.refresh}
                 />
 
             </div>
-           
+
             {/*Elements specific for each scriptItem type*/}
 
+            {(type === SCENE) &&
+                <div className="scene-controls">
+                    <Icon icon="remove" onClick={() => onClick('deleteScene', scriptItem)} />
+                </div>
+            }
+        </div>
 
-            {/*<div md="3" className={`script-item-comment d-none ${(showComments) ? 'd-md-block' : ''} draft-border`} >*/}
-            {/*    <Comment scriptItem={scriptItem} />*/}
-            {/*</div>*/}
-
-
-        </div >
     )
 }
 

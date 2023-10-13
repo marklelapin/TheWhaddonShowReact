@@ -1,12 +1,17 @@
-﻿import React from 'react';
+﻿//React and Redux
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
+
+//Components
 import Avatar from 'components/Avatar/Avatar';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from 'reactstrap';
+import PartNameAndAvatar from './PartNameAndAvatar';
+import PartSelectorDropdown  from './PartSelectorDropdown';
+
+//Utilities
 
 import { log } from 'helper'
-import PartNameAndAvatar from './PartNameAndAvatar';
+
 
 function PartSelector(props) {
 
@@ -48,99 +53,63 @@ function PartSelector(props) {
 
     //Event Handlers
 
-    const handlePartSelectorClick = (event, partId) => {
+    const handleSelectorClick = (action, value) => {
 
-        if (partId === null) {
+        switch (action) {
+            case 'partIds':
+                onChange(value)
+                setOpenPartSelector(false)
+                break;
+            case 'toggle':
+                setOpenPartSelector(!openPartSelector)
+                break;
+            case 'confirm':
+                const newPartIds = partsArray.filter(part => part.selected).map(part => part.id)
+                onChange(newPartIds)
+                setOpenPartSelector(false)
+                break;
+            case 'partsArray':
+                setPartsArray(value)
+                break;
 
-            onChange([])
-            setOpenPartSelector(false)
-            return;
+            default: return;
         }
-
-        if (event.ctrlKey) {
-
-            const updatedPartsArray = partsArray.map(part => {
-                if (part.id === partId) {
-                    return { ...part, selected: !part.selected }
-                }
-                else {
-                    return part
-                }
-            })
-
-            setPartsArray(updatedPartsArray)
-
-        } else {
-
-            onChange([partId])
-            setOpenPartSelector(false)
-
-        }
-
-    }
-
-    const handleConfirm = () => {
-
-        const newPartIds = partsArray.filter(part => part.selected).map(part => part.id)
-
-        onChange(newPartIds)
-        setOpenPartSelector(false)
-
-    }
-
-    const isMultiSelect = () => {
-
-        return partsArray.some(part => part.selected === true)
-    }
-
-    const toggleDropdown = () => {
-        setOpenPartSelector(!openPartSelector)
     }
 
 
 
+
+    const toggleDropdown = (e) => {
+        e.stopPropagation();
+setOpenPartSelector(!openPartSelector)
+
+    }
+
+
+    log(debug, 'PartSelector openPartSelector:', openPartSelector)
     return (
         <div className="part-selector" >
-            <div className="part-selector-avatars" onClick={()=>toggleDropdown()}>
+            <div className="part-selector-avatars clickable" onClick={(e) => toggleDropdown(e)}>
 
                 {partsArray.filter(part => part.allocated === true).map(part => {
-                    return (<PartNameAndAvatar size={size} key={part.id} part={part} avatar />
+                    return (<Avatar size={size} key={part.id} person={part} avatar />
                     )
                 })}
                 {(partsArray.some(part => part.allocated === true)) === false &&
                     < Avatar person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
                 }
             </div>
-            <div  className={`part-selector-dropdown ${openPartSelector ? 'show' : 'hide'}`} >
+            {(openPartSelector) &&
+                < div className={`part-selector-dropdown`} >
 
-                {(partsArray.length === 0) &&
-                    <h3 onClick={() => toggleDropdown()} >No parts setup for this scene</h3>}
+                    <PartSelectorDropdown
+                        partsArray={partsArray}
+                        onClick={(action, value) => handleSelectorClick(action, value)} />
+                </div>
+            }
 
-                {(partsArray.length > 0) &&
-                    < PartNameAndAvatar part={{ id: 0, name: 'Clear all parts', personId: null }} onClick={(e) => handlePartSelectorClick(e,null)} avatar partName />
-                }
 
-                {partsArray.map(part => {
-
-                    return (
-                        <PartNameAndAvatar
-                            part={part}
-                            onClick={(event) => handlePartSelectorClick(event, part.id)}
-                            selected={part.selected}
-                            avatar
-                            partName />
-                    )
-
-                })}
-                {isMultiSelect() &&
-                        <Button color="danger" sixe='sm' type="submit" onClick={() => handleConfirm()}>Confirm</Button>
-                }
-                {!isMultiSelect() &&
-                        <small>(use Ctrl to multi-select)</small>
-                }
-            </div>
-
-        </div>
+        </div >
 
     )
 

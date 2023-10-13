@@ -11,3 +11,7 @@ export const SOUND = 'Sound';
 export const LIGHTING = 'Lighting';
 export const CURTAIN = 'Curtain';
 export const INITIAL_CURTAIN = 'InitialCurtain';
+
+export const HEADER_TYPES = [SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN]
+
+export const CURTAIN_TYPES = [CURTAIN, INITIAL_CURTAIN]

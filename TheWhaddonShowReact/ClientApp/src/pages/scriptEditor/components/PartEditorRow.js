@@ -1,6 +1,6 @@
 ﻿//React and Redux
 import React from 'react';
-import {  useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
@@ -13,7 +13,7 @@ import ScriptItemControls from './ScriptItemControls';
 
 //Utilities
 import { log } from 'helper'
-import { changeFocus } from 'actions/navigation';
+import { changeFocus } from 'actions/scriptEditor';
 import { moveFocusToId } from '../scripts/utilityScripts';
 
 
@@ -31,27 +31,29 @@ function PartEditorRow(props) {
 
     log(debug, 'PartEditorProps', props)
 
-
-
-
     //Redux
     const focus = useSelector(state => state.scriptEditor.focus[part.id])
 
-    const handleFocus = () => {
-
-        dispatch(changeFocus(part)) //update global state of which item is focussed
-
-    }
 
     useEffect(() => {
+        const textareaRef = document.getElementById(`${part.id}`)
+        const textInputRef = textareaRef.querySelector('input')
 
-        if (focus && focus.id === part.id) {
-            moveFocusToId(part.id, focus.position)
+        if (textInputRef) {
+            textInputRef.focus();
         }
 
-    }, [focus])
+    }, [])
 
 
+
+
+
+
+    //EVENT HANDLERS
+    const handleFocus = () => {
+        dispatch(changeFocus(part)) //update global state of which item is focussed
+    }
 
     return (
 
@@ -64,7 +66,7 @@ function PartEditorRow(props) {
                     part={part}
                     onAvatarClick={(e, linkId) => onClick('avatar', null)}
                     onNameChange={(text) => onChange('text', text)}
-                    onKeyDown={(e) => onKeyDown(e,part)}
+                    onKeyDown={onKeyDown}
                     onBlur={(e) => onBlur(e)}
                     onFocus={() => handleFocus()}
                 />

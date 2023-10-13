@@ -1,4 +1,5 @@
 ﻿
+import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from "dataAccess/scriptItemTypes"; 
 
 import { ScriptItemUpdate } from 'dataAccess/localServerModels';
 import { sortLatestScriptItems } from '../../../dataAccess/localServerUtils';
@@ -67,8 +68,6 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 export default newScriptItemsForCreate
 
 
-
-
 export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) {
 
     let deleteScriptItem = { ...scriptItemToDelete }
@@ -104,4 +103,49 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) 
     //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
     return newScriptItems
 
+}
+
+export function createHeaderScriptItems(previousScene,nextScene = null) {
+
+    let newPreviousScene = { ...previousScene }
+    let newNextScene = (nextScene) ? { ...nextScene } : null
+
+    let scene = new ScriptItemUpdate(SCENE)
+    let synopsis = new ScriptItemUpdate(SYNOPSIS)
+    let initialStaging = new ScriptItemUpdate(INITIAL_STAGING)
+    let initialCurtain = new ScriptItemUpdate(INITIAL_CURTAIN)
+
+    let dialogue = new ScriptItemUpdate(DIALOGUE)
+
+    scene.text = 'New Scene'
+
+    //nextIds
+    newPreviousScene.nextId = scene.id
+    scene.nextId = synopsis.id
+    synopsis.nextId = initialStaging.id
+    initialStaging.nextId = initialCurtain.id
+    initialCurtain.nextId = dialogue.id
+
+    //previousIds
+    if (newNextScene) { newNextScene.previousId = scene.id }
+    scene.previousId = previousScene.id
+    synopsis.previousId = scene.id
+    initialStaging.previousId = synopsis.id
+    initialCurtain.previousId = initialStaging.id
+    dialogue.previousId = initialCurtain.id
+
+
+    //parentIds
+    scene.parentId = previousScene.parentId
+    synopsis.parentId = scene.id
+    initialStaging.parentId = scene.id
+    initialCurtain.parentId = scene.id
+    dialogue.parentId = scene.id
+
+    
+
+    const newUpdates = [newPreviousScene, scene, synopsis, initialStaging, initialCurtain, dialogue]
+    newUpdates.push(newNextScene)
+
+    return newUpdates
 }

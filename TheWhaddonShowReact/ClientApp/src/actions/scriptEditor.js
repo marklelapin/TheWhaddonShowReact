@@ -10,6 +10,7 @@ export const UPDATE_PART_PERSONS = 'UPDATE_PART_PERSONS';
 export const ADD_UPDATES_SCENE_HISTORY = 'ADD_UPDATES_SCENE_HISTORY';
 export const ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY';
 export const UPDATE_SCENE_PART_PERSONS = 'UPDATE_SCENE_PART_PERSONS';
+export const CHANGE_FOCUS = 'CHANGE_FOCUS';
 
 
 export function updateSearchParameters(searchParameters) {
@@ -87,3 +88,9 @@ type: UPDATE_SCENE_PART_PERSONS,
     }
 }
 
+export function changeFocus(focus) {
+    return {
+        type: CHANGE_FOCUS,
+        focus,
+    }
+}

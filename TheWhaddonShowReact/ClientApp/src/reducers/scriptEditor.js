@@ -8,9 +8,9 @@ import { UPDATE_PART_PERSONS } from 'actions/scriptEditor';
 import { ADD_UPDATES_SCENE_HISTORY } from 'actions/scriptEditor';
 import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from 'actions/scriptEditor';
 import { UPDATE_SCENE_PART_PERSONS } from 'actions/scriptEditor';
-import { UPDATE_PART_FOCUS } from 'actions/scriptEditor';
 
-import { CHANGE_FOCUS } from 'actions/navigation';
+
+import { CHANGE_FOCUS } from 'actions/scriptEditor';
 
 
 const initialState = {

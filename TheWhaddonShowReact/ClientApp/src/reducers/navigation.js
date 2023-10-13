@@ -38,11 +38,6 @@ export default function runtime(state = initialState, action) {
                 ...state,
                 activeItem: action.activeItem,
             };
-        case CHANGE_FOCUS:
-            return {
-                ...state,
-                focus: action.focus,
-            }
         default:
             return state;
     }

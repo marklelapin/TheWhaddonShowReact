@@ -9,7 +9,8 @@ import { Icon } from 'components/Icons/Icons'
 
 //Constants
 import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from 'dataAccess/scriptItemTypes';
-
+import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
+import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
 //utils
 import { log } from 'helper';
 import CheckBox from 'components/Forms/CheckBox';
@@ -19,12 +20,9 @@ function ScriptItemControls(props) {
     //utils
     const debug = true;
 
-
     //Constants
     const scriptItemTypes = [CURTAIN, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN]
-
     const attachTypes = [SONG, SOUND, STAGING, INITIAL_STAGING, SYNOPSIS]
-    const curtainTypes = [CURTAIN, INITIAL_CURTAIN]
 
     //Props
     const { onClick, scriptItem = null, part = null, header = null } = props;
@@ -46,8 +44,8 @@ function ScriptItemControls(props) {
 
         setDropdownOpen(prevState => !prevState);
     }
-    const handleDropdownClick = (type) => {
-
+    const handleDropdownClick = (e, type) => {
+        e.preventDefault()
         onClick('changeType', type)
     }
 
@@ -82,23 +80,26 @@ function ScriptItemControls(props) {
                             <Icon icon="link" onClick={() => handleClick('link')} />
                         </>
                     }
-                    {scriptItem && curtainTypes.includes(scriptItem.type) &&
+                    {scriptItem && CURTAIN_TYPES.includes(scriptItem.type) &&
 
                         <CheckBox checked={scriptItem.curtainOpen} onChange={() => handleClick('toggleCurtain')} ios={true} />
                     }
                 </div>
                 <div className="header-right-controls">
-                    <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-                        {/*<DropdownToggle>*/}
-                        <Icon icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} />
-                        {/* </DropdownToggle>*/}
-                        <DropdownMenu>
-                            {scriptItemTypes.map((type) => {
-                                return <DropdownItem onClick={() => handleDropdownClick(type)}>{type}</DropdownItem>
-                            })
-                            }
-                        </DropdownMenu>
-                    </Dropdown>-
+
+                    {scriptItem && HEADER_TYPES.includes(scriptItem.type) === false &&
+                        < Dropdown isOpen={dropdownOpen} toggle={toggle}>
+
+                            <Icon icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} /> 
+
+                            <DropdownMenu>
+                                {scriptItemTypes.map((type) => {
+                                    return <DropdownItem key={type} onClick={(e) => handleDropdownClick(e, type)}>{type}</DropdownItem>
+                                })
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    }
 
                     {undoDateTime &&
                         <div className="confirm-undo-buttons">
@@ -111,31 +112,33 @@ function ScriptItemControls(props) {
                     {(undoDateTime) &&
                         <Icon icon="redo" onClick={() => onClick('redo')} />
                     }
+                    <Icon icon='comment-o' onClick={() => onClick('comment')} />'
                     {/*{(!undoDateTime) &&*/}
                     {/*    <Icon icon="remove" />*/}
                     {/*}*/}
 
                 </div>
-                
+
 
             </div>
 
 
             <div className="bottom-right-controls">
-                {scriptItem &&
-                    <>
-                        <Icon icon="play" onClick={() => onClick('confirm')} />
-                        <Icon icon="add" onClick={() => onClick('add')} />
-                    </>
-                }
+                {scriptItem && <Icon icon="play" onClick={() => onClick('confirm')} />}
+
+                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add')} /> }
+
+
+                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => onClick('delete')} />}
+         
             </div>
 
             <div className="outside-right-controls">
                 {part &&
                     <>
-                        <Icon icon="play" onClick={() => onClick('confirm',null)} />
-                        <Icon icon="search" onClick={() => onClick('search',null)} />
-                        <Icon icon="trash" onClick={() => onClick('delete',null)} />
+                        <Icon icon="play" onClick={() => onClick('confirm', null)} />
+                        <Icon icon="search" onClick={() => onClick('search', null)} />
+                        <Icon icon="trash" onClick={() => onClick('delete', null)} />
                     </>
                 }
             </div>
