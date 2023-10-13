@@ -13,13 +13,16 @@ import SceneSelectorRow from './SceneSelectorRow'
 //Utils
 import { ACT, SCENE } from 'dataAccess/scriptItemTypes'
 import { log } from 'helper';
-import {moveFocusToId } from '../scripts/utilityScripts'
-
+import { moveFocusToId } from '../scripts/utilityScripts'
 import { TestAct } from '../Script'
+import { prepareUpdates } from 'dataAccess/localServerUtils';
+import { addUpdates } from 'actions/localServer';
 
+//Constants
+import { ScriptItem } from 'dataAccess/localServerModels';
 
 function SceneSelector(props) {
-    const debug = false;
+    const debug = true;
 
     const { scenes } = props;
 
@@ -44,7 +47,6 @@ function SceneSelector(props) {
                 break;
             default:
                 break;
-
         }
 
         dispatch(updateSearchParameters(searchParameters))
@@ -72,12 +74,70 @@ function SceneSelector(props) {
     }
 
 
-    const handleClick = (type, id) => {
 
+    const handleDragStart = (e) => {
+        e.dataTransfer.setData("text/plain", `sceneId:${e.currentTarget.dataset.sceneid}`)
+    }
+    const handleDragOver = (e) => {
+        e.preventDefault()
+        if (e.dataTransfer.getData("text/plain").substring(0, 1) === "sceneId") {
+            e.currentTarget.classList.add("drag-over")
+        }
+
+    }
+    const handleDragLeave = (e) => {
+        e.preventDefault()
+        e.currentTarget.classList.remove("drag-over")
+    }
+    const handleDrop = (e) => {
+        e.preventDefault()
+
+        const newPreviousId = e.currentTarget.dataset.sceneid
+
+        const sceneId = e.dataTransfer.getData("text/plain").substring(8)
+
+        moveScene(sceneId, newPreviousId)
+
+    }
+
+    const moveScene = (sceneId, newPreviousId) => {
+
+        const scene = scenes.find(scene => scene.id === sceneId)
+        const newPreviousScene = scenes.find(scene => scene.id === newPreviousId)
+        const newNextScene = scenes.find(scene => scene.id === newPreviousScene?.nextId)
+        const oldPreviousScene = scenes.find(scene => scene.id === scene.previousId)
+        const oldNextScene = scenes.find(scene => scene.id === scene.nextId)
+
+        let sceneUpdate = (scene) ? { ...scene } : null
+        let newPreviousSceneUpdate = (newPreviousScene) ? { ...newPreviousScene } : null
+        let newNextSceneUpdate = (newNextScene) ? { ...newNextScene } : null
+        let oldPreviousSceneUpdate = (oldPreviousScene) ? { ...oldPreviousScene } : null
+        let oldNextSceneUpdate = (oldNextScene) ? { ...oldNextScene } : null
+
+        if (sceneUpdate) {
+            sceneUpdate.previousId = newPreviousScene?.id
+            sceneUpdate.nextId = newNextScene?.id
+        }
+
+        (newPreviousSceneUpdate) && (newPreviousSceneUpdate.nextId = scene?.id);
+        (newNextSceneUpdate) && (newNextSceneUpdate.previousId = scene?.id);
+
+        (oldPreviousSceneUpdate) && (oldPreviousSceneUpdate.nextId = oldNextScene?.id);
+        (oldNextSceneUpdate) && (oldNextSceneUpdate.previousId = oldPreviousScene?.id);
+
+        const updates = [sceneUpdate, newPreviousSceneUpdate, newNextSceneUpdate, oldPreviousSceneUpdate, oldNextSceneUpdate]
+
+        const preparedUpdates = prepareUpdates(updates)
+
+        dispatch(addUpdates(preparedUpdates, ScriptItem));
+
+    }
+
+
+    const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
                 moveFocusToId(id)
-                //dispatch(changeFocus({ id: id })) //TODO add in travel to scene functionality?
                 dispatch(toggleSceneSelector())
                 break;
             case 'add':
@@ -90,6 +150,7 @@ function SceneSelector(props) {
 
 
     log(debug, 'SceneSelector Rendering: scenes', scenes)
+    log(debug, 'SceneSelector Rendering: filteredScenes', filteredScenes())
 
     return (
         <div id="scene-selector" className="draft-border">
@@ -102,13 +163,18 @@ function SceneSelector(props) {
 
                 if (scene.type === ACT) {
 
-                    return <h2 key={scene.id}>scene.text</h2>
+                    return <h2 key={scene.id}>{scene.text}</h2>
                 }
 
                 return <SceneSelectorRow
                     key={scene.id}
                     scene={scene}
-                    onClick={(type, id) => handleClick(type, id)}
+                    onClick={(action, id) => handleClick(action, id)}
+                    onDragStart={handleDragStart}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+
                 />
 
 
