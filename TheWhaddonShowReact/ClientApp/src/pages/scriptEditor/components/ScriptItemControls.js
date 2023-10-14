@@ -18,7 +18,7 @@ import CheckBox from 'components/Forms/CheckBox';
 function ScriptItemControls(props) {
 
     //utils
-    const debug = true;
+    const debug = false;
 
     //Constants
     const scriptItemTypes = [CURTAIN, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN]

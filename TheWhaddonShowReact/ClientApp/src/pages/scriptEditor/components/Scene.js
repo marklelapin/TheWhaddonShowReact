@@ -19,7 +19,7 @@ import { newScriptItemsForDelete, newScriptItemsForCreate, createHeaderScriptIte
 
 import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
 import { log } from 'helper'
-import { moveFocusToId, moveFocusToUndefinedScriptItem } from '../scripts/utilityScripts';
+import { moveFocusToId, removeFocusFromId } from '../scripts/utilityScripts';
 import { changeFocus } from 'actions/navigation'
 import { create } from 'lodash';
 
@@ -34,10 +34,12 @@ function Scene(props) {
     const debugKeys = true;
 
     const dispatch = useDispatch()
-    const above = 'above'
-    const below = 'below'
-    const start = 'start'
-    const end = 'end'
+    const ABOVE = 'above'
+    const BELOW = 'below'
+    const START = 'start'
+    const END = 'end'
+    const DOWN = 'down'
+    const UP = 'up'
 
     //props
     const { scene, onClick } = props;
@@ -71,25 +73,26 @@ function Scene(props) {
         setScriptItems(scriptItems)
     }
     
-    //useEffect(() => {
-    //    if (focusAfterScriptItemsChange) {
-    //        moveFocusToId(focusAfterScriptItemsChange.id, focusAfterScriptItemsChange.position);
-    //        setFocusAfterScriptItemsChange(null)
-    //    }
-    //}, [scriptItems])
-
-
+ 
 
     //CRUD OPERATIONS 
     //-------------------------------------------------------------------------------------------------
 
-    const createScriptItem = (placement, currentScriptItem, scriptItems, type = 'Dialogue') => {
+    const createScriptItem = (placement, currentScriptItem, type = 'Dialogue') => {
+
+        let latestScriptItems = []
+
+        setScriptItems((prevScriptItems) => {
+            latestScriptItems = [...prevScriptItems]
+            return prevScriptItems
+        })
+
 
         if (HEADER_TYPES.includes(currentScriptItem.type) && currentScriptItem.type !== INITIAL_CURTAIN) {
             return;
         }
 
-        let { newScriptItem, newScriptItems } = newScriptItemsForCreate(placement, currentScriptItem, scriptItems, type)
+        let { newScriptItem, newScriptItems } = newScriptItemsForCreate(placement, currentScriptItem, latestScriptItems, type)
 
         log(debug, 'createScriptItem', newScriptItem)
         log(debug, 'newScriptItems', newScriptItems)
@@ -107,39 +110,39 @@ function Scene(props) {
 
     }
 
-    const deleteScriptItem = (scriptItemToDelete, scriptItems) => {
+    const deleteScriptItem = (scriptItemToDelete, direction = DOWN) => {
 
         if (HEADER_TYPES.includes(scriptItemToDelete.type)) {
             alert('You cannot delete a header item.')
             return;
         }
 
-        const newScriptItems = newScriptItemsForDelete(scriptItemToDelete, scriptItems)
+        let latestScriptItems = []
+
+        setScriptItems((prevScriptItems) => {
+            latestScriptItems = [...prevScriptItems]
+            return prevScriptItems
+        })
+
+       
+        const newScriptItems = newScriptItemsForDelete(scriptItemToDelete, latestScriptItems)
 
         const preparedUpdates = prepareUpdates(newScriptItems)
 
         dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
 
-        setFocusAfterScriptItemsChange({
-            id: scriptItemToDelete.nextId || scriptItemToDelete.previousId,
-            parentId: scriptItemToDelete.parentId,
-            position: (scriptItemToDelete.nextId) ? start : end
-        })
-    }
-
-    const updateIfChanged = (scriptItem) => {
-        log(debug, 'updating in Scene.js')
-
-
-        if (scriptItem.changed) {
-            const preparedUpdate = prepareUpdate(scriptItem)
-            dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
+        if (direction === DOWN) {
+            moveFocusToId(scriptItemToDelete.nextId || scriptItemToDelete.previousId,
+                (scriptItemToDelete.nextId) ? START : END)
+        } else {
+            moveFocusToId(scriptItemToDelete.previousId,END)
         }
-
-
+        //moveFocusToId(scriptItemToDelete.nextId || scriptItemToDelete.previousId,
+        //    (scriptItemToDelete.nextId) ? start : end)
+        
     }
 
-
+ 
 
 
     //EVENT HANDLERS
@@ -180,15 +183,12 @@ function Scene(props) {
 
     }
 
-
-
-
     const handleClick = (action, scriptItem) => {
 
         switch (action) {
-            case 'add': createScriptItem(below, scriptItem, scriptItems); break;
-            case 'delete': deleteScriptItem(scriptItem, scriptItems); break;
-            case 'confirm': updateIfChanged(scriptItem); break;
+            case 'add': createScriptItem(BELOW, scriptItem); break;
+            case 'delete': deleteScriptItem(scriptItem,DOWN); break;
+            case 'confirm': //updateIfChanged(scriptItem); break;
             case 'undo': handleUndo(); break;
             case 'redo': handleRedo(); break;
             case 'setUndo': handleSetUndo(); break;
@@ -200,13 +200,10 @@ function Scene(props) {
 
     const handleKeyDown = (e, scriptItem, previousFocusOverride = null, nextFocusOverride = null) => {
 
-        const up = 'up'
-        const down = 'down'
-
         const closestPosition = () => {
 
             const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
-            const closestPosition = (percentageAcoss > 0.5) ? end : start
+            const closestPosition = (percentageAcoss > 0.5) ? END : START
             return closestPosition
 
         }
@@ -215,7 +212,7 @@ function Scene(props) {
         const moveFocus = (direction, position = null, overrideId = null) => {
 
             e.preventDefault()
-            const newId = overrideId || (direction === down) ? nextFocusOverride?.id || scriptItem.nextId : previousFocusOverride?.id || scriptItem.previousId
+            const newId = overrideId || (direction === DOWN) ? nextFocusOverride?.id || scriptItem.nextId : previousFocusOverride?.id || scriptItem.previousId
             const currentClosestPosition = closestPosition()
             let newPosition = position || currentClosestPosition //|| (direction === up) ? start : end
 
@@ -229,7 +226,9 @@ function Scene(props) {
 
 
         if (e.key === 'ArrowDown' && scriptItem.nextId === null) {
-            updateIfChanged(scriptItem)
+            removeFocusFromId(scriptItem.id)
+            moveFocusToId(scriptItem.id,END)
+            //updateIfChanged(scriptItem)
             return
         }
 
@@ -251,10 +250,10 @@ function Scene(props) {
                 e.preventDefault()
 
                 if (HEADER_TYPES.includes(scriptItem.type)) {
-                    moveFocus(up)
+                    moveFocus(UP)
                     return
                 } else {
-                    createScriptItem(above, scriptItem, latestScriptItems)
+                    createScriptItem(ABOVE, scriptItem, latestScriptItems)
                     return
                 }
             }
@@ -262,15 +261,15 @@ function Scene(props) {
             if (e.key === 'ArrowDown') {
                 e.preventDefault()
                 if (HEADER_TYPES.includes(scriptItem.type)) {
-                    moveFocus(down)
+                    moveFocus(DOWN)
                     return
                 } else {
-                    createScriptItem(below, scriptItem, latestScriptItems)
+                    createScriptItem(BELOW, scriptItem, latestScriptItems)
                     return
                 }
             }
 
-            if (e.key === 'Enter' && e.target.tagName.toLowerCase() === 'textarea') {
+            if (e.key === 'Enter') {
                 /*   log(debugKeys,'it got here')*/
                 e.preventDefault();
                 const start = e.target.selectionStart;
@@ -289,39 +288,31 @@ function Scene(props) {
             e.preventDefault()
 
             if (HEADER_TYPES.includes(scriptItem.type) && scriptItem.type !== INITIAL_CURTAIN) {
-                moveFocus(down)
+                moveFocus(DOWN)
                 return;
             }
-
-            let latestScriptItems = []
-
-            setScriptItems((prevScriptItems) => {
-                latestScriptItems = [...prevScriptItems]
-                return prevScriptItems
-            })
-
-
-            createScriptItem(below, scriptItem, latestScriptItems)
+            removeFocusFromId(scriptItem.id) //triggers save of any changes to store with ScriptItem component.
+            createScriptItem(BELOW, scriptItem)
             return
         }
         if (e.key === 'ArrowUp') {
             e.preventDefault()
-            moveFocus(up)
+            moveFocus(UP)
             return
         }
         if (e.key === 'ArrowDown') {
             e.preventDefault()
-            moveFocus(down)
+            moveFocus(DOWN)
             return
         }
         if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length) {
             e.preventDefault()
-            moveFocus(down, start)
+            moveFocus(DOWN, START)
             return
         }
         if (e.key === 'ArrowLeft' && e.target.selectionEnd === 0) {
             e.preventDefault()
-            moveFocus(up, end)
+            moveFocus(UP, END)
             return
         }
 
@@ -329,12 +320,12 @@ function Scene(props) {
         if (e.key === 'Backspace') {
 
             if (!scriptItem.text || scriptItem.text === null || scriptItem.text === '') {
-                deleteScriptItem(scriptItem, scriptItems)
+                deleteScriptItem(scriptItem, UP)
                 return
             }
 
             if (e.target.selectionEnd === 0) {
-                moveFocus(up, end)
+                moveFocus(UP, END)
                 return
             }
         }
@@ -347,20 +338,22 @@ function Scene(props) {
                 const previousScriptItem = scriptItems.find(item => item.id === scriptItem.previousId)
 
                 if (scriptItem.text === null || scriptItem.text.length === 0) {
-                    deleteScriptItem(scriptItem, scriptItems)
+                    e.preventDefault()
+                    deleteScriptItem(scriptItem, DOWN)
                     return
                 }
 
 
 
                 if (nextScriptItem && (nextScriptItem.text === null || nextScriptItem.text.length === 0)) {
-                    deleteScriptItem(nextScriptItem, scriptItems)
+                    e.preventDefault()
+                    deleteScriptItem(nextScriptItem, UP)
                     return
                 }
 
                 if (nextScriptItem) {
                     e.preventDefault();
-                    moveFocus(down, start);
+                    moveFocus(DOWN, START);
                     return;
                 }
 
@@ -451,15 +444,15 @@ function Scene(props) {
                             {
                                 id: (currentScene.partIds) ? currentScene.partIds[0] : null,
                                 parentId: currentScene.id,
-                                position: start
+                                position: START
                             }}
                     />
                 }
                 <PartEditor
                     scene={currentScene}
                     onChange={(partIds) => handlePartIdChange(partIds)}
-                    previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: end }} //override the default focus ids
-                    nextFocus={{ id: staging.id, parentId: currentScene.id, position: start }}
+                    previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
+                    nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
                 />
 
                 {staging &&
@@ -472,7 +465,7 @@ function Scene(props) {
                                 {
                                     id: (currentScene.partIds) ? currentScene.partIds[currentScene.partIds.length - 1] : null,
                                     parentId: currentScene.id,
-                                    position: end
+                                    position: END
                                 }}
 
                         />

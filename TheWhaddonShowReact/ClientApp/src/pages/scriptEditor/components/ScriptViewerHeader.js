@@ -24,7 +24,7 @@ import PersonSelector from './PersonSelector';
 
 
 function ScriptViewer(props) {
-    const debug = true;
+    const debug = false;
 
     //utils
     const _ = require('lodash');
@@ -42,7 +42,7 @@ function ScriptViewer(props) {
     const partPersons = useSelector(state => state.scriptEditor.partPersons)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons)
 
-    log(debug, 'ScriptViewer: focus', focus)
+    log(debug, 'ScriptViewerHeader: focus', focus)
 
 
     //Internal State
@@ -55,7 +55,7 @@ function ScriptViewer(props) {
 
 
     useEffect(() => {
-        log(debug, 'Script Viewer UseEffect Focus:', focus, focussedScene)
+        log(debug, 'Script Viewer Header UseEffect Focus:', focus, focussedScene)
         let currentFocus = null;
         for (var key in focus) {
             if (focus.hasOwnProperty(key)) {

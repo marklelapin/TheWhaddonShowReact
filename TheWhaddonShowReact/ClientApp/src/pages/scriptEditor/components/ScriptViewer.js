@@ -21,7 +21,7 @@ import ScriptViewerHeader from './ScriptViewerHeader';
 function ScriptViewer(props) {
 
     //utility consts
-    const debug = true;
+    const debug = false;
     const dispatch = useDispatch()
 
     //props
