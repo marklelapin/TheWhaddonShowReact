@@ -1,5 +1,9 @@
-﻿const start = 'start'
-const end = 'end'
+﻿export const START = 'start';
+export const END = 'end';
+export const UP = 'up';
+export const DOWN = 'down';
+export const ABOVE = 'above';
+export const BELOW = 'below';
 
 export function findScriptItem(element, scriptItems) {
 
@@ -29,7 +33,7 @@ export function findScriptItem(element, scriptItems) {
 
 }
 
-export function moveFocusToId(id, position = start) {
+export function moveFocusToId(id, position = START) {
     console.log(`moveFocusToId id: ${id} position: ${position}`)
 
 
@@ -37,7 +41,7 @@ export function moveFocusToId(id, position = start) {
 
     if (newTextInput) {
         newTextInput.focus();
-        if (position === start) {
+        if (position === START) {
             newTextInput.selectionStart = 0
             newTextInput.selectionEnd = 0
         } else {

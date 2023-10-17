@@ -78,13 +78,7 @@ function Scene(props) {
 
 
 
-    const deleteScriptItem = (scriptItemToDelete, direction = DOWN) => {
-
-
-
-
-    }
-
+  
 
 
 

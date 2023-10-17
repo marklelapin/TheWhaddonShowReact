@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { createSelector } from 'react-redux';
 
-import { updatePartPersons, updateScenePartPersons, addUpdatesToSceneScriptItemHistory, addUpdatesToSceneHistory} from 'actions/scriptEditor';
+import { updatePartPersons, updateScenePartPersons, addUpdatesToSceneScriptItemHistory, addUpdatesToSceneHistory } from 'actions/scriptEditor';
 
 //utils
 import { log } from 'helper';
-import { getLatest } from 'dataAccess/localServerUtils';
+import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
 import { addPersonsInfo } from 'dataAccess/partScripts';
 import { PartUpdate } from 'dataAccess/localServerModels';
-
+import { addUpdates } from 'actions/localServer'; 
 export function ScriptEditorProcessing() {
 
     const _ = require('lodash');
@@ -37,7 +37,7 @@ export function ScriptEditorProcessing() {
     useEffect(() => {
         log(debug, 'ScriptEditorProcessing useEffect refreshTrigger', refreshTrigger)
 
-        if (refreshTrigger.updates && refreshTrigger.type ==='ScriptItem') {
+        if (refreshTrigger.updates && refreshTrigger.type === 'ScriptItem') {
             const scriptItemUpdates = refreshTrigger.updates
             const sceneUpdates = scriptItemUpdates.filter(update => update.type === 'Show' || update.type === 'Act' || update.type === 'Scene')
 
@@ -51,11 +51,11 @@ export function ScriptEditorProcessing() {
                     const updates = scriptItemUpdates.filter(update => update.parentId === sceneId || update.id === sceneId)
 
                     log(debug, 'ScriptEditorProcessing dispatchUpdateToSceneSCriptItemHistory', { sceneId: sceneId, updates: updates })
-                    dispatch(addUpdatesToSceneScriptItemHistory(sceneId,updates))
+                    dispatch(addUpdatesToSceneScriptItemHistory(sceneId, updates))
                 })
             }
 
-            
+
             if (sceneUpdates) {
                 //const sceneIds = [...new Set(sceneUpdates.map(update => update.parentId))]
                 //Update scriptEditor.scenesHistory
@@ -63,13 +63,13 @@ export function ScriptEditorProcessing() {
                 //    const updates = sceneUpdates.filter(update => update.parentId === sceneId)
                 //    dispatch(addUpdatesToSceneHistory(updates))
                 //})
-         
+
                 dispatch(addUpdatesToSceneHistory(sceneUpdates))
 
             }
 
         }
-        
+
 
 
 
@@ -92,8 +92,22 @@ export function ScriptEditorProcessing() {
     useEffect(() => {
 
         const latestScenes = getLatest(sceneHistory || [])
-        log(debug, 'latestScenes', latestScenes)
-        log(debug, 'scenes hisotry ', sceneHistory)
+        log(debug, 'PartPersons: latestScenes', latestScenes)
+        log(debug, 'PartPersons: scenes hisotry ', sceneHistory)
+        log(debug, 'PartPersons: partPersons', partPersons)
+
+        const storedPartIds = [...partPersons].map(partPerson => partPerson.id);
+        let newPartIds = [];
+
+        latestScenes.forEach(scene => {
+            const newIds = scene.partIds.filter(partId => !storedPartIds.includes(partId))
+            newPartIds = [...newPartIds, ...newIds]
+        });
+
+        const newPartUpdates = prepareUpdates(newPartIds.map(partId => { return { ...new PartUpdate(), id: partId } }))
+
+        dispatch(addUpdates(newPartUpdates, 'Part'))
+
         const newScenePartPersons = latestScenes.map(scene => {
             return {
                 ...scene,
@@ -104,21 +118,24 @@ export function ScriptEditorProcessing() {
         })
 
         const oldScenePartPersons = scenePartPersons
-       
-        log(debug,'newSCnePArtPerson',newScenePartPersons)
+
+        log(debug, 'PartPersons: oldScenePartPersons', oldScenePartPersons)
+
+        log(debug, 'newSCnePArtPerson', newScenePartPersons)
 
         newScenePartPersons.forEach(item => {
 
             if (_.isEqual(item, oldScenePartPersons[item.id]) === false) {
-                dispatch(updateScenePartPersons(item.id,item))
+                log(debug, 'PartPersons: dispatchUpdateToScenePartPersons', item)
+                dispatch(updateScenePartPersons(item.id, item))
             }
 
         })
 
-    }, [partPersons, sceneHistory])
+}, [partPersons, sceneHistory])
 
 
-    return (null)
+return (null)
 }
 
 export default ScriptEditorProcessing;
