@@ -43,6 +43,7 @@ function ScriptItemText(props) {
 
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
+    const [textAreaRows, setTextAreaRows] = useState(1)
 
     let finalPlaceholder;
 
@@ -89,18 +90,6 @@ function ScriptItemText(props) {
     };
 
 
-    const getTextWidth = () => {
-        const textInputRef = document.getElementById(`script-item-text-input-${id}`)
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        context.font = window.getComputedStyle(textInputRef).font;
-        const textMetrics = context.measureText(text());
-        log(debug, `getTextWidth: ${textMetrics.width + 50}`)
-        return textMetrics.width + 50;
-    };
-
-
-
     const text = () => {
         let finalText;
         if (tempTextValue === '') {
@@ -112,6 +101,35 @@ function ScriptItemText(props) {
 
         return finalText
     }
+
+
+    const getTextAreaRows = () => {
+        const latestText = text()
+
+        let textRows = latestText.split('\n') || []
+
+        return textRows
+
+    }
+
+
+
+    const getTextWidth = () => {
+        const textInputRef = document.getElementById(`script-item-text-input-${id}`)
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        context.font = window.getComputedStyle(textInputRef).font;
+
+        const textOfLongestLine = getTextAreaRows().reduce((a, b) => (a.length > b.length) ? a : b, '');
+
+        const textMetrics = context.measureText(textOfLongestLine);
+        log(debug, `getTextWidth: ${textMetrics.width + 50}`)
+        return textMetrics.width + 50;
+    };
+
+
+
+
 
 
 
@@ -179,6 +197,7 @@ function ScriptItemText(props) {
                 e.target.value = newText;
                 e.target.selectionStart = start + 1;
                 e.target.selectionEnd = start + 1;
+                handleTextChange(e)
                 return
 
             }
@@ -192,13 +211,15 @@ function ScriptItemText(props) {
                 return;
             }
             let text = tempTextValue;
-            setTempTextValue(null)
+
 
             if (e.target.selectionEnd === 0) {
+                debug(log, `EventsCheck: ScriptItemTextKeyDown: Enter: ${text}`)
                 onChange('addScriptItemAbove', text)
             } else {
                 onChange('addScriptItemBelow', text)
             }
+            setTempTextValue(null)
             return
         }
         if (e.key === 'ArrowUp') {
@@ -315,6 +336,7 @@ function ScriptItemText(props) {
                 onBlur={() => handleBlur()}
                 onFocus={() => handleFocus()}
                 onKeyDown={(e) => handleKeyDown(e, scriptItem)}
+                rows={getTextAreaRows().length}
             >
             </TextareaAutosize>
 

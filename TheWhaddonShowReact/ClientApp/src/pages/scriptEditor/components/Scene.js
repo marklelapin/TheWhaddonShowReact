@@ -149,7 +149,7 @@ function Scene(props) {
         let newFocusId = scriptItemToUpdate;
         let newFocusPosition = END;
 
-        const addScriptItem = (direction, scriptItem) => {
+        const addScriptItem = (direction,scriptItemToUpdate) => {
 
             const tempTextValue = value;
 
@@ -160,7 +160,7 @@ function Scene(props) {
                 newUpdates = prepareUpdate(scriptItemToUpdateWithText);
             }
 
-            let createUpdates = prepareUpdates(newScriptItemsForCreate(direction, scriptItem, [...scriptItems], DIALOGUE), 1)
+            let createUpdates = prepareUpdates(newScriptItemsForCreate(direction, scriptItemToUpdateWithText, [...scriptItems], DIALOGUE), 1)
 
             newUpdates = [...newUpdates, ...createUpdates]
             newFocusId = null //left for new ScriptItem to focus on itself when created.
