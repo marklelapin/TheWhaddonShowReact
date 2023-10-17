@@ -155,7 +155,7 @@ function ScriptItemText(props) {
                 log(debug, 'EventsCheck: ScriptItemTextControlsClick: add')
                 let text = tempTextValue;
                 setTempTextValue(null)
-                onChange('addScriptItem', text);
+                onChange('addScriptItemBelow', text);
                 break;
             case 'delete': onClick('delete'); break;
             case 'undo': onClick('undo'); break;
