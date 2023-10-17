@@ -25,7 +25,7 @@ import { changeFocus } from 'actions/navigation';
 
 //Constants
 import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from 'dataAccess/scriptItemTypes';
-import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
+
 
 function ScriptItem(props) {
 
@@ -35,129 +35,19 @@ function ScriptItem(props) {
 
 
     // get specific props
-    const { scriptItem: storedScriptItem, scene, alignRight = false, onClick, onKeyDown, previousFocus = null, nextFocus = null } = props;
+    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus, previousFocus = null, nextFocus = null } = props;
 
 
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments)
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[storedScriptItem.parentId])
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scriptItem.parentId])
 
-    //Internal State
-    const [scriptItem, setScriptItem] = useState({})
-
-
+    //Refs
     const textInputRef = useRef(null)
 
 
-
-    useEffect(() => {
-        if (scriptItem.setFocus) {
-            moveFocusToId(scriptItem.id, 'end');
-            delete scriptItem.setFocus
-        }
-
-    }, [])
-
-    useEffect(() => {
-        log(debug, 'SCripItem: useEffect: storedScriptItem', storedScriptItem)
-       
-        setScriptItem(storedScriptItem)
-       
-    }, [storedScriptItem])
-
-
-
-    //changes are registered internally until onBlur is called
-    const handleChange = (type, value) => {
-
-        switch (type) {
-            case 'text': setScriptItem({ ...scriptItem, text: value, changed: true }); break;
-            case 'partIds':
-                const newUpdate = { ...scriptItem, partIds: value }
-
-                saveChangeToStore(newUpdate)
-                moveFocusToId(scriptItem.id, 'end');
-                break;
-            case 'tags':
-                setScriptItem({ ...scriptItem, tags: value, changed: true })
-                moveFocusToId(scriptItem.id, 'end'); break;
-            case 'type':
-                let newScriptItem = { ...scriptItem, type: value, changed: true }
-
-                if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
-                    newScriptItem.tags = getOpenCurtainTags(newScriptItem)
-                    newScriptItem.text = newCurtainText(true, scriptItem)
-                } else if (CURTAIN_TYPES.includes(scriptItem.type)) { //i.e. its coming from a curtain type
-                    newScriptItem.text = "";
-                }
-                saveChangeToStore(newScriptItem)
-
-                moveFocusToId(scriptItem.id, 'end');
-                break;
-            case 'toggleCurtain':
-
-                const open = value
-
-                const newTags = (open) ? getOpenCurtainTags(scriptItem) : getCloseCurtainTags(scriptItem)
-
-                const newText = newCurtainText(open, scriptItem)
-
-                const update = {
-                    ...scriptItem
-                    , tags: newTags
-                    , text: newText
-                    , changed: true
-                }
-                saveChangeToStore(update)
-
-                moveFocusToId(scriptItem.id, 'end');
-
-                break;
-            default: return;
-        }
-
-    }
  
-
-    const saveChangeToStore = (newScriptItem) => {
-        const preparedUpdate = prepareUpdate(newScriptItem)
-        dispatch(addUpdates(preparedUpdate, 'ScriptItem'));
-    }
-
-    const newCurtainText = (open, scriptItem) => {
-
-        const previousCurtainOpen = scriptItem.previousCurtainOpen
-
-        if (open) { // curtain is opening
-            if (previousCurtainOpen === true) return 'Curtain remains open'
-            else return 'Curtain opens'
-        } else { //curtain is closing
-            if (previousCurtainOpen === false) return 'Curtain remains closed'
-            else return 'Curtain closes'
-        }
-    }
-
-    const getOpenCurtainTags = (scriptItem) => {
-        const tags = scriptItem.tags
-
-        let newTags = tags.filter(tag => tag !== 'CloseCurtain')
-        newTags.push('OpenCurtain')
-
-        return newTags;
-    }
-
-    const getCloseCurtainTags = (scriptItem) => {
-        const tags = scriptItem.tags;
-
-        let newTags = tags.filter(tag => tag !== 'OpenCurtain')
-        newTags.push('CloseCurtain')
-
-        return newTags;
-    }
-
-
     //calculations functions
-
     const showParts = () => {
         switch (scriptItem.type) {
             case DIALOGUE: return true;
@@ -183,18 +73,6 @@ function ScriptItem(props) {
 
 
 
-    //Saves to Redux store when focus is taken off the scriptItem
-    const handleBlur = () => {
-
-        if (scriptItem.changed) {
-
-            const preparedUpdate = prepareUpdate([scriptItem])
-
-            dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
-        }
-    }
-
-
 
     log(debug, 'ScriptItemProps', props)
 
@@ -208,7 +86,7 @@ function ScriptItem(props) {
                     <PartSelector
                         scene={scene}
                         allocatedPartIds={scriptItem.partIds}
-                        onChange={(selectedPartIds) => handleChange('partIds', selectedPartIds)}
+                        onChange={(selectedPartIds) => onChange('partIds', selectedPartIds)}
                     />
                 </div>
             }
@@ -219,10 +97,9 @@ function ScriptItem(props) {
                     maxWidth={textInputRef.current?.offsetWidth}
                     scriptItem={scriptItem}
                     header={header()}
-                    onClick={(action) => onClick(action, scriptItem)}
-                    onChange={handleChange}
-                    onBlur={()=>handleBlur()}
-                    onKeyDown={(e) => onKeyDown(e, scriptItem, previousFocus, nextFocus)}
+                    onClick={onClick}
+                    onChange={onChange}
+                    moveFocus={moveFocus}
                     refresh={scriptItem.refresh}
                 />
 

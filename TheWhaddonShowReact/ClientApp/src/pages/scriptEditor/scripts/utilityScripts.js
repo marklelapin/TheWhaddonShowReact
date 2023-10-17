@@ -35,16 +35,16 @@ export function moveFocusToId(id, position = start) {
 
     const newTextInput = getTextInputElement(id);
 
-    newTextInput.focus();
-
-    if (position === start) {
-        newTextInput.selectionStart = 0
-        newTextInput.selectionEnd = 0
-    } else {
-        newTextInput.selectionStart = newTextInput.value.length
-        newTextInput.selectionEnd = newTextInput.value.length
+    if (newTextInput) {
+        newTextInput.focus();
+        if (position === start) {
+            newTextInput.selectionStart = 0
+            newTextInput.selectionEnd = 0
+        } else {
+            newTextInput.selectionStart = newTextInput.value.length
+            newTextInput.selectionEnd = newTextInput.value.length
+        }
     }
-
 }
 
 export function removeFocusFromId(id) {

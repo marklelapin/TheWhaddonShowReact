@@ -64,10 +64,6 @@ function ScriptItemControls(props) {
 
     }
 
-    const toggleCurtain = () => {
-
-    }
-
 
     return (
         <>
@@ -124,12 +120,12 @@ function ScriptItemControls(props) {
 
 
             <div className="bottom-right-controls">
-                {scriptItem && <Icon icon="play" onClick={() => onClick('confirm')} />}
+                {scriptItem && <Icon icon="play" onClick={() => onClick('confirm',null)} />}
 
-                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add')} /> }
+                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add', null)} onMouseDown={(e)=>e.preventDefault()}  /> }
 
 
-                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => onClick('delete')} />}
+                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => onClick('delete',null)} />}
          
             </div>
 

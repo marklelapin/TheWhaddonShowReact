@@ -59,10 +59,8 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 
     }
 
-
-
     //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
-    return { newScriptItem, newScriptItems }
+    return newScriptItems 
 
 }
 export default newScriptItemsForCreate

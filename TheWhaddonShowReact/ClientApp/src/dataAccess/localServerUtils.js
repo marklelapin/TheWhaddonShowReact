@@ -288,22 +288,30 @@ export function getLatest(history, undoDateTime = null, includeInActive = false,
 
 
 
-export function prepareUpdate(updates) {
-    return prepareUpdates(updates)
+export function prepareUpdate(updates,adjustment) {
+    return prepareUpdates(updates,adjustment)
 }
 
-export function prepareUpdates(updates) {
+export function prepareUpdates(updates, adjustment) {
+
+    const moment = require("moment");
+
     let output = updates
 
     if (!Array.isArray(updates)) {
         output = [updates]
     }
 
+    const createdDate = moment()
+    
+    const adjustedDate = createdDate.add(adjustment,'ms')
+     
+    const formattedDate = adjustedDate.format("YYYY-MM-DDTHH:mm:ss.SSS")
 
 
     output.forEach((update, index) => {
 
-        output[index] = { ...update, created: new Date().toISOString().replace('Z', ''), updatedOnServer: null }
+        output[index] = { ...update, created: formattedDate, updatedOnServer: null }
     })
 
     output.forEach((update) => {

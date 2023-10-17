@@ -1,6 +1,6 @@
 ﻿import React from 'react';
-import { useEffect, useRef } from 'react';
-import { useSelector, useDispatch} from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 //Components
 import TextareaAutosize from 'react-autosize-textarea';
@@ -13,24 +13,27 @@ import { changeFocus } from 'actions/scriptEditor';
 
 //css
 import s from 'pages/forms/elements/Elements.module.scss';
-import { INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from 'dataAccess/scriptItemTypes';
+import { HEADER_TYPES, INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from 'dataAccess/scriptItemTypes';
 import { moveFocusToId } from '../scripts/utilityScripts';
 
 function ScriptItemText(props) {
 
     //utils
-    const debug = false;
+    const debug = true;
     const dispatch = useDispatch()
 
     //constants
     const audioTypes = [SONG, SOUND]
     const videoTypes = [SONG, SOUND, SCENE, SYNOPSIS]
-
+    const END = 'end'
+    const START = 'start'
+    const UP = 'up'
+    const DOWN = 'down'
 
     //Props
-    const { scriptItem, header, onChange, onClick, onBlur, onKeyDown, placeholder = "...", maxWidth = null } = props;
+    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null } = props;
 
-    const { id, text, type, tags } = scriptItem
+    const { id, type, tags } = scriptItem
 
     log(debug, 'ScriptItemTextProps', props)
 
@@ -38,7 +41,9 @@ function ScriptItemText(props) {
     //REdux
     const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
 
-    
+    //Internal state
+    const [tempTextValue, setTempTextValue] = useState(null)
+
     let finalPlaceholder;
 
     switch (type) {
@@ -49,7 +54,7 @@ function ScriptItemText(props) {
         default: finalPlaceholder = placeholder;
     }
 
-   
+
 
     useEffect(() => {
         const textareaRef = document.getElementById(`script-item-text-${id}`)
@@ -57,17 +62,12 @@ function ScriptItemText(props) {
             adjustTextareaWidth(textareaRef)
         }
 
+        //males the textarea the focus when created.
         const textInputRef = textareaRef.querySelector('textarea')
-         
         if (textInputRef) {
             textInputRef.focus();
         }
-        
-
-
     }, [])
-
-
 
     //Calculations / Utitlity functions
 
@@ -75,7 +75,7 @@ function ScriptItemText(props) {
         if (element) {
             const textWidth = getTextWidth();
 
-            const finalWidth = Math.max(50, Math.min(maxWidth, textWidth))
+            const finalWidth = Math.max(50, Math.min(maxWidth || textWidth, textWidth))
             //let percentageWidth = '20%'
 
             //if (maxWidth) {
@@ -83,7 +83,7 @@ function ScriptItemText(props) {
             //    percentageWidth = `${percentage}%`
             //}
             const finalWidthString = `${Math.floor(finalWidth)}px`
-
+            log(debug, ` adjustTextareaWidth: ${element.id} : ${finalWidthString}`)
             element.style.width = finalWidthString;
         }
     };
@@ -94,21 +94,32 @@ function ScriptItemText(props) {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         context.font = window.getComputedStyle(textInputRef).font;
-        const textMetrics = context.measureText(text);
+        const textMetrics = context.measureText(text());
+        log(debug, `getTextWidth: ${textMetrics.width + 50}`)
         return textMetrics.width + 50;
     };
 
 
 
+    const text = () => {
+        let finalText;
+        if (tempTextValue === '') {
+            finalText = tempTextValue
+        } else {
+            finalText = tempTextValue || scriptItem.text || ''
+        }
+        log(debug, `EventsCheck: final text: ${finalText}`)
 
+        return finalText
+    }
 
 
 
     //Event Handlers
 
-    const handleChange = (e) => {
-
-        onChange('text', e.target.value)
+    const handleTextChange = (e) => {
+        log(debug, `EventsCheck: handleTextChange: ${e.target.value || ''} `)
+        setTempTextValue(e.target.value || '')
         const textareaRef = document.getElementById(`script-item-text-${id}`)
         if (textareaRef) {
             adjustTextareaWidth(textareaRef)
@@ -117,11 +128,17 @@ function ScriptItemText(props) {
 
     const handleControlsClick = (action, value) => {
 
+        log(debug, `EventCheck: ScriptItemTextControlsClick: ${action},${value}`)
         switch (action) {
             case 'changeType': onChange('type', value); break;
             case 'toggleCurtain': onChange('toggleCurtain', value); break;
-            case 'confirm': onClick('confirm'); break;
-            case 'add': onClick('add'); break;
+            case 'confirm': handleBlur(); break; //TODO- only show confirm if tempTextValue is not null.remove focus.
+            case 'add':
+                log(debug, 'EventsCheck: ScriptItemTextControlsClick: add')
+                let text = tempTextValue;
+                setTempTextValue(null)
+                onChange('addScriptItem', text);
+                break;
             case 'delete': onClick('delete'); break;
             case 'undo': onClick('undo'); break;
             case 'redo': onClick('redo'); break;
@@ -140,11 +157,143 @@ function ScriptItemText(props) {
 
     }
 
+    const handleKeyDown = (e, scriptItem) => {
 
-    const handleFocus = () => {
-         dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
+
+        const closestPosition = () => {
+            const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
+            const closestPosition = (percentageAcoss > 0.5) ? END : START
+            return closestPosition
+        }
+
+
+        if (e.shiftKey) {
+
+            if (e.key === 'Enter') {  //allows new line to be entered in text-area
+                /*   log(debugKeys,'it got here')*/
+                e.preventDefault();
+                const start = e.target.selectionStart;
+                const end = e.target.selectionEnd;
+                const text = e.target.value;
+                const newText = text.substring(0, start) + '\n' + text.substring(end);
+                e.target.value = newText;
+                e.target.selectionStart = start + 1;
+                e.target.selectionEnd = start + 1;
+                return
+
+            }
+        }
+
+        if (e.key === 'Enter') {
+            e.preventDefault()
+
+            if (HEADER_TYPES.includes(scriptItem.type) && scriptItem.type !== INITIAL_CURTAIN) {
+                moveFocus(DOWN, END)
+                return;
+            }
+            let text = tempTextValue;
+            setTempTextValue(null)
+
+            if (e.target.selectionEnd === 0) {
+                onChange('addScriptItemAbove', text)
+            } else {
+                onChange('addScriptItemBelow', text)
+            }
+            return
+        }
+        if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            moveFocus(UP, closestPosition())
+            return
+        }
+        if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            moveFocus(DOWN, closestPosition())
+            return
+        }
+        if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length) {
+            e.preventDefault()
+            moveFocus(DOWN, START)
+            return
+        }
+        if (e.key === 'ArrowLeft' && e.target.selectionEnd === 0) {
+            e.preventDefault()
+            moveFocus(UP, END)
+            return
+        }
+
+
+        if (e.key === 'Backspace') {
+
+            if (!text() || text() === null || text() === '') {
+                e.preventDefault()
+                onChange('deleteScriptItem', UP)
+                return
+            }
+
+            if (e.target.selectionEnd === 0) {
+                e.preventDefault()
+                moveFocus(UP, END)
+                return
+            }
+        }
+
+        if (e.key === 'Delete') {
+
+            log(debug, `EventsCheck: ScriptItemTextKeyDown: Delete ${tempTextValue}`)
+            if (e.target.selectionStart === e.target.value.length) {
+                e.preventDefault()
+                log(debug, `eventsCheck: Delete STage 1:`)
+                if (text() === null || text().length === 0) {
+                    log(debug, 'eventsCheck: Delete STage 2')
+                    onChange('deleteScriptItem', DOWN)
+                    return
+                }
+
+                log(debug, 'eventsCheck: Delete STage 3')
+                const nextScriptItemElement = document.getElementById(scriptItem.nextId)
+                if (nextScriptItemElement) {
+                    const textInputElement = nextScriptItemElement.querySelector('.text-input')
+                    if (textInputElement) {
+                        const nextScriptItemText = textInputElement.value
+
+                        if (nextScriptItemText === null || nextScriptItemText.length === 0) {
+                            e.preventDefault()
+                            onChange('deleteNextScriptItem', UP)
+                            return
+                        } else {
+                            e.preventDefault();
+                            moveFocus(DOWN, START);
+                            return;
+                        }
+
+                    }
+
+
+
+                }
+
+            }
+
+
+
+        }
+
     }
 
+    const handleFocus = () => {
+        dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
+    }
+
+
+    const handleBlur = () => {
+        log(debug, `EventsCheck: ScriptItemTextBlur: ${tempTextValue}`)
+
+        if (tempTextValue || tempTextValue === '') {
+            onChange('text', tempTextValue)
+        }
+        setTempTextValue(null)
+    }
 
     return (
         <div id={`script-item-text-${id}`} className="script-item-text">
@@ -161,15 +310,15 @@ function ScriptItemText(props) {
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
                 className={`form-control ${s.autogrow} transition-height text-input`}
-                value={text || ''}
-                onChange={(e) => handleChange(e)}
-                onBlur={onBlur}
+                value={text()}
+                onChange={(e) => handleTextChange(e)}
+                onBlur={() => handleBlur()}
                 onFocus={() => handleFocus()}
-                onKeyDown={(e) => onKeyDown(e)}
+                onKeyDown={(e) => handleKeyDown(e, scriptItem)}
             >
             </TextareaAutosize>
 
-            {(focus) && 
+            {(focus) &&
                 <ScriptItemControls
                     scriptItem={scriptItem}
                     header={header}

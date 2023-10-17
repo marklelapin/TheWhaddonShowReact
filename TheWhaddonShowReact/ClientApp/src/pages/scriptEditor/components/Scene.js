@@ -25,13 +25,13 @@ import { create } from 'lodash';
 
 //Constants
 import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
-import { INITIAL_CURTAIN } from 'dataAccess/scriptItemTypes';
+import { INITIAL_CURTAIN, DIALOGUE } from 'dataAccess/scriptItemTypes';
+import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
 function Scene(props) {
 
     //utility constants
-    const debug = false;
+    const debug = true;
     const debugRenderProps = true;
-    const debugKeys = true;
 
     const dispatch = useDispatch()
     const ABOVE = 'above'
@@ -52,97 +52,40 @@ function Scene(props) {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
 
 
-    log(debug, 'sceneScriptItemHistory', sceneScriptItemHistory)
+    log(debug, 'sceneScriptItemHistory ', sceneScriptItemHistory)
 
     //Internal State
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
-    const [scriptItems, setScriptItems] = useState([]); //
+    //const [scriptItems, setScriptItems] = useState([]); //
     const [focusAfterScriptItemsChange, setFocusAfterScriptItemsChange] = useState(false); //the id to focus on after script items have changed]
 
 
     //Update of internal scriptItems. This is triggered by changes to the sceneScriptItemHistory or the undoDateTime
-    useEffect(() => {
-        resetScriptItems()
-    }, [])
-    useEffect(() => {
-        resetScriptItems()
-    }, [sceneScriptItemHistory, undoDateTime])
+    //useEffect(() => {
+    //    resetScriptItems()
+    //}, [])
+    //useEffect(() => {
+    //    resetScriptItems()
+    //}, [sceneScriptItemHistory, undoDateTime])
 
-    const resetScriptItems = () => {
-        const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
-        setScriptItems(scriptItems)
-    }
-    
- 
-
-    //CRUD OPERATIONS 
-    //-------------------------------------------------------------------------------------------------
-
-    const createScriptItem = (placement, currentScriptItem, type = 'Dialogue') => {
-
-        let latestScriptItems = []
-
-        setScriptItems((prevScriptItems) => {
-            latestScriptItems = [...prevScriptItems]
-            return prevScriptItems
-        })
+    //const resetScriptItems = () => {
+    //    const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
+    //    setScriptItems(scriptItems)
+    //}
 
 
-        if (HEADER_TYPES.includes(currentScriptItem.type) && currentScriptItem.type !== INITIAL_CURTAIN) {
-            return;
-        }
-
-        let { newScriptItem, newScriptItems } = newScriptItemsForCreate(placement, currentScriptItem, latestScriptItems, type)
-
-        log(debug, 'createScriptItem', newScriptItem)
-        log(debug, 'newScriptItems', newScriptItems)
-
-        //setFocusAfterScriptItemsChange({
-        //    ...newScriptItem, position: (placement === above) ? start : end
-        //})
-
-        newScriptItem.setFocus = true
-
-        const preparedUpdates = prepareUpdates(newScriptItems)
+    const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
 
 
-        dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
-
-    }
 
     const deleteScriptItem = (scriptItemToDelete, direction = DOWN) => {
 
-        if (HEADER_TYPES.includes(scriptItemToDelete.type)) {
-            alert('You cannot delete a header item.')
-            return;
-        }
 
-        let latestScriptItems = []
 
-        setScriptItems((prevScriptItems) => {
-            latestScriptItems = [...prevScriptItems]
-            return prevScriptItems
-        })
 
-       
-        const newScriptItems = newScriptItemsForDelete(scriptItemToDelete, latestScriptItems)
-
-        const preparedUpdates = prepareUpdates(newScriptItems)
-
-        dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
-
-        if (direction === DOWN) {
-            moveFocusToId(scriptItemToDelete.nextId || scriptItemToDelete.previousId,
-                (scriptItemToDelete.nextId) ? START : END)
-        } else {
-            moveFocusToId(scriptItemToDelete.previousId,END)
-        }
-        //moveFocusToId(scriptItemToDelete.nextId || scriptItemToDelete.previousId,
-        //    (scriptItemToDelete.nextId) ? start : end)
-        
     }
 
- 
+
 
 
     //EVENT HANDLERS
@@ -184,11 +127,9 @@ function Scene(props) {
     }
 
     const handleClick = (action, scriptItem) => {
-
+        log(debug, `EventsCheck: handleClick: ${action},${scriptItem.id}`)
         switch (action) {
-            case 'add': createScriptItem(BELOW, scriptItem); break;
-            case 'delete': deleteScriptItem(scriptItem,DOWN); break;
-            case 'confirm': //updateIfChanged(scriptItem); break;
+            case 'delete': handleChange('deleteScriptItem', DOWN, scriptItem); break;
             case 'undo': handleUndo(); break;
             case 'redo': handleRedo(); break;
             case 'setUndo': handleSetUndo(); break;
@@ -197,172 +138,163 @@ function Scene(props) {
         }
     }
 
+    const handleChange = (type, value, scriptItem) => {
 
-    const handleKeyDown = (e, scriptItem, previousFocusOverride = null, nextFocusOverride = null) => {
+        log(debug, `EventsCheck: handleChange: ${type} , ${value}, ${scriptItem.id}, ${scriptItem.created}`)
 
-        const closestPosition = () => {
+        const scriptItemToUpdate = [...scriptItems].find(item => item.id === scriptItem.id)
 
-            const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
-            const closestPosition = (percentageAcoss > 0.5) ? END : START
-            return closestPosition
+        let newUpdates = []
+        //sets default next focus and position - they get overridden in switch statements if necessary
+        let newFocusId = scriptItemToUpdate;
+        let newFocusPosition = END;
+
+        const addScriptItem = (direction, scriptItem) => {
+
+            const tempTextValue = value;
+
+            let scriptItemToUpdateWithText = { ...scriptItemToUpdate }
+
+            if (tempTextValue) {
+                scriptItemToUpdateWithText.text = tempTextValue;
+                newUpdates = prepareUpdate(scriptItemToUpdateWithText);
+            }
+
+            let createUpdates = prepareUpdates(newScriptItemsForCreate(direction, scriptItem, [...scriptItems], DIALOGUE), 1)
+
+            newUpdates = [...newUpdates, ...createUpdates]
+            newFocusId = null //left for new ScriptItem to focus on itself when created.
 
         }
 
+        const deleteScriptItem = (scriptItem) => {
+            const direction = value || DOWN;
+            const scriptItemToDelete = scriptItem;
 
-        const moveFocus = (direction, position = null, overrideId = null) => {
-
-            e.preventDefault()
-            const newId = overrideId || (direction === DOWN) ? nextFocusOverride?.id || scriptItem.nextId : previousFocusOverride?.id || scriptItem.previousId
-            const currentClosestPosition = closestPosition()
-            let newPosition = position || currentClosestPosition //|| (direction === up) ? start : end
-
-            if (newId) {
-
-                moveFocusToId(newId, newPosition)
-
-            }
-
-        }
-
-
-        if (e.key === 'ArrowDown' && scriptItem.nextId === null) {
-            removeFocusFromId(scriptItem.id)
-            moveFocusToId(scriptItem.id,END)
-            //updateIfChanged(scriptItem)
-            return
-        }
-
-
-
-
-        if (e.shiftKey) {
-
-
-            let latestScriptItems = []
-
-            setScriptItems((prevScriptItems) => {
-                latestScriptItems = [...prevScriptItems]
-                return prevScriptItems
-            })
-
-
-            if (e.key === 'ArrowUp') {
-                e.preventDefault()
-
-                if (HEADER_TYPES.includes(scriptItem.type)) {
-                    moveFocus(UP)
-                    return
-                } else {
-                    createScriptItem(ABOVE, scriptItem, latestScriptItems)
-                    return
-                }
-            }
-
-            if (e.key === 'ArrowDown') {
-                e.preventDefault()
-                if (HEADER_TYPES.includes(scriptItem.type)) {
-                    moveFocus(DOWN)
-                    return
-                } else {
-                    createScriptItem(BELOW, scriptItem, latestScriptItems)
-                    return
-                }
-            }
-
-            if (e.key === 'Enter') {
-                /*   log(debugKeys,'it got here')*/
-                e.preventDefault();
-                const start = e.target.selectionStart;
-                const end = e.target.selectionEnd;
-                const text = e.target.value;
-                const newText = text.substring(0, start) + '\n' + text.substring(end);
-                e.target.value = newText;
-                e.target.selectionStart = start + 1;
-                e.target.selectionEnd = start + 1;
-                return
-
-            }
-        }
-
-        if (e.key === 'Enter') {
-            e.preventDefault()
-
-            if (HEADER_TYPES.includes(scriptItem.type) && scriptItem.type !== INITIAL_CURTAIN) {
-                moveFocus(DOWN)
+            if (HEADER_TYPES.includes(scriptItemToDelete.type)) {
+                alert('You cannot delete a header item.')
                 return;
             }
-            removeFocusFromId(scriptItem.id) //triggers save of any changes to store with ScriptItem component.
-            createScriptItem(BELOW, scriptItem)
-            return
-        }
-        if (e.key === 'ArrowUp') {
-            e.preventDefault()
-            moveFocus(UP)
-            return
-        }
-        if (e.key === 'ArrowDown') {
-            e.preventDefault()
-            moveFocus(DOWN)
-            return
-        }
-        if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length) {
-            e.preventDefault()
-            moveFocus(DOWN, START)
-            return
-        }
-        if (e.key === 'ArrowLeft' && e.target.selectionEnd === 0) {
-            e.preventDefault()
-            moveFocus(UP, END)
-            return
-        }
+            log(debug, 'EventsCheck: deleteScriptItem', scriptItemToDelete)
+            newUpdates = prepareUpdates(newScriptItemsForDelete(scriptItemToDelete, [...scriptItems]))
 
-
-        if (e.key === 'Backspace') {
-
-            if (!scriptItem.text || scriptItem.text === null || scriptItem.text === '') {
-                deleteScriptItem(scriptItem, UP)
-                return
-            }
-
-            if (e.target.selectionEnd === 0) {
-                moveFocus(UP, END)
-                return
+            if (direction === DOWN) {
+                newFocusId = scriptItemToDelete.nextId || scriptItemToDelete.previousId
+                newFocusPosition = (scriptItemToDelete.nextId) ? START : END
+            } else {
+                newFocusId = scriptItemToDelete.previousId;
+                newFocusPosition = END;
             }
         }
 
-        if (e.key === 'Delete') {
+        switch (type) {
+            case 'text':
+                log(debug, `EventsCheck handleChange text: ${value}`)
+                newUpdates = prepareUpdate({ ...scriptItemToUpdate, text: value }); break;
+            case 'partIds': newUpdates = prepareUpdate({ ...scriptItemToUpdate, partIds: value }); break;
+            case 'tags': newUpdates = prepareUpdate({ ...scriptItemToUpdate, tags: value }); break;
+            case 'type':
+                let draft = prepareUpdate({ ...scriptItemToUpdate, type: value })
 
-            if (e.target.selectionStart === e.target.value.length) {
-
-                const nextScriptItem = scriptItems.find(item => item.id === scriptItem.nextId)
-                const previousScriptItem = scriptItems.find(item => item.id === scriptItem.previousId)
-
-                if (scriptItem.text === null || scriptItem.text.length === 0) {
-                    e.preventDefault()
-                    deleteScriptItem(scriptItem, DOWN)
-                    return
+                if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
+                    draft.tags = getOpenCurtainTags(draft)
+                    draft.text = newCurtainText(true, scriptItemToUpdate)
+                } else if (CURTAIN_TYPES.includes(scriptItemToUpdate.type)) { //i.e. its coming from a curtain type
+                    draft.text = "";
                 }
+                break;
 
+            case 'toggleCurtain':
+                const open = value
+                const newTags = (open) ? getOpenCurtainTags(scriptItem) : getCloseCurtainTags(scriptItem)
+                const newText = newCurtainText(open, scriptItem)
+                newUpdates = prepareUpdate({
+                    ...scriptItemToUpdate
+                    , tags: newTags
+                    , text: newText
+                    , changed: true
+                })
+                break;
 
-
-                if (nextScriptItem && (nextScriptItem.text === null || nextScriptItem.text.length === 0)) {
-                    e.preventDefault()
-                    deleteScriptItem(nextScriptItem, UP)
-                    return
-                }
-
+            case 'addScriptItemBelow':
+                addScriptItem(BELOW, scriptItemToUpdate)
+                break;
+            case 'addScriptItemAbove':
+                addScriptItem(ABOVE, scriptItemToUpdate)
+                break;
+            case 'deleteScriptItem':
+                deleteScriptItem(scriptItemToUpdate)
+                break;
+            case 'deleteNextScriptItem':
+                const nextScriptItem = [...scriptItems].find(item => item.id === scriptItemToUpdate.nextId)
                 if (nextScriptItem) {
-                    e.preventDefault();
-                    moveFocus(DOWN, START);
-                    return;
+                    deleteScriptItem(nextScriptItem)
                 }
-
-            }
-
+                break;
+            default: return;
         }
+        log(debug, `EventsCheck: newUpdates count ${newUpdates.length}`)
+        log(debug, `EVentsCheck: new Updates: + ${JSON.stringify(newUpdates)}`)
+
+        dispatch(addUpdates(newUpdates, 'ScriptItem'));
+
+        if (newFocusId) {
+            moveFocusToId(newFocusId, newFocusPosition);
+        }
+
+        return
+
+
+
+
+
     }
 
 
+    const newCurtainText = (open, scriptItem) => {
+
+        const previousCurtainOpen = scriptItem.previousCurtainOpen
+
+        if (open) { // curtain is opening
+            if (previousCurtainOpen === true) return 'Curtain remains open'
+            else return 'Curtain opens'
+        } else { //curtain is closing
+            if (previousCurtainOpen === false) return 'Curtain remains closed'
+            else return 'Curtain closes'
+        }
+    }
+
+    const getOpenCurtainTags = (scriptItem) => {
+        const tags = scriptItem.tags
+
+        let newTags = tags.filter(tag => tag !== 'CloseCurtain')
+        newTags.push('OpenCurtain')
+
+        return newTags;
+    }
+
+    const getCloseCurtainTags = (scriptItem) => {
+        const tags = scriptItem.tags;
+
+        let newTags = tags.filter(tag => tag !== 'OpenCurtain')
+        newTags.push('CloseCurtain')
+
+        return newTags;
+    }
+
+
+    const handleMoveFocus = (direction, position, scriptItem, previousFocusOverrideId = null, nextFocusOverrideId = null) => {
+
+
+
+        const newId = (direction === DOWN) ? nextFocusOverrideId || scriptItem.nextId : previousFocusOverrideId || scriptItem.previousId
+        let newPosition = position || END
+
+        if (newId) {
+            moveFocusToId(newId, newPosition)
+        }
+
+    }
 
 
     const handlePartIdChange = (partIds) => {
@@ -378,19 +310,6 @@ function Scene(props) {
         dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
     }
 
-    //const handleChange = (type, id, value) => {
-
-    //    if (type === 'partIds') {
-    //        let update = [...scriptItems].find(item => item.id === id)
-    //        update.partIds = value
-
-    //        update = prepareUpdate(update)
-
-    //        dispatch(addUpdates(update, 'ScriptItem')) //part Updates are confirmed in part editor so unlike other updates this automatically updates the store.
-    //    }
-
-
-    //}
 
 
     const currentScene = scriptItems.find(item => item.type === 'Scene') || {} //returns the synopsis scriptItem
@@ -431,21 +350,16 @@ function Scene(props) {
                     (currentScene) &&
                     <ScriptItem scriptItem={currentScene}
                         onClick={(action) => handleClick(action, currentScene)}
-                        onKeyDown={handleKeyDown}
+                        onChange={(type, value) => handleChange(type, value, currentScene)}
+                        moveFocus={(direction, position) => handleMoveFocus(direction, position, currentScene, null, null)}
                     />
 
                 }
                 {synopsis &&
                     <ScriptItem scriptItem={synopsis}
                         onClick={(action) => handleClick(action, synopsis)}
-
-                        onKeyDown={handleKeyDown}
-                        nextFocus={
-                            {
-                                id: (currentScene.partIds) ? currentScene.partIds[0] : null,
-                                parentId: currentScene.id,
-                                position: START
-                            }}
+                        onChange={(type, value) => handleChange(type, value, synopsis)}
+                        moveFocus={(direction, position) => handleMoveFocus(direction, position, synopsis, null, currentScene.partIds[0])}
                     />
                 }
                 <PartEditor
@@ -460,14 +374,8 @@ function Scene(props) {
                         <ScriptItem
                             scriptItem={staging}
                             onClick={(action) => handleClick(action, staging)}
-                            onKeyDown={handleKeyDown}
-                            previousFocus={
-                                {
-                                    id: (currentScene.partIds) ? currentScene.partIds[currentScene.partIds.length - 1] : null,
-                                    parentId: currentScene.id,
-                                    position: END
-                                }}
-
+                            onChange={(type, value) => handleChange(type, value, staging)}
+                            moveFocus={(direction, position) => handleMoveFocus(direction, position, staging, currentScene.partIds[currentScene.partIds.length - 1], null)}
                         />
                     </>
 
@@ -481,11 +389,12 @@ function Scene(props) {
                     return (
                         <ScriptItem
                             onClick={(action) => handleClick(action, scriptItem)}
+                            onChange={(type, value) => handleChange(type, value, scriptItem)}
                             key={scriptItem.id}
                             scriptItem={scriptItem}
                             scene={currentScene}
                             alignRight={scriptItem.alignRight}
-                            onKeyDown={handleKeyDown}
+                            moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, null)}
 
                         />
                     )
