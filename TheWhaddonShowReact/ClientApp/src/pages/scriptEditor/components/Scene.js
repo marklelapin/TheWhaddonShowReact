@@ -27,6 +27,12 @@ import { create } from 'lodash';
 import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
 import { INITIAL_CURTAIN, DIALOGUE } from 'dataAccess/scriptItemTypes';
 import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
+import { UP, DOWN, START, END, ABOVE, BELOW } from '../scripts/utilityScripts';
+
+
+export const PART_IDS = 'partIds';
+
+
 function Scene(props) {
 
     //utility constants
@@ -34,12 +40,6 @@ function Scene(props) {
     const debugRenderProps = true;
 
     const dispatch = useDispatch()
-    const ABOVE = 'above'
-    const BELOW = 'below'
-    const START = 'start'
-    const END = 'end'
-    const DOWN = 'down'
-    const UP = 'up'
 
     //props
     const { scene, onClick } = props;
@@ -52,26 +52,14 @@ function Scene(props) {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
 
 
-    log(debug, 'sceneScriptItemHistory ', sceneScriptItemHistory)
+    log(debug, 'EventsCheck Scene_sceneScriptItemHistory ', sceneScriptItemHistory)
 
     //Internal State
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
     //const [scriptItems, setScriptItems] = useState([]); //
-    const [focusAfterScriptItemsChange, setFocusAfterScriptItemsChange] = useState(false); //the id to focus on after script items have changed]
+   
 
 
-    //Update of internal scriptItems. This is triggered by changes to the sceneScriptItemHistory or the undoDateTime
-    //useEffect(() => {
-    //    resetScriptItems()
-    //}, [])
-    //useEffect(() => {
-    //    resetScriptItems()
-    //}, [sceneScriptItemHistory, undoDateTime])
-
-    //const resetScriptItems = () => {
-    //    const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
-    //    setScriptItems(scriptItems)
-    //}
 
 
     const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
@@ -128,6 +116,7 @@ function Scene(props) {
             case 'redo': handleRedo(); break;
             case 'setUndo': handleSetUndo(); break;
             case 'cancelUndo': setUndoDateTime(null); break;
+            case 'deleteScene': onClick('deleteScene'); break;
             default: return;
         }
     }
@@ -185,7 +174,7 @@ function Scene(props) {
             case 'text':
                 log(debug, `EventsCheck handleChange text: ${value}`)
                 newUpdates = prepareUpdate({ ...scriptItemToUpdate, text: value }); break;
-            case 'partIds': newUpdates = prepareUpdate({ ...scriptItemToUpdate, partIds: value }); break;
+            case PART_IDS: newUpdates = prepareUpdate({ ...scriptItemToUpdate, partIds: value }); break;
             case 'tags': newUpdates = prepareUpdate({ ...scriptItemToUpdate, tags: value }); break;
             case 'type':
                 let draft = prepareUpdate({ ...scriptItemToUpdate, type: value })
@@ -291,18 +280,7 @@ function Scene(props) {
     }
 
 
-    const handlePartIdChange = (partIds) => {
-
-        log(debug, 'PartIdChange', partIds)
-
-        let scene = [...scriptItems].find(item => item.type === 'Scene') || {}
-
-        scene.partIds = partIds
-
-        const preparedUpdate = prepareUpdate(scene)
-
-        dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
-    }
+ 
 
 
 
@@ -358,7 +336,7 @@ function Scene(props) {
                 }
                 <PartEditor
                     scene={currentScene}
-                    onChange={(partIds) => handlePartIdChange(partIds)}
+                    onChange={(type,value) => handleChange(type,value,currentScene)}
                     previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
                     nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
                 />
@@ -397,7 +375,7 @@ function Scene(props) {
             </div>
 
             <div className={`scene-footer ${currentScene.finalCurtain ? 'curtain-open' : 'curtain-closed'}`}>
-                <div className="add-new-scene clickable" onClick={() => onClick('addNewScene', currentScene)}>
+                <div className="add-new-scene clickable" onClick={() => onClick('addNewScene')}>
                     (add new scene)
                 </div>
             </div>

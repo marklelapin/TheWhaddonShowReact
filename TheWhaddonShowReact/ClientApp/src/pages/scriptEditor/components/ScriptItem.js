@@ -109,7 +109,7 @@ function ScriptItem(props) {
 
             {(type === SCENE) &&
                 <div className="scene-controls">
-                    <Icon icon="remove" onClick={() => onClick('deleteScene', scriptItem)} />
+                    <Icon icon="trash" onClick={() => onClick('deleteScene',null)} />
                 </div>
             }
         </div>

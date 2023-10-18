@@ -103,6 +103,40 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) 
 
 }
 
+export function newScriptItemsForSceneDelete(sceneToDelete, currentScenes) {
+
+    let deleteScene = { ...sceneToDelete }
+
+    let previousScene = currentScenes.find(scene => scene.id === deleteScene.previousId)
+    let nextScene = currentScenes.find(scene => scene.id === deleteScene.nextId)
+
+
+    if (previousScene) {
+
+        if (nextScene) {
+            previousScene.nextId = nextScene.id
+        } else {
+            previousScene.nextId = null
+        }
+    }
+
+    if (nextScene) {
+        nextScene.previousId = previousScene.id
+    }
+
+    deleteScene.isActive = false
+
+    const newScriptItems = [];
+    newScriptItems.push(previousScene)
+    newScriptItems.push(nextScene)
+    newScriptItems.push(deleteScene)
+
+    //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
+    return newScriptItems
+
+
+}
+
 export function createHeaderScriptItems(previousScene,nextScene = null) {
 
     let newPreviousScene = { ...previousScene }

@@ -58,13 +58,11 @@ function ScriptItemText(props) {
 
 
     useEffect(() => {
-        const textareaRef = document.getElementById(`script-item-text-${id}`)
-        if (textareaRef) {
-            adjustTextareaWidth(textareaRef)
-        }
+        
+        adjustTextareaWidth()
 
         //males the textarea the focus when created.
-        const textInputRef = textareaRef.querySelector('textarea')
+        const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
         if (textInputRef) {
             textInputRef.focus();
         }
@@ -72,8 +70,9 @@ function ScriptItemText(props) {
 
     //Calculations / Utitlity functions
 
-    const adjustTextareaWidth = (element) => {
-        if (element) {
+    const adjustTextareaWidth = () => {
+        const textareaRef = document.getElementById(`script-item-text-${id}`)
+        if (textareaRef) {
             const textWidth = getTextWidth();
 
             const finalWidth = Math.max(50, Math.min(maxWidth || textWidth, textWidth))
@@ -84,8 +83,8 @@ function ScriptItemText(props) {
             //    percentageWidth = `${percentage}%`
             //}
             const finalWidthString = `${Math.floor(finalWidth)}px`
-            log(debug, ` adjustTextareaWidth: ${element.id} : ${finalWidthString}`)
-            element.style.width = finalWidthString;
+            log(debug, ` adjustTextareaWidth: ${textareaRef.id} : ${finalWidthString}`)
+            textareaRef.style.width = finalWidthString;
         }
     };
 
@@ -120,7 +119,9 @@ function ScriptItemText(props) {
         const context = canvas.getContext('2d');
         context.font = window.getComputedStyle(textInputRef).font;
 
-        const textOfLongestLine = getTextAreaRows().reduce((a, b) => (a.length > b.length) ? a : b, '');
+        let textOfLongestLine = getTextAreaRows().reduce((a, b) => (a.length > b.length) ? a : b, '');
+
+        if (textOfLongestLine === '') {textOfLongestLine = finalPlaceholder }
 
         const textMetrics = context.measureText(textOfLongestLine);
         log(debug, `getTextWidth: ${textMetrics.width + 50}`)
@@ -214,7 +215,7 @@ function ScriptItemText(props) {
 
 
             if (e.target.selectionEnd === 0) {
-                debug(log, `EventsCheck: ScriptItemTextKeyDown: Enter: ${text}`)
+               
                 onChange('addScriptItemAbove', text)
             } else {
                 onChange('addScriptItemBelow', text)
@@ -314,6 +315,7 @@ function ScriptItemText(props) {
             onChange('text', tempTextValue)
         }
         setTempTextValue(null)
+        adjustTextareaWidth()
     }
 
     return (

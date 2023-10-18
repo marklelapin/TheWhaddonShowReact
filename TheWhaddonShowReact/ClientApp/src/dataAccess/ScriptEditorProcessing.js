@@ -35,7 +35,7 @@ export function ScriptEditorProcessing() {
 
     //Refresh trigger used to update scriptEdiotorScenes with additional partPerson info.
     useEffect(() => {
-        log(debug, 'ScriptEditorProcessing useEffect refreshTrigger', refreshTrigger)
+        log(debug, 'EventsCheck ScriptEditorProcessing useEffect refreshTrigger', refreshTrigger)
 
         if (refreshTrigger.updates && refreshTrigger.type === 'ScriptItem') {
             const scriptItemUpdates = refreshTrigger.updates
@@ -45,12 +45,15 @@ export function ScriptEditorProcessing() {
             //Update scriptEditor.sceneScriptItemsHistory
             if (scriptItemUpdates) {
 
-                const sceneIds = [...new Set(scriptItemUpdates.map(update => update.parentId || update.id))]
+                const scriptItemIds = [...scriptItemUpdates].map(update => update.parentId || update.id)
+                const sceneIds = sceneUpdates.map(update => update.id)
 
-                sceneIds.forEach(sceneId => {
+                const uniqueSceneIds = [...new Set([...scriptItemIds,...sceneIds])]
+
+                uniqueSceneIds.forEach(sceneId => {
                     const updates = scriptItemUpdates.filter(update => update.parentId === sceneId || update.id === sceneId)
 
-                    log(debug, 'ScriptEditorProcessing dispatchUpdateToSceneSCriptItemHistory', { sceneId: sceneId, updates: updates })
+                    log(debug, 'EventsCheck ScriptEditorProcessing dispatchUpdateToSceneSCriptItemHistory', { sceneId: sceneId, updates: updates })
                     dispatch(addUpdatesToSceneScriptItemHistory(sceneId, updates))
                 })
             }
@@ -70,15 +73,12 @@ export function ScriptEditorProcessing() {
 
         }
 
-
-
-
     }, [refreshTrigger])
 
 
     //Update PartPersons 
     useEffect(() => {
-
+        log(debug,'PartPersons: storedParts', storedParts)
         const latestPersons = getLatest(storedPersons || [])
         const latestParts = getLatest(storedParts || [])
 
@@ -91,12 +91,13 @@ export function ScriptEditorProcessing() {
     //Update ScenePartPersons
     useEffect(() => {
 
+
         const latestScenes = getLatest(sceneHistory || [])
         log(debug, 'PartPersons: latestScenes', latestScenes)
         log(debug, 'PartPersons: scenes hisotry ', sceneHistory)
         log(debug, 'PartPersons: partPersons', partPersons)
 
-        const storedPartIds = [...partPersons].map(partPerson => partPerson.id);
+        const storedPartIds = [...new Set( [...storedParts].map(partPerson => partPerson.id))];
         let newPartIds = [];
 
         latestScenes.forEach(scene => {

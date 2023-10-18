@@ -10,13 +10,14 @@ import Scene from './Scene'
 
 import { log } from 'helper';
 import { addUpdates } from 'actions/localServer';
-import { createHeaderScriptItems } from '../scripts/crudScripts';
+import { createHeaderScriptItems, newScriptItemsForSceneDelete } from '../scripts/crudScripts';
 import { prepareUpdates } from 'dataAccess/localServerUtils';
+import { moveFocusToId } from '../scripts/utilityScripts';
 
 //Constants
 import { SHOW, ACT } from 'dataAccess/scriptItemTypes';
 import ScriptViewerHeader from './ScriptViewerHeader';
-
+import { START, END } from '../scripts/utilityScripts';
 
 function ScriptViewer(props) {
 
@@ -34,24 +35,51 @@ function ScriptViewer(props) {
 
 
 
-    const handleClick = (action, value) => {
+
+    const handleClick = (action, scene) => {
+
+        let newUpdates = []
+        let newFocusId = null
+        let newFocusScenePosition = START
+        let newFocusTextInputPosition = START
 
         switch (action) {
             case 'addNewScene':
-                const previousScene = value
+                const previousScene = scene
                 const nextScene = scenes.find(scene => scene.id === previousScene.nextId)
-
-                const newHeaderScriptItems = createHeaderScriptItems(previousScene,nextScene)
-                const preparedUpdates = prepareUpdates(newHeaderScriptItems)
-
-                dispatch(addUpdates(preparedUpdates, 'ScriptItem'));
+                newUpdates = createHeaderScriptItems(previousScene,nextScene)
+               
                 break;
-                default: 
+            case 'deleteScene':
+                const sceneToDelete = scene;
+                newUpdates = newScriptItemsForSceneDelete(sceneToDelete, scenes)
+                newFocusId = sceneToDelete.nextId || sceneToDelete.previousId
+                break;
+            default: 
         }
+
+        if (newUpdates) {
+            const preparedUpdates = prepareUpdates(newUpdates)
+            dispatch(addUpdates(preparedUpdates, 'ScriptItem'));
+        }
+        if (newFocusId) {
+            handleMoveFocus(newFocusId, newFocusScenePosition, newFocusTextInputPosition)
+        }
+                    
     }
 
 
+    const handleMoveFocus = (sceneId, scenePosition, itemPosition = null) => { //different to move focus in partEdior and SCriptItems - position relates to start and end of scene. (not start and end of individual item)
 
+        const moveToScene = scenes.find(scene => scene.id === sceneId)
+
+        const moveToId = (scenePosition === START) ? moveToScene.id : moveToScene.finalId
+
+        const moveToPosition = itemPosition || (scenePosition === START) ? START : END
+
+        moveFocusToId(moveToId, moveToPosition)
+
+    }
 
 
         return (
@@ -70,7 +98,7 @@ function ScriptViewer(props) {
                                 return <h2 key={scene.id} >{scene.text}</h2>
                             }
                             else {
-                                return <Scene key={scene.id} scene={scene} onClick={(action, value) => handleClick(action, value)} />
+                                return <Scene key={scene.id} scene={scene} onClick={(action) => handleClick(action, scene)} />
                             }
                         }
 
