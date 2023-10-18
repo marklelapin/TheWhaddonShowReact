@@ -17,10 +17,10 @@ import { moveFocusToId } from '../scripts/utilityScripts';
 import {UP,DOWN,START,END,ABOVE,BELOW} from '../scripts/utilityScripts';
 
 
-
+import { PART_IDS }  from './Scene';
 //ChangeTypes
 export const NAME = 'name';
-export const PART_IDS = 'partIds';
+
 export const ADD_TAG = 'tags';
 export const REMOVE_TAG = 'removeTag';
 export const ADD_PART_ABOVE = 'addPartAbove';
@@ -55,19 +55,20 @@ function PartEditor(props) {
     const [modalPersons, setModalPersons] = useState(null); //if populated opens up selectperson modal
 
 
-    
-   
+    log(debug,'PartPersons: sceneParts',sceneParts)
 
     log(debug,'PartEditor: sceneParts',sceneParts)
   
     const previousPart = (part) => {
-        const partIndex = sceneParts.findIndex(item => item.id === part.id)
-return sceneParts[partIndex - 1] || null
+       
+        const partIndex = sceneParts.partIds.findIndex(id => id === part.id)
+   return sceneParts.partPersons[partIndex - 1] || null
     }
 
     const nextPart = (part) => {
-        const partIndex = sceneParts.findIndex(item => item.id === part.id)
-        return sceneParts[partIndex + 1] || null
+      
+        const partIndex = sceneParts.partIds.findIndex(id =>id === part.id)
+        return sceneParts.partPersons[partIndex + 1] || null
     }
 
     
@@ -80,10 +81,10 @@ return sceneParts[partIndex - 1] || null
 
     const handleMoveFocus = (direction, position, part) => {
 
-        const currentPartIndex = sceneParts.findIndex(item => item.id === part.id && item.isActive)
+        const currentPartIndex = sceneParts.partPersons.findIndex(item => item.id === part.id && item.isActive)
 
-        const nextPart = sceneParts[currentPartIndex + 1]
-        const previousPart = sceneParts[currentPartIndex - 1]
+        const nextPart = sceneParts.partPersons[currentPartIndex + 1]
+        const previousPart = sceneParts.partPersons[currentPartIndex - 1]
 
         if (direction === UP) { moveFocusToId(previousPart?.id || previousFocus?.id || part.id, position || END); return }
 
@@ -95,8 +96,12 @@ return sceneParts[partIndex - 1] || null
 
     const handleChange = (type, value, part) => {
 
+        log(debug, 'PartPersons: handleChange', { type: type, value: value, part: part })
+
+        const copySceneParts = { ...sceneParts }
+
         const partId = part.id
-        let partToUpdate = [...sceneParts.find(part => part.id === partId)]
+        let partToUpdate = copySceneParts.partPersons.find(part => part.id === partId)
         let partUpdates = [];
         let newPartIds = [];
         let newFocusId = part.id //varied with switch statement if needed.
@@ -113,14 +118,18 @@ return sceneParts[partIndex - 1] || null
                 partUpdates = prepareUpdate(partWithTempText)
             }
 
-            const partBeforeIndex = sceneParts.findIndex(part => part.id === partId) - ((direction === ABOVE) ? 1 : 0) || 0
+            const partIndex = copySceneParts.partIds.findIndex(id => id === partId)
+            const partBeforeIndex = (direction === BELOW) ? partIndex  : partIndex -1
 
-            const startArray = partUpdates.slice(0, partBeforeIndex + 1)
-            const endArray = partUpdates.slice(partBeforeIndex + 1)
-            const newPart = new PartUpdate()
-            partUpdates = prepareUpdate(newPart)
 
-            newPartIds = [startArray.map(part => part.id), newPart.id, endArray.map(part => part.id)]
+            const startArray = copySceneParts.partIds.slice(0, partBeforeIndex + 1) || []
+            const endArray = copySceneParts.partIds.slice(partBeforeIndex + 1) || []
+            const newPart = prepareUpdate(new PartUpdate())
+            const newPartArray = [newPart[0].id]
+
+            partUpdates = [...partUpdates, ...newPart]
+
+            newPartIds = [...startArray, ...newPartArray, ...endArray]
         }
 
 
@@ -132,19 +141,18 @@ return sceneParts[partIndex - 1] || null
             }
 
             partUpdates = prepareUpdate({ ...partToDelete, isActive: false })
-            newPartIds = sceneParts.filter(part => part.id !== partToDelete.id).map(part => part.id)
+            newPartIds = copySceneParts.partIds.filter(id => id !== partToDelete.id)
 
             let newFocus = (direction === UP)
-                ? previousPart() || previousFocus
-                : nextPart() || nextFocus
+                ? previousPart(partToDelete) || previousFocus
+                : nextPart(partToDelete) || nextFocus
             newFocusId = newFocus.id
             newFocusPosition = (direction === UP) ? 'end' : 'start'
         }
 
         switch (type) {
             case NAME: partUpdates = prepareUpdate({ ...partToUpdate, name: value.trimStart() });
-                break;
-            case PART_IDS:
+                newFocusId = null;
                 break;
             case ADD_TAG: partUpdates = prepareUpdate({ ...partToUpdate, tags: [...part.tags, value] });
                 break;
@@ -161,7 +169,7 @@ return sceneParts[partIndex - 1] || null
                 newFocusId = null
                 break;
             case DELETE_PART:
-                deletePart(part, DOWN);
+                deletePart(part, value);
                 break;
             case DELETE_NEXT_PART:
                 deletePart(nextPart, UP)
@@ -169,12 +177,13 @@ return sceneParts[partIndex - 1] || null
             default: return;
         }
 
-        
+
+        log(debug,'PartPersons: dispatch',partUpdates)
 
         dispatch(addUpdates(partUpdates, 'Part'))
 
         if (newPartIds.length > 0) {
-            onChange('partIds',newPartIds)
+            onChange(PART_IDS,newPartIds)
         }
 
         if (newFocusId) {
@@ -204,7 +213,7 @@ return sceneParts[partIndex - 1] || null
     const handleClickAvatar = (part) => {
 
 
-        const activeParts = sceneParts.filter(item => item.isActive === true)
+        const activeParts = sceneParts.partPersons.filter(item => item.isActive === true)
 
         const allocatedPersonIds = activeParts.filter(part => part.personId !== null).map(part => part.personId)
 
@@ -251,6 +260,7 @@ return sceneParts[partIndex - 1] || null
                             key={part.id}
                             part={part}
                             nextPart={nextPart}
+                            sceneId={scene.id}
                             onChange={(type, value) => handleChange(type, value, part)}
                             onClick={(action,value) => handleClick(action,value,part)}
                             moveFocus={(direction, position) => handleMoveFocus(direction, position, part) }

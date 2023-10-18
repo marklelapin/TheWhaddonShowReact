@@ -20,6 +20,8 @@ import {
 } from 'dataAccess/localServerModels';
 import { v4 as uuidv4 } from 'uuid';
 
+import { log } from 'helper.js';
+
 const defaultState = {
     localCopyId: uuidv4(),
     sync: {
@@ -133,6 +135,8 @@ export default function localServerReducer(state = defaultState, action) {
 
 
         case ADD_UPDATES:
+
+            log(debug, 'PartPersons addUpdates', action.payload)
 
             if (action.payload.length === 0) { return state }
 

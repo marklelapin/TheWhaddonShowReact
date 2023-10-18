@@ -24,7 +24,7 @@ import PersonSelector from './PersonSelector';
 
 
 function ScriptViewer(props) {
-    const debug = false;
+    const debug = true;
 
     //utils
     const _ = require('lodash');
@@ -55,13 +55,15 @@ function ScriptViewer(props) {
 
 
     useEffect(() => {
-        log(debug, 'Script Viewer Header UseEffect Focus:', focus, focussedScene)
+        log(debug, 'ScriptViewerHeader Focus:', { focus: focus, focussedScene: focussedScene })
         let currentFocus = null;
         for (var key in focus) {
             if (focus.hasOwnProperty(key)) {
                 currentFocus = focus[key];
             }
         }
+        log(debug, 'ScriptViewerHeader currentFocus:', currentFocus)
+        log(debug, 'ScriptViewerHeader keyfocusdata:', {parentId: currentFocus?.parentId,focussedSceneId: focussedScene?.id})
         if (currentFocus && currentFocus.parentId && currentFocus.parentId !== focussedScene?.id) { //only if moved to a new scene.
 
             const newFocussedScene = scenePartPersons[currentFocus.parentId]
@@ -74,7 +76,7 @@ function ScriptViewer(props) {
 
     useEffect(() => {
         if (scenePartPersons && focussedScene) {
-            const updatedScene = scenePartPersons[focussedScene.parentId]
+            const updatedScene = scenePartPersons[focussedScene.id]
             setFocussedScene(updatedScene)
         }
 
