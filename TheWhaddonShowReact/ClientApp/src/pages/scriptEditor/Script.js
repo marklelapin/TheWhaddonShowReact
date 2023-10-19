@@ -14,7 +14,7 @@ import { Container, Row, Col } from 'reactstrap';
 import { ScriptItemUpdate, ScriptItem } from 'dataAccess/localServerModels';
 import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from 'dataAccess/scriptItemTypes';
 import { prepareUpdates } from 'dataAccess/localServerUtils';
-import { sortLatestScriptItems } from 'dataAccess/scriptItemScripts';
+import { sortLatestScriptItems } from './scripts/scriptItem';
 import { addUpdates } from 'actions/localServer';
 
 //Utils
@@ -51,7 +51,7 @@ function Script() {
         const testDialogue2 = new ScriptItemUpdate(DIALOGUE, 'Hello World Again')
 
         testScene.previousId = testAct.id
-        testScene.nextId = testSynopsis.id
+        testScene.nextId = null
 
         testSynopsis.previousId = testScene.id
         testSynopsis.nextId = testInitialStaging.id

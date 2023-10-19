@@ -14,7 +14,7 @@ import { changeFocus } from 'actions/scriptEditor';
 //css
 import s from 'pages/forms/elements/Elements.module.scss';
 import { HEADER_TYPES, INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from 'dataAccess/scriptItemTypes';
-import { moveFocusToId } from '../scripts/utilityScripts';
+import { moveFocusToId } from '../scripts/utility';
 
 function ScriptItemText(props) {
 

@@ -13,8 +13,8 @@ import PartEditorRow from './PartEditorRow';
 import { getLatest, prepareUpdate } from 'dataAccess/localServerUtils';
 import {PartUpdate } from 'dataAccess/localServerModels';
 import { log } from 'helper'
-import { moveFocusToId } from '../scripts/utilityScripts';
-import {UP,DOWN,START,END,ABOVE,BELOW} from '../scripts/utilityScripts';
+import { moveFocusToId } from '../scripts/utility';
+import {UP,DOWN,START,END,ABOVE,BELOW} from '../scripts/utility';
 
 
 import { PART_IDS }  from './Scene';

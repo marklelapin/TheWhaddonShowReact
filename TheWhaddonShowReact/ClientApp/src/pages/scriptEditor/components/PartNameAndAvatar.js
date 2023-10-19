@@ -6,7 +6,7 @@ import { getLatest, } from 'dataAccess/localServerUtils';
 import Avatar from 'components/Avatar/Avatar';
 import { Col, Row, Input } from 'reactstrap';
 
-import { addPersonInfo } from '../scripts/PartScripts'
+import { addPersonInfo } from '../scripts/part'
 
 import { log } from 'helper';
 import { changeFocus } from 'actions/navigation'

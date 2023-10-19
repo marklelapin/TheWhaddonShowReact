@@ -25,7 +25,6 @@ export const addPersonInfo = (part, person) => {
 }
 
 
-
 export const setupParts = (parts, persons) => {
 
     let updateParts = [...parts]

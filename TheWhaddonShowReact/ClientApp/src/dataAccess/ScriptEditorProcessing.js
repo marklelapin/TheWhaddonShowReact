@@ -9,7 +9,7 @@ import { updatePartPersons, updateScenePartPersons, addUpdatesToSceneScriptItemH
 //utils
 import { log } from 'helper';
 import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
-import { addPersonsInfo } from 'dataAccess/partScripts';
+import { addPersonsInfo } from 'pages/scriptEditor/scripts/part';
 import { PartUpdate } from 'dataAccess/localServerModels';
 import { addUpdates } from 'actions/localServer'; 
 export function ScriptEditorProcessing() {
@@ -66,7 +66,7 @@ export function ScriptEditorProcessing() {
                 //    const updates = sceneUpdates.filter(update => update.parentId === sceneId)
                 //    dispatch(addUpdatesToSceneHistory(updates))
                 //})
-
+                log(debug, 'EventsCheck ScriptEditorProcessing dispatchUpdateToSceneHistory', sceneUpdates)
                 dispatch(addUpdatesToSceneHistory(sceneUpdates))
 
             }

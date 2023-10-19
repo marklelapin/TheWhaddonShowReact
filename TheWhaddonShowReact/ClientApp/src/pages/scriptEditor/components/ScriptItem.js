@@ -20,7 +20,7 @@ import { Container, Row, Col } from 'reactstrap';
 import { log } from 'helper';
 import { addUpdates } from 'actions/localServer';
 import { prepareUpdate } from 'dataAccess/localServerUtils';
-import { moveFocusToId } from '../scripts/utilityScripts';
+import { moveFocusToId } from '../scripts/utility';
 import { changeFocus } from 'actions/navigation';
 
 //Constants

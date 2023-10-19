@@ -2,12 +2,107 @@
 import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from "dataAccess/scriptItemTypes"; 
 
 import { ScriptItemUpdate } from 'dataAccess/localServerModels';
-import { sortLatestScriptItems } from '../../../dataAccess/localServerUtils';
+import { getLatest } from 'dataAccess/localServerUtils';
+import { log } from 'helper';
 
-export const above = 'above'
-export const below = 'below'
+import {ABOVE,BELOW} from './utility'; 
 
 
+//Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
+//--------------------------------------------------------------------------------------------------
+export function sortLatestScriptItems(head, scriptItems, undoDateTime) {
+
+    const latestScriptItems = getLatest(scriptItems, undoDateTime);
+    const sortedScriptItems = sortScriptItems(head, latestScriptItems);
+
+    return sortedScriptItems;
+
+}
+
+export function sortScriptItems(head, scriptItems) {
+
+    const debug = false
+
+    log(debug, 'Sort Head: ', head)
+    log(debug, 'Sort ScriptItems', scriptItems)
+
+    if (scriptItems.length === 0) return [];
+
+    let targetArray = [...scriptItems];
+
+    log(debug, 'EventsCheck sortScriptItems', { head: head, scriptItems: scriptItems })
+
+    //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Act linked list but also the head of the Scene linked list
+    const originalHeadNextId = head.nextId //this gets put back at end of process.
+    const headNextId = targetArray.filter((item) => item.previousId === head.id)[0].id;
+    targetArray = targetArray.map(item => item.id === head.id ? { ...item, nextId: headNextId } : item)
+
+    log(debug, 'EventsCheck sortScriptItems after head change', { targetArray: targetArray })
+
+    //create objectMap of all items in the targetArray
+    const idToObjectMap = {};
+
+    for (const item of targetArray) {
+        idToObjectMap[item.id] = item;
+    }
+
+    //Sort the targetArray by nextId
+    const sortedLinkedList = [];
+    let currentId = head.id
+    let curtainOpen = false; //TODO need to be able to work out starting position of curtain from previous scene.
+    let previousCurtainOpen;
+
+    while (currentId !== null) {
+        let currentItem = idToObjectMap[currentId];
+
+        if (currentItem) {
+            if (opensCurtain(currentItem)) { curtainOpen = true }
+            if (closesCurtain(currentItem)) { curtainOpen = false }
+
+            currentItem.previousCurtainOpen = previousCurtainOpen;
+            currentItem.curtainOpen = curtainOpen;
+            previousCurtainOpen = curtainOpen;
+
+            currentId = currentItem.nextId;
+            currentItem = (currentItem.id === head.id) ? { ...currentItem, nextId: originalHeadNextId } : currentItem //returns head.nextId back to original
+            
+            sortedLinkedList.push(currentItem);
+            
+        } else {
+            currentId = null;
+        }
+
+    }
+
+    
+
+    return sortedLinkedList;
+}
+
+const opensCurtain = (scriptItem) => {
+
+    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
+        return scriptItem.tags.includes('OpenCurtain')
+    }
+
+    return false
+}
+
+const closesCurtain = (scriptItem) => {
+
+    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
+        return scriptItem.tags.includes('CloseCurtain')
+    }
+
+    return false
+}
+
+//----------------------------------------------------------------------------------
+
+
+
+//Functions to create scriptItem updates for various crud operations
+//----------------------------------------------------------------------------------
 export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = 'Dialogue') {
 
     const currentScriptItems = [..._currentScriptItems] 
@@ -25,7 +120,7 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 
     let newScriptItems = [];
 
-    if (placement === above) {
+    if (placement === ABOVE) {
 
         previousScriptItem.nextId = newScriptItem.id
         previousScriptItem.changed = true
@@ -41,7 +136,7 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 
     }
 
-    if (placement === below) {
+    if (placement === BELOW) {
 
         existingScriptItem.nextId = newScriptItem.id;
         existingScriptItem.changed = true
@@ -63,8 +158,6 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
     return newScriptItems 
 
 }
-export default newScriptItemsForCreate
-
 
 export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) {
 
@@ -153,7 +246,7 @@ export function createHeaderScriptItems(previousScene,nextScene = null) {
 
     //nextIds
     newPreviousScene.nextId = scene.id
-    scene.nextId = synopsis.id
+    scene.nextId = previousScene.nextId
     synopsis.nextId = initialStaging.id
     initialStaging.nextId = initialCurtain.id
     initialCurtain.nextId = dialogue.id
@@ -181,3 +274,6 @@ export function createHeaderScriptItems(previousScene,nextScene = null) {
 
     return newUpdates
 }
+
+
+

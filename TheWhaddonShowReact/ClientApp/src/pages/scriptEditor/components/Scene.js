@@ -13,13 +13,13 @@ import PartEditor from 'pages/scriptEditor/components/PartEditor.js';
 
 //Utilities
 import { prepareUpdates, prepareUpdate } from 'dataAccess/localServerUtils';
-import { sortLatestScriptItems } from 'dataAccess/scriptItemScripts';
+import { sortLatestScriptItems } from '../scripts/scriptItem';
 import { addUpdates } from 'actions/localServer';
-import { newScriptItemsForDelete, newScriptItemsForCreate, createHeaderScriptItems } from '../scripts/crudScripts';
+import { newScriptItemsForDelete, newScriptItemsForCreate, createHeaderScriptItems } from '../scripts/scriptItem';
 
-import { getNextUndoDate, getNextRedoDate } from '../scripts/undoScripts';
+import { getNextUndoDate, getNextRedoDate } from '../scripts/undo';
 import { log } from 'helper'
-import { moveFocusToId, removeFocusFromId } from '../scripts/utilityScripts';
+import { moveFocusToId, removeFocusFromId } from '../scripts/utility';
 import { changeFocus } from 'actions/navigation'
 import { create } from 'lodash';
 
@@ -27,7 +27,7 @@ import { create } from 'lodash';
 import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
 import { INITIAL_CURTAIN, DIALOGUE } from 'dataAccess/scriptItemTypes';
 import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
-import { UP, DOWN, START, END, ABOVE, BELOW } from '../scripts/utilityScripts';
+import { UP, DOWN, START, END, ABOVE, BELOW } from '../scripts/utility';
 
 
 export const PART_IDS = 'partIds';
@@ -63,7 +63,7 @@ function Scene(props) {
 
 
     const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
-
+    log(debug, 'EventsCheck Scene_scriptItems ', scriptItems)
 
 
   
@@ -323,7 +323,7 @@ function Scene(props) {
                     <ScriptItem scriptItem={currentScene}
                         onClick={(action) => handleClick(action, currentScene)}
                         onChange={(type, value) => handleChange(type, value, currentScene)}
-                        moveFocus={(direction, position) => handleMoveFocus(direction, position, currentScene, null, null)}
+                        moveFocus={(direction, position) => handleMoveFocus(direction, position, currentScene, null, synopsis.id)}
                     />
 
                 }

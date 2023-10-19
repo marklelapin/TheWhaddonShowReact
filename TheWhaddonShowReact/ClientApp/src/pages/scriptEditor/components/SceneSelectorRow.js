@@ -8,7 +8,7 @@ import { Icon } from 'components/Icons/Icons';
 
 //utils
 import { log } from 'helper';
-import { moveFocusToId } from '../scripts/utilityScripts';
+import { moveFocusToId } from '../scripts/utility';
 
 function SceneSelectorRow(props) {
 

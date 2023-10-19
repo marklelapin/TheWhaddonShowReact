@@ -13,7 +13,7 @@ import SceneSelectorRow from './SceneSelectorRow'
 //Utils
 import { ACT, SCENE } from 'dataAccess/scriptItemTypes'
 import { log } from 'helper';
-import { moveFocusToId } from '../scripts/utilityScripts'
+import { moveFocusToId } from '../scripts/utility'
 import { TestAct } from '../Script'
 import { prepareUpdates } from 'dataAccess/localServerUtils';
 import { addUpdates } from 'actions/localServer';

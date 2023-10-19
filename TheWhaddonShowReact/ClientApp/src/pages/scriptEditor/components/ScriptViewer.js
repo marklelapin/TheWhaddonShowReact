@@ -10,19 +10,19 @@ import Scene from './Scene'
 
 import { log } from 'helper';
 import { addUpdates } from 'actions/localServer';
-import { createHeaderScriptItems, newScriptItemsForSceneDelete } from '../scripts/crudScripts';
+import { createHeaderScriptItems, newScriptItemsForSceneDelete } from '../scripts/scriptItem';
 import { prepareUpdates } from 'dataAccess/localServerUtils';
-import { moveFocusToId } from '../scripts/utilityScripts';
+import { moveFocusToId } from '../scripts/utility';
 
 //Constants
 import { SHOW, ACT } from 'dataAccess/scriptItemTypes';
 import ScriptViewerHeader from './ScriptViewerHeader';
-import { START, END } from '../scripts/utilityScripts';
+import { START, END } from '../scripts/utility';
 
 function ScriptViewer(props) {
 
     //utility consts
-    const debug = false;
+    const debug = true;
     const dispatch = useDispatch()
 
     //props
@@ -45,19 +45,21 @@ function ScriptViewer(props) {
 
         switch (action) {
             case 'addNewScene':
+                log(debug, 'UpdatingScenes ScriptViewer Add Scene', scene)
                 const previousScene = scene
                 const nextScene = scenes.find(scene => scene.id === previousScene.nextId)
                 newUpdates = createHeaderScriptItems(previousScene,nextScene)
                
                 break;
             case 'deleteScene':
+                log(debug,'UpdateingScenes ScriptViewer Delete Scene', scene)
                 const sceneToDelete = scene;
                 newUpdates = newScriptItemsForSceneDelete(sceneToDelete, scenes)
                 newFocusId = sceneToDelete.nextId || sceneToDelete.previousId
                 break;
             default: 
         }
-
+        log(debug,'UpdatingScenes ScriptViewer Updates', newUpdates)
         if (newUpdates) {
             const preparedUpdates = prepareUpdates(newUpdates)
             dispatch(addUpdates(preparedUpdates, 'ScriptItem'));

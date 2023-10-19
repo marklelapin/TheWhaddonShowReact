@@ -15,7 +15,7 @@ import ScriptItemControls from './ScriptItemControls';
 import { log } from 'helper'
 import { changeFocus } from 'actions/scriptEditor';
 import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART } from './PartEditor';
-import { DOWN, UP, START, END } from '../scripts/utilityScripts';
+import { DOWN, UP, START, END } from '../scripts/utility';
 function PartEditorRow(props) {
 
     //utility consts
