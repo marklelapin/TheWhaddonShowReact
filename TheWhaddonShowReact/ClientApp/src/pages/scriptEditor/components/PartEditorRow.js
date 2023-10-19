@@ -16,6 +16,7 @@ import { log } from 'helper'
 import { changeFocus } from 'actions/scriptEditor';
 import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART } from './PartEditor';
 import { DOWN, UP, START, END } from '../scripts/utility';
+import { moveFocusToId } from '../scripts/utility';
 function PartEditorRow(props) {
 
     //utility consts
@@ -26,11 +27,11 @@ function PartEditorRow(props) {
 
 
     //props
-    const { nextPart, sceneId, onClick, onChange, moveFocus } = props;
+    const { nextPart, sceneId, isFirst, onClick, onChange, moveFocus } = props;
     log(debug, 'PartEditorProps', props)
 
     let { part } = props;
-   
+
 
     //Redux
     const focus = useSelector(state => state.scriptEditor.focus[part.id])
@@ -40,11 +41,16 @@ function PartEditorRow(props) {
 
 
     useEffect(() => {
-        //makes the textarea the focus when created
-        const textInputRef = document.getElementById(`${part.id}`)?.querySelector('input')
-        if (textInputRef) {
-            textInputRef.focus();
+
+        if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
+            moveFocusToId(sceneId, START)
+        } else { //makes the textarea the focus when created
+            const textInputRef = document.getElementById(`${part.id}`)?.querySelector('input')
+            if (textInputRef) {
+                textInputRef.focus();
+            }
         }
+
     }, [])
 
 
@@ -90,12 +96,12 @@ function PartEditorRow(props) {
 
             const name = partWithTempName().name
 
-           if ( !name || name === null || name === '') {
-               e.preventDefault()
-               log(debug, 'PartPersons: handleKeyDown: Backspace', { name: name, tempName: tempName })
+            if (!name || name === null || name === '') {
+                e.preventDefault()
+                log(debug, 'PartPersons: handleKeyDown: Backspace', { name: name, tempName: tempName })
                 part.name = ''
-               onChange(DELETE_PART, UP)
-                
+                onChange(DELETE_PART, UP)
+
                 return
             }
 
@@ -115,13 +121,13 @@ function PartEditorRow(props) {
                 e.preventDefault()
 
                 if ((!name || name === null || name.length === 0)) {
-                    part.name=''
+                    part.name = ''
                     onChange(DELETE_PART, DOWN)
                     return
                 }
 
                 if (nextPart && (nextPart.name || '') === '') {
-                    part.name=''
+                    part.name = ''
                     onChange(DELETE_NEXT_PART, DOWN)
                     return
                 }
@@ -172,8 +178,8 @@ function PartEditorRow(props) {
                 break;
             case 'confirm': handleBlur(); break;
             case 'delete': onChange(DELETE_PART, DOWN)
-            setTempName(null)
-                ; break;
+                setTempName(null)
+                    ; break;
 
             default: return;
         }
@@ -186,9 +192,9 @@ function PartEditorRow(props) {
 
     const handleBlur = () => {
 
-        log(debug, 'PartPersons : handleBlur', (tempName === null, { tempName: null,partName: part.name }, { tempName: tempName,partName: part.name }))
+        log(debug, 'PartPersons : handleBlur', (tempName === null, { tempName: null, partName: part.name }, { tempName: tempName, partName: part.name }))
         if (tempName || (tempName === '' && part.name !== '')) {
-            
+
             onChange(NAME, tempName)
         }
         setTempName(null)

@@ -27,7 +27,7 @@ import { create } from 'lodash';
 import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
 import { INITIAL_CURTAIN, DIALOGUE } from 'dataAccess/scriptItemTypes';
 import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
-import { UP, DOWN, START, END, ABOVE, BELOW } from '../scripts/utility';
+import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 
 export const PART_IDS = 'partIds';
@@ -42,7 +42,7 @@ function Scene(props) {
     const dispatch = useDispatch()
 
     //props
-    const { scene, onClick } = props;
+    const { scene, onClick, previousSceneEndId } = props;
 
     log(debug, 'Scene Passed into Scene', scene)
 
@@ -267,9 +267,6 @@ function Scene(props) {
 
 
     const handleMoveFocus = (direction, position, scriptItem, previousFocusOverrideId = null, nextFocusOverrideId = null) => {
-
-
-
         const newId = (direction === DOWN) ? nextFocusOverrideId || scriptItem.nextId : previousFocusOverrideId || scriptItem.previousId
         let newPosition = position || END
 
@@ -316,14 +313,14 @@ function Scene(props) {
     //---------------------------------
 
     return (
-        <>
+        <div id={`scene-${currentScene.id}`}>
             <div className={`scene-header ${(scene.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
                 {
                     (currentScene) &&
                     <ScriptItem scriptItem={currentScene}
                         onClick={(action) => handleClick(action, currentScene)}
                         onChange={(type, value) => handleChange(type, value, currentScene)}
-                        moveFocus={(direction, position) => handleMoveFocus(direction, position, currentScene, null, synopsis.id)}
+                        moveFocus={(direction, position) => handleMoveFocus(direction, (direction===UP) ? SCENE_END : position, currentScene, currentScene.previousId, synopsis.id)}
                     />
 
                 }
@@ -366,7 +363,7 @@ function Scene(props) {
                             scriptItem={scriptItem}
                             scene={currentScene}
                             alignRight={scriptItem.alignRight}
-                            moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, null)}
+                            moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, (scriptItem.nextId===null) ? currentScene.nextId : null)}
 
                         />
                     )
@@ -379,7 +376,7 @@ function Scene(props) {
                     (add new scene)
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

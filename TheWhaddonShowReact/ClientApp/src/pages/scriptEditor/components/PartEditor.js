@@ -260,6 +260,7 @@ function PartEditor(props) {
                             key={part.id}
                             part={part}
                             nextPart={nextPart}
+                            isFirst={sceneParts.partIds.length===1}
                             sceneId={scene.id}
                             onChange={(type, value) => handleChange(type, value, part)}
                             onClick={(action,value) => handleClick(action,value,part)}

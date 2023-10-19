@@ -4,7 +4,7 @@ export const UP = 'up';
 export const DOWN = 'down';
 export const ABOVE = 'above';
 export const BELOW = 'below';
-
+export const SCENE_END = 'sceneEnd';
 export function findScriptItem(element, scriptItems) {
 
     let currentElement = element;
@@ -35,6 +35,24 @@ export function findScriptItem(element, scriptItems) {
 
 export function moveFocusToId(id, position = START) {
     console.log(`moveFocusToId id: ${id} position: ${position}`)
+
+    if (position === SCENE_END) {
+
+        const sceneElement = document.getElementById(`scene-${id}`)
+
+        const sceneTextInputs = sceneElement.querySelectorAll('.text-input')
+
+        const lastTextInput = sceneTextInputs[sceneTextInputs.length - 1]
+
+        if (lastTextInput) {
+            lastTextInput.focus();
+            lastTextInput.selectionStart = lastTextInput.value.length
+        }
+
+        return
+    }
+
+
 
 
     const newTextInput = getTextInputElement(id);
