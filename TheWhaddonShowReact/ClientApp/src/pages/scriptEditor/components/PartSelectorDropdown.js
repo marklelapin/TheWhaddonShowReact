@@ -1,6 +1,7 @@
 ﻿//React and Redux
 import React from 'react';
-import {useEffect } from 'react';
+import { useEffect } from 'react';
+import {useSelector } from 'react-redux';
 
 //Components
 import { Button } from 'reactstrap';
@@ -11,21 +12,27 @@ import PartNameAndAvatar from './PartNameAndAvatar';
 
 function PartSelectorDropdown(props) {
 
-    const debug = false;
+    const debug = true;
 
-    log(debug, 'PartSelectorProps', props)
+    log(debug, 'PartSelectorDropdown Props', props)
     //Props
-    const { partsArray, onClick } = props;
+    const { partsArray = null, onClick, allowMultiSelect = true } = props;
 
+    //redux
+    const partPersons = useSelector(state => state.scriptEditor.partPersons)
 
+    const finalPartsArray = partsArray || [...partPersons]
+
+ 
 
     useEffect(() => {
 
+        log(debug, 'PartSelectorDropdown useEffect')
         const toggleIfOutsideDropdown = (e) => {
             const isInsideDropdown = e.target.closest('.part-selector-dropdown')
 
             if (!isInsideDropdown) {
-                onClick('toggle')
+                onClick('togglePartSelectorDropdown')
             }
 }
 
@@ -42,16 +49,17 @@ function PartSelectorDropdown(props) {
     const handlePartSelectorClick = (event, partId) => {
         //event.stopPropagation();
         //event.preventDefault();
-        
+        log(debug, 'PartSelectorDropdown handlePartSelectorClick')
+
         if (partId === null) {
 
             onClick('partIds', [])
             return;
         }
 
-        if (event.ctrlKey) {
+        if (event.ctrlKey && allowMultiSelect) {
 
-            const updatedPartsArray = partsArray.map(part => {
+            const updatedPartsArray = finalPartsArray.map(part => {
                 if (part.id === partId) {
                     return { ...part, selected: !part.selected }
                 }
@@ -71,21 +79,24 @@ function PartSelectorDropdown(props) {
     }
 
     const isMultiSelect = () => {
-        return partsArray.some(part => part.selected === true)
+
+        log(debug, 'PartSelectorDropdown isMultiSelect')
+        return finalPartsArray.some(part => part.selected === true)
     }
 
 
     return (
         <>
 
-            {(partsArray.length === 0) &&
-                <h3 onClick={() => onClick('toggle')} >No parts setup for this scene</h3>}
 
-            {(partsArray.length > 0) &&
+            {(finalPartsArray.length === 0) &&
+                <h3 onClick={() => onClick('togglePartSelectorDropdown')} >No parts setup for this scene</h3>}
+
+          {(finalPartsArray.length > 0) &&
                 < PartNameAndAvatar part={{ id: 0, name: 'Clear all parts', personId: null }} onClick={(e) => handlePartSelectorClick(e, null)} avatar partName />
             }
 
-            {partsArray.map(part => {
+            {finalPartsArray.map(part => {
 
                 return (
                     <PartNameAndAvatar
@@ -101,7 +112,7 @@ function PartSelectorDropdown(props) {
             {isMultiSelect() &&
                 <Button color="danger" size='sm' type="submit" onClick={() => onClick('confirm')}>Confirm</Button>
             }
-            {!isMultiSelect() &&
+            {!isMultiSelect() && allowMultiSelect &&
                 <small>(use Ctrl to multi-select)</small>
             }
 

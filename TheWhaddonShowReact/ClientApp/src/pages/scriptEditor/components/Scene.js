@@ -31,7 +31,7 @@ import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utilit
 
 
 export const PART_IDS = 'partIds';
-
+export const PARTS = 'parts';
 
 function Scene(props) {
 
@@ -175,6 +175,14 @@ function Scene(props) {
                 log(debug, `EventsCheck handleChange text: ${value}`)
                 newUpdates = prepareUpdate({ ...scriptItemToUpdate, text: value }); break;
             case PART_IDS: newUpdates = prepareUpdate({ ...scriptItemToUpdate, partIds: value }); break;
+            case PARTS:
+                const oldPartId = value.oldPartId
+                const newPartId = value.newPartId
+
+                newUpdates = prepareUpdates( //replaces all oldPartIds with newPartIds
+                    [...scriptItems].map(item => ({ ...item, partIds: [...item.partIds].map(partId => (partId === oldPartId) ? newPartId : partId) } ))
+                )
+                break;
             case 'tags': newUpdates = prepareUpdate({ ...scriptItemToUpdate, tags: value }); break;
             case 'type':
                 let draft = prepareUpdate({ ...scriptItemToUpdate, type: value })

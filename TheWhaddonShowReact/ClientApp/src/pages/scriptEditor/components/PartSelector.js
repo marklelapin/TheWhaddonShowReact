@@ -20,7 +20,7 @@ function PartSelector(props) {
 
     log(debug, 'PartSelectorProps', props)
     //Props
-    const { scene, allocatedPartIds = [], onChange, size = "md" } = props;
+    const { scene = {}, allocatedPartIds = [], onChange, size = "md" } = props;
 
     //REdux
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
@@ -28,7 +28,6 @@ function PartSelector(props) {
     //Internal State
     const [partsArray, setPartsArray] = useState([])
     const [openPartSelector, setOpenPartSelector] = useState(false);
-
 
 
     const sceneParts = scenePartPersons?.partPersons
@@ -60,7 +59,7 @@ function PartSelector(props) {
                 onChange(value)
                 setOpenPartSelector(false)
                 break;
-            case 'toggle':
+            case 'togglePartSelectorDropdown':
                 setOpenPartSelector(!openPartSelector)
                 break;
             case 'confirm':
@@ -100,7 +99,7 @@ setOpenPartSelector(!openPartSelector)
                 }
             </div>
             {(openPartSelector) &&
-                < div className={`part-selector-dropdown`} >
+                < div className="part-selector-dropdown" >
 
                     <PartSelectorDropdown
                         partsArray={partsArray}

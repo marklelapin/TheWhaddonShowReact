@@ -17,7 +17,7 @@ import { moveFocusToId } from '../scripts/utility';
 import {UP,DOWN,START,END,ABOVE,BELOW} from '../scripts/utility';
 
 
-import { PART_IDS }  from './Scene';
+import { PART_IDS,PARTS }  from './Scene';
 //ChangeTypes
 export const NAME = 'name';
 
@@ -28,6 +28,7 @@ export const ADD_PART_BELOW = 'addPartBelow'
 export const DELETE_PART = 'deletePart';
 export const DELETE_NEXT_PART = 'deleteNextPart';
 export const ALLOCATE_PERSON = 'allocatePerson';
+export const PART_ID = 'partId';
 
 function PartEditor(props) {
 
@@ -174,6 +175,10 @@ function PartEditor(props) {
             case DELETE_NEXT_PART:
                 deletePart(nextPart, UP)
                 break;
+            case PART_ID:
+                newPartIds = newPartIds.map(id => (id === partId) ? value : id)
+                onChange(PARTS, {oldPartId: partId, newPartId: value})
+
             default: return;
         }
 

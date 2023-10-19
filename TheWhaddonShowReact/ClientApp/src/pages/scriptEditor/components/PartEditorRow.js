@@ -10,11 +10,12 @@ import TagsInput from 'components/Forms/TagsInput';
 
 import PartNameAndAvatar from './PartNameAndAvatar';
 import ScriptItemControls from './ScriptItemControls';
+import PartSelectorDropdown from './PartSelectorDropdown';
 
 //Utilities
 import { log } from 'helper'
 import { changeFocus } from 'actions/scriptEditor';
-import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART } from './PartEditor';
+import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART, PART_ID } from './PartEditor';
 import { DOWN, UP, START, END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
 function PartEditorRow(props) {
@@ -35,13 +36,15 @@ function PartEditorRow(props) {
 
     //Redux
     const focus = useSelector(state => state.scriptEditor.focus[part.id])
+    
 
     //internal state
-    const [tempName, setTempName] = useState(null)
-
+    const [tempName, setTempName] = useState(null);
+    const [openPartSelector, setOpenPartSelector] = useState(null);
+    log(debug, 'PartEditorRow: openPartSelector', {value:openPartSelector})
 
     useEffect(() => {
-
+        log(debug,'PartEditorRow: useEffect')
         if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
             moveFocusToId(sceneId, START)
         } else { //makes the textarea the focus when created
@@ -169,23 +172,32 @@ function PartEditorRow(props) {
     }
 
 
-    const handleControlsClick = (action, value) => {
+    const handleControlsClick = (action, value,e) => {
 
         switch (action) {
             case 'add':
                 onChange(ADD_PART_BELOW, tempName);
                 setTempName(null)
                 break;
-            case 'confirm': handleBlur(); break;
+            //case 'confirm': handleBlur(); break;
             case 'delete': onChange(DELETE_PART, DOWN)
                 setTempName(null)
                     ; break;
+            case 'search':
+                e.stopPropagation();
+                setOpenPartSelector(!openPartSelector); break;
+            case 'togglePartSelectorDropdown': setOpenPartSelector(!openPartSelector); break;
+
+            case 'partIds':
+                onChange(PART_ID, value[0]);
+                break;
 
             default: return;
         }
     }
 
     const handleFocus = () => {
+
         dispatch(changeFocus({ ...part, parentId: sceneId })) //update global state of which item is focussed
     }
 
@@ -199,6 +211,10 @@ function PartEditorRow(props) {
         }
         setTempName(null)
     }
+
+
+  
+
 
     return (
 
@@ -215,13 +231,28 @@ function PartEditorRow(props) {
                     onBlur={() => handleBlur()}
                     onFocus={() => handleFocus()}
                 />
+                
                 {(focus) &&
-                    <ScriptItemControls
+                    <div className="part-editor-controls">
+                        <ScriptItemControls
                         part={part}
-                        onClick={(action, value) => handleControlsClick(action, value)}
-                    />
-                }
+                        onClick={(action, value,e) => handleControlsClick(action, value,e)}
+                        />
 
+                        {(openPartSelector) &&
+                            < div className="part-selector-dropdown" >
+
+                                <PartSelectorDropdown
+                                    allowMultiSelect={false}
+                                    onClick={(action, partIds) => handleControlsClick(action, partIds)} />
+                            </div>
+                        }
+
+
+
+
+                    </div>
+                }
                 <div className="part-tags">
                     <TagsInput
                         strapColor="primary"

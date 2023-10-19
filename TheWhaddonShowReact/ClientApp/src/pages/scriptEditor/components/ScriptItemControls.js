@@ -25,7 +25,7 @@ function ScriptItemControls(props) {
     const attachTypes = [SONG, SOUND, STAGING, INITIAL_STAGING, SYNOPSIS]
 
     //Props
-    const { onClick, scriptItem = null, part = null, header = null } = props;
+    const { onClick, scriptItem = null, part = null, header = null, children } = props;
 
     log(debug, 'ScriptItemControlsProps', props)
 
@@ -35,9 +35,6 @@ function ScriptItemControls(props) {
 
     //Internal State
     const [dropdownOpen, setDropdownOpen] = useState(false);
-
-
-
 
     //event handlers
     const toggle = () => {
@@ -86,7 +83,7 @@ function ScriptItemControls(props) {
                     {scriptItem && HEADER_TYPES.includes(scriptItem.type) === false &&
                         < Dropdown isOpen={dropdownOpen} toggle={toggle}>
 
-                            <Icon icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} /> 
+                            <Icon icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} />
 
                             <DropdownMenu>
                                 {scriptItemTypes.map((type) => {
@@ -120,27 +117,26 @@ function ScriptItemControls(props) {
 
 
             <div className="bottom-right-controls">
-                {scriptItem && <Icon icon="play" onClick={() => onClick('confirm',null)} />}
+                {scriptItem && <Icon icon="play" onClick={() => onClick('confirm', null)} />}
 
-                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add', null)} onMouseDown={(e)=>e.preventDefault()}  /> }
+                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add', null)} onMouseDown={(e) => e.preventDefault()} />}
 
 
-                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => onClick('delete',null)} />}
-         
+                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => onClick('delete', null)} />}
+
             </div>
 
             <div className="outside-right-controls">
                 {part &&
                     <>
                         <Icon icon="play" onClick={() => onClick('confirm', null)} />
-                        <Icon icon="search" onClick={() => onClick('search', null)} />
+                        <Icon icon="search" onClick={(e) => onClick('search',null,e)} />
                         <Icon icon="trash" onClick={() => onClick('delete', null)} />
                     </>
                 }
             </div>
 
-
-
+            {children}
 
         </>
     )
