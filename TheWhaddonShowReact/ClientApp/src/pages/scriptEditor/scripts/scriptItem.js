@@ -1,11 +1,11 @@
 ﻿
-import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from "dataAccess/scriptItemTypes"; 
+import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from "dataAccess/scriptItemTypes";
 
 import { ScriptItemUpdate } from 'dataAccess/localServerModels';
 import { getLatest } from 'dataAccess/localServerUtils';
 import { log } from 'helper';
 
-import {ABOVE,BELOW} from './utility'; 
+import { ABOVE, BELOW } from './utility';
 
 
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
@@ -65,16 +65,16 @@ export function sortScriptItems(head, scriptItems) {
 
             currentId = currentItem.nextId;
             currentItem = (currentItem.id === head.id) ? { ...currentItem, nextId: originalHeadNextId } : currentItem //returns head.nextId back to original
-            
+
             sortedLinkedList.push(currentItem);
-            
+
         } else {
             currentId = null;
         }
 
     }
 
-    
+
 
     return sortedLinkedList;
 }
@@ -105,7 +105,7 @@ const closesCurtain = (scriptItem) => {
 //----------------------------------------------------------------------------------
 export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = 'Dialogue') {
 
-    const currentScriptItems = [..._currentScriptItems] 
+    const currentScriptItems = [..._currentScriptItems]
     const existingScriptItem = { ..._existingScriptItem }
 
 
@@ -155,7 +155,7 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
     }
 
     //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
-    return newScriptItems 
+    return newScriptItems
 
 }
 
@@ -230,7 +230,7 @@ export function newScriptItemsForSceneDelete(sceneToDelete, currentScenes) {
 
 }
 
-export function createHeaderScriptItems(previousScene,nextScene = null) {
+export function createHeaderScriptItems(previousScene, nextScene = null) {
 
     let newPreviousScene = { ...previousScene }
     let newNextScene = (nextScene) ? { ...nextScene } : null
@@ -267,7 +267,7 @@ export function createHeaderScriptItems(previousScene,nextScene = null) {
     initialCurtain.parentId = scene.id
     dialogue.parentId = scene.id
 
-    
+
 
     const newUpdates = [newPreviousScene, scene, synopsis, initialStaging, initialCurtain, dialogue]
     newUpdates.push(newNextScene)
@@ -276,4 +276,37 @@ export function createHeaderScriptItems(previousScene,nextScene = null) {
 }
 
 
+export function newMoveSceneScriptItems(sceneId, newPreviousId, scenes) {
 
+    const scene = scenes.find(scene => scene.id === sceneId)
+
+    if (sceneId === newPreviousId || scene.previousId === newPreviousId) return []
+
+    const newNextId = [...scenes].find(scene => scene.id === newPreviousId)?.nextId || null
+    const oldPreviousId = [...scenes].find(scene => scene.id === sceneId)?.previousId || null
+    const oldNextId = [...scenes].find(scene => scene.id === sceneId)?.nextId || null
+
+    const affectedIds = [...new Set([sceneId, newPreviousId, newNextId, oldPreviousId, oldNextId])].filter(item => item !== null)
+
+    let updateObjects = [...scenes]
+        .filter(scene => affectedIds.includes(scene.id))
+        .reduce((idToObjectMap, scene) => {
+            idToObjectMap[scene.id] = scene;
+            return idToObjectMap;
+        }, {})
+
+    updateObjects[sceneId].previousId =  newPreviousId //handles case where swaping with element directly next to it.
+    updateObjects[sceneId].nextId = newNextId //handles case where swaping with element directly next to it.
+    updateObjects[sceneId].parentId = updateObjects[newPreviousId].parentId
+
+    updateObjects[newPreviousId].nextId = sceneId
+    if (newNextId) { updateObjects[newNextId].previousId = sceneId }
+
+    updateObjects[oldPreviousId].nextId = oldNextId
+    if (oldNextId) { updateObjects[oldNextId].previousId = oldPreviousId }
+
+    const updates = Object.values(updateObjects)
+
+    return updates
+
+}

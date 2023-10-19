@@ -20,6 +20,7 @@ import { addUpdates } from 'actions/localServer';
 
 //Constants
 import { ScriptItem } from 'dataAccess/localServerModels';
+import { newMoveSceneScriptItems } from '../scripts/scriptItem';
 
 function SceneSelector(props) {
     const debug = true;
@@ -100,38 +101,17 @@ function SceneSelector(props) {
 
     }
 
+
     const moveScene = (sceneId, newPreviousId) => {
 
-        const scene = scenes.find(scene => scene.id === sceneId)
-        const newPreviousScene = scenes.find(scene => scene.id === newPreviousId)
-        const newNextScene = scenes.find(scene => scene.id === newPreviousScene?.nextId)
-        const oldPreviousScene = scenes.find(scene => scene.id === scene.previousId)
-        const oldNextScene = scenes.find(scene => scene.id === scene.nextId)
-
-        let sceneUpdate = (scene) ? { ...scene } : null
-        let newPreviousSceneUpdate = (newPreviousScene) ? { ...newPreviousScene } : null
-        let newNextSceneUpdate = (newNextScene) ? { ...newNextScene } : null
-        let oldPreviousSceneUpdate = (oldPreviousScene) ? { ...oldPreviousScene } : null
-        let oldNextSceneUpdate = (oldNextScene) ? { ...oldNextScene } : null
-
-        if (sceneUpdate) {
-            sceneUpdate.previousId = newPreviousScene?.id
-            sceneUpdate.nextId = newNextScene?.id
-        }
-
-        (newPreviousSceneUpdate) && (newPreviousSceneUpdate.nextId = scene?.id);
-        (newNextSceneUpdate) && (newNextSceneUpdate.previousId = scene?.id);
-
-        (oldPreviousSceneUpdate) && (oldPreviousSceneUpdate.nextId = oldNextScene?.id);
-        (oldNextSceneUpdate) && (oldNextSceneUpdate.previousId = oldPreviousScene?.id);
-
-        const updates = [sceneUpdate, newPreviousSceneUpdate, newNextSceneUpdate, oldPreviousSceneUpdate, oldNextSceneUpdate]
+        const updates = newMoveSceneScriptItems(sceneId, newPreviousId,scenes)
 
         const preparedUpdates = prepareUpdates(updates)
 
         dispatch(addUpdates(preparedUpdates, ScriptItem));
 
     }
+
 
 
     const handleClick = (type, id) => {
