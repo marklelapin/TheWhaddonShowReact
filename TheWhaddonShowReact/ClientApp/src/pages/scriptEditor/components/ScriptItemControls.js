@@ -119,7 +119,7 @@ function ScriptItemControls(props) {
             <div className="bottom-right-controls">
                 {scriptItem && <Icon icon="play" onClick={() => onClick('confirm', null)} />}
 
-                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add', null)} onMouseDown={(e) => e.preventDefault()} />}
+                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add', null)}  />}
 
 
                 {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => onClick('delete', null)} />}
@@ -129,7 +129,8 @@ function ScriptItemControls(props) {
             <div className="outside-right-controls">
                 {part &&
                     <>
-                        <Icon icon="play" onClick={() => onClick('confirm', null)} />
+                    <Icon icon="play" onClick={() => onClick('confirm', null)} />
+                    <Icon icon="add" onClick={() => onClick('add', null)}/>
                         <Icon icon="search" onClick={(e) => onClick('search',null,e)} />
                         <Icon icon="trash" onClick={() => onClick('delete', null)} />
                     </>
