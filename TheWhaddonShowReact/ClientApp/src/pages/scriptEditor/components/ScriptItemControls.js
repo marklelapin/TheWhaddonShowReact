@@ -27,6 +27,8 @@ function ScriptItemControls(props) {
     //Props
     const { onClick, scriptItem = null, part = null, header = null, children } = props;
 
+    const hasComment = scriptItem?.comment || part?.comment || false;
+
     log(debug, 'ScriptItemControlsProps', props)
 
     //Redux
@@ -105,7 +107,13 @@ function ScriptItemControls(props) {
                     {(undoDateTime) &&
                         <Icon icon="redo" onClick={() => onClick('redo')} />
                     }
-                    <Icon icon='comment-o' onClick={() => onClick('comment')} />'
+                    {(!hasComment) &&
+                        <Icon icon='comment-o' onClick={() => onClick('addComment')} />
+                    }
+                    {(hasComment) &&
+                        <Icon icon='comment' onClick={() => onClick('goToComment')} />    
+                    }
+
                     {/*{(!undoDateTime) &&*/}
                     {/*    <Icon icon="remove" />*/}
                     {/*}*/}

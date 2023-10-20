@@ -125,12 +125,12 @@ function ScriptViewer(props) {
 
     return (
         <>
-            <Container fluid className="bg-light script-viewer-header sticky-top">
-                <Row >
-                    <Col xs="1" className="d-flex justify-content-start align-items-center">
+            <div id="script-viewer-header" className="bg-light script-viewer-header">
+                
+                    <div className="left-controls justify-content-start align-items-center">
                         <Icon icon="arrow-left" onClick={() => handleArrowLeft()}></Icon>
-                    </Col>
-                    <Col className="d-flex justify-content-center">
+                    </div>
+                    <div  className="center-controls justify-content-center">
                         <Nav className="bg-light" tabs>
                             <NavItem>
                                 <NavLink
@@ -148,8 +148,11 @@ function ScriptViewer(props) {
                                 </NavLink>
                             </NavItem >
                         </Nav >
-                    </Col>
-                    <Col xs="1">
+                    </div>
+                <div className="view-as-control">
+                    <span>view as:
+                    </span>
+                
                         <Avatar
                             size="sm"
                             person={viewAsPartPerson}
@@ -163,9 +166,9 @@ function ScriptViewer(props) {
                         {/*    onClick={(partIdArray) => handleSelectPartId(partIdArray[0])}*/}
                         {/*/>*/}
 
-                    </Col>
+                    </div>
 
-                    <Col xs="1" className="d-flex justify-content-end align-items-center">
+                    <div className="right-controls justify-content-end align-items-center">
                         {(isSmallerScreen() === false) &&
 
                             (showComments) ? <Icon icon="comment" onClick={() => toggleShowComments()}></Icon>
@@ -177,10 +180,10 @@ function ScriptViewer(props) {
                             <Icon icon="redo" onClick={() => handleRedo()}></Icon>
                         }
                         <Icon icon="print" onClick={() => handlePrint()}></Icon>
-                    </Col>
-                </Row>
+                    </div>
+               
 
-            </Container>
+            </div>
 
 
             {(openPersonSelector) &&

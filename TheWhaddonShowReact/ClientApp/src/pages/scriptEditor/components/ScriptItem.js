@@ -37,7 +37,7 @@ function ScriptItem(props) {
     // get specific props
     const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus, previousFocus = null, nextFocus = null } = props;
 
-
+    log(debug, 'ScriptItemComment: scriptItem', scriptItem)
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene?.id])
@@ -46,7 +46,7 @@ function ScriptItem(props) {
     const textInputRef = useRef(null)
 
 
- 
+
     //calculations functions
     const showParts = () => {
         switch (scriptItem.type) {
@@ -59,10 +59,10 @@ function ScriptItem(props) {
         switch (scriptItem.type) {
             case DIALOGUE:
                 if (scenePartPersons) {
-log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
+                    log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
                     log(debug, 'ScriptItem:  changePart scenePartPersons', scenePartPersons)
                     const partPersons = scriptItem.partIds.map(partId => scenePartPersons.partPersons.find(partPerson => partPerson.id === partId))
-                    
+
                     const partNames = partPersons.map(partPersons => partPersons?.name).join(',')
 
                     return partNames || '-'
@@ -77,7 +77,7 @@ log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
 
     log(debug, 'ScriptItemProps', props)
 
-    const { id, type } = scriptItem;
+    const { id, type, comment } = scriptItem;
 
     return (
         <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
@@ -106,13 +106,26 @@ log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
 
             </div>
 
+            {(comment) &&
+
+                <div id={comment.id} key={comment.id} className="script-item-comment">
+                    <Comment comment={comment} />
+                </div>
+
+            }
+
             {/*Elements specific for each scriptItem type*/}
 
             {(type === SCENE) &&
                 <div className="scene-controls">
-                    <Icon icon="trash" onClick={() => onClick('deleteScene',null)} />
+                    <Icon icon="trash" onClick={() => onClick('deleteScene', null)} />
                 </div>
             }
+
+
+
+
+
         </div>
 
     )

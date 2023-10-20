@@ -75,7 +75,7 @@ function ScriptViewer(props) {
             <>
                 <ScriptViewerHeader />
 
-                <div id="script-viewer" className="draft-border">
+                <div id="script-viewer-main" className="draft-border">
 
                     <div id="script-body" className="draft-border">
                         {(scenes && scenes.length > 0) && scenes.map(scene => {
@@ -95,7 +95,7 @@ function ScriptViewer(props) {
 
 
                     </div>
-                    <div id="script-comment" className={`${(showComments) ? "show-comments" : ''} draft-border`}>
+                    <div id="script-comment" className={`${(showComments) ? "show-comments" : 'hide-comments'} draft-border`}>
 
                     </div>
                 </div>

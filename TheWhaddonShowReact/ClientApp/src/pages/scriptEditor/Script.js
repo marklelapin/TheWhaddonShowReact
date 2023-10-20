@@ -126,26 +126,24 @@ function Script() {
         <div id="script-page" className="draft-border">
 
             {(isLargerScreen) && <h1 className="page-title">Script - <span className="fw-semi-bold">Editor</span></h1>}
-            <Container fluid>
-                <Row>
+            
+                <div id="script-page-content">
                     {(showSceneSelector || isLargerScreen) &&
-                        <Col xs="12" md="3">
+                        <div id="script-selector" >
                             <SceneSelector scenes={scenes} />
-                        </Col>
+                        </div>
                     }
 
                     {(!showSceneSelector || isLargerScreen) &&
-                        <Col xs="12" md="9">
+                        <div id="script-viewer">
                             <ScriptViewer scenes={scenes} />
 
-                        </Col>
+                        </div>
                     }
 
-                </Row>
+                </div>
 
-            </Container>
-
-
+        
         </div>
 
 

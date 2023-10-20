@@ -1,5 +1,5 @@
 ﻿
-import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from "dataAccess/scriptItemTypes";
+import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE, COMMENT } from "dataAccess/scriptItemTypes";
 
 import { ScriptItemUpdate } from 'dataAccess/localServerModels';
 import { getLatest } from 'dataAccess/localServerUtils';
@@ -15,7 +15,10 @@ export function sortLatestScriptItems(head, scriptItems, undoDateTime) {
     const latestScriptItems = getLatest(scriptItems, undoDateTime);
     const sortedScriptItems = sortScriptItems(head, latestScriptItems);
 
-    return sortedScriptItems;
+    const activeComments = latestScriptItems.filter(item=> item.isActive && item.type === COMMENT)
+    const commentedScriptItems = sortedScriptItems.map(item => ({...item, comment: activeComments.find(comment => comment.id === item.commentId) }))
+
+    return commentedScriptItems;
 
 }
 

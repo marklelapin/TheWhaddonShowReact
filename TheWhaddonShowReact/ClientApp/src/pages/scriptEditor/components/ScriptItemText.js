@@ -171,6 +171,8 @@ function ScriptItemText(props) {
                 const linksToAdd = []
                 onChange('addLinks', linksToAdd);
                 break;
+            case 'addComment': onChange('addComment', null); break;
+            case 'goToComment': onClick('goToComment', null); break;
             default: return;
         }
 

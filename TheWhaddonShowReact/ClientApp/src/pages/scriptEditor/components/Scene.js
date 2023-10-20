@@ -16,6 +16,7 @@ import { prepareUpdates, prepareUpdate } from 'dataAccess/localServerUtils';
 import { sortLatestScriptItems } from '../scripts/scriptItem';
 import { addUpdates } from 'actions/localServer';
 import { newScriptItemsForDelete, newScriptItemsForCreate, createHeaderScriptItems } from '../scripts/scriptItem';
+import { ScriptItemUpdate } from 'dataAccess/localServerModels';
 
 import { getNextUndoDate, getNextRedoDate } from '../scripts/undo';
 import { log } from 'helper'
@@ -23,15 +24,21 @@ import { moveFocusToId, removeFocusFromId } from '../scripts/utility';
 import { changeFocus } from 'actions/navigation'
 import { create } from 'lodash';
 
+import {
+    updateShowComments,
+} from 'actions/scriptEditor';
+
 //Constants
 import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
-import { INITIAL_CURTAIN, DIALOGUE } from 'dataAccess/scriptItemTypes';
+import { INITIAL_CURTAIN, DIALOGUE,COMMENT } from 'dataAccess/scriptItemTypes';
 import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 
 export const PART_IDS = 'partIds';
 export const PARTS = 'parts';
+export const ADD_COMMENT = 'addComment';
+export const DELETE_COMMENT = 'deleteComment';
 
 function Scene(props) {
 
@@ -57,7 +64,7 @@ function Scene(props) {
     //Internal State
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
     //const [scriptItems, setScriptItems] = useState([]); //
-   
+
 
 
 
@@ -66,7 +73,7 @@ function Scene(props) {
     log(debug, 'EventsCheck Scene_scriptItems ', scriptItems)
 
 
-  
+
 
 
 
@@ -116,7 +123,12 @@ function Scene(props) {
             case 'redo': handleRedo(); break;
             case 'setUndo': handleSetUndo(); break;
             case 'cancelUndo': setUndoDateTime(null); break;
-            case 'deleteScene': onClick('deleteScene'); break;
+            case 'deleteScene': onClick('deleteScene',null); break;
+            case 'goToComment':
+                dispatch(updateShowComments(true))
+                moveFocusToId(scriptItem.comment?.id)
+                ; break;
+
             default: return;
         }
     }
@@ -132,7 +144,7 @@ function Scene(props) {
         let newFocusId = scriptItemToUpdate;
         let newFocusPosition = END;
 
-        const addScriptItem = (direction,scriptItemToUpdate) => {
+        const addScriptItem = (direction, scriptItemToUpdate) => {
 
             const tempTextValue = value;
 
@@ -181,7 +193,7 @@ function Scene(props) {
 
                 log(debug, 'changeParts handleChange PARTS:', { oldPartId: oldPartId, newPartId: newPartId })
                 newUpdates = prepareUpdates( //replaces all oldPartIds with newPartIds
-                    [...scriptItems].map(item => ({ ...item, partIds: [...item.partIds].map(partId => (partId === oldPartId) ? newPartId : partId) } ))
+                    [...scriptItems].map(item => ({ ...item, partIds: [...item.partIds].map(partId => (partId === oldPartId) ? newPartId : partId) }))
                 )
                 break;
             case 'tags': newUpdates = prepareUpdate({ ...scriptItemToUpdate, tags: value }); break;
@@ -223,6 +235,19 @@ function Scene(props) {
                     deleteScriptItem(nextScriptItem)
                 }
                 break;
+            case ADD_COMMENT:
+                let newComment = new ScriptItemUpdate(COMMENT)
+                newComment.parentId = currentScene.id
+                newComment.previousId = scriptItemToUpdate.id
+                let newScriptItem = { ...scriptItemToUpdate, commentId: newComment.id, comment: newComment }
+                newUpdates = prepareUpdates([newComment, newScriptItem])
+                dispatch(updateShowComments(true))
+                break;
+
+            case DELETE_COMMENT:
+                newUpdates = prepareUpdate({ ...scriptItemToUpdate, commentId: null })
+                break;
+
             default: return;
         }
         log(debug, `EventsCheck: newUpdates count ${newUpdates.length}`)
@@ -286,7 +311,7 @@ function Scene(props) {
     }
 
 
- 
+
 
 
 
@@ -329,7 +354,7 @@ function Scene(props) {
                     <ScriptItem scriptItem={currentScene}
                         onClick={(action) => handleClick(action, currentScene)}
                         onChange={(type, value) => handleChange(type, value, currentScene)}
-                        moveFocus={(direction, position) => handleMoveFocus(direction, (direction===UP) ? SCENE_END : position, currentScene, currentScene.previousId, synopsis.id)}
+                        moveFocus={(direction, position) => handleMoveFocus(direction, (direction === UP) ? SCENE_END : position, currentScene, currentScene.previousId, synopsis.id)}
                     />
 
                 }
@@ -342,7 +367,7 @@ function Scene(props) {
                 }
                 <PartEditor
                     scene={currentScene}
-                    onChange={(type,value) => handleChange(type,value,currentScene)}
+                    onChange={(type, value) => handleChange(type, value, currentScene)}
                     previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
                     nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
                 />
@@ -372,7 +397,7 @@ function Scene(props) {
                             scriptItem={scriptItem}
                             scene={currentScene}
                             alignRight={scriptItem.alignRight}
-                            moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, (scriptItem.nextId===null) ? currentScene.nextId : null)}
+                            moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, (scriptItem.nextId === null) ? currentScene.nextId : null)}
 
                         />
                     )
