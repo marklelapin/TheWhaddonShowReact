@@ -16,7 +16,7 @@ function PartSelectorDropdown(props) {
 
     log(debug, 'PartSelectorDropdown Props', props)
     //Props
-    const { partsArray = null, onClick, allowMultiSelect = true } = props;
+    const { partsArray = null, onClick, allowMultiSelect = true, allowClear = true } = props;
 
     //redux
     const partPersons = useSelector(state => state.scriptEditor.partPersons)
@@ -92,7 +92,7 @@ function PartSelectorDropdown(props) {
             {(finalPartsArray.length === 0) &&
                 <h3 onClick={() => onClick('togglePartSelectorDropdown')} >No parts setup for this scene</h3>}
 
-          {(finalPartsArray.length > 0) &&
+          {(finalPartsArray.length > 0 && allowClear) &&
                 < PartNameAndAvatar part={{ id: 0, name: 'Clear all parts', personId: null }} onClick={(e) => handlePartSelectorClick(e, null)} avatar partName />
             }
 

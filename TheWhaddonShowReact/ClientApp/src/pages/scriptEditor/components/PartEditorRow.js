@@ -197,7 +197,6 @@ function PartEditorRow(props) {
     }
 
     const handleFocus = () => {
-
         dispatch(changeFocus({ ...part, parentId: sceneId })) //update global state of which item is focussed
     }
 
@@ -244,13 +243,10 @@ function PartEditorRow(props) {
 
                                 <PartSelectorDropdown
                                     allowMultiSelect={false}
+                                    allowClear={false}
                                     onClick={(action, partIds) => handleControlsClick(action, partIds)} />
                             </div>
                         }
-
-
-
-
                     </div>
                 }
                 <div className="part-tags">

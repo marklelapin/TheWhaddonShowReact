@@ -141,7 +141,6 @@ function PartEditor(props) {
                 return
             }
 
-            partUpdates = prepareUpdate({ ...partToDelete, isActive: false })
             newPartIds = copySceneParts.partIds.filter(id => id !== partToDelete.id)
 
             let newFocus = (direction === UP)
@@ -176,6 +175,13 @@ function PartEditor(props) {
                 deletePart(nextPart, UP)
                 break;
             case PART_ID:
+                const selectedPartId = value
+
+                if (scene.partIds.includes(selectedPartId)) {
+                    alert('The part is already associated with this scene')
+                    return;
+                }
+
                 newPartIds = newPartIds.map(id => (id === partId) ? value : id)
                 onChange(PARTS, {oldPartId: partId, newPartId: value})
 

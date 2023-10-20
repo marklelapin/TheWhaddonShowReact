@@ -43,7 +43,7 @@ function PartSelector(props) {
 
         //add click event listener to document to close dropdown
         //TODOD
-    }, [sceneParts, allocatedPartIds])
+    }, [scene,sceneParts, allocatedPartIds])
 
     log(debug, 'PartSelector partsArray:', partsArray)
 

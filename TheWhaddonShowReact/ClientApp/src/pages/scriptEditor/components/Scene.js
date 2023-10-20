@@ -179,6 +179,7 @@ function Scene(props) {
                 const oldPartId = value.oldPartId
                 const newPartId = value.newPartId
 
+                log(debug, 'changeParts handleChange PARTS:', { oldPartId: oldPartId, newPartId: newPartId })
                 newUpdates = prepareUpdates( //replaces all oldPartIds with newPartIds
                     [...scriptItems].map(item => ({ ...item, partIds: [...item.partIds].map(partId => (partId === oldPartId) ? newPartId : partId) } ))
                 )
@@ -225,7 +226,7 @@ function Scene(props) {
             default: return;
         }
         log(debug, `EventsCheck: newUpdates count ${newUpdates.length}`)
-        log(debug, `EVentsCheck: new Updates: + ${JSON.stringify(newUpdates)}`)
+        log(debug, `EVentsCheck: changePart new Updates: + ${JSON.stringify(newUpdates)}`)
 
         dispatch(addUpdates(newUpdates, 'ScriptItem'));
 

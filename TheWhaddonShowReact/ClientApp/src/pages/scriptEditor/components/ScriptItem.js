@@ -30,7 +30,7 @@ import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUN
 function ScriptItem(props) {
 
     //utility consts
-    const debug = false;
+    const debug = true;
     const dispatch = useDispatch()
 
 
@@ -40,7 +40,7 @@ function ScriptItem(props) {
 
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments)
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scriptItem.parentId])
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene?.id])
 
     //Refs
     const textInputRef = useRef(null)
@@ -59,10 +59,11 @@ function ScriptItem(props) {
         switch (scriptItem.type) {
             case DIALOGUE:
                 if (scenePartPersons) {
-
+log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
+                    log(debug, 'ScriptItem:  changePart scenePartPersons', scenePartPersons)
                     const partPersons = scriptItem.partIds.map(partId => scenePartPersons.partPersons.find(partPerson => partPerson.id === partId))
-
-                    const partNames = partPersons.map(partPersons => partPersons.name).join(',')
+                    
+                    const partNames = partPersons.map(partPersons => partPersons?.name).join(',')
 
                     return partNames || '-'
                 }; break;

@@ -82,7 +82,11 @@ export function ScriptEditorProcessing() {
         const latestPersons = getLatest(storedPersons || [])
         const latestParts = getLatest(storedParts || [])
 
+        
+
         const partPersons = addPersonsInfo(latestParts, latestPersons)
+
+        
 
         dispatch(updatePartPersons(partPersons))
 
@@ -93,10 +97,13 @@ export function ScriptEditorProcessing() {
 
 
         const latestScenes = getLatest(sceneHistory || [])
+        const latestParts = getLatest(storedParts || [])
         log(debug, 'PartPersons: latestScenes', latestScenes)
         log(debug, 'PartPersons: scenes hisotry ', sceneHistory)
         log(debug, 'PartPersons: partPersons', partPersons)
 
+
+        //Adds new partPersons if not already in redux store
         const storedPartIds = [...new Set( [...storedParts].map(partPerson => partPerson.id))];
         let newPartIds = [];
 
@@ -108,6 +115,17 @@ export function ScriptEditorProcessing() {
         const newPartUpdates = prepareUpdates(newPartIds.map(partId => { return { ...new PartUpdate(), id: partId } }))
 
         dispatch(addUpdates(newPartUpdates, 'Part'))
+
+        //Makes any partPersons that are no longer allocated in any scene inActive
+
+        const scenePartIds = [...new Set(latestScenes.map(scene => scene.partIds).flat())]
+        const partsToDelete = latestParts.filter(part => !scenePartIds.includes(part.id))
+
+        const deletePartUpdates = prepareUpdates(partsToDelete.map(part => { return { ...part, isActive: false } }))
+
+        dispatch(addUpdates(deletePartUpdates, 'Part'))
+
+        
 
         const newScenePartPersons = latestScenes.map(scene => {
             return {
