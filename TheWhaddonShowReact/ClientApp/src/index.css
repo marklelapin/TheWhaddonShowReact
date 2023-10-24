@@ -233,7 +233,7 @@
 .script-item {
     padding: 10px 40px 10px 40px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     position: relative;
 }
 
@@ -315,6 +315,13 @@
 
 .script-item-parts {
     width: auto;
+}
+
+
+.script-item .media-dropzone {
+
+
+
 }
 
 /*PART SELECTOR*/

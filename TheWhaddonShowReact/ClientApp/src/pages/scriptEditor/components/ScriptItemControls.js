@@ -51,6 +51,7 @@ function ScriptItemControls(props) {
     const handleClick = (action) => {
         switch (action) {
             case 'attach':
+                onClick('toggleMedia')
                 break;
             case 'link':
                 break;
@@ -72,7 +73,7 @@ function ScriptItemControls(props) {
                     {scriptItem && attachTypes.includes(scriptItem.type) &&
                         <>
                             <Icon icon="attach" onClick={() => handleClick('attach')} />
-                            <Icon icon="link" onClick={() => handleClick('link')} />
+                        {/*  <Icon icon="link" onClick={() => handleClick('link')} />*/}
                         </>
                     }
                     {scriptItem && CURTAIN_TYPES.includes(scriptItem.type) &&

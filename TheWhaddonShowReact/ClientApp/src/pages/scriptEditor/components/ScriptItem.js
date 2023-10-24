@@ -15,7 +15,7 @@ import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 import { Icon } from 'components/Icons/Icons';
 import { Container, Row, Col } from 'reactstrap';
-
+import MediaDropzone from 'components/Uploaders/MediaDropzone';
 //utilities
 import { log } from 'helper';
 import { addUpdates } from 'actions/localServer';
@@ -41,9 +41,16 @@ function ScriptItem(props) {
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene?.id])
+    const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
 
     //Refs
     const textInputRef = useRef(null)
+
+
+    //internal state
+    const [showMedia, setShowMedia] = useState(false)
+
+
 
 
 
@@ -72,12 +79,42 @@ function ScriptItem(props) {
 
     }
 
+    const handleShowMedia = (value = null) => {
+        log(debug, 'handleShowMedia', {showMedia: showMedia, value: value})
+        if (value === null) {
+            setShowMedia(!showMedia)
+        } else {
+            setShowMedia(value)
+        }
+    }
 
+    const handleMedia = (type, media) => {
+        let urls = []
 
+        if (Array.isArray(media)) {
+            urls = media
+        } else {
+            urls = [media]
+        }
+
+        let updatedAttachments = [...scriptItem.attachments]
+
+        switch (type) {
+            case 'add': updatedAttachments = [...updatedAttachments, ...urls]; break;
+            case 'remove': updatedAttachments = updatedAttachments.filter(attachment => !urls.includes(attachment)); break;
+            default : return;
+        }
+
+        onChange('attachments', updatedAttachments)
+    }
 
     log(debug, 'ScriptItemProps', props)
+    log(debug, 'ScriptItem: showMedia', { showMedia: showMedia })
+    log(debug, 'ScriptItem: focus', { focus: focus })
 
     const { id, type, comment } = scriptItem;
+
+
 
     return (
         <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
@@ -99,12 +136,22 @@ function ScriptItem(props) {
                     scriptItem={scriptItem}
                     header={header()}
                     onClick={onClick}
+                    toggleMedia={(value) => handleShowMedia(value)}
                     onChange={onChange}
                     moveFocus={moveFocus}
                     refresh={scriptItem.refresh}
                 />
 
             </div>
+            {((showMedia && focus) || (scriptItem.attachments.length > 0)) &&
+                <MediaDropzone
+                existingMediaURLs={scriptItem.attachments}
+                addMedia={(media) => handleMedia('add', media)}
+                removeMedia={(media) => handleMedia('remove', media)}
+                showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
+                autoLoad={true}
+            />
+            }
 
             {(comment) &&
 

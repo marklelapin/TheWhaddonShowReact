@@ -197,6 +197,7 @@ function Scene(props) {
                 )
                 break;
             case 'tags': newUpdates = prepareUpdate({ ...scriptItemToUpdate, tags: value }); break;
+            case 'attachments': newUpdates = prepareUpdate({ ...scriptItemToUpdate, attachments: value }); break;
             case 'type':
                 let draft = prepareUpdate({ ...scriptItemToUpdate, type: value })
 
@@ -206,8 +207,9 @@ function Scene(props) {
                 } else if (CURTAIN_TYPES.includes(scriptItemToUpdate.type)) { //i.e. its coming from a curtain type
                     draft.text = "";
                 }
+             
+                newUpdates = draft
                 break;
-
             case 'toggleCurtain':
                 const open = value
                 const newTags = (open) ? getOpenCurtainTags(scriptItem) : getCloseCurtainTags(scriptItem)

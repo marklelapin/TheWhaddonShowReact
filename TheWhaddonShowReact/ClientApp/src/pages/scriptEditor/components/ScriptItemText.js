@@ -31,7 +31,7 @@ function ScriptItemText(props) {
     const DOWN = 'down'
 
     //Props
-    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null } = props;
+    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia } = props;
 
     const { id, type, tags } = scriptItem
 
@@ -161,10 +161,8 @@ function ScriptItemText(props) {
             case 'delete': onClick('delete'); break;
             case 'undo': onClick('undo'); break;
             case 'redo': onClick('redo'); break;
-            case 'attach':
-                //TODO open file
-                const filesToAdd = []
-                onChange('addFiles', filesToAdd);
+            case 'toggleMedia':
+                toggleMedia()
                 break;
             case 'link':
                 //TODO get linkg
@@ -307,6 +305,7 @@ function ScriptItemText(props) {
 
     const handleFocus = () => {
         dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
+        toggleMedia(false)
     }
 
 
@@ -318,6 +317,8 @@ function ScriptItemText(props) {
         }
         setTempTextValue(null)
         adjustTextareaWidth()
+        log(debug,'showMedia handleBlur')
+        toggleMedia(false)
     }
 
     return (
