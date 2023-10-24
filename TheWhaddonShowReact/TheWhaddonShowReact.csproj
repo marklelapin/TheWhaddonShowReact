@@ -50,6 +50,7 @@
     <Folder Include="ClientApp\src\images\NewFolder1\" />
     <Folder Include="ClientApp\src\images\NewFolder\" />
     <Folder Include="uploads\" />
+    <Folder Include="uploads\media\" />
   </ItemGroup>
 
   <ItemGroup>

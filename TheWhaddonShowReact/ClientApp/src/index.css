@@ -233,7 +233,7 @@
 .script-item {
     padding: 10px 40px 10px 40px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     position: relative;
 }
 
