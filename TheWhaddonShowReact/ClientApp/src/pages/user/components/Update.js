@@ -52,8 +52,7 @@ function Update(props) {
 
                     <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={onChange} />
 
-                    <Button id="save" type="submit" color={button.color} size="xs" onClick={onClickUpdate} className={(button.disable) ? 'disabled' : ''}>{button.text}</Button>
-                    {userChanged && <Button id="cancel" type="button" color="secondary" size="xs" onClick={onClickCancel} >Cancel</Button>}
+                    <Update id="save" hasChanged={userChanged} onClickUpdate={onClickUpdate} onClickCancel={onClickCancel} isNew={isNew} ></Update >
                 </div >
             </td>
         )

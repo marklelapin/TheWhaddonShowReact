@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using System.IO.Abstractions;
 
 namespace TheWhaddonShowReact.Controllers
@@ -13,6 +14,38 @@ namespace TheWhaddonShowReact.Controllers
 		{
 			_fileSystem = fileSystem;
 		}
+
+		[HttpGet("download/media/{fileName}")]
+		public async Task<IActionResult> Media(string fileName)
+		{
+			var mediaFolder = _fileSystem.Path.Combine("uploads/media");
+			string filePath = _fileSystem.Path.Combine(mediaFolder, fileName);
+
+			if (!_fileSystem.File.Exists(filePath))
+			{
+				return NotFound();
+			}
+
+			var provider = new FileExtensionContentTypeProvider();
+			if (!provider.TryGetContentType(filePath, out string contentType))
+			{
+				contentType = "application/octet-stream";
+			}
+
+			try
+			{
+
+				var bytes = System.IO.File.ReadAllBytes(filePath);
+				Response.Headers.Add("Content-Type", contentType);
+
+				return File(bytes, contentType, fileName);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+		}
+
 
 		[HttpPost("upload")]
 		public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromForm] string folder = "uploads")

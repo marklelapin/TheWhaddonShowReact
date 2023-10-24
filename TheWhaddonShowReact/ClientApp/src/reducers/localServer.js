@@ -8,7 +8,7 @@
     UPDATE_CONNECTION_STATUS,
     SYNC,
     END_SYNC,
-CLOSE_POSTBACK
+    CLOSE_POSTBACK
 } from 'actions/localServer';
 
 import {
@@ -20,6 +20,8 @@ import {
 } from 'dataAccess/localServerModels';
 import { v4 as uuidv4 } from 'uuid';
 
+import { log } from 'helper.js';
+
 const defaultState = {
     localCopyId: uuidv4(),
     sync: {
@@ -27,6 +29,7 @@ const defaultState = {
         error: null,
         lastSyncDate: null
     },
+    refresh: {},
     //**LSMTypeInCode**
     persons: new LocalServerModel(Person), //object holding all information with regard to persons
     scriptItems: new LocalServerModel(ScriptItem), //object holding all information with regard to scriptItems
@@ -39,7 +42,7 @@ const defaultState = {
 
 export default function localServerReducer(state = defaultState, action) {
 
-    const debug = false;
+    const debug = true;
 
     switch (action.type) {
 
@@ -73,9 +76,9 @@ export default function localServerReducer(state = defaultState, action) {
                 let searchArray = null;
                 switch (action.payloadType) {
                     //**LSMTypeInCode**
-                    case Person: searchArray = state.persons.history; break
-                    case ScriptItem: searchArray = state.scriptItems.history; break
-                    case Part: searchArray = state.parts.history; break
+                    case Person: searchArray = [...state.persons.history]; break
+                    case ScriptItem: searchArray = [...state.scriptItems.history]; break
+                    case Part: searchArray = [...state.parts.history]; break
                     default: return state;
                 }
 
@@ -103,11 +106,11 @@ export default function localServerReducer(state = defaultState, action) {
 
             //Get the correct array of data to update
             let data = null;
-            switch (action.payloadType) {   
+            switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: data = state.persons.history; break
-                case ScriptItem: data = state.scriptItems.history; break
-                case Part: data = state.parts.history; break
+                case Person: data = [...state.persons.history]; break
+                case ScriptItem: data = [...state.scriptItems.history]; break
+                case Part: data = [...state.parts.history]; break
                 default: return state;
             }
 
@@ -133,29 +136,53 @@ export default function localServerReducer(state = defaultState, action) {
 
         case ADD_UPDATES:
 
+            log(debug, 'PartPersons addUpdates', action.payload)
+
+            if (action.payload.length === 0) { return state }
+
             let history = [];
             //pick correct data set to process
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: history = state.persons.history; break
-                case ScriptItem: history = state.scriptItems.history; break
-                case Part: history = state.parts.history; break
+                case Person: history = [...state.persons.history]; break
+                case ScriptItem: history = [...state.scriptItems.history]; break
+                case Part: history = [...state.parts.history]; break
                 default: return state
             };
 
             //filter out any updates from payload that are already in the store. This can happen if postBacks have failed due to poor connection.
 
-            const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => existingUpdate.id === update.id && existingUpdate.created === update.created))
+            const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => (existingUpdate.id === update.id && existingUpdate.created === update.created)))
 
+
+             console.log('adding updates via ADD_UPDATE in localserver reducer')
             //update correct data set to update
-            switch (action.payloadType) {
-                //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] } };
-                case Part: return { ...state, parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] } };
-                default: return state
-            };
 
+            if (updatesToAdd.length > 0) {
+                switch (action.payloadType) {
+                    //**LSMTypeInCode** *//
+                    case Person: return {
+                        ...state,
+                        persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
+                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                    };
+                    case ScriptItem: return {
+                        ...state,
+                        scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
+                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                    };
+                    case Part: return {
+                        ...state,
+                        parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
+                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                    };
+                    default: return state
+                };
+
+
+            }
+            return state;
+  
 
         case CLEAR_CONFLICTS: //TODO Complete Clear Conflicts
             if (action.payload.length === 0) { return state }
@@ -163,9 +190,9 @@ export default function localServerReducer(state = defaultState, action) {
             let searchArray = [];
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: searchArray = state.persons.history; break
-                case ScriptItem: searchArray = state.scriptItems.history; break
-                case Part: searchArray = state.parts.history; break
+                case Person: searchArray = [...state.persons.history]; break
+                case ScriptItem: searchArray = [...state.scriptItems.history]; break
+                case Part: searchArray = [...state.parts.history]; break
                 default: searchArray = [];
             }
 
@@ -207,7 +234,7 @@ export default function localServerReducer(state = defaultState, action) {
             let lastSyncDate = null
             const error = action.payload
             debug && console.log('setting lastSyncDate')
-            if (error === null) { lastSyncDate = new Date() } 
+            if (error === null) { lastSyncDate = new Date() }
 
             switch (action.payloadType) {
 
@@ -218,12 +245,12 @@ export default function localServerReducer(state = defaultState, action) {
 
 
                     return {
-                    ...state, persons: {
-                        ...state.persons, sync: {
-                            ...state.persons.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.persons.sync.lastSyncDate
+                        ...state, persons: {
+                            ...state.persons, sync: {
+                                ...state.persons.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.persons.sync.lastSyncDate
+                            }
                         }
-                    }
-                };
+                    };
                 case ScriptItem: return {
                     ...state, scriptItems: {
                         ...state.scriptItems, sync: {

@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { uploadFiles } from 'dataAccess/generalUtils';
 
 import {
@@ -14,7 +14,7 @@ import {
 import Widget from 'components/Widget'
 import Dropzone from 'react-dropzone'
 import s from 'pages/forms/elements/Elements.module.scss';
-function ImageDropzone(props) {
+function VideoDropzone(props) {
 
     const {
         singleFile = false
@@ -27,12 +27,12 @@ function ImageDropzone(props) {
     const [searchTags, setSearchTags] = useState([]);
 
 
-    const handleDrop = (selectedFiles) => {
+    const handleDrop = useCallback((selectedFiles) => {
 
         if (selectedFiles === undefined || selectedFiles === null) return null
         /*const selectedFilesArray = Object.values(selectedFiles)*/
         setImages([...images, ...selectedFiles])
-    }
+    }, []);
 
     const handleTagsChange = (event = null) => {
         if (event !== null) {
@@ -122,4 +122,4 @@ function ImageDropzone(props) {
     );
 
 }
-export default ImageDropzone;
+export default VideoDropzone;

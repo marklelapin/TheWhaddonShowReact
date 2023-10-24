@@ -2,8 +2,25 @@
 }
 
 .draft-border {
-    border: 2px dashed red;
+    /*  border: 2px dashed red;*/
 }
+
+
+.clickable {
+    cursor: pointer;
+}
+
+
+/*Icons*/
+
+.reverse-icon {
+    transform: scaleX(-1);
+}
+
+
+
+
+
 
 /*User Personal Details*/
 
@@ -14,21 +31,20 @@
 
 
 
-.tags-input{
+.tags-input {
     display: flex;
 }
 
 .personal-details.full-name {
-flex: 1 0 100%;
+    flex: 1 0 100%;
 }
 
 .personal-details.email {
-flex: 2 0 100%;
+    flex: 2 0 100%;
 }
 
 .tag-button.dropdown {
-margin: 2px;
-
+    margin: 2px;
 }
 
 #user-modal {
@@ -40,7 +56,499 @@ margin: 2px;
 }
 
 
-/*AvatarModule*/
+/*Avatar Component*/
 .avatar-image-upload {
     display: none;
+}
+
+
+/*PersonSelector Component*/
+.select-person-section {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.person-button {
+    margin: 5px;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+/* The containger for the script page*/
+#script-page {
+}
+
+
+
+#script-page-content {
+    display: flex;
+    flex-direction: row;
+}
+
+#script-selector {
+    flex: 0 0 300px;
+}
+
+
+/* The container for the script-viewer component*/
+#script-viewer {
+    flex: 1;
+    display: flex;
+    max-width: 100%;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: scroll;
+    background-color: #f0f0f0;
+}
+
+#script-viewer-header {
+    display: flex;
+    flex-direction: row;
+    padding: 0px;
+    text-align: end;
+    align-items: center;
+    position: sticky;
+    top: 0px;
+}
+
+.script-viewer-header .left-controls {
+    flex: 0 0 20px;
+}
+
+.script-viewer-header .center-controls {
+    flex: 1;
+    justify-self: center;
+}
+
+.script-viewer-header .view-as-control {
+    flex: 0 0 100px;
+    display: flex;
+    align-items: center
+}
+
+.script-viewer-header .right-controls {
+    flex: 0 0 60px;
+}
+
+
+
+#script-viewer-main {
+    flex: 1;
+    display: flex;
+    max-width: 100%;
+    flex-direction: row;
+}
+
+#script-body {
+    flex: 1;
+}
+
+#script-comment.hide-comments {
+    display: none;
+}
+
+#script-comment.show-comments {
+    flex: 0 0 310px;
+}
+
+
+
+
+/* The container for scene-selector component*/
+#scene-selector {
+    height: 100vh;
+    overflow-y: scroll;
+}
+
+
+
+/*SCENE HEADER*/
+.scene-header {
+    padding: 10px;
+}
+
+    .scene-header .script-item {
+        background-color: white;
+    }
+
+/*PART EDITOR*/
+
+.part-editor {
+    padding: 10px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.part {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 0px 10px 0px;
+}
+
+.part-editor .part-avatar-name {
+    flex: 1;
+}
+
+.part-controls {
+    text-align: start;
+}
+
+.part-tags {
+    flex: 1;
+    text-align: start;
+}
+
+/*PART AVATAR NAME*/
+.part-avatar-name {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.part-avatar {
+}
+
+.part-name {
+    flex: 1;
+    text-align: start;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+}
+
+
+
+
+/*SCRIPT ITEM*/
+.script-item {
+    padding: 10px 40px 10px 40px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+    .script-item.dialogue {
+        padding-left: 10px;
+        padding-right: 70px;
+        flex-direction: row;
+    }
+
+        .script-item.dialogue.align-right {
+            padding-left: 70px;
+            padding-right: 10px;
+        }
+
+    .script-item .text-input {
+        text-align: center;
+    }
+
+.scene-controls {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+
+
+/*Text Input Styles*/
+.text-input {
+    width: 100%;
+}
+
+.script-item .text-input:not(:focus) {
+    border: none;
+}
+
+.part .text-input:not(:focus) {
+    border: none;
+}
+
+
+
+/*Curtain background styles*/
+.curtain-open {
+    color: white;
+    background-color: #30324c;
+}
+
+.curtain-closed {
+    background-color: #ff5574;
+}
+
+
+/*Layout*/
+.script-item-text-area {
+    flex: 1;
+    display: flex;
+    position: relative;
+    justify-content: center;
+}
+
+
+.dialogue .script-item-text-area {
+    flex: 1;
+    display: flex;
+    position: relative;
+    justify-content: flex-start;
+}
+
+.dialogue.align-right .script-item-text-area {
+    justify-content: flex-end;
+    order: -1;
+}
+
+.script-item-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+}
+
+.script-item-parts {
+    width: auto;
+}
+
+
+.script-item .media-dropzone {
+
+
+
+}
+
+/*PART SELECTOR*/
+.part-selector {
+    position: relative;
+    color: rgb(41, 50, 58);
+}
+
+    .part-selector .avatar {
+        margin: 0px;
+    }
+
+/*multiple avatars css_________*/
+.part-selector-avatars {
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    --overlap: -15px; /*overlap the avatars by this amount*/
+}
+
+.part-selector-avatars {
+}
+
+    .part-selector-avatars .part-avatar-name:nth-child(n) {
+        --n: calc(var(--overlap) * (var(--index) - 1));
+        transform: translateX(var(--n))
+    }
+
+
+.part-avatar-name:nth-child(1) {
+    --index: 1;
+}
+
+.part-avatar-name:nth-child(2) {
+    --index: 2;
+}
+
+.part-avatar-name:nth-child(3) {
+    --index: 3;
+}
+
+.part-avatar-name:nth-child(4) {
+    --index: 4;
+}
+
+.part-avatar-name:nth-child(5) {
+    --index: 5;
+}
+
+_____________________________
+
+
+.part-selector-avatars .avatar {
+}
+
+.part-selector-dropdown {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 11;
+    background-color: white;
+    padding: 15px;
+}
+
+    .part-selector-dropdown .part-avatar-name {
+        white-space: nowrap;
+        z-index: 12;
+        margin-bottom: 10px;
+    }
+
+    .part-selector-dropdown :hover {
+    }
+
+    .part-selector-dropdown .part-avatar {
+        z-index: 11;
+    }
+
+    .part-selector-dropdown .avatar {
+        z-index: 11;
+    }
+
+
+    .part-selector-dropdown .part-name {
+        z-index: 11;
+    }
+
+    .part-selector-dropdown .part-avatar-name:hover {
+        background-color: #f0f0f0;
+    }
+
+    .part-selector-dropdown .part-avatar-name.selected {
+        background-color: #ffc107;
+    }
+
+    .part-selector-dropdown p {
+        margin: 0px;
+    }
+
+
+
+/*SCRIPT ITEM HEADER*/
+.script-item-header {
+}
+
+.align-right .script-item-header {
+    left: 10px;
+    right: 10px;
+}
+
+
+
+
+
+/*SCRIPT ITEM CONTROLS*/
+
+.header-controls {
+    position: absolute;
+    top: -20px;
+    right: 0px;
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+    .header-controls.header-exists {
+        top: 0px;
+    }
+
+.header-right-controls {
+    flex: 1;
+    text-align: end;
+    z-index: 10;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.header-left-controls {
+    flex: 1;
+    text-align: end;
+    z-index: 10;
+}
+
+.bottom-right-controls {
+    position: absolute;
+    bottom: 0px;
+    right: -37px;
+    z-index: 5;
+}
+
+.header-controls .checkbox-ios i {
+    height: 15px;
+    background-color: black;
+}
+
+.header-controls i::before {
+    height: 15px !important;
+    width: 15px !important;
+}
+
+
+
+
+
+/* Script-Item-Comments*/
+
+.script-item-comment {
+    display:flex;
+    flex-direction: column;
+    position: absolute;
+    width: 250px;
+    top: 0px;
+    right: -280px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
+}
+.comment-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.comment-header .created-by {
+    flex:1;
+}
+
+.script-item-comment .text-input{
+
+    text-align: justify;
+}
+
+.comment-footer{
+    display: flex;
+    flex-direction: row;
+}
+
+.comment-footer .tags-input {
+flex: 1;
+z-index: 10;
+
+}
+
+.tags-input * {
+    z-index: 100;
+}
+
+/*INDIVIDUAL STYLING OF SCRIPT ITEM TYPES*/
+
+/*DIALOGUE*/
+.script-item.dialogue .script-item-text .text-input {
+    /* border: 1px solid #ccc;*/
+    border-radius: 0px 20px 20px 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    width: 100%;
+    z-index: 2;
+}
+
+.script-item.dialogue.align-right .script-item-text .text-input {
+    /*  border: 1px solid #ccc;*/
+    border-radius: 20px 0px 20px 20px;
+    font-size: 16px;
+    width: 100%;
+    z-index: 2;
+    background-color: yellowgreen;
 }

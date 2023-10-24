@@ -1,9 +1,12 @@
 ﻿import {v4 as uuidv4} from 'uuid'; 
+import {  SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN } from './scriptItemTypes'; 
+
+import { localServerDateNow } from './localServerUtils';
 
 // Identifies the types of LocalServerModel updates (works similarly to redux actions)
 export const Person = 'Person';
 export const ScriptItem = 'ScriptItem';
-export const Part = 'Part'
+export const Part = 'Part';
 
 
 export class LocalServerModel {
@@ -49,7 +52,7 @@ export class LocalToServerPostBack {
 export class LocalServerModelUpdate {
     constructor(id = null, created = null, updatedOnServer = null, createdBy = 'Mark Carter', isActive = true, isSample = false,isConflicted = false) {
         this.id = id || uuidv4();
-        this.created = created || new Date();
+        this.created = created || localServerDateNow();
         this.updatedOnServer = updatedOnServer;
         this.createdBy = createdBy;
         this.isActive = isActive;
@@ -76,10 +79,35 @@ export class PersonUpdate extends LocalServerModelUpdate {
         this.isActive = true;
         this.pictureRef = null;
     }
+}
 
+export class ScriptItemUpdate extends LocalServerModelUpdate {
+
+    constructor(type, text = null) {
+        super();
+        this.type = type;
+        this.text = text;
+        this.partIds = (type===SCENE) ? [new PartUpdate().id] : [];
+        this.tags = [];
+        this.nextId = null;
+        this.previousId = null;
+        this.parentId = null;
+        this.attachments = [];
+    }
 
 }
 
+
+export class PartUpdate extends LocalServerModelUpdate {
+
+    constructor() {
+        super();
+        this.name = null
+        this.personId = null;
+        this.tags = [];
+    }
+
+}
 
 
 

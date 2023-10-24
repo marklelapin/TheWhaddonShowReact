@@ -47,12 +47,12 @@ function User(props) {
     const dispatch = useDispatch()
 
     //if storedUser changes then update the user state.
-    //useEffect(() => {
+    useEffect(() => {
 
-    //    setUser((newUser !== null ? newUser : storedUser))
-    //    setUserChanged(false)
+        setUser((newUser !== null ? newUser : storedUser))
+        setUserChanged(false)
 
-    //}, [storedUser])
+    }, [storedUser])
 
     useEffect(() => {
         if (user === storedUser) {

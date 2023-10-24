@@ -17,9 +17,9 @@ import Widgets from '../../pages/widgets';
 
 import DashboardAnalytics from '../../pages/analytics';
 import Dashboard from '../../pages/dashboard';
-import UserFormPage from '../../pages/user/form/UsersFormPage';
 import Home from '../../pages/home/Home';
 import Users from '../../pages/user/Users';
+import Script from '../../pages/scriptEditor/Script';
 
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header';
@@ -52,20 +52,6 @@ class Layout extends React.Component {
         this.handleSwipe = this.handleSwipe.bind(this);
     }
 
-    //componentDidMount() {
-    //    this.handleResize();
-    //    window.addEventListener('resize', this.handleResize.bind(this));
-    //}
-
-    //componentWillUnmount() {
-    //    window.removeEventListener('resize', this.handleResize.bind(this));
-    //}
-
-    //handleResize() {
-    //    if (window.innerWidth <= 768 && this.props.sidebarStatic) {
-    //        this.props.dispatch(toggleSidebar());
-    //    }
-    //}
 
     handleSwipe(e) {
         if ('ontouchstart' in window) {
@@ -100,7 +86,7 @@ class Layout extends React.Component {
 
                     <Hammer onSwipe={this.handleSwipe}>
                         <main className={s.content}>
-                            <BreadcrumbHistory url={this.props.location.pathname} />
+                            {/*<BreadcrumbHistory url={this.props.location.pathname} />*/}
                             <TransitionGroup>
                                 <CSSTransition
                                     key={this.props.location.key}
@@ -108,13 +94,12 @@ class Layout extends React.Component {
                                     timeout={200}
                                 >
                                     <Switch>
-                                        <Route path="/app/main" exact component={Home} />} />
+                                        <Route path="/app/main" exact component={Home} />
                                         <Route path="/app/main/dashboard" exact component={Dashboard} />
                                         <Route path="/app/main/widgets" exact component={Widgets} />
                                         <Route path="/app/main/analytics" exact component={DashboardAnalytics} />
 
-                                        <Route path="/app/script/view" exact render={() => <Redirect to="/app/chat" />} /> 
-                                        <Route path="/app/script/edit" exact component={() => <Redirect to="/app/chat" />} />
+                                        <Route path="/app/script" exact component={Script} />
                                         <Route path="/app/script/import" exact component={() => <Redirect to="/app/chat" />} />
 
                                         <Route path="/app/planning/cast" exact render={() => <Redirect to="/app/tables/static" />} />
@@ -132,8 +117,6 @@ class Layout extends React.Component {
 
                                         <Route path="/admin" exact render={() => <Redirect to="/admin/users" />} />
                                         <Route path="/admin/users" exact component={Users} />
-                                        <Route path="/admin/users/new" exact component={UserFormPage} />
-                                        <Route path="/admin/users/:id/edit" exact component={UserFormPage} />
 
                                         <Route path="/apiMonitor/documentation" exact render={() => <Redirect to="/app/grid" />} />
                                         <Route path="/apiMonitor/dashboard" exact render={() => <Redirect to="/app/main/analytics" />} />

@@ -3,7 +3,8 @@ import {
     OPEN_SIDEBAR,
     CLOSE_SIDEBAR,
     CHANGE_ACTIVE_SIDEBAR_ITEM,
-    CLOSE_SIDEBAR_AND_TOGGLE_STATIC
+    CLOSE_SIDEBAR_AND_TOGGLE_STATIC,
+    CHANGE_FOCUS
 } from '../actions/navigation';
 
 const initialState = {

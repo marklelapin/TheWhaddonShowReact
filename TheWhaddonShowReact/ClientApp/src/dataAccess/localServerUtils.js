@@ -24,7 +24,7 @@ import {
     endSync,
     closePostBack
 } from 'actions/localServer';
-
+import { log } from 'helper.js';
 
 
 export async function useSync() {
@@ -88,14 +88,14 @@ export async function useSync() {
 
             try {
 
-                const syncData = await createSyncData(data, localCopyId, type, dispatch, debug)
+                const syncData = await createSyncData(data, localCopyId, debug)
 
-                const response = await postSyncData(syncData, type, dispatch,debug)
+                const response = await postSyncData(syncData, type, dispatch, debug)
 
-                if (response.status === 200) { 
-                  const cbpSuccess =  await closePostBacks(syncData.postBacks, type, dispatch,debug)
+                if (response.status === 200) {
+                    const cbpSuccess = await closePostBacks(syncData.postBacks, type, dispatch, debug)
 
-                  const psrSuccess =  await processSyncResponse(response.data, type, dispatch,debug)
+                    const psrSuccess = await processSyncResponse(response.data, type, dispatch, debug)
 
                     if (cbpSuccess && psrSuccess) {
                         finishSync(null, type, dispatch)
@@ -103,14 +103,14 @@ export async function useSync() {
                         finishSync('Error finishing sync.', null, type, dispatch, debug)
                     }
 
-                    
+
                 } else {
- finishSync(`Error: ${response.message}`, type, dispatch)
-                    
+                    finishSync(`Error: ${response.message}`, type, dispatch)
+
                 }
 
             } catch (error) {
-                debug &&  console.log(error)
+                debug && console.log(error)
                 finishSync(error.message, type, dispatch)
             }
         }
@@ -160,9 +160,9 @@ const postSyncData = async (syncData, type, dispatch, debug) => {
         debug && console.log("ResponseStatus from server:  " + response.status)
         debug && console.log("Response from server:  " + JSON.stringify(response.data))
 
-    //dispatch(updateConnectionStatus('Ok'))
+        //dispatch(updateConnectionStatus('Ok'))
 
-    return (response)
+        return (response)
     }
     catch (error) {
         throw new Error("Error posting sync data: " + error.message)
@@ -184,13 +184,13 @@ const closePostBacks = (postBacks, type, dispatch) => {
     }
 }
 
-const processSyncResponse = async (responseData, type, dispatch,debug) => {
+const processSyncResponse = async (responseData, type, dispatch, debug) => {
 
     let process = ''
     debug && console.log("Processing Sync Response: ")
 
     try {
-        process ='postBacks'
+        process = 'postBacks'
         if (responseData.postBacks.length === 0) {
 
             debug && console.log('No PostBack to process.');
@@ -201,7 +201,7 @@ const processSyncResponse = async (responseData, type, dispatch,debug) => {
             debug && console.log('Processing postBacks.')
             debug && console.log(type)
 
-            const postBacksArray = Object.values(responseData.postBacks) 
+            const postBacksArray = Object.values(responseData.postBacks)
 
             postBacksArray.forEach(postBack => { dispatch(processServerToLocalPostBacks(postBack, type)) })
         }
@@ -209,7 +209,7 @@ const processSyncResponse = async (responseData, type, dispatch,debug) => {
         process = 'updates'
         if (responseData.updates.length === 0) {
             debug && console.log('No updates to process.');
-            debug &&  console.log(type)
+            debug && console.log(type)
         }
         else {
             debug && console.log('Processing updates.');
@@ -220,7 +220,7 @@ const processSyncResponse = async (responseData, type, dispatch,debug) => {
         process = 'conflicts'
         if (responseData.conflictIdsToClear.length === 0) {
             debug && console.log('No conflicts to clear.');
-                debug && console.log(type)
+            debug && console.log(type)
 
         }
         else {
@@ -234,7 +234,7 @@ const processSyncResponse = async (responseData, type, dispatch,debug) => {
         }
 
         else {
-           debug && console.log('Updating last sync date.')
+            debug && console.log('Updating last sync date.')
             dispatch(updateLastSyncDate(responseData.lastSyncDate))
         }
 
@@ -254,7 +254,8 @@ const finishSync = (error, type, dispatch) => {
 }
 
 
-export function getLatest(history) {
+export function getLatest(history, undoDateTime = null, includeInActive = false, includeSamples = false) {
+    const undoDate = (undoDateTime) ? new Date(undoDateTime) : null
 
     if (history === undefined) {
         throw new Error("getLatest passed undefined history property")
@@ -262,42 +263,77 @@ export function getLatest(history) {
 
     if (!Array.isArray(history) || history.length === 0) { return [] }
 
-    const latestUpdates = history.reduce((acc, update) => {
+    const unDoneHistory = history
+        .map(item => ({ ...item, created: new Date(item.created) }))
+        .filter((update) => (undoDate === null || update.created < undoDate))
+
+    const sampleHistory = unDoneHistory.filter((update) => update.isSample === false || includeSamples === true)
+
+    const latestUpdates = sampleHistory.reduce((acc, update) => {
         if (!acc[update.id] || update.created > acc[update.id].created) {
             acc[update.id] = update;
         }
+         
         return acc;
     }, {})
 
-    let latestUpdatesArray = Object.values(latestUpdates);
+    const latestUpdatesArray = Object.values(latestUpdates);
 
-    if (latestUpdatesArray === null || latestUpdatesArray === undefined) { latestUpdatesArray = [] }
+    let latestActive = latestUpdatesArray.filter((update) => update.isActive === true || includeInActive === true)
 
-    return latestUpdatesArray;
+    if (latestActive === null || latestActive === undefined) { latestActive = [] }
+
+
+    return latestActive;
 
 
 }
 
 
 
-export function prepareUpdate(updates) {
-    return prepareUpdates(updates)
+export function prepareUpdate(updates, adjustment) {
+    return prepareUpdates(updates, adjustment)
 }
 
-export function prepareUpdates(updates) {
+export function prepareUpdates(updates, adjustment) {
+
     let output = updates
-  
+
     if (!Array.isArray(updates)) {
         output = [updates]
     }
 
+    const createdDate = localServerDateNow(adjustment)
+
+
     output.forEach((update, index) => {
 
-        output[index] = { ...update, created: new Date().toISOString().replace('Z',''), updatedOnServer: null }
+        output[index] = { ...update, created: createdDate, updatedOnServer: null }
     })
 
+    output.forEach((update) => {
+
+        delete update.new
+        delete update.changed
+
+    })
 
     return output;
 
 
 }
+
+
+export function localServerDateNow(adjustment = null) {
+
+    const moment = require("moment");
+
+    const createdDate = moment()
+
+    const adjustedDate = createdDate.add(adjustment, 'ms')
+
+    const formattedDate = adjustedDate.format("YYYY-MM-DDTHH:mm:ss.SSS")
+
+    return formattedDate
+}
+

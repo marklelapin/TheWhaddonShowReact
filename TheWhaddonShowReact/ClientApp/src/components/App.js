@@ -1,10 +1,28 @@
+//REact and REdux
 import React from 'react';
-import {useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router';
 import { HashRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { ConnectedRouter } from 'connected-react-router';
+
+//dataAccess Components
+import LocalServerSyncing from 'dataAccess/LocalServerSyncing';
+import ScriptEditorProcessing from 'dataAccess/ScriptEditorProcessing';
+
+import {
+    QueryClient,
+    QueryClientProvider
+} from '@tanstack/react-query'
+
+//Components
+import LayoutComponent from 'components/Layout';
+import Login from 'pages/auth/login';
+import Verify from 'pages/auth/verify';
+import Register from 'pages/auth/register';
+import Reset from 'pages/auth/reset';
+import Forgot from 'pages/auth/forgot';
+//Utils
 import { getHistory } from 'index';
 import { AdminRoute, UserRoute, AuthRoute } from './RouteComponents';
 
@@ -12,22 +30,13 @@ import { AdminRoute, UserRoute, AuthRoute } from './RouteComponents';
 import ErrorPage from 'pages/error';
 /* eslint-enable */
 
+// Styles
 import 'styles/theme.scss';
-import LayoutComponent from 'components/Layout';
-import Login from 'pages/auth/login';
-import Verify from 'pages/auth/verify';
-import Register from 'pages/auth/register';
-import Reset from 'pages/auth/reset';
-import Forgot from 'pages/auth/forgot';
 
-import { useSync } from 'dataAccess/localServerUtils';
-import { sync } from 'actions/localServer';
-import { Person, ScriptItem, Part } from 'dataAccess/localServerModels';
 
-import {
-    QueryClient,
-    QueryClientProvider
-} from '@tanstack/react-query'
+
+
+
 
 
 
@@ -41,41 +50,16 @@ function App() {
 const currentUser = useSelector((state) => state.auth.currentUser)
     const loadingInit = useSelector((state) => state.auth.loadingInit)
 
-    const isPersonSyncing = useSelector((state)=>state.localServer.persons.sync.isSyncing)
-
-const dispatch = useDispatch();
-
-    useSync();
-
-    useEffect(() => {
-        syncWithServer()
-
-        const intervalId = setInterval(syncWithServer,1000 * 10) //every minute
-
-        return () => {
-            clearInterval(intervalId)
-        }
-
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-
-    const syncWithServer = () => {
-
-        dispatch(sync(Person))
-        //dispatch(sync(ScriptItem))
-        //dispatch(sync(Part))
-    }
-
-
-
-
-
-
+    const dispatch = useDispatch();
+  
     if (loadingInit) { //this.props.loadingInit this.props.dispatch in {} below
         return <div />;
     }
 
     return (
+        <>
+            <LocalServerSyncing />
+            <ScriptEditorProcessing />
 
         <QueryClientProvider client={queryClient}>
             <ToastContainer
@@ -109,6 +93,11 @@ const dispatch = useDispatch();
                 </HashRouter>
             </ConnectedRouter>
         </QueryClientProvider>
+        
+        
+        </>
+
+        
 
     );
 
