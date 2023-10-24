@@ -31,7 +31,7 @@ function ScriptItemText(props) {
     const DOWN = 'down'
 
     //Props
-    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia } = props;
+    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia, undoDateTime } = props;
 
     const { id, type, tags } = scriptItem
 
@@ -58,12 +58,15 @@ function ScriptItemText(props) {
 
 
     useEffect(() => {
+
         
         adjustTextareaWidth()
 
-        //males the textarea the focus when created.
+        
+        //makes the textarea the focus when created unless during an undo.
+        
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
-        if (textInputRef) {
+        if (textInputRef && undoDateTime === null) {
             textInputRef.focus();
         }
     }, [])
@@ -137,6 +140,7 @@ function ScriptItemText(props) {
     //Event Handlers
 
     const handleTextChange = (e) => {
+
         log(debug, `EventsCheck: handleTextChange: ${e.target.value || ''} `)
         setTempTextValue(e.target.value || '')
         const textareaRef = document.getElementById(`script-item-text-${id}`)
@@ -178,13 +182,12 @@ function ScriptItemText(props) {
 
     const handleKeyDown = (e, scriptItem) => {
 
-
-        const closestPosition = () => {
+        log(debug, `EventsCheck: ScriptItemTextKeyDown: key: ${e.key}`)
+               const closestPosition = () => {
             const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
             const closestPosition = (percentageAcoss > 0.5) ? END : START
             return closestPosition
         }
-
 
         if (e.shiftKey) {
 
@@ -301,9 +304,24 @@ function ScriptItemText(props) {
 
         }
 
+        if (e.key === 'Tab') {
+            handleBlur();
+        }
+        log(debug, `EventsCheck: ScriptItemTextKeyDown: key: ${e.key}, tempTextValue = ${tempTextValue}`)
+        if (e.ctrlKey && e.key === 'z' && tempTextValue === scriptItem.text) {
+            setTempTextValue(null)
+            onClick('undo')
+        }
+        
+        if (e.ctrlKey && e.key === 'y' && undoDateTime !== null) {
+            onClick('redo')
+        }
+
+
     }
 
     const handleFocus = () => {
+        if (undoDateTime) { onClick('confirmUndo') }
         dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
         toggleMedia(false)
     }

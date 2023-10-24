@@ -20,7 +20,7 @@ function PartSelector(props) {
 
     log(debug, 'PartSelectorProps', props)
     //Props
-    const { scene = {}, allocatedPartIds = [], onChange, size = "md" } = props;
+    const { scene = {}, allocatedPartIds = [], onChange, size = "md" ,undoDateTime,onClick} = props;
 
     //REdux
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
@@ -79,6 +79,7 @@ function PartSelector(props) {
 
 
     const toggleDropdown = (e) => {
+        if (undoDateTime) { onClick('confirmUndo') }
         e.stopPropagation();
 setOpenPartSelector(!openPartSelector)
 

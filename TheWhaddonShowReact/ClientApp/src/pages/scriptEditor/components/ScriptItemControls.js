@@ -97,17 +97,9 @@ function ScriptItemControls(props) {
                         </Dropdown>
                     }
 
-                    {undoDateTime &&
-                        <div className="confirm-undo-buttons">
-                            <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
-                            <Button size='xs' color="danger" onClick={() => onClick('cancelUndo')} >cancel</Button>
-                        </div>
-                    }
+                    
 
-                    <Icon icon="undo" onClick={() => onClick('undo')} />
-                    {(undoDateTime) &&
-                        <Icon icon="redo" onClick={() => onClick('redo')} />
-                    }
+                    
                     {(!hasComment) &&
                         <Icon icon='comment-o' onClick={() => onClick('addComment')} />
                     }

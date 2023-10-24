@@ -28,7 +28,7 @@ function PartEditorRow(props) {
 
 
     //props
-    const { nextPart, sceneId, isFirst, onClick, onChange, moveFocus } = props;
+    const { nextPart, sceneId, isFirst, onClick, onChange, moveFocus, undoDateTime } = props;
     log(debug, 'PartEditorProps', props)
 
     let { part } = props;
@@ -53,7 +53,6 @@ function PartEditorRow(props) {
                 textInputRef.focus();
             }
         }
-
     }, [])
 
 
@@ -197,6 +196,8 @@ function PartEditorRow(props) {
     }
 
     const handleFocus = () => {
+        if (undoDateTime) { onClick('confirmUndo') }
+
         dispatch(changeFocus({ ...part, parentId: sceneId })) //update global state of which item is focussed
     }
 

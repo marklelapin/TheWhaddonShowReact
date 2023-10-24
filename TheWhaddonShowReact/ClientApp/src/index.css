@@ -233,13 +233,14 @@
 .script-item {
     padding: 10px 40px 10px 40px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     position: relative;
 }
 
     .script-item.dialogue {
         padding-left: 10px;
         padding-right: 70px;
+        flex-direction: row;
     }
 
         .script-item.dialogue.align-right {

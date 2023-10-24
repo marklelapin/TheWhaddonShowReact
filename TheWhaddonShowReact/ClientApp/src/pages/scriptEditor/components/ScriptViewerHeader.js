@@ -159,13 +159,7 @@ function ScriptViewer(props) {
                             avatarInitials={(viewAsPartPerson === null) ? '?' : null}
                             onClick={() => togglePersonSelector()}
                         />
-                        {/*<PartSelector*/}
-                        {/*    scenePartIds={focussedScene?.partIds}*/}
-                        {/*    allocatedPartIds={(viewAsPart===null) ? null : [viewAsPart.id]}*/}
-                        {/*    size="sm"*/}
-                        {/*    onClick={(partIdArray) => handleSelectPartId(partIdArray[0])}*/}
-                        {/*/>*/}
-
+                    
                     </div>
 
                     <div className="right-controls justify-content-end align-items-center">
@@ -175,10 +169,6 @@ function ScriptViewer(props) {
                             : <Icon icon="comment-o" onClick={() => toggleShowComments()}></Icon>
                         }
 
-                        <Icon icon="undo" onClick={() => handleUndo()}></Icon>
-                        {(undoDateTime !== null) &&
-                            <Icon icon="redo" onClick={() => handleRedo()}></Icon>
-                        }
                         <Icon icon="print" onClick={() => handlePrint()}></Icon>
                     </div>
                

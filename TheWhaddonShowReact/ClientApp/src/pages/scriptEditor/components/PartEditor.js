@@ -37,7 +37,7 @@ function PartEditor(props) {
     const dispatch = useDispatch();
 
     //props
-    const { scene = null, onChange, previousFocus, nextFocus } = props;
+    const { scene = null, onChange, previousFocus, nextFocus, undoDateTime, onClick} = props;
 
     log(debug, 'PartEditorProps', props)
 
@@ -213,6 +213,7 @@ function PartEditor(props) {
 
 
     const handleClick = (action, value, part) => {
+        if (undoDateTime) { onClick('confirmUndo') }
 
         switch (action) {
             case 'avatar': handleClickAvatar(part); break;
@@ -274,7 +275,8 @@ function PartEditor(props) {
                             isFirst={sceneParts.partIds.length===1}
                             sceneId={scene.id}
                             onChange={(type, value) => handleChange(type, value, part)}
-                            onClick={(action,value) => handleClick(action,value,part)}
+                            onClick={(action, value) => handleClick(action, value, part)}
+                            undoDateTime={undoDateTime}
                             moveFocus={(direction, position) => handleMoveFocus(direction, position, part) }
                         />
 

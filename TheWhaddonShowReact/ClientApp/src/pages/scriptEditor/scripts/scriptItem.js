@@ -24,7 +24,7 @@ export function sortLatestScriptItems(head, scriptItems, undoDateTime) {
 
 export function sortScriptItems(head, scriptItems) {
 
-    const debug = false
+    const debug = true
 
     log(debug, 'Sort Head: ', head)
     log(debug, 'Sort ScriptItems', scriptItems)

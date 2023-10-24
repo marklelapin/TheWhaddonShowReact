@@ -42,7 +42,7 @@ const defaultState = {
 
 export default function localServerReducer(state = defaultState, action) {
 
-    const debug = false;
+    const debug = true;
 
     switch (action.type) {
 

@@ -12,7 +12,7 @@ import PartEditor from 'pages/scriptEditor/components/PartEditor.js';
 
 
 //Utilities
-import { prepareUpdates, prepareUpdate } from 'dataAccess/localServerUtils';
+import { prepareUpdates, prepareUpdate, getLatest } from 'dataAccess/localServerUtils';
 import { sortLatestScriptItems } from '../scripts/scriptItem';
 import { addUpdates } from 'actions/localServer';
 import { newScriptItemsForDelete, newScriptItemsForCreate, createHeaderScriptItems } from '../scripts/scriptItem';
@@ -63,26 +63,28 @@ function Scene(props) {
 
     //Internal State
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
-    //const [scriptItems, setScriptItems] = useState([]); //
+    const [scriptItems, setScriptItems] = useState([]); //
 
 
 
 
+//useEffect Hooks
+    useEffect(() => {
 
-    const scriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
-    log(debug, 'EventsCheck Scene_scriptItems ', scriptItems)
+      const newScriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
+
+      setScriptItems(newScriptItems)
+      
+    },[undoDateTime,sceneScriptItemHistory,scene])
 
 
-
-
-
-
+   
     //EVENT HANDLERS
     //--------------------------------------------------------------------------------------------------------
 
     const handleUndo = () => {
 
-        const nextUndoDate = getNextUndoDate([...sceneScriptItemHistory, ...scriptItems], undoDateTime)
+        const nextUndoDate = getNextUndoDate([...sceneScriptItemHistory], undoDateTime)
 
         setUndoDateTime(nextUndoDate)
 
@@ -90,39 +92,55 @@ function Scene(props) {
 
     const handleRedo = () => {
 
-        const nextUndoDate = getNextRedoDate([...sceneScriptItemHistory, ...scriptItems], undoDateTime)
+        const nextUndoDate = getNextRedoDate([...sceneScriptItemHistory], undoDateTime)
 
         setUndoDateTime(nextUndoDate)
 
     }
 
-    const handleSetUndo = () => {
+    const handleConfirmUndo = () => {
 
-        //process scriptItemsToAdd
+        //process changed scriptItems
+        if (undoDateTime === null) return;
 
-        const idsToUpdate = new Set([...scriptItems].filter(item => item.created > undoDateTime).map(item => item.id))
-
+        const idsToUpdate = new Set([...sceneScriptItemHistory].filter(item => new Date(item.created) >= undoDateTime).map(item => item.id))
 
         //convert to array
         const arrayIds = [...idsToUpdate];
+
         //filter the scriptItems matching the ids
-        const filterScriptItems = scriptItems.filter((item) => arrayIds.includes(item.id));
+        const changeScriptItems = scriptItems.filter((item) => arrayIds.includes(item.id));
+        const changeScriptItemIds = changeScriptItems.map(item => item.id)
+
+        const deleteScriptItemIds = arrayIds.filter(id => !changeScriptItemIds.includes(id))
+
+        let deleteScriptItems = getLatest([...sceneScriptItemHistory].filter(item => deleteScriptItemIds.includes(item.id)))
+
+        deleteScriptItems = deleteScriptItems.map(item => ({ ...item, isActive: false }))
+
 
         //update these scriptItems
-        const updates = prepareUpdates(filterScriptItems);
+        const updates = prepareUpdates([...changeScriptItems,...deleteScriptItems]);
 
-        dispatch(addUpdates(updates));
+        dispatch(addUpdates(updates, 'ScriptItem'));
+
+        setUndoDateTime(null)
 
     }
 
     const handleClick = (action, scriptItem) => {
+
+        if (['undo', 'redo','confirmUndo'].includes(action) === false && undoDateTime !== null) {
+            handleConfirmUndo();
+        }
+
+
         log(debug, `EventsCheck: handleClick: ${action},${scriptItem.id}`)
         switch (action) {
             case 'delete': handleChange('deleteScriptItem', DOWN, scriptItem); break;
             case 'undo': handleUndo(); break;
             case 'redo': handleRedo(); break;
-            case 'setUndo': handleSetUndo(); break;
-            case 'cancelUndo': setUndoDateTime(null); break;
+            case 'confirmUndo': handleConfirmUndo(); break;
             case 'deleteScene': onClick('deleteScene',null); break;
             case 'goToComment':
                 dispatch(updateShowComments(true))
@@ -284,7 +302,7 @@ function Scene(props) {
     }
 
     const getOpenCurtainTags = (scriptItem) => {
-        const tags = scriptItem.tags
+        const tags = scriptItem.tags || [];
 
         let newTags = tags.filter(tag => tag !== 'CloseCurtain')
         newTags.push('OpenCurtain')
@@ -317,7 +335,7 @@ function Scene(props) {
 
 
 
-    const currentScene = scriptItems.find(item => item.type === 'Scene') || {} //returns the synopsis scriptItem
+    const currentScene = { ...scriptItems.find(item => item.type === 'Scene') || {}, undoDateTime: undoDateTime } //returns the synopsis scriptItem
     const synopsis = scriptItems.find(item => item.type === 'Synopsis') || {} //returns the synopsis scriptItem
     const staging = scriptItems.find(item => item.type === 'InitialStaging') || {}//returns the staging scriptItem')
 
@@ -356,6 +374,7 @@ function Scene(props) {
                     <ScriptItem scriptItem={currentScene}
                         onClick={(action) => handleClick(action, currentScene)}
                         onChange={(type, value) => handleChange(type, value, currentScene)}
+                        undoDateTime={undoDateTime}
                         moveFocus={(direction, position) => handleMoveFocus(direction, (direction === UP) ? SCENE_END : position, currentScene, currentScene.previousId, synopsis.id)}
                     />
 
@@ -363,15 +382,19 @@ function Scene(props) {
                 {synopsis &&
                     <ScriptItem scriptItem={synopsis}
                         onClick={(action) => handleClick(action, synopsis)}
-                        onChange={(type, value) => handleChange(type, value, synopsis)}
+                    onChange={(type, value) => handleChange(type, value, synopsis)}
+                    undoDateTime={undoDateTime}
                         moveFocus={(direction, position) => handleMoveFocus(direction, position, synopsis, null, currentScene.partIds[0])}
                     />
                 }
                 <PartEditor
                     scene={currentScene}
                     onChange={(type, value) => handleChange(type, value, currentScene)}
+                    onClick={(action)=>handleClick(action,currentScene) }
+                    undoDateTime={undoDateTime}
                     previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
                     nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
+
                 />
 
                 {staging &&
@@ -379,7 +402,8 @@ function Scene(props) {
                         <ScriptItem
                             scriptItem={staging}
                             onClick={(action) => handleClick(action, staging)}
-                            onChange={(type, value) => handleChange(type, value, staging)}
+                        onChange={(type, value) => handleChange(type, value, staging)}
+                        undoDateTime={undoDateTime}
                             moveFocus={(direction, position) => handleMoveFocus(direction, position, staging, currentScene.partIds[currentScene.partIds.length - 1], null)}
                         />
                     </>
@@ -399,6 +423,7 @@ function Scene(props) {
                             scriptItem={scriptItem}
                             scene={currentScene}
                             alignRight={scriptItem.alignRight}
+                            undoDateTime={undoDateTime}
                             moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, (scriptItem.nextId === null) ? currentScene.nextId : null)}
 
                         />

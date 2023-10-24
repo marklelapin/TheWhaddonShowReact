@@ -1,6 +1,8 @@
 ﻿import {v4 as uuidv4} from 'uuid'; 
 import {  SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN } from './scriptItemTypes'; 
 
+import { localServerDateNow } from './localServerUtils';
+
 // Identifies the types of LocalServerModel updates (works similarly to redux actions)
 export const Person = 'Person';
 export const ScriptItem = 'ScriptItem';
@@ -50,7 +52,7 @@ export class LocalToServerPostBack {
 export class LocalServerModelUpdate {
     constructor(id = null, created = null, updatedOnServer = null, createdBy = 'Mark Carter', isActive = true, isSample = false,isConflicted = false) {
         this.id = id || uuidv4();
-        this.created = created || new Date();
+        this.created = created || localServerDateNow();
         this.updatedOnServer = updatedOnServer;
         this.createdBy = createdBy;
         this.isActive = isActive;

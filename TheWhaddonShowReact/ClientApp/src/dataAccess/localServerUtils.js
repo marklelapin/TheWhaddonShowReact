@@ -254,8 +254,8 @@ const finishSync = (error, type, dispatch) => {
 }
 
 
-
 export function getLatest(history, undoDateTime = null, includeInActive = false, includeSamples = false) {
+    const undoDate = (undoDateTime) ? new Date(undoDateTime) : null
 
     if (history === undefined) {
         throw new Error("getLatest passed undefined history property")
@@ -263,7 +263,9 @@ export function getLatest(history, undoDateTime = null, includeInActive = false,
 
     if (!Array.isArray(history) || history.length === 0) { return [] }
 
-    const unDoneHistory = history.filter((update) => update.created <= (undoDateTime || update.created))
+    const unDoneHistory = history
+        .map(item => ({ ...item, created: new Date(item.created) }))
+        .filter((update) => (undoDate === null || update.created < undoDate))
 
     const sampleHistory = unDoneHistory.filter((update) => update.isSample === false || includeSamples === true)
 
@@ -271,6 +273,7 @@ export function getLatest(history, undoDateTime = null, includeInActive = false,
         if (!acc[update.id] || update.created > acc[update.id].created) {
             acc[update.id] = update;
         }
+         
         return acc;
     }, {})
 
@@ -288,13 +291,11 @@ export function getLatest(history, undoDateTime = null, includeInActive = false,
 
 
 
-export function prepareUpdate(updates,adjustment) {
-    return prepareUpdates(updates,adjustment)
+export function prepareUpdate(updates, adjustment) {
+    return prepareUpdates(updates, adjustment)
 }
 
 export function prepareUpdates(updates, adjustment) {
-
-    const moment = require("moment");
 
     let output = updates
 
@@ -302,16 +303,12 @@ export function prepareUpdates(updates, adjustment) {
         output = [updates]
     }
 
-    const createdDate = moment()
-    
-    const adjustedDate = createdDate.add(adjustment,'ms')
-     
-    const formattedDate = adjustedDate.format("YYYY-MM-DDTHH:mm:ss.SSS")
+    const createdDate = localServerDateNow(adjustment)
 
 
     output.forEach((update, index) => {
 
-        output[index] = { ...update, created: formattedDate, updatedOnServer: null }
+        output[index] = { ...update, created: createdDate, updatedOnServer: null }
     })
 
     output.forEach((update) => {
@@ -327,5 +324,16 @@ export function prepareUpdates(updates, adjustment) {
 }
 
 
+export function localServerDateNow(adjustment = null) {
 
+    const moment = require("moment");
+
+    const createdDate = moment()
+
+    const adjustedDate = createdDate.add(adjustment, 'ms')
+
+    const formattedDate = adjustedDate.format("YYYY-MM-DDTHH:mm:ss.SSS")
+
+    return formattedDate
+}
 

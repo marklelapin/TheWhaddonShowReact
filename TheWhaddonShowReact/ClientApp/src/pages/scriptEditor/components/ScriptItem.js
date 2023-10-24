@@ -14,7 +14,7 @@ import Comment from './Comment';
 import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 import { Icon } from 'components/Icons/Icons';
-import { Container, Row, Col } from 'reactstrap';
+import { Button } from 'reactstrap';
 import MediaDropzone from 'components/Uploaders/MediaDropzone';
 //utilities
 import { log } from 'helper';
@@ -35,7 +35,7 @@ function ScriptItem(props) {
 
 
     // get specific props
-    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus, previousFocus = null, nextFocus = null } = props;
+    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus,undoDateTime, previousFocus = null, nextFocus = null } = props;
 
     log(debug, 'ScriptItemComment: scriptItem', scriptItem)
     //Redux state
@@ -80,7 +80,10 @@ function ScriptItem(props) {
     }
 
     const handleShowMedia = (value = null) => {
-        log(debug, 'handleShowMedia', {showMedia: showMedia, value: value})
+
+        if (undoDateTime) { onClick('confirmUndo') }
+
+        log(debug, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
             setShowMedia(!showMedia)
         } else {
@@ -89,6 +92,9 @@ function ScriptItem(props) {
     }
 
     const handleMedia = (type, media) => {
+
+        if (undoDateTime) { onClick('confirmUndo') }
+
         let urls = []
 
         if (Array.isArray(media)) {
@@ -102,7 +108,7 @@ function ScriptItem(props) {
         switch (type) {
             case 'add': updatedAttachments = [...updatedAttachments, ...urls]; break;
             case 'remove': updatedAttachments = updatedAttachments.filter(attachment => !urls.includes(attachment)); break;
-            default : return;
+            default: return;
         }
 
         onChange('attachments', updatedAttachments)
@@ -124,6 +130,8 @@ function ScriptItem(props) {
                     <PartSelector
                         scene={scene}
                         allocatedPartIds={scriptItem.partIds}
+                        undoDateTime={undoDateTime}
+                        onClick={onClick}
                         onChange={(selectedPartIds) => onChange('partIds', selectedPartIds)}
                     />
                 </div>
@@ -138,19 +146,19 @@ function ScriptItem(props) {
                     onClick={onClick}
                     toggleMedia={(value) => handleShowMedia(value)}
                     onChange={onChange}
+                    undoDateTime={undoDateTime}
                     moveFocus={moveFocus}
-                    refresh={scriptItem.refresh}
                 />
 
             </div>
-            {((showMedia && focus) || (scriptItem.attachments.length > 0)) &&
+            {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
                 <MediaDropzone
-                existingMediaURLs={scriptItem.attachments}
-                addMedia={(media) => handleMedia('add', media)}
-                removeMedia={(media) => handleMedia('remove', media)}
-                showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
-                autoLoad={true}
-            />
+                    existingMediaURLs={scriptItem.attachments}
+                    addMedia={(media) => handleMedia('add', media)}
+                    removeMedia={(media) => handleMedia('remove', media)}
+                    showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
+                    autoLoad={true}
+                />
             }
 
             {(comment) &&
@@ -165,7 +173,17 @@ function ScriptItem(props) {
 
             {(type === SCENE) &&
                 <div className="scene-controls">
+                    {scriptItem.undoDateTime &&
+                        <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
+                    }
+                    <Icon icon="undo" onClick={() => onClick('undo')} />
+                    {scriptItem.undoDateTime &&
+                        <Icon icon="redo" onClick={() => onClick('redo')} />
+                    }
                     <Icon icon="trash" onClick={() => onClick('deleteScene', null)} />
+
+
+
                 </div>
             }
 
