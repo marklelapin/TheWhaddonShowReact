@@ -93,6 +93,7 @@ export class ScriptItemUpdate extends LocalServerModelUpdate {
         this.previousId = null;
         this.parentId = null;
         this.attachments = [];
+        this.commentId = null;
     }
 
 }
