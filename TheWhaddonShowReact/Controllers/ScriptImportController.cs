@@ -36,24 +36,19 @@ namespace TheWhaddonShowReact.Controllers
 			_openAIKey = _config.GetValue<string>("OpenAIKey");
 		}
 
-		[HttpPost("import")]
-		public async Task<IActionResult> Import([FromForm] IFormFile file)
+		[HttpPost("convertTextToScriptItems")]
+		public async Task<IActionResult> ConvertTextToScriptItems([FromBody] string fileText)
 		{
-			if (file == null || file.Length == 0)
+			if (fileText == null || fileText.Length == 0)
 			{
-				return BadRequest("No file selected");
+				return BadRequest("No text given to import controller.");
 			}
 
 			string fileContent;
 			try
 
 			{
-				using (var reader = new StreamReader(file.OpenReadStream()))
-				{
-					fileContent = reader.ReadToEnd();
-				}
-
-				(ImportHeader header, List<ImportLine> importLines) = await extractFileContent(fileContent);
+				(ImportHeader header, List<ImportLine> importLines) = await extractFileContent(fileText);
 
 				SetParts(header);
 

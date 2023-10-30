@@ -11,6 +11,9 @@
     CLOSE_POSTBACK
 } from 'actions/localServer';
 
+import { CLEAR_IMPORT_UPDATES } from 'actions/scriptEditor';
+import { IMPORT_GUID } from 'pages/scriptEditor/ScriptImporter';
+
 import {
     //**LSMTypeInCode** */
     Person
@@ -268,6 +271,14 @@ export default function localServerReducer(state = defaultState, action) {
 
                 default: return state;
             }
+
+        case CLEAR_IMPORT_UPDATES:
+
+            return {
+                ...state,
+                scriptItems: {...state.scriptItems, history: state.scriptItems.history.filter((item) => item.parentId !== IMPORT_GUID)}
+            }
+
         default:
             return state;
     }

@@ -89,15 +89,15 @@ export async function fetchMediaFiles(fileNames) {
     }
 
 
-    
+
 
     const getFile = async (fileName) => {
 
         try {
             log(debug, 'fetchMediaFiles fileName', fileName)
-            const response = await axios.get(`file/download/media/${fileName}`, {responseType: 'arraybuffer'});
+            const response = await axios.get(`file/download/media/${fileName}`, { responseType: 'arraybuffer' });
 
-            const type  = response.headers['content-type']
+            const type = response.headers['content-type']
 
             const blob = new Blob([response.data]);
 
@@ -116,5 +116,44 @@ export async function fetchMediaFiles(fileNames) {
 
     return files || []
 
+}
+
+export async function getFileTextContents(files) {
+
+    const debug = true;
+    const textContents = [];
+
+    log(debug, 'getFileTextContents files', files)
+
+    for (const file of files) {
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await axios.post('file/getFileTextContent', formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+
+            log(debug, 'getFileTextContents response', response.data)
+
+            if (response.status === 200) {
+                textContents.push(response.data)
+            } else {
+                alert(`Couldn't get text from ${file.name}.`)
+            }
+        }
+        catch (error) {
+            alert(`${file.name} failed to upload.`)
+            console.log(`${file.name} failed to upload. ${error}`)
+            return
+        }
+    }
+
+    log(debug, 'getFileTextContents textContents', textContents)
+    console.log('hello')
+    return textContents
 }
 

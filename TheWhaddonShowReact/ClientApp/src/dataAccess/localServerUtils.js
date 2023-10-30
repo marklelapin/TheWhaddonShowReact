@@ -26,6 +26,7 @@ import {
 } from 'actions/localServer';
 import { log } from 'helper.js';
 
+import { IMPORT_GUID } from 'pages/scriptEditor/ScriptImporter';
 
 export async function useSync() {
 
@@ -61,7 +62,7 @@ export async function useSync() {
 
     useEffect(() => {
         if (scriptItems.sync.isSyncing) {
-            setData(scriptItems.history)
+            setData(scriptItems.history.filter(item=>item.parentId !== IMPORT_GUID))
             setType(scriptItems.type)
             setTriggerSync(!triggerSync)
         }

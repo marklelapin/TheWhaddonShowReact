@@ -11,6 +11,7 @@ export const ADD_UPDATES_SCENE_HISTORY = 'ADD_UPDATES_SCENE_HISTORY';
 export const ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY';
 export const UPDATE_SCENE_PART_PERSONS = 'UPDATE_SCENE_PART_PERSONS';
 export const CHANGE_FOCUS = 'CHANGE_FOCUS';
+export const CLEAR_IMPORT_UPDATES = 'CLEAR_IMPORT_UPDATES';
 
 
 export function updateSearchParameters(searchParameters) {
@@ -92,5 +93,11 @@ export function changeFocus(focus) {
     return {
         type: CHANGE_FOCUS,
         focus,
+    }
+}
+
+export function clearImportUpdates() {
+    return {
+        type: CLEAR_IMPORT_UPDATES,
     }
 }

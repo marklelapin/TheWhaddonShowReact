@@ -78,5 +78,31 @@ namespace TheWhaddonShowReact.Controllers
 				return StatusCode(500, ex.Message);
 			}
 		}
+
+
+		[HttpPost("getFileTextContent")]
+		public async Task<IActionResult> Import([FromForm] IFormFile file)
+		{
+			if (file == null || file.Length == 0)
+			{
+				return BadRequest("No file selected");
+			}
+
+			string fileContent = "";
+			try
+			{
+				using (var reader = new StreamReader(file.OpenReadStream()))
+				{
+					fileContent = reader.ReadToEnd();
+				}
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+
+			return Ok(fileContent);
+
+		}
 	}
 }
