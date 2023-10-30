@@ -24,7 +24,7 @@ import Script from '../../pages/scriptEditor/Script';
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
-import Helper from '../Helper';
+//import Helper from '../Helper';
 import { openSidebar, closeSidebar } from '../../actions/navigation';
 import s from './Layout.module.scss';
 import { DashboardThemes } from '../../reducers/layout';
@@ -82,7 +82,7 @@ class Layout extends React.Component {
                 <Sidebar />
                 <div className={s.wrap}>
                     <Header />
-                    <Helper />
+                
 
                     <Hammer onSwipe={this.handleSwipe}>
                         <main className={s.content}>
