@@ -17,6 +17,8 @@
   <ItemGroup>
     <PackageReference Include="MarkCarter.MyApiMonitorClassLibrary" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.20" />
+    <PackageReference Include="Microsoft.Office.Interop.Word" Version="15.0.4797.1004" />
+    <PackageReference Include="MimeMapping" Version="2.0.0" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
   </ItemGroup>
 
