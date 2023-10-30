@@ -43,6 +43,15 @@ if (builder.Environment.IsDevelopment()) //allows file upload from localhost:444
 
 builder.Services.AddDownstreamApi("TheWhaddonShowApi", builder.Configuration.GetSection("TheWhaddonShowApi"));
 
+builder.Services.AddHttpClient("OpenAI", opts =>
+{
+	opts.BaseAddress = new Uri(builder.Configuration.GetValue<string>("OpenAIApi:BaseUrl"));
+	opts.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration.GetValue<string>("OpenAIApi:ApiKey")}");
+	opts.DefaultRequestHeaders.Add("Content-Type", "application/json");
+});
+
+
+
 
 
 builder.Services.AddControllersWithViews();
