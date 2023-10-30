@@ -1,26 +1,24 @@
+//react/Redux
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Switch, Route, withRouter, Redirect } from 'react-router';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
+
+
+//Components
 import Hammer from 'rc-hammerjs';
-
-
 import TablesStatic from '../../pages/tables/static';
 import TablesDynamic from '../../pages/tables/dynamic';
-
 import ExtraCalendar from '../../pages/extra/calendar';
-
 import ExtraGallery from '../../pages/extra/gallery';
-
 import Widgets from '../../pages/widgets';
-
 import DashboardAnalytics from '../../pages/analytics';
 import Dashboard from '../../pages/dashboard';
 import Home from '../../pages/home/Home';
 import Users from '../../pages/user/Users';
 import Script from '../../pages/scriptEditor/Script';
-
+import ScriptImporter from '../../pages/scriptEditor/ScriptImporter';
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
@@ -28,7 +26,6 @@ import Sidebar from '../Sidebar';
 import { openSidebar, closeSidebar } from '../../actions/navigation';
 import s from './Layout.module.scss';
 import { DashboardThemes } from '../../reducers/layout';
-
 import BreadcrumbHistory from '../BreadcrumbHistory';
 import ApiTestResults from '../../pages/apiMonitor/TestResults';
 
@@ -100,7 +97,7 @@ class Layout extends React.Component {
                                         <Route path="/app/main/analytics" exact component={DashboardAnalytics} />
 
                                         <Route path="/app/script" exact component={Script} />
-                                        <Route path="/app/script/import" exact component={() => <Redirect to="/app/chat" />} />
+                                        <Route path="/app/script/import" exact component={ScriptImporter} />
 
                                         <Route path="/app/planning/cast" exact render={() => <Redirect to="/app/tables/static" />} />
                                         <Route path="/app/planning/props" exact render={() => <Redirect to="/app/tables/static" />} />

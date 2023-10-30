@@ -1,0 +1,9 @@
+1. pass in whole scene:
+
+identify the scene title, synopsis, parts, initial staging and fist of line of this scene. Return the information in a json string.
+
+
+2.then split the scene up into different lines
+
+for each line of this script identify its type as either 'action','dialogue','sound','lighting' . actions tend to be surrounded by brackets with nothing else on the line.
+ if its of type dialogue or action identify the parts saying the dialogue from ['Charlotte','Ms Collin','Richard','Mr Burnett','Rose','Annabelle'].  return a json string with an array of objects for each line with type, parts(as an array) and text as properties.
