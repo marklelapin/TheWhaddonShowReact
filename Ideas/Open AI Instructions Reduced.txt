@@ -1,0 +1,122 @@
+Parse theatre scripts into a csv with Type,Parts,Text as headers.
+
+Type can be Scene,Synopsis,InitialStaging,Staging,InitialCurtain,Curtain,Dialogue,Action,Sound,Lighting
+
+The first 4 rows must be in the order Scene,Synopsis,InitialStaging,InitialCurtain. If nothing relates then make text = ''
+Only type dialogue needs parts which is an array of the parts speaking the dialogue.
+For Curtain and InitialCurtain text should either be 'Curtain Open','Curtain Closed' or ''
+
+
+
+
+ScriptItems: an an array of objects representing lines of a theatre script with id, type, text, partIds, tags, nextId and previousId as detailed below.
+
+id: = distinct guid,
+
+type: one of... 
+Scene - the title of the scene.
+Synopsis - a brief description of the scene.
+IntitialStaging - a description of the intitial staging required
+Staging - a description of changes to the staging during the scene
+InitialCurtain - whether or not the curtain is opened or closed at the beginning of the scene
+Curtain - changes to the curtain being open or closed during the scene
+Dialogue - the words spoken by parts
+Action - a description of any actions occuring
+Sound - a description of a sound that is to be made.
+Lighting - a description of lighting setup and changes.
+
+text: title of scene, description of action, words of dialogue etc
+
+partIds: apply to Dialogue type only = array of ids corresponding to the Part or Parts from above speaking the dialogue.
+
+tags: apply to Curtain and Initial Curtain types only. Array containing either "curtainOpen" or "curtainClosed"
+
+nextId: is the id of the scriptItem before
+previousId: is the id of the scriptItem after
+
+
+The first scriptItem should be of type Scene and its partIds should contain array of all partIds in Parts.
+The second is of type Synopsis
+The third is of type Initial Staging
+the fourth is of type Initial Curtain
+
+If nothing corresponds to these types make text = ''
+
+After that the types of scriptItems can be whatever makes most sense.
+
+Example:
+
+{
+  "Parts": [
+    {
+      "id": "1a8dc454-1e24-4ed2-b6f9-61b91a88c11d",
+      "name": "John Doe"
+    },
+    {
+      "id": "2f3ba94d-ced3-4f23-91e3-37c59232c654",
+      "name": "Jane Smith"
+    }
+  ],
+  "ScriptItems": [
+    {
+      "id": "3c02a38f-82d0-4a01-bde7-fc4221b84dc6",
+      "type": "Scene",
+      "text": "Jane meets Joe",
+	"partIds": ["1a8dc454-1e24-4ed2-b6f9-61b91a88c11d","2f3ba94d-ced3-4f23-91e3-37c59232c654"]
+      "nextId": "a0f4b2a6-3b1c-45d8-9e5a-2d3e2f1c8a77",
+      "previousId": null
+    },
+{
+      "id": "a0f4b2a6-3b1c-45d8-9e5a-2d3e2f1c8a77",
+      "type": "Synopsis",
+      "text": "The setup for the next 3 scenes involving two people talking in a park.",
+      "nextId": "6f90c1f1-0eab-4c3b-81bf-7d4a39b11288",
+      "previousId": 3c02a38f-82d0-4a01-bde7-fc4221b84dc6
+    },
+{
+      "id": "6f90c1f1-0eab-4c3b-81bf-7d4a39b11288",
+      "type": "InitialStaging",
+      "text": "Two chairs and a table in front of the curtain.",
+      "nextId": "b3ca1c04-61f6-4938-a8e1-8010b956c5c6",
+      "previousId": "a0f4b2a6-3b1c-45d8-9e5a-2d3e2f1c8a77"
+    },
+{
+      "id": "b3ca1c04-61f6-4938-a8e1-8010b956c5c6",
+      "type": "InitialCurtain",
+      "text": "curtain open",
+"tags": "curtainOpen"
+      "nextId": "938c5cf4-74ac-4f2e-9ef7-673ecad1d01f",
+      "previousId": "6f90c1f1-0eab-4c3b-81bf-7d4a39b11288"
+    },
+    {
+      "id": "938c5cf4-74ac-4f2e-9ef7-673ecad1d01f",
+      "type": "Dialogue",
+      "text": "Hello, world!",
+      "partIds": ["1a8dc454-1e24-4ed2-b6f9-61b91a88c11d"],
+      "nextId": "4c2345f6-7dab-4a9e-8ea0-fa91d23451a3",
+      "previousId": "3c02a38f-82d0-4a01-bde7-fc4221b84dc6"
+    },
+    {
+      "id": "4c2345f6-7dab-4a9e-8ea0-fa91d23451a3",
+      "type": "Action",
+      "text": "John waves his hand.",
+      "nextId": "7deaf9b3-6bd2-4ca4-94a0-d3b9ef7cd9f8",
+      "previousId": "938c5cf4-74ac-4f2e-9ef7-673ecad1d01f"
+    },
+    {
+      "id": "7deaf9b3-6bd2-4ca4-94a0-d3b9ef7cd9f8",
+      "type": "Dialogue",
+      "text": "Hi, Jane!",
+      "partIds": ["2f3ba94d-ced3-4f23-91e3-37c59232c654"],
+      "nextId": null,
+      "previousId": "4c2345f6-7dab-4a9e-8ea0-fa91d23451a3"
+    }
+  ]
+}
+
+
+
+ 
+
+
+

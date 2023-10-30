@@ -1,0 +1,128 @@
+{
+  "Parts": [
+    {
+      "id": "1a8dc454-1e24-4ed2-b6f9-61b91a88c11d",
+      "name": "Ms Collin"
+    },
+    {
+      "id": "2f3ba94d-ced3-4f23-91e3-37c59232c654",
+      "name": "Voiceover (Graham Stewart)"
+    },
+    {
+      "id": "3c02a38f-82d0-4a01-bde7-fc4221b84dc6",
+      "name": "Richard"
+    },
+    {
+      "id": "4c2345f6-7dab-4a9e-8ea0-fa91d23451a3",
+      "name": "Rose"
+    },
+    {
+      "id": "5e67f33a-7d13-45ab-9f92-4a8d6c1a32d5",
+      "name": "Shirley"
+    },
+    {
+      "id": "6d0f33e1-1a2c-45f4-9e9a-6a9b9c6c1a1e",
+      "name": "Charlotte"
+    },
+    {
+      "id": "7d1a23d8-23ab-4ac3-9e3d-3a7b4c1b8a7d",
+      "name": "Sharon"
+    },
+    {
+      "id": "8d2c4a11-8eab-4f6e-9f0a-6a9c6a1e4b3d",
+      "name": "Benjamin"
+    }
+  ],
+  "ScriptItems": [
+    {
+      "id": "1a8dc454-1e24-4ed2-b6f9-61b91a88c11d",
+      "type": "Scene",
+      "text": "Whaddon Hall Secondary Roll Call",
+      "partIds": [
+        "1a8dc454-1e24-4ed2-b6f9-61b91a88c11d",
+        "2f3ba94d-ced3-4f23-91e3-37c59232c654",
+        "3c02a38f-82d0-4a01-bde7-fc4221b84dc6",
+        "4c2345f6-7dab-4a9e-8ea0-fa91d23451a3",
+        "5e67f33a-7d13-45ab-9f92-4a8d6c1a32d5",
+        "6d0f33e1-1a2c-45f4-9e9a-6a9b9c6c1a1e",
+        "7d1a23d8-23ab-4ac3-9e3d-3a7b4c1b8a7d",
+        "8d2c4a11-8eab-4f6e-9f0a-6a9c6a1e4b3d"
+      ],
+      "tags": [],
+      "nextId": "2f3ba94d-ced3-4f23-91e3-37c59232c654",
+      "previousId": null
+    },
+    {
+      "id": "2f3ba94d-ced3-4f23-91e3-37c59232c654",
+      "type": "Synopsis",
+      "text": "Angry inner-city schoolteacher takes registration and gets mad at mispronunciations",
+      "partIds": [],
+      "tags": [],
+      "nextId": "3c02a38f-82d0-4a01-bde7-fc4221b84dc6",
+      "previousId": "1a8dc454-1e24-4ed2-b6f9-61b91a88c11d"
+    },
+    {
+      "id": "3c02a38f-82d0-4a01-bde7-fc4221b84dc6",
+      "type": "InitialStaging",
+      "text": "In front of curtain",
+      "partIds": [],
+      "tags": [],
+      "nextId": "4c2345f6-7dab-4a9e-8ea0-fa91d23451a3",
+      "previousId": "2f3ba94d-ced3-4f23-91e3-37c59232c654"
+    },
+    {
+      "id": "4c2345f6-7dab-4a9e-8ea0-fa91d23451a3",
+      "type": "InitialCurtain",
+      "text": "Props: Table with Books and Paper on (to be swept off). Staging for School Days setup behind curtain.",
+      "partIds": [],
+      "tags": [],
+      "nextId": "5e67f33a-7d13-45ab-9f92-4a8d6c1a32d5",
+      "previousId": "3c02a38f-82d0-4a01-bde7-fc4221b84dc6"
+    },
+    {
+      "id": "5e67f33a-7d13-45ab-9f92-4a8d6c1a32d5",
+      "type": "Dialogue",
+      "text": "Voiceover: Meanwhile at Whaddon Hall Secondary School a different kind of registration is taking place…",
+      "partIds": [],
+      "tags": [],
+      "nextId": "6d0f33e1-1a2c-45f4-9e9a-6a9b9c6c1a1e",
+      "previousId": "4c2345f6-7dab-4a9e-8ea0-fa91d23451a3"
+    },
+    {
+      "id": "6d0f33e1-1a2c-45f4-9e9a-6a9b9c6c1a1e",
+      "type": "Dialogue",
+      "text": "Ms Collin: All right, listen up you lot. I’m your headteacher Ms Collin, I taught school for 20 years in the most deprived parts of the Northern Territories and don’t mean Stony Stratford so if you hard nuts from the Whaddon Hall Estate think you’re going to get one over me you’ve got another thing coming. Do you get me? Okay, let’s take the register.",
+      "partIds": ["1a8dc454-1e24-4ed2-b6f9-61b91a88c11d"],
+      "tags": [],
+      "nextId": "7d1a23d8-23ab-4ac3-9e3d-3a7b4c1b8a7d",
+      "previousId": "5e67f33a-7d13-45ab-9f92-4a8d6c1a32d5"
+    },
+    {
+      "id": "7d1a23d8-23ab-4ac3-9e3d-3a7b4c1b8a7d",
+      "type": "Dialogue",
+      "text": "Charlotte: Do you mean Charlotte?",
+      "partIds": ["6d0f33e1-1a2c-45f4-9e9a-6a9b9c6c1a1e"],
+      "tags": [],
+      "nextId": "8d2c4a11-8eab-4f6e-9f0a-6a9c6a1e4b3d",
+      "previousId": "6d0f33e1-1a2c-45f4-9e9a-6a9b9c6c1a1e"
+    },
+    {
+      "id": "8d2c4a11-8eab-4f6e-9f0a-6a9c6a1e4b3d",
+      "type": "Dialogue",
+      "text": "Ms Collin: No I mean Charlene. Charlotte: Ok sorry. If that’s what you prefer. I think that’s me yes. Ms Collin: That’s what I want class. Some respect. Bruce…Bruce Burnett… Benjamin: I’m Benjamin Burnett. Ms Collin: I said Bruce. Benjamin: Well my name’s Benjamin Burnett. I think you might have got it wrong. Ms Collin: Are you out of your bloody mind Bruce….are you really saying I’m wrong Bruce. Do you want to go to war? Benjamin: I guess not. Ms Collin: Good. Sheila Vincent. Shirley: Shirley? Ms Collin: Are you testing me Sheila? Shirley: It’s Shirley? Ms Collin: Nah. Say it properly. Shirley: Shirley? Ms Collin: No Shirley: Shirley Ms Collin: No. Say it Right. Shirley: Sheila Ms Collin: Correct. Anyone else want to play? Is that how it’s going to be? (pause) Richard. Richard Boat – eng Richard: It’s actually Boateng. Ms Collin: That’s what I said Boat – eng. Richard: No it’s Boateng. Ms Collin: Boateng Richard: It’s Boateng. It’s actually the 4th most common surname in Ghana. Ms Collin: Do I look like a care Boat - eng. Richard: Boateng. Ms Collin: God damn it. Boateng. I don’t any more. Rose Rose Rose Ambler Boat-eng Rose: Ambler-Boateng Ms Collin: God damn it! (Snaps clipboard in half) Ms Collin: Sheila Shirley: I think you’ve already done me. Ms Collin: Not you. The other Sheila. Sheila Bess-elle Sharon: It’s actually Sharon. Ms Collin: Son of a .....(sweeps books off the table)",
+      "partIds": ["1a8dc454-1e24-4ed2-b6f9-61b91a88c11d", "6d0f33e1-1a2c-45f4-9e9a-6a9b9c6c1a1e", "8d2c4a11-8eab-4f6e-9f0a-6a9c6a1e4b3d"],
+      "tags": [],
+      "nextId": null,
+      "previousId": "8d2c4a11-8eab-4f6e-9f0a-6a9c6a1e4b3d"
+    },
+    {
+      "id": "9d3f4a7e-6c8b-4a4f-9e0a-6f9a1d2a1e4b",
+      "type": "Lighting",
+      "text": "Lighting: Lights Out!",
+      "partIds": [],
+      "tags": [],
+      "nextId": null,
+      "previousId": "8d2c4a11-8eab-4f6e-9f0a-6a9c6a1e4b3d"
+    }
+  ]
+}
