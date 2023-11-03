@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.IO.Abstractions;
-using System.Text;
+using MyClassLibrary.Configuration;
+using MyClassLibrary.Interfaces;
 using System.Text.Json;
 using TheWhaddonShowClassLibrary.Models;
 using TheWhaddonShowReact.Models.LocalServer;
-
 
 namespace TheWhaddonShowReact.Controllers
 {
@@ -15,168 +14,161 @@ namespace TheWhaddonShowReact.Controllers
 	[Route("api/[controller]")]
 	public class ScriptImportController : ControllerBase
 	{
-		private readonly IFileSystem _fileSystem;
-		private readonly IConfiguration _config;
-		private readonly IHttpClientFactory _factory;
-		private readonly string ServiceName = "OpenAI";
-		private readonly string _openAIKey;
+		private readonly IOpenAIControllerService _openAIControllerService;
 
-		private string ImportFolder = "import";
-
+		private ImportHeader Header = new ImportHeader();
 		private List<ImportLine> ImportLines = new List<ImportLine>();
 
 		public List<ScriptItemUpdate> NewScriptItemUpdates = new List<ScriptItemUpdate>();
 		public List<PartUpdate> NewPartUpdates = new List<PartUpdate>();
 
-		public ScriptImportController(IFileSystem fileSystem, IConfiguration config, IHttpClientFactory factory)
+		public ScriptImportController(IOpenAIControllerService openAIControllerService)
 		{
-			_fileSystem = fileSystem;
-			_config = config;
-			_factory = factory;
-			_openAIKey = _config.GetValue<string>("OpenAIKey");
+			_openAIControllerService = openAIControllerService;
 		}
 
-		[HttpPost("convertTextToScriptItems")]
-		public async Task<IActionResult> ConvertTextToScriptItems([FromBody] string fileText)
+		[HttpPost("convertTextToHeaderScriptItems")]
+		public async Task<IActionResult> ConvertTextToHeaderScriptItems([FromBody] string text) //, [FromQuery] Guid parentId
 		{
-			if (fileText == null || fileText.Length == 0)
+			if (text == null || text.Length == 0)
 			{
 				return BadRequest("No text given to import controller.");
 			}
 
-			string fileContent;
 			try
 
 			{
-				(ImportHeader header, List<ImportLine> importLines) = await extractFileContent(fileText);
+				string firstPrompt = "Identify the scene 'title', 'synopsis', 'initialStaging' and 'parts' of the scene." +
+					"Return the information as a RFC8259 compliant json string with parts as an array.";
 
-				SetParts(header);
+				var firstResponse = await _openAIControllerService.GetChatCompletionContent(firstPrompt, text, null);
 
-				SetScriptItems(header, importLines);
+				if (firstResponse is ObjectResult objectResult)
+				{
+					if (objectResult.StatusCode == 200)
+					{
+						ImportHeader header = JsonSerializer.Deserialize<ImportHeader>((string)objectResult.Value!) ?? new ImportHeader();
+						List<PartUpdate> headerParts = createParts(header);
+						var headerScriptItems = createHeaderScriptItems(header, headerParts); //, parentId
 
+						var options = new JsonSerializerOptions
+						{
+							PropertyNamingPolicy = new CamelCaseNamingPolicy()
+						};
+
+						return Ok(JsonSerializer.Serialize(new ImportResponse(headerScriptItems, headerParts), options));
+					}
+					else
+					{
+						return StatusCode((int)(objectResult.StatusCode ?? 500), objectResult.Value);
+					}
+				}
+
+				throw new Exception("");
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, ex.Message);
+				return StatusCode(500, $"Error getting response from OpenAI Api: {ex.Message}");
 			}
 
-			string importResponse = JsonSerializer.Serialize(new ImportResponse(NewPartUpdates, NewScriptItemUpdates));
+		}
+
+
+		[HttpPost("convertTextToScriptItems")]
+		public async Task<IActionResult> ConvertTextToScriptItems([FromBody] string text,
+																	[FromQuery] string[] partNames,
+																	[FromQuery] Guid[] partIds,
+																	[FromQuery] Guid parentId
+			)
+		{
+			List<ScriptItemUpdate> scriptItemsOutput = new List<ScriptItemUpdate>();
+
+			try
+			{
+				////split the fileContent into chunks of lines to keep OpenAI tokens below max limit
+				List<string> fileContentLines = text.Split("\n").ToList();
+
+
+
+				//then process fileContent in chunks
+				int chunkSize = 1;
+				for (int i = 0; i < fileContentLines.Count; i += chunkSize)
+				{
+					string textChunk = string.Join("\n", fileContentLines.Skip(i).Take(chunkSize));
+					//Then for all chunks of lines get OpenAI to identify the type and text of each line and the parts associated with it.
+
+					string prompt = "For each line of theatre script identify the type as Staging, Action, Dialogue, Sound or Lighting." +
+						"Actions tend to be surrounded by brackets with nothing else on the line. If unsure make it Action." +
+						"If type is Dialogue identify the parts (if any) associated with the text. they will be at the start and separated from the dialogue." +
+						"Try to associated the parts with one of the following: " + partNames.ToString() + "." +
+						"Return a RFC8259 compliant json string only with an array of objects for each line with type, parts(as an array) and text as properties.";
+
+					var response = await _openAIControllerService.GetChatCompletionContent(prompt, textChunk, null);
+
+					if (response is ObjectResult objectResult)
+					{
+						if (objectResult.StatusCode == 200)
+						{
+							List<ImportLine> listImportLines = JsonSerializer.Deserialize<List<ImportLine>>((string)objectResult.Value!) ?? new List<ImportLine>();
+							scriptItemsOutput.AddRange(createScriptItems(listImportLines, parentId, partNames, partIds));
+						}
+						else
+						{
+							return StatusCode((int)(objectResult.StatusCode ?? 500), objectResult.Value);
+						}
+					}
+					else
+					{
+						throw new Exception("");
+					}
+
+				}
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Error getting response from OpenAI Api: {ex.Message}");
+			}
+
+			var options = new JsonSerializerOptions
+			{
+				PropertyNamingPolicy = new CamelCaseNamingPolicy()
+			};
+			string importResponse = JsonSerializer.Serialize(new ImportResponse(scriptItemsOutput), options);
 
 			return Ok(importResponse);
-
 		}
 
-		/// <summary>
-		/// Extracts the relevant information from the fileContent using OpenAI
-		/// </summary>
-		/// <param name="fileContent"></param>
-		/// <returns></returns>
-		async Task<(ImportHeader header, List<ImportLine> importLines)> extractFileContent(string fileContent)
+		List<PartUpdate> createParts(ImportHeader header)
 		{
-			// Get the headerinfo from OpenAI analysis of the fileContent
-			string firstPrompt = "Identify the scene title, synopsis, parts, initial_staging and first_line of the scene. Return the information in a json string.";
+			List<string> parts = header.parts;
 
-			string headerInfo = await GetOpenAIResponse(firstPrompt, fileContent);
-
-			ImportHeader header = JsonSerializer.Deserialize<ImportHeader>(headerInfo) ?? new ImportHeader();
-
-			List<ImportLine> importLines = new List<ImportLine>();
-
-			//split the fileContent into chunks of lines to keep OpenAI tokens below max limit
-
-			List<string> fileContentLines = fileContent.Split("\n").ToList();
-
-			for (int i = 0; i < fileContentLines.Count; i += 8)
-			{
-
-				string fileContentChunk = string.Join("\n", fileContentLines.Skip(i).Take(8));
-
-
-				string prompt = "For each line of this script identify its type as either 'action', 'dialogue', 'sound','lighting'." +
-					"Actions tend to be surrounded by brackets with nothing else on the line." +
-					"If type is dialogue or action identify the parts associated with the text" +
-					$"Parts can be any from [{string.Join(",", header.Parts)}]." +
-					"Return a json string with an array of objects for each line with type, parts(as an array) and text as properties.";
-
-				string responseJson = await GetOpenAIResponse(prompt, fileContentChunk);
-
-				List<ImportLine> responseArray = JsonSerializer.Deserialize<List<ImportLine>>(responseJson) ?? new List<ImportLine>();
-
-				ImportLines = ImportLines.Concat(responseArray).ToList();
-
-			}
-
-
-			return (header, importLines);
-
-		}
-
-
-		async Task<string> GetOpenAIResponse(string systemPrompt, string userPrompt)
-		{
-			var contentObject = new
-			{
-				model = "gpt-3.5-turbo",
-				messages = new[]
-				{
-					new {
-						role = "system",
-						content = systemPrompt
-					}
-					,new {
-						role = "user",
-						content =  userPrompt
-					}
-				},
-				max_tokens = 4097,
-				temperature = 0,
-				top_p = 1,
-				frequency_penalty = 0,
-				presence_penalty = 0,
-			};
-
-			var contentJson = JsonSerializer.Serialize(contentObject);
-
-			var httpContent = new StringContent(contentJson, Encoding.UTF8, "application/json");
-
-			var client = _factory.CreateClient(ServiceName);
-			HttpResponseMessage response = await client.PostAsync("", httpContent);
-
-			var responseContent = response.Content.ReadAsStringAsync().Result;
-
-			return responseContent;
-		}
-
-
-		void SetParts(ImportHeader header)
-		{
 			List<PartUpdate> partUpdates = new List<PartUpdate>();
 
-			foreach (string part in header.Parts)
+			foreach (string part in parts)
 			{
 				PartUpdate newPart = new PartUpdate(part);
 				partUpdates.Add(newPart);
 			}
 
-			NewPartUpdates = partUpdates;
+			return partUpdates;
 		}
 
-
-		void SetScriptItems(ImportHeader header, List<ImportLine> importLines)
+		private List<ScriptItemUpdate> createHeaderScriptItems(ImportHeader header, List<PartUpdate> headerParts) //, Guid parentId
 		{
 			//Create header script items
-			ScriptItemUpdate scene = new ScriptItemUpdate("Scene");
-			scene.Text = header.Title;
-			scene.PartIds = NewPartUpdates.Select(x => x.Id).ToList();
+			ScriptItemUpdate scene = new ScriptItemUpdate("Scene"); //parentId, null, 
+			scene.Text = header.title;
+			scene.PartIds = headerParts.Select(x => x.Id).ToList();
 
 			ScriptItemUpdate synopsis = new ScriptItemUpdate("Synopsis");
-			scene.Text = header.Synopsis;
+			synopsis.Text = header.synopsis;
 
 			ScriptItemUpdate initialStaging = new ScriptItemUpdate("InitialStaging");
-			scene.Text = header.InitialStaging;
+			initialStaging.Text = header.initialStaging;
 
 			ScriptItemUpdate initialCurtain = new ScriptItemUpdate("InitialCurtain");
-			scene.Text = header.InitialCurtain;
+			initialCurtain.Tags = new List<string>() { "OpenCurtain" };
+			//scene.Text = header.InitialCurtain;
 
 			//add next, previous  and parent ids to header script items
 			scene.NextId = synopsis.Id;
@@ -193,6 +185,27 @@ namespace TheWhaddonShowReact.Controllers
 			initialCurtain.NextId = null;//established after script items created below.
 			initialCurtain.ParentId = scene.Id;
 
+			List<ScriptItemUpdate> scriptItemUpdates = new List<ScriptItemUpdate>()
+			{
+				scene,
+				synopsis,
+				initialStaging,
+				initialCurtain
+			};
+
+			return scriptItemUpdates;
+		}
+
+
+		List<ScriptItemUpdate> createScriptItems(List<ImportLine> importLines, Guid parentId, string[] partNames, Guid[] partIds)
+		{
+			Dictionary<string, Guid> partDictionary = new Dictionary<string, Guid>();
+
+			for (int i = 0; i < partNames.Length; i++)
+			{
+				partDictionary.Add(partNames[i], partIds[i]);
+			}
+
 
 			//create body script items
 			List<ScriptItemUpdate> scriptItems = new List<ScriptItemUpdate>();
@@ -201,17 +214,25 @@ namespace TheWhaddonShowReact.Controllers
 			{
 				try
 				{
-					ScriptItemUpdate scriptItem = new ScriptItemUpdate(Guid.NewGuid(), scene.Id, line.Type, getPartUpdates(line.Parts), null);
-					scriptItem.Text = line.Text ?? "";
+					List<Guid> parts = new List<Guid>();
+
+					foreach (string partName in line.parts)
+					{
+						parts.Add(partDictionary[partName]);
+					}
+
+					ScriptItemUpdate scriptItem = new ScriptItemUpdate(Guid.NewGuid(), parentId, line.type, null, null);
+					scriptItem.Text = line.text ?? "";
+					scriptItem.PartIds = parts;
 					scriptItems.Add(scriptItem);
 				}
 				catch
 				{
-					if (line.Text != null || line.Text?.Length > 0)
+					if (line.text != null || line.text?.Length > 0)
 					{
 						//if it fails but there is text then produce an action.
-						ScriptItemUpdate scriptItem = new ScriptItemUpdate(Guid.NewGuid(), scene.Id, "Action", null, null);
-						scriptItem.Text = line.Text;
+						ScriptItemUpdate scriptItem = new ScriptItemUpdate(Guid.NewGuid(), parentId, "Action", null, null);
+						scriptItem.Text = line.text;
 						scriptItems.Add(scriptItem);
 					}
 
@@ -225,15 +246,10 @@ namespace TheWhaddonShowReact.Controllers
 			{
 				scriptItems[i].PreviousId = scriptItems[i - 1]?.Id;
 				scriptItems[i].NextId = scriptItems[i + 1]?.Id;
-				scriptItems[i].ParentId = scene.Id;
+				scriptItems[i].ParentId = parentId;
 			}
 
-			//link header and body script items
-			initialCurtain.NextId = scriptItems[0].Id;
-			scriptItems[0].PreviousId = initialCurtain.Id;
-
-
-			NewScriptItemUpdates = scriptItems;
+			return scriptItems;
 
 		}
 

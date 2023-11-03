@@ -2,9 +2,9 @@
 {
 	public class ImportLine
 	{
-		public string Type { get; set; } = "";
-		public string Text { get; set; } = "";
-		public List<string> Parts { get; set; } = new List<string>();
+		public string type { get; set; } = "";
+		public string text { get; set; } = "";
+		public List<string> parts { get; set; } = new List<string>();
 
 
 	}
