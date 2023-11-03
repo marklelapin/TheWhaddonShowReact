@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 
 
 //Components
+import { Input } from 'reactstrap';
 import Dropzone from 'react-dropzone'
+import TextareaAutosize from 'react-autosize-textarea';
 
 //data access
 import { axios } from 'axios';
@@ -58,7 +60,10 @@ function TextDropzone(props) {
                 {fileText &&
                     <div className={s['text-dropzone-item']}>
 
-                        {fileText}
+                        <TextareaAutosize
+                            className={s[`text-dropzone-input`]}
+                            value={fileText}
+                        />
 
                     </div>
 
