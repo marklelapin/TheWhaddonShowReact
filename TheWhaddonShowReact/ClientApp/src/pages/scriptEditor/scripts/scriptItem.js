@@ -10,7 +10,7 @@ import { ABOVE, BELOW } from './utility';
 
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
 //--------------------------------------------------------------------------------------------------
-export function sortLatestScriptItems(head, scriptItems, undoDateTime) {
+export function sortLatestScriptItems(head, scriptItems, undoDateTime = null) {
 
     const latestScriptItems = getLatest(scriptItems, undoDateTime);
     const sortedScriptItems = sortScriptItems(head, latestScriptItems);

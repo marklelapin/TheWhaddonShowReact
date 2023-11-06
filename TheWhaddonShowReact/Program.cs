@@ -3,10 +3,13 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Identity.Web;
 using MyApiMonitorClassLibrary.Interfaces;
 using MyApiMonitorClassLibrary.Models;
+using MyClassLibrary.Configuration;
 using MyClassLibrary.DataAccessMethods;
 using MyClassLibrary.Extensions;
+using MyClassLibrary.Interfaces;
 using MyClassLibrary.LocalServerMethods.Interfaces;
 using MyClassLibrary.LocalServerMethods.Models;
+using MyClassLibrary.OpenAI;
 using System.IO.Abstractions;
 using TheWhaddonShowClassLibrary.DataAccess;
 using TheWhaddonShowReact.Models.LocalServer;
@@ -47,14 +50,16 @@ builder.Services.AddHttpClient("OpenAI", opts =>
 {
 	opts.BaseAddress = new Uri(builder.Configuration.GetValue<string>("OpenAIApi:BaseUrl"));
 	opts.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration.GetValue<string>("OpenAIApi:ApiKey")}");
-	opts.DefaultRequestHeaders.Add("Content-Type", "application/json");
 });
 
 
 
 
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+	options.InputFormatters.Add(new TextPlainInputFormatter());
+});
 
 
 //Api Monitor services
@@ -72,7 +77,7 @@ builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddScoped(typeof(ILocalDataAccess<>), typeof(ReactLocalDataAccess<>));
 builder.Services.AddScoped(typeof(IServerDataAccess<>), typeof(APIServerDataAccess<>));
 builder.Services.AddScoped(typeof(ILocalServerEngine<>), typeof(LocalServerEngine<>));
-
+builder.Services.AddTransient<IOpenAIControllerService, OpenAIControllerService>();
 // File uploading services
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();

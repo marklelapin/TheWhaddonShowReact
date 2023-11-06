@@ -4,24 +4,17 @@ import { useState, useEffect } from 'react';
 
 
 //Components
-import {
-  
-    Button,
-    Input,
-    Container
-} from 'reactstrap';
-import Widget from 'components/Widget'
+import { Input } from 'reactstrap';
 import Dropzone from 'react-dropzone'
-import MediaDisplay from './MediaDisplay';
-import { Icon } from 'components/Icons/Icons';
+import TextareaAutosize from 'react-autosize-textarea';
 
 //data access
-import { uploadFiles, fetchMediaFiles } from 'dataAccess/generalUtils';
+import { axios } from 'axios';
 
 
 //utils
+import { getFileTextContents } from 'dataAccess/generalUtils';
 import { log } from 'helper';
-import {textract} from 'textract';
 
 //css
 import s from './Uploaders.module.css';
@@ -31,39 +24,27 @@ function TextDropzone(props) {
     const debug = true;
 
     const {
-        dropzoneText = 'This Dropzone accepts .txt .doc & .docx files and converts it to plain text. Drag and drop your file here or click to select file to upload',
+        dropzoneText = 'This Dropzone accepts single .txt .doc & .docx files and converts them to plain text. Drag and drop your file here or click to select file to upload',
         fileText,
-        setFileText
+        onChange
     } = props;
 
-
-    const handleDrop = (selectedFiles) => {
+    log(debug, 'TextDropzone props', props)
+    const handleDrop = async (selectedFiles) => {
 
         if (selectedFiles === undefined || selectedFiles === null) return null
 
         if (selectedFiles.length !== 1) {
-           alert('Please only select one file')
+            alert('Please only select one file')
             return null
         }
+    
 
-        const fileString = getStringFromFile(selectedFiles[0])
-
-        setFileText(fileString)
-
+        const textContents = await getFileTextContents(selectedFiles)
+        log(debug, 'TextDropzone textContents', textContents)
+        onChange(textContents[0])
     }
 
-
-    const getStringFromFile = (file) => {
-
-        textract.fromBufferWithPath(file.path, { preserveLineBreaks: true }, (error, text) => {
-            if (error) {
-                console.error(`Error extracting text`, error)
-            } 
-
-            return (error) ? "Failed to processes text from file." : text;
-        })
-
-    }
 
     return (
 
@@ -73,20 +54,23 @@ function TextDropzone(props) {
                 onDrop={(selectedFiles) => handleDrop(selectedFiles)}
                 accept="text/*, .doc, .docx"
                 className={`${s.dropzone}`}
-                maxFiles={1}
+                multiple={false}
             >
 
-                ({fileText &&
+                {fileText &&
                     <div className={s['text-dropzone-item']}>
 
-                        {fileText}
+                        <TextareaAutosize
+                            className={s[`text-dropzone-input`]}
+                            value={fileText}
+                        />
 
                     </div>
 
-                })
-                ({!fileText &&
-                <p>{dropzoneText}</p>    
-                })
+                }
+                {!fileText &&
+                    <p>{dropzoneText}</p>
+                }
 
 
             </Dropzone>

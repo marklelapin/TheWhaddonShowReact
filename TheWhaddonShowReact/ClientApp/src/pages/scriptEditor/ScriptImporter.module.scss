@@ -1,0 +1,30 @@
+@import '../../styles/app';
+
+.script-importer-content{
+    display: flex;
+    flex-direction:row;
+}
+
+.import-file {
+    flex: 1;
+    padding:10px;
+}
+
+.file-converter{
+    flex: 1;
+    padding: 10px;
+    background-color: $red;
+}
+
+.file-converter-header{
+display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.import-file textarea {
+    width: 100%;
+    cursor: pointer;
+}

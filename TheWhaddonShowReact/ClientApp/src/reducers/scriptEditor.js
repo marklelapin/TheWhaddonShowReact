@@ -8,10 +8,12 @@ import { UPDATE_PART_PERSONS } from 'actions/scriptEditor';
 import { ADD_UPDATES_SCENE_HISTORY } from 'actions/scriptEditor';
 import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from 'actions/scriptEditor';
 import { UPDATE_SCENE_PART_PERSONS } from 'actions/scriptEditor';
+import { CLEAR_IMPORT_UPDATES } from 'actions/scriptEditor';
 
 
 import { CHANGE_FOCUS } from 'actions/scriptEditor';
 
+import { IMPORT_GUID } from 'pages/scriptEditor/ScriptImporter';
 
 const initialState = {
     searchParameters: {
@@ -90,6 +92,13 @@ export default function runtime(state = initialState, action) {
             return {
                 ...state,
                 focus: { [action.focus.id]: action.focus }
+            }
+        case CLEAR_IMPORT_UPDATES:
+            return {
+                ...state,
+                sceneHistory: [...state.sceneHistory.filter(item => item.id !== IMPORT_GUID)],
+                sceneScriptItemHistory: { ...state.sceneScriptItemHistory, [IMPORT_GUID]: [] },
+                scenePartPersons: { ...state.scenePartPersons, [IMPORT_GUID]: [] },
             }
  
             default:
