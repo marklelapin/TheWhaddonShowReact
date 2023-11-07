@@ -10,11 +10,6 @@ import { ConnectedRouter } from 'connected-react-router';
 import LocalServerSyncing from 'dataAccess/LocalServerSyncing';
 import ScriptEditorProcessing from 'dataAccess/ScriptEditorProcessing';
 
-import {
-    QueryClient,
-    QueryClientProvider
-} from '@tanstack/react-query'
-
 //Components
 import LayoutComponent from 'components/Layout';
 import Login from 'pages/auth/login';
@@ -40,9 +35,6 @@ import 'styles/theme.scss';
 
 
 
-// Create a client
-const queryClient = new QueryClient()
-
 const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
 
 function App() {
@@ -61,7 +53,7 @@ const currentUser = useSelector((state) => state.auth.currentUser)
             <LocalServerSyncing />
             <ScriptEditorProcessing />
 
-        <QueryClientProvider client={queryClient}>
+
             <ToastContainer
                 autoClose={5000}
                 hideProgressBar
@@ -92,7 +84,6 @@ const currentUser = useSelector((state) => state.auth.currentUser)
                     </Switch>
                 </HashRouter>
             </ConnectedRouter>
-        </QueryClientProvider>
         
         
         </>

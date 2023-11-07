@@ -9,8 +9,6 @@ import {
 } from 'actions/apiMonitor';
 import Datetime from 'react-datetime';
 
-
-
 import {
     Row,
     Col,

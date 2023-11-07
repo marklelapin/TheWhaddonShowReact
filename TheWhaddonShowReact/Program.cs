@@ -33,10 +33,6 @@ if (builder.Environment.IsDevelopment()) //allows file upload from localhost:444
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();
-
-
-
-
 		//WithOrigins("http://localhost:44442")
 		//.AllowAnyHeader()
 		//	   .AllowAnyMethod();
@@ -108,7 +104,8 @@ app.UseStaticFiles(new StaticFileOptions
 	RequestPath = "/uploads"
 });
 
-
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 //Configuration for routing
 app.UseHttpsRedirection();

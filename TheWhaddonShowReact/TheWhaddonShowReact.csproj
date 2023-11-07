@@ -12,14 +12,18 @@
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>a099b916-2697-4ff8-b55c-f50c5d0309d3</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MarkCarter.MyApiMonitorClassLibrary" Version="1.0.0" />
+    <PackageReference Include="MarkCarter.MyClassLibrary" Version="1.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.20" />
     <PackageReference Include="Microsoft.Office.Interop.Word" Version="15.0.4797.1004" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
     <PackageReference Include="MimeMapping" Version="2.0.0" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
+    <PackageReference Include="TheWhaddonShow.ClassLibrary" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,11 +59,6 @@
     <Folder Include="uploads\media\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\MyClassLibrarySolution\MyClassLibrary\MyClassLibrary.csproj" />
-    <ProjectReference Include="..\..\TheWhaddonShowApp\TheWhaddonShowClassLibrary\TheWhaddonShowClassLibrary.csproj" />
-  </ItemGroup>
-
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
@@ -72,8 +71,8 @@
 
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+     <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" /> 
+     <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" /> 
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
