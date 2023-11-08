@@ -23,17 +23,17 @@ builder.RequireAuthorizationThroughoutAsFallbackPolicy();
 builder.ByPassAuthenticationIfInDevelopment();
 
 // Add services to the container.
-if (builder.Environment.IsDevelopment()) //allows file upload from localhost:44442 in development.
+if (builder.Environment.IsDevelopment()) //allows file upload from localhost:56789 in development.
 {
 	builder.Services.AddCors(options =>
 	{
 		options.AddPolicy("AllowDevelopmentOrigin", builder =>
 	{
-		builder.WithOrigins("http://localhost:44442")
+		builder.WithOrigins("http://localhost:56789")
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();
-		//WithOrigins("http://localhost:44442")
+		//WithOrigins("http://localhost:56789")
 		//.AllowAnyHeader()
 		//	   .AllowAnyMethod();
 	});

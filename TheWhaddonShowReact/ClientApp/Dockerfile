@@ -15,5 +15,5 @@ RUN yarn install
 # Bundle app source
 COPY . .
 
-EXPOSE 44442
+EXPOSE 56789
 CMD [ "yarn", "start:backend" ]
