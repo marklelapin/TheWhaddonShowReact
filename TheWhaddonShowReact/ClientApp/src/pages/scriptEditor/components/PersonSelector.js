@@ -1,16 +1,16 @@
 ﻿//React and Redux
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch, ReactReduxContext } from 'react-redux';
+
+import { useSelector } from 'react-redux';
 
 //Components
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import Avatar from 'components/Avatar/Avatar';
-import Widget from 'components/Widget';
+import Avatar from '../../../components/Avatar/Avatar';
+import Widget from '../../../components/Widget';
 
 //utilities
-import { categorisePersons, addFriendlyName } from 'dataAccess/personScripts';
-import { getLatest } from 'dataAccess/localServerUtils';
+import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts';
+import { getLatest } from '../../../dataAccess/localServerUtils';
 function PersonSelector(props) {
 
     //Props

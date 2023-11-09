@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import { Icon } from 'components/Icons/Icons';
+import { Icon } from '../../components/Icons/Icons';
 
 function TagButton(props) {
 

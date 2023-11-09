@@ -1,20 +1,20 @@
 ﻿//React and Redux
 import React from 'react';
-import { useState, useEffect, } from 'react';
+import { useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { addUpdates } from 'actions/localServer';
+import { addUpdates } from '../../../actions/localServer';
 //Components
 
 import PersonSelector from './PersonSelector';
 
 import PartEditorRow from './PartEditorRow';
 //Utilities
-import { getLatest, prepareUpdate } from 'dataAccess/localServerUtils';
-import {PartUpdate } from 'dataAccess/localServerModels';
-import { log } from 'helper'
+import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
+import { PartUpdate } from '../../../dataAccess/localServerModels';
+import { log } from '../../../helper'
 import { moveFocusToId } from '../scripts/utility';
-import {UP,DOWN,START,END,ABOVE,BELOW} from '../scripts/utility';
+import {UP,DOWN,END,ABOVE,BELOW} from '../scripts/utility';
 
 
 import { PART_IDS,PARTS }  from './Scene';

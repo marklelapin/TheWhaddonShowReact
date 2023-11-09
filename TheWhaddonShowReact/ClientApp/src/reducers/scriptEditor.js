@@ -1,19 +1,19 @@
-import { UPDATE_SEARCH_PARAMETERS } from 'actions/scriptEditor';
-import { UPDATE_VIEW_COMMENTS } from 'actions/scriptEditor';
-import { UPDATE_DIALOGUE_RIGHT_ID } from 'actions/scriptEditor';
-import { TOGGLE_SCENE_SELECTOR } from 'actions/scriptEditor';
-import { UPDATE_SHOW_COMMENTS } from 'actions/scriptEditor';
-import { UPDATE_VIEW_AS_PART_PERSON } from 'actions/scriptEditor';
-import { UPDATE_PART_PERSONS } from 'actions/scriptEditor';
-import { ADD_UPDATES_SCENE_HISTORY } from 'actions/scriptEditor';
-import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from 'actions/scriptEditor';
-import { UPDATE_SCENE_PART_PERSONS } from 'actions/scriptEditor';
-import { CLEAR_IMPORT_UPDATES } from 'actions/scriptEditor';
+import { UPDATE_SEARCH_PARAMETERS } from '../actions/scriptEditor';
+import { UPDATE_VIEW_COMMENTS } from '../actions/scriptEditor';
+import { UPDATE_DIALOGUE_RIGHT_ID } from '../actions/scriptEditor';
+import { TOGGLE_SCENE_SELECTOR } from '../actions/scriptEditor';
+import { UPDATE_SHOW_COMMENTS } from '../actions/scriptEditor';
+import { UPDATE_VIEW_AS_PART_PERSON } from '../actions/scriptEditor';
+import { UPDATE_PART_PERSONS } from '../actions/scriptEditor';
+import { ADD_UPDATES_SCENE_HISTORY } from '../actions/scriptEditor';
+import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from '../actions/scriptEditor';
+import { UPDATE_SCENE_PART_PERSONS } from '../actions/scriptEditor';
+import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
 
 
-import { CHANGE_FOCUS } from 'actions/scriptEditor';
+import { CHANGE_FOCUS } from '../actions/scriptEditor';
 
-import { IMPORT_GUID } from 'pages/scriptEditor/ScriptImporter';
+import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
 const initialState = {
     searchParameters: {

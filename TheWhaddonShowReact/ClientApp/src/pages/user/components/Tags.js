@@ -1,7 +1,6 @@
 ﻿import React from 'react';
-import CheckBox from 'components/Forms/CheckBox';
 
-import TagsInput from 'components/Forms/TagsInput';
+import TagsInput from '../../../components/Forms/TagsInput';
 
 function Update(props) {
 

@@ -1,21 +1,20 @@
 import React from 'react';
-import { push } from 'connected-react-router';
 
 //Redux Hooks
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import isScreen from 'core/screenHelper';
+import { useSelector } from 'react-redux';
+import isScreen from '../../../core/screenHelper';
 
 //Data Access / Local Server Model
-import { getLatest } from 'dataAccess/localServerUtils';
+import { getLatest } from '../../../dataAccess/localServerUtils';
 //Components
-import DataLoading from 'components/DataLoading/DataLoading';
+import DataLoading from '../../../components/DataLoading/DataLoading';
 
-import { headers, row, modal } from './User';
+import { headers, row } from './User';
 import { Table, Button } from 'reactstrap';
 import User from './User';
-import { PersonUpdate } from 'dataAccess/localServerModels';
-import Widget from 'components/Widget';
+import { PersonUpdate } from '../../../dataAccess/localServerModels';
+import Widget from '../../../components/Widget';
 
 //SASS
 import s from '../Users.module.scss';

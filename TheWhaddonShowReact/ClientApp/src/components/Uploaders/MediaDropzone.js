@@ -2,28 +2,21 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 
-
 //Components
 import {
-    FormGroup,
-    Label,
-    Row,
-    Col,
     Button,
-    Input,
-    Container
+    Input
 } from 'reactstrap';
-import Widget from 'components/Widget'
 import Dropzone from 'react-dropzone'
 import MediaDisplay from './MediaDisplay';
-import { Icon } from 'components/Icons/Icons';
+import { Icon } from '../../components/Icons/Icons';
 
 //data access
-import { uploadFiles, fetchMediaFiles } from 'dataAccess/generalUtils';
+import { uploadFiles, fetchMediaFiles } from '../../dataAccess/generalUtils';
 
 
 //utils
-import { log } from 'helper';
+import { log } from '../../helper';
 
 //css
 import s from './Uploaders.module.css';

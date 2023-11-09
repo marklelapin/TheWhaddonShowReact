@@ -23,10 +23,10 @@ import {
     //updateConnectionStatus,
     endSync,
     closePostBack
-} from 'actions/localServer';
-import { log } from 'helper.js';
+} from '../actions/localServer';
+import { log } from '../helper.js';
 
-import { IMPORT_GUID } from 'pages/scriptEditor/ScriptImporter';
+import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
 export async function useSync() {
 

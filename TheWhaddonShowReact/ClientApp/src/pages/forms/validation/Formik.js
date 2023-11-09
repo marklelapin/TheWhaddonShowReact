@@ -1,13 +1,13 @@
 import { Formik } from 'formik';
 import React, { Component } from 'react';
-import Loader from 'components/Loader';
-import InputFormItem from 'components/FormItems/items/InputFormItem';
-import SwitchFormItem from 'components/FormItems/items/SwitchFormItem';
-import RadioFormItem from 'components/FormItems/items/RadioFormItem';
-import ImagesFormItem from 'components/FormItems/items/ImagesFormItem';
-import usersFields from 'components/Users/usersFields';
-import IniValues from 'components/FormItems/iniValues';
-import FormValidations from 'components/FormItems/formValidations';
+import Loader from '../../../components/Loader';
+import InputFormItem from '../../../components/FormItems/items/InputFormItem';
+import SwitchFormItem from '../../../components/FormItems/items/SwitchFormItem';
+import RadioFormItem from '../../../components/FormItems/items/RadioFormItem';
+import ImagesFormItem from '../../../components/FormItems/items/ImagesFormItem';
+import usersFields from '../../../components/Users/usersFields';
+import IniValues from '../../../components/FormItems/iniValues';
+import FormValidations from '../../../components/FormItems/formValidations';
 
 class UsersForm extends Component {
   iniValues = () => {

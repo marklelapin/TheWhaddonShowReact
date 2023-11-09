@@ -15,11 +15,11 @@ import {
     ModalFooter,
 } from 'reactstrap';
 
-import { getLatest, prepareUpdate } from 'dataAccess/localServerUtils'
-import 'index.css'
+import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils'
+import '../../../index.css'
 
-import { addUpdates } from 'actions/localServer';
-import { Person, PersonUpdate } from 'dataAccess/localServerModels';
+import { addUpdates } from '../../../actions/localServer';
+import { Person, PersonUpdate } from '../../../dataAccess/localServerModels';
 
 export const headers = 'headers'
 export const row = 'row'

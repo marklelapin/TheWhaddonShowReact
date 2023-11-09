@@ -1,7 +1,5 @@
 ﻿import React from 'react';
-import User from 'pages/user/components/User';
-import UsersTable from 'pages/user/components/UsersTable';
-import Roles from '../user/components/Roles';
+import User from '../../pages/user/components/User';
 
 function Home() {
     return (

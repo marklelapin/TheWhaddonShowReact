@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import s from './Avatar.module.scss'; // eslint-disable-line css-modules/no-unused-class
-import adminDefault from 'images/chat/chat2.png';
-import { uploadFiles } from 'dataAccess/generalUtils.js';
-import { uploads_avatars } from 'dataAccess/uploadLocations';
+import adminDefault from '../../images/chat/chat2.png';
+import { uploadFiles } from '../../dataAccess/generalUtils.js';
+import { uploads_avatars } from '../../dataAccess/uploadLocations';
 
 //interface Props {
 //    person: {};

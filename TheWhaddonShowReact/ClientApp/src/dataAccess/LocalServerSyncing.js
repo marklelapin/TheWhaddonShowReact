@@ -1,9 +1,9 @@
 ﻿import React from 'react';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useSync } from 'dataAccess/localServerUtils'; 
-import {sync } from 'actions/localServer';
-import {Person, ScriptItem, Part} from 'dataAccess/localServerModels';
+import {  useDispatch } from 'react-redux';
+import { useSync } from '../dataAccess/localServerUtils'; 
+import {sync } from '../actions/localServer';
+import {Person, ScriptItem, Part} from '../dataAccess/localServerModels';
 
 export  function LocalServerSyncing() {
 

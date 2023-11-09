@@ -1,6 +1,5 @@
 ﻿import React from 'react';
-import { Button } from 'reactstrap'; // eslint-disable-line no-unused-vars }
-import CheckBox from 'components/Forms/CheckBox';
+import CheckBox from '../../../components/Forms/CheckBox';
 
 function Update(props) {
 

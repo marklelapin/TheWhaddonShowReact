@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useState, useCallback } from 'react';
-import { uploadFiles } from 'dataAccess/generalUtils';
+import { uploadFiles } from '../../dataAccess/generalUtils';
 
 import {
     FormGroup,
@@ -11,9 +11,9 @@ import {
     Input,
     Container
 } from 'reactstrap';
-import Widget from 'components/Widget'
+import Widget from '../../components/Widget'
 import Dropzone from 'react-dropzone'
-import s from 'pages/forms/elements/Elements.module.scss';
+import s from '../../pages/forms/elements/Elements.module.scss';
 function VideoDropzone(props) {
 
     const {

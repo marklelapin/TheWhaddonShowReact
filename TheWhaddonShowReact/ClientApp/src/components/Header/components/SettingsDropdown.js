@@ -1,12 +1,12 @@
 ﻿import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
-import Settings from 'images/sidebar/basil/Settings';
+import Settings from '../../../images/sidebar/basil/Settings';
 
 import React from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 
 
 
-import Notifications from 'components/Notifications';
+import Notifications from '../../../components/Notifications';
 
 
 //interface Props {

@@ -1,21 +1,20 @@
 ﻿import React from 'react';
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 //Components
-import { Icon } from 'components/Icons/Icons';
-import TagsInput from 'components/Forms/TagsInput';
+import { Icon } from '../../../components/Icons/Icons';
+import TagsInput from '../../../components/Forms/TagsInput';
 import TextareaAutosize from 'react-autosize-textarea';
 
 //utils
-import { changeFocus } from 'actions/scriptEditor';
-import { log } from 'helper';
+import { changeFocus } from '../../../actions/scriptEditor';
 import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
-import { prepareUpdate } from 'dataAccess/localServerUtils';
-import { addUpdates } from 'actions/localServer';
+import { prepareUpdate } from '../../../dataAccess/localServerUtils';
+import { addUpdates } from '../../../actions/localServer';
 //css
-import s from 'pages/forms/elements/Elements.module.scss';
+import s from '../../../pages/forms/elements/Elements.module.scss';
 
 function Comment(props) {
 

@@ -1,25 +1,22 @@
 ﻿//React & Redux
 import React from 'react';
-import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateSearchParameters, toggleSceneSelector } from 'actions/scriptEditor';
-import { changeFocus } from 'actions/navigation';
+import { updateSearchParameters, toggleSceneSelector } from '../../../actions/scriptEditor';
 
 //Components
 import ScriptSearch from './ScriptSearch'
 import SceneSelectorRow from './SceneSelectorRow'
 
 //Utils
-import { ACT, SCENE } from 'dataAccess/scriptItemTypes'
-import { log } from 'helper';
+import { ACT } from '../../../dataAccess/scriptItemTypes'
+import { log } from '../../../helper';
 import { moveFocusToId } from '../scripts/utility'
-import { TestAct } from '../Script'
-import { prepareUpdates } from 'dataAccess/localServerUtils';
-import { addUpdates } from 'actions/localServer';
+import { prepareUpdates } from '../../../dataAccess/localServerUtils';
+import { addUpdates } from '../../../actions/localServer';
 
 //Constants
-import { ScriptItem } from 'dataAccess/localServerModels';
+import { ScriptItem } from '../../../dataAccess/localServerModels';
 import { newMoveSceneScriptItems } from '../scripts/scriptItem';
 
 function SceneSelector(props) {
@@ -31,26 +28,25 @@ function SceneSelector(props) {
 
 
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
-    const showSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
 
     const handleSearchParameterChange = (type, value) => {
-        let searchParameters = { ...searchParameters }
+        let newSearchParameters = { ...searchParameters }
 
         switch (type) {
             case 'addTag':
-                searchParameters.tags.push(value)
+                newSearchParameters.tags.push(value)
                 break;
             case 'removeTag':
-                searchParameters.tags = searchParameters.tags.filter(tag => tag !== value)
+                newSearchParameters.tags = newSearchParameters.tags.filter(tag => tag !== value)
                 break;
             case 'myScenes':
-                searchParameters.myScenes = value
+                newSearchParameters.myScenes = value
                 break;
             default:
                 break;
         }
 
-        dispatch(updateSearchParameters(searchParameters))
+        dispatch(updateSearchParameters(newSearchParameters))
     }
 
 

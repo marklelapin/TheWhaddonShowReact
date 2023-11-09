@@ -5,16 +5,15 @@ import { useSelector, useDispatch } from 'react-redux';
 //Components
 import TextareaAutosize from 'react-autosize-textarea';
 import ScriptItemControls from './ScriptItemControls';
-import { log } from 'helper';
+import { log } from '../../../helper';
 
 
 //Utilities
-import { changeFocus } from 'actions/scriptEditor';
+import { changeFocus } from '../../../actions/scriptEditor';
 
 //css
-import s from 'pages/forms/elements/Elements.module.scss';
-import { HEADER_TYPES, INITIAL_CURTAIN, CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from 'dataAccess/scriptItemTypes';
-import { moveFocusToId } from '../scripts/utility';
+import s from '../../../pages/forms/elements/Elements.module.scss';
+import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
 
 function ScriptItemText(props) {
 

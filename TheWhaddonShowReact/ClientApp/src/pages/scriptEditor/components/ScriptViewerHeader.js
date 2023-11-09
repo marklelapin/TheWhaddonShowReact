@@ -7,17 +7,16 @@ import {
     toggleSceneSelector,
     updateShowComments,
     updateViewAsPartPerson,
-} from 'actions/scriptEditor';
+} from '../../../actions/scriptEditor';
 
 //Components
-import { Container, Row, Col, Nav, NavItem, NavLink } from 'reactstrap';
-import { Icon } from 'components/Icons/Icons'
-import Avatar from 'components/Avatar/Avatar'
+import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Icon } from '../../../components/Icons/Icons'
+import Avatar from '../../../components/Avatar/Avatar'
 
 //utitilites
-import { isSmallerScreen } from 'components/Sidebar/Sidebar'
-import { log } from 'helper';
-import { getLatest } from 'dataAccess/localServerUtils'
+import { isSmallerScreen } from '../../../components/Sidebar/Sidebar'
+import { log } from '../../../helper';
 
 //Constants
 import PersonSelector from './PersonSelector';

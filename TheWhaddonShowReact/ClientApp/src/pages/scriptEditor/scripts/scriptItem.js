@@ -1,9 +1,9 @@
 ﻿
-import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE, COMMENT } from "dataAccess/scriptItemTypes";
+import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE, COMMENT } from "../../../dataAccess/scriptItemTypes";
 
-import { ScriptItemUpdate } from 'dataAccess/localServerModels';
-import { getLatest } from 'dataAccess/localServerUtils';
-import { log } from 'helper';
+import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
+import { getLatest } from '../../../dataAccess/localServerUtils';
+import { log } from '../../../helper';
 
 import { ABOVE, BELOW } from './utility';
 

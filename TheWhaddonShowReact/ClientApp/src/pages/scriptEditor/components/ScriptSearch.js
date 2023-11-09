@@ -1,7 +1,5 @@
 ﻿import React from 'react';
-import {useState, useEffect} from 'react'; 
-import {useSelector, useDispatch} from 'react-redux'; 
-import  TagsInput  from 'components/Forms/TagsInput';
+import TagsInput from '../../../components/Forms/TagsInput';
 import { Button } from 'reactstrap';
 //Components
 import { Input } from 'reactstrap';

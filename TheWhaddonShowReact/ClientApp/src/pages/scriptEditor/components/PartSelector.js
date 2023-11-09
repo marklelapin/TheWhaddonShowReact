@@ -1,16 +1,15 @@
 ﻿//React and Redux
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 //Components
-import Avatar from 'components/Avatar/Avatar';
-import PartNameAndAvatar from './PartNameAndAvatar';
+import Avatar from '../../../components/Avatar/Avatar';
 import PartSelectorDropdown  from './PartSelectorDropdown';
 
 //Utilities
 
-import { log } from 'helper'
+import { log } from '../../../helper'
 
 
 function PartSelector(props) {

@@ -2,24 +2,21 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { store } from 'index'
 
 //Components
 import SceneSelector from './components/SceneSelector';
 import ScriptViewer from './components/ScriptViewer';
-import { Container, Row, Col } from 'reactstrap';
 
 //localServerModels
-import { ScriptItemUpdate, ScriptItem } from 'dataAccess/localServerModels';
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from 'dataAccess/scriptItemTypes';
-import { prepareUpdates } from 'dataAccess/localServerUtils';
+import { ScriptItemUpdate, ScriptItem } from '../../dataAccess/localServerModels';
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from '../../dataAccess/scriptItemTypes';
+import { prepareUpdates } from '../../dataAccess/localServerUtils';
 import { sortLatestScriptItems } from './scripts/scriptItem';
-import { addUpdates } from 'actions/localServer';
+import { addUpdates } from '../../actions/localServer';
 
 //Utils
-import { log } from 'helper.js';
-import isScreen from 'core/screenHelper';
+import { log } from '../../helper.js';
+import isScreen from '../../core/screenHelper';
 
 
 function Script() {

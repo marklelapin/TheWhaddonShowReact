@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import  DataLoading from 'components/DataLoading/DataLoading';
-import {updateIsLoading} from 'actions/apiMonitor' 
+import DataLoading from '../../../components/DataLoading/DataLoading';
+import {updateIsLoading} from '../../../actions/apiMonitor' 
 
 import {
     Row,
@@ -23,7 +23,7 @@ import {
 
 import s from '../TestResults.modules.scss';
 
-import { TickOrCross } from 'components/Icons/Icons'
+import { TickOrCross } from '../../../components/Icons/Icons'
 
 
 
