@@ -3,7 +3,9 @@ import axios from 'axios';
 
 import { log } from '../helper';
 
-export async function uploadFiles(filesObject, targetFolder, options = {}) {
+import { STORAGE_ACCOUNT_NAME } from './storageContainerNames';
+
+export async function uploadFiles(filesObject, containerName, options = {}) {
 
     const { showSuccessAlerts = true } = options
 
@@ -15,7 +17,7 @@ export async function uploadFiles(filesObject, targetFolder, options = {}) {
         return;
     }
 
-    const pictureRefs = [];
+    const blobNames = [];
     const failedUploads = [];
 
 
@@ -24,17 +26,18 @@ export async function uploadFiles(filesObject, targetFolder, options = {}) {
 
         const formData = new FormData();
         formData.append('file', file)
-        formData.append('folder', targetFolder)
+        //formData.append('containerName', containerName)
+
         const response = await axios.post('file/upload', formData, {
-            headers: {
-                "Content-Type": "multipart/form-data"
+           params: {
+                containerName: containerName
             }
         }).then(response => {
             if (response.status === 200) {
                 if (showSuccessAlerts) alert(`${file.name} uploaded successfully.`)
                 console.log(`${file.name} uploaded successfully.`)
                 console.log(response.data)
-                pictureRefs.push(response.data)
+                blobNames.push(response.data)
                 return 'Ok'
             } else {
                 alert(`${file.name} failed to upload.`)
@@ -58,46 +61,53 @@ export async function uploadFiles(filesObject, targetFolder, options = {}) {
     if (uploadResults.every(response => response === 'Ok')) {
         if (showSuccessAlerts) { alert('All images uploaded successfully') }
     } else {
-        alert(`Some images failed to upload. ${pictureRefs.length} out of ${files.length} were successfull.`); //TODO add number of images that failed or list of images that failed')
+        alert(`Some images failed to upload. ${blobNames.length} out of ${files.length} were successfull.`); //TODO add number of images that failed or list of images that failed')
         console.error('Error uploading images')
         console.log("SUMMARY:")
-        console.log(`Successful Uploads: ${pictureRefs.length}`)
+        console.log(`Successful Uploads: ${blobNames.length}`)
         console.log(`Failed Uploads: ${failedUploads.length}`)
         console.log("Successful Uploads:")
-        console.log(pictureRefs.toString())
+        console.log(blobNames.toString())
         console.log("Failed Uploads:")
         console.log(failedUploads.toString())
 
 
     }
 
-    return { pictureRefs, failedUploads }
+    return { blobNames, failedUploads }
 
 }
 
 
-export async function fetchMediaFiles(fileNames) {
+export async function fetchFiles(containerName, fileNames) {
 
     const debug = true;
+
+    if ((fileNames?.length || 0) === 0) {
+        log(debug, 'fetchFiles fileNames', 'No file names provided')
+        return null 
+    }
+    log(debug,'fetchFiles fileNames', fileNames)
+
 
     let fileNameArray = []
 
     if (Array.isArray(fileNames)) {
         fileNameArray = [...fileNames]
     } else {
-        fileNameArray = [{ ...fileNames }]
+        fileNameArray = [fileNames]
     }
-
-
-
 
     const getFile = async (fileName) => {
 
         try {
-            log(debug, 'fetchMediaFiles fileName', fileName)
-            const response = await axios.get(`file/download/media/${fileName}`, { responseType: 'arraybuffer' });
+            log(debug, 'fetchFiles fileName', { containerName: containerName, fileName: fileName })
 
-            const type = response.headers['content-type']
+            const requestUrl = `https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName}/${fileName}`
+            log(debug, 'fetchFiles requestUrl', requestUrl)
+            const response = await axios.get(requestUrl, { responseType: 'arraybuffer' });
+
+            const type = response.headers['Content-Type']
 
             const blob = new Blob([response.data]);
 
@@ -107,14 +117,19 @@ export async function fetchMediaFiles(fileNames) {
 
         }
         catch (error) {
-            throw new Error("Error fetching media files: " + error.message)
+            throw new Error(`Error fetching ${containerName} files: ` + error.message)
         }
 
     }
 
     const files = await Promise.all(fileNameArray.map(async (fileName) => await getFile(fileName)))
 
-    return files || []
+    if (Array.isArray(fileNames)) {
+        return files || []
+    } else {
+        return files[0] || {}
+    }
+
 
 }
 

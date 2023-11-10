@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import s from './Avatar.module.scss'; // eslint-disable-line css-modules/no-unused-class
 import adminDefault from '../../images/chat/chat2.png';
-import { uploadFiles } from '../../dataAccess/generalUtils.js';
-import { uploads_avatars } from '../../dataAccess/uploadLocations';
+import { uploadFiles, fetchFiles } from '../../dataAccess/generalUtils.js';
+import { AVATARS } from '../../dataAccess/storageContainerNames';
 
 //interface Props {
 //    person: {};
@@ -25,8 +25,10 @@ export function Avatar(props) {
 
     const inputId = `avatar-image-upload-${person.id}`
 
-    const avatarImage = () => {
-        if (pictureRef !== null) return `${uploads_avatars}/${person.pictureRef}`
+    const avatarImageObjectURL = async () => {
+        const file = await fetchFiles(AVATARS,pictureRef )
+        const imageObjectURL = file?.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+        if (imageObjectURL !== null) return imageObjectURL
         if (person && person.role === 'admin') return adminDefault // TODO used to bring back default photo when testing. remove when live
         return false
     }
@@ -58,11 +60,11 @@ export function Avatar(props) {
         }
 
         if (files.length === 1) {
-            uploadFiles(files, uploads_avatars, { showSuccessAlerts: false })
+            uploadFiles(files, AVATARS, { showSuccessAlerts: false })
                 .then(response => {
                     console.log(response)
-                    console.log(response.pictureRefs[0].toString())
-                    pictureRef = response.pictureRefs[0]
+                    console.log(response.blobNames[0].toString())
+                    pictureRef = response.blobNames[0]
                     return pictureRef
                 })
                 .then(pictureRef => {
@@ -94,8 +96,8 @@ export function Avatar(props) {
 
             <span className={`${s.avatar} rounded-circle float-start avatar`} onClick={(e) => handleImageClick(e)} style={avatarSize()}>
                 {
-                    avatarImage() ?
-                        <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} />
+                    avatarImageObjectURL() ?
+                        <img src={avatarImageObjectURL()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} />
                         :
                         < span title={avatarTitle} > {avatarText} </span>
                 }

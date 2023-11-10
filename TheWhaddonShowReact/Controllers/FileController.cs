@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.StaticFiles;
-using System.IO.Abstractions;
+﻿using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace TheWhaddonShowReact.Controllers
 {
@@ -8,75 +8,45 @@ namespace TheWhaddonShowReact.Controllers
 	[Route("api/[controller]")]
 	public class FileController : ControllerBase
 	{
-		private readonly IFileSystem _fileSystem;
+		private string _connectionString;
 
-		public FileController(IFileSystem fileSystem)
+		public FileController(IConfiguration config) // TODO should be taking in IFileControllerService
 		{
-			_fileSystem = fileSystem;
+			_connectionString = config.GetValue<string>("ConnectionStrings:AzureBlobStorage");
 		}
 
-		[HttpGet("download/media/{fileName}")]
-		public async Task<IActionResult> Media(string fileName)
-		{
-			var mediaFolder = _fileSystem.Path.Combine("uploads/media");
-			string filePath = _fileSystem.Path.Combine(mediaFolder, fileName);
 
-			if (!_fileSystem.File.Exists(filePath))
-			{
-				return NotFound();
-			}
-
-			var provider = new FileExtensionContentTypeProvider();
-			if (!provider.TryGetContentType(filePath, out string contentType))
-			{
-				contentType = "application/octet-stream";
-			}
-
-			try
-			{
-
-				var bytes = System.IO.File.ReadAllBytes(filePath);
-				Response.Headers.Add("Content-Type", contentType);
-
-				return File(bytes, contentType, fileName);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+		//[HttpGet("fetch/{containerName}/{fileName}")]
+		//public async Task<IActionResult> Fetch(string containerName, string fileName)
+		//{
+		//	//TODO - issue in GitHub - this is currently being done through direct api call in the client. Need to create interface with download, upload and fetch file methods and extract out of client.
+		//}
 
 
 		[HttpPost("upload")]
-		public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromForm] string folder = "uploads")
+		public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromQuery] string containerName)
 		{
-			if (file == null || file.Length == 0)
-			{
-				return BadRequest("No file selected");
-			}
-
+			if (file == null || file.Length == 0) { return BadRequest("No file selected"); }
+			if (containerName == null) { return BadRequest("No container name supplied"); }
+			if (containerName != "media" &&
+				containerName != "avatars") { return BadRequest("Invalid container name supplied"); }
 			try
 			{
-				var uploadsFolder = _fileSystem.Path.Combine(folder);
-				if (!_fileSystem.Directory.Exists(uploadsFolder))
-				{
-					_fileSystem.Directory.CreateDirectory(uploadsFolder);
-				}
+				string uniqueBlobName = Guid.NewGuid().ToString() + "_" + file.FileName;
 
-				var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-				var filePath = _fileSystem.Path.Combine(uploadsFolder, uniqueFileName);
 
-				using (var stream = _fileSystem.File.Create(filePath))
-				{
-					await file.CopyToAsync(stream);
-				}
+				var container = new BlobContainerClient(_connectionString, containerName);
+				container.Create();
 
-				return Content(uniqueFileName);
+				var blob = container.GetBlobClient(uniqueBlobName);
+				await blob.UploadAsync(file.OpenReadStream());
+				return Ok(uniqueBlobName);
 			}
 			catch (Exception ex)
 			{
 				return StatusCode(500, ex.Message);
 			}
+
 		}
 
 

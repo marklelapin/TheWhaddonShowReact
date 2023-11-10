@@ -12,11 +12,14 @@ import MediaDisplay from './MediaDisplay';
 import { Icon } from '../../components/Icons/Icons';
 
 //data access
-import { uploadFiles, fetchMediaFiles } from '../../dataAccess/generalUtils';
+import { uploadFiles, fetchFiles } from '../../dataAccess/generalUtils';
 
 
 //utils
 import { log } from '../../helper';
+
+//constants
+import { MEDIA } from '../../dataAccess/storageContainerNames';
 
 //css
 import s from './Uploaders.module.css';
@@ -49,14 +52,14 @@ function MediaDropzone(props) {
 
     useEffect(() => {
         getMediaFiles()
-    }, [existingMediaURLs, newMediaFiles])
+    }, [existingMediaURLs, newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
 
     const getMediaFiles = async () => {
 
-        const youTubeURLs = existingMediaURLs.filter(url => url.includes('youtube.com'))
-        const fileURLs = existingMediaURLs.filter(url => !youTubeURLs.includes(url))
+        const youTubeURLs = existingMediaURLs.filter(url => url.includes('youtube.com')) || []
+        const fileURLs = existingMediaURLs.filter(url => !youTubeURLs.includes(url)) || []
 
-        const existingFiles = await fetchMediaFiles(fileURLs)
+        const existingFiles = await fetchFiles(MEDIA,fileURLs) || []
 
         const newFiles = [...youTubeURLs, ...existingFiles, ...newMediaFiles]
         setMediaFiles(newFiles)
@@ -102,9 +105,9 @@ function MediaDropzone(props) {
 
         //process file urls
         if (fileURLs.length > 0) {
-            const result = await uploadFiles(fileURLs, 'uploads/media')
-            if (result.pictureRefs) {
-                addMedia(result.pictureRefs)
+            const result = await uploadFiles(fileURLs, MEDIA)
+            if (result.blobNames) {
+                addMedia(result.blobNames)
             }
         }
 

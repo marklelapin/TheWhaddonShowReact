@@ -77,6 +77,8 @@ builder.Services.AddTransient<IOpenAIControllerService, OpenAIControllerService>
 // File uploading services
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+//Configuration services
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 
 
