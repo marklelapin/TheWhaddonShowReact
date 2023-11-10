@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import CheckBox from '../../../components/Forms/CheckBox';
-
+import {Button } from 'reactstrap';
+ 
 function Update(props) {
 
     const { user, type, userChanged, onChange, className ,onClickUpdate, onClickCancel, isNew} = props
@@ -49,9 +50,10 @@ function Update(props) {
             <td className={className}>
                 < div className="user-update">
 
-                    <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={onChange} />
+                    <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={(e) => onChange('isActive',e.target.checked)} />
 
-                    <Update id="save" hasChanged={userChanged} onClickUpdate={onClickUpdate} onClickCancel={onClickCancel} isNew={isNew} ></Update >
+                    <Button id="save" color={button.color} disabled={button.disabled} onClick={onClickUpdate}>{button.text}</Button>
+                    {/*<Update id="save" hasChanged={userChanged} onClickUpdate={onClickUpdate} onClickCancel={onClickCancel} isNew={isNew} ></Update >*/}
                 </div >
             </td>
         )

@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -16,11 +17,30 @@ namespace TheWhaddonShowReact.Controllers
 		}
 
 
-		//[HttpGet("fetch/{containerName}/{fileName}")]
-		//public async Task<IActionResult> Fetch(string containerName, string fileName)
-		//{
-		//	//TODO - issue in GitHub - this is currently being done through direct api call in the client. Need to create interface with download, upload and fetch file methods and extract out of client.
-		//}
+		[HttpGet()]
+		public async Task<IActionResult> Get([FromQuery] string containerName, [FromQuery] string fileName)
+		{
+			try
+			{
+				var blobServiceClient = new BlobServiceClient(_connectionString);
+				var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+				var blobClient = containerClient.GetBlobClient(fileName);
+
+				if (await blobClient.ExistsAsync())
+				{
+					BlobDownloadInfo download = await blobClient.DownloadAsync();
+					var contentType = download.ContentType;
+					Stream blobStream = download.Content;
+					return File(blobStream, contentType, fileName);
+				}
+				return NotFound();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, "Error in file controller fetching file:" + ex.Message);
+			}
+
+		}
 
 
 		[HttpPost("upload")]
@@ -36,10 +56,9 @@ namespace TheWhaddonShowReact.Controllers
 
 
 				var container = new BlobContainerClient(_connectionString, containerName);
-				container.Create();
 
 				var blob = container.GetBlobClient(uniqueBlobName);
-				await blob.UploadAsync(file.OpenReadStream());
+				await blob.UploadAsync(file.OpenReadStream(), new BlobHttpHeaders { ContentType = file.ContentType });
 				return Ok(uniqueBlobName);
 			}
 			catch (Exception ex)

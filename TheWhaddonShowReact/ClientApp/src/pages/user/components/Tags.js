@@ -4,7 +4,7 @@ import TagsInput from '../../../components/Forms/TagsInput';
 
 function Update(props) {
 
-    const {className, user, tagOptions, onClickAdd, onClickRemove, type } = props
+    const {className, user, tagOptions, onChange, type } = props
 
 
     const headers = () => {
@@ -16,8 +16,8 @@ function Update(props) {
 
             <td className={className}>
                 <TagsInput tags={user.tags} strapColor="primary" tagOptions={tagOptions}
-                    onClickAdd={onClickAdd}
-                    onClickRemove={onClickRemove} />
+                    onClickAdd={(tag)=>onChange('addTag',tag)}
+                    onClickRemove={(tag)=>onChange('removeTag',tag)} />
             </td>
         )
     }

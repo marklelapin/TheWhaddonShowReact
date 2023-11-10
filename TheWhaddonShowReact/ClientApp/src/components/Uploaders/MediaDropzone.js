@@ -36,6 +36,8 @@ function MediaDropzone(props) {
         , removeMedia
         , showControls
         , autoLoad = false
+        , width = null
+        , height = 100
     } = props;
 
 
@@ -197,7 +199,10 @@ function MediaDropzone(props) {
                                 <MediaDisplay
                                     file={isYouTube(media) ? null : media}
                                     youTubeUrl={isYouTube(media) ? media : null}
-                                    key={`drop-id-${idx}`} />
+                                    key={`drop-id-${idx}`}
+                                    width={width}
+                                    height={height}
+                                />
                                 <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} />
                             </div>
 

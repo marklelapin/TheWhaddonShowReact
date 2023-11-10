@@ -6,7 +6,7 @@ import Avatar from '../../../components/Avatar/Avatar';
 
 function PersonalDetails(props) {
 
-    const { person = {}, type, onNameChange, onEmailChange, onAvatarChange } = props
+    const { person = {}, type, onChange } = props
 
     const { firstName = '', lastName = null, email = '' } = person
 
@@ -32,15 +32,15 @@ function PersonalDetails(props) {
         return (
             <>
                 <td>
-                    <Avatar person={person} onChange={onAvatarChange} />
+                    <Avatar person={person} onChange={(pictureRef)=>onChange('avatar',pictureRef)} />
                 </td>
                 <td className="personal-details no-shrink" >
 
                     <div>
-                        <InputText className="full-name" placeholder="Enter first and last name" value={fullName} onChange={onNameChange} />
+                        <InputText className="full-name" placeholder="Enter first and last name" value={fullName} onChange={(e)=>onChange('name',e.target.value)} />
                     </div>
                     <div>
-                        <InputText className="email" placeholder="Enter email" value={email} onChange={onEmailChange} />
+                        <InputText className="email" placeholder="Enter email" value={email} onChange={(e)=>onChange('email',e.target.value)} />
                     </div>
 
                 </td>

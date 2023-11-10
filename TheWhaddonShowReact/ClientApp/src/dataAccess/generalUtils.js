@@ -3,8 +3,6 @@ import axios from 'axios';
 
 import { log } from '../helper';
 
-import { STORAGE_ACCOUNT_NAME } from './storageContainerNames';
-
 export async function uploadFiles(filesObject, containerName, options = {}) {
 
     const { showSuccessAlerts = true } = options
@@ -27,12 +25,13 @@ export async function uploadFiles(filesObject, containerName, options = {}) {
         const formData = new FormData();
         formData.append('file', file)
         //formData.append('containerName', containerName)
+        try {
+            const response = await axios.post('file/upload', formData, {
+                params: {
+                    containerName: containerName
+                }
+            })
 
-        const response = await axios.post('file/upload', formData, {
-           params: {
-                containerName: containerName
-            }
-        }).then(response => {
             if (response.status === 200) {
                 if (showSuccessAlerts) alert(`${file.name} uploaded successfully.`)
                 console.log(`${file.name} uploaded successfully.`)
@@ -40,21 +39,25 @@ export async function uploadFiles(filesObject, containerName, options = {}) {
                 blobNames.push(response.data)
                 return 'Ok'
             } else {
-                alert(`${file.name} failed to upload.`)
-                console.log(`${file.name} failed to upload.`)
+                alert(`${file.name} failed to upload. ${response.status} ${response.message}`)
+                console.log(`${file.name} failed to upload. ${response.status} ${response.message}`)
                 failedUploads.push(file.name) //TODO need to check that this is a valid field for file.
                 return 'Failed'
             }
-        })
-            .catch(error => {
-                alert(`${file.name} failed to upload.`)
-                console.log(`${file.name} failed to upload. ${error}`)
-                failedUploads.push(file.name)
-                return 'Failed'
-            })
 
-        return response;
+        }
+        catch (error) {
+            alert(`${file.name} failed to upload.`)
+            console.log(`${file.name} failed to upload. ${error}`)
+            failedUploads.push(file.name)
+            return 'Failed'
+        }
+
+
+
     })
+
+
 
     const uploadResults = await Promise.all(uploadPromises);
 
@@ -85,9 +88,9 @@ export async function fetchFiles(containerName, fileNames) {
 
     if ((fileNames?.length || 0) === 0) {
         log(debug, 'fetchFiles fileNames', 'No file names provided')
-        return null 
+        return null
     }
-    log(debug,'fetchFiles fileNames', fileNames)
+    log(debug, 'Avatar fetchFiles fileNames', fileNames)
 
 
     let fileNameArray = []
@@ -103,15 +106,23 @@ export async function fetchFiles(containerName, fileNames) {
         try {
             log(debug, 'fetchFiles fileName', { containerName: containerName, fileName: fileName })
 
-            const requestUrl = `https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName}/${fileName}`
-            log(debug, 'fetchFiles requestUrl', requestUrl)
-            const response = await axios.get(requestUrl, { responseType: 'arraybuffer' });
 
-            const type = response.headers['Content-Type']
+            const response = await axios.get('file', {
+                responseType: 'arraybuffer'
+                , params: {
+                    containerName: containerName,
+                    fileName: fileName
+                }
+            });
+
 
             const blob = new Blob([response.data]);
-
+            log(debug,'fetchFiles blob',blob)
+            const type = response.headers['content-type'];
+            log(debug,'fetchFiles type',type)
             const file = new File([blob], fileName, { type });
+
+            log(debug, 'fetchFiles file', file)
 
             return file
 
@@ -124,11 +135,7 @@ export async function fetchFiles(containerName, fileNames) {
 
     const files = await Promise.all(fileNameArray.map(async (fileName) => await getFile(fileName)))
 
-    if (Array.isArray(fileNames)) {
-        return files || []
-    } else {
-        return files[0] || {}
-    }
+    return files;
 
 
 }
