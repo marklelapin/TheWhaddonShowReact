@@ -1,13 +1,19 @@
 ﻿import React from 'react';
-import { useEffect, useState } from 'react';
-import s from './Avatar.module.scss'; // eslint-disable-line css-modules/no-unused-class
+import {  useSelector } from 'react-redux';
+
+//Components
+
+import { uploadFiles } from '../../dataAccess/fileUtils.js';
+
+//Constants
+import { AVATARS } from '../../dataAccess/storageContainerNames';
 import adminDefault from '../../images/chat/chat2.png';
-import { uploadFiles, fetchFiles } from '../../dataAccess/generalUtils.js';
-import { AVATARS, MEDIA } from '../../dataAccess/storageContainerNames';
+
+//utils
 import { log } from '../../helper';
-//interface Props {
-//    person: {};
-//}
+
+import s from './Avatar.module.scss'; 
+
 
 export function Avatar(props) {
 
@@ -16,7 +22,6 @@ export function Avatar(props) {
     const { person: draftPerson, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
 
     const person = draftPerson || {}
-
 
     const { firstName = null, email = null, pictureRef = null } = person;
 
@@ -28,53 +33,15 @@ export function Avatar(props) {
 
     const inputId = `avatar-image-upload-${person.id}`
 
-    const [avatarURL, setAvatarURL] = useState(null);
+    const avatarImageObjectURL = useSelector(state => state.cache[AVATARS][pictureRef])
+
+    const avatarURL = avatarImageObjectURL ? avatarImageObjectURL : pictureRef 
 
     log(debug, 'Avatar person', person)
 
-    useEffect(() => {
-        log(debug,'Avatar useEffect pictureRef', pictureRef)
-        const getAvatarURL = async () => {
-            const response = await avatarImageObjectURL(pictureRef)
-            log(debug,'Avatar useEffect response', JSON.stringify(response))
-            setAvatarURL(response)
-        }
 
-        getAvatarURL()
 
-    }, [person])
-
-    const avatarImageObjectURL = async (pictureRef) => {
-
-        let files = []
-        let imageObjectURL;
-        try {
-
-            log(debug, 'avatarImageObjectURL pictureRef', pictureRef)
-            files = await fetchFiles(AVATARS, pictureRef)
-        }
-        catch (error) {
-            log(debug, 'avatarImageObjectURL error', error.message)
-        }
-
-        if (files && files.length > 0) {
-            try {
-                imageObjectURL = URL.createObjectURL(files[0])
-            }
-            catch (error) {
-                throw new Error(`Error creating object URL for ${AVATARS} files: ` + error.message)
-            }
-
-        } else {
-            if (person && person.role === 'admin') {
-                imageObjectURL = adminDefault
-            }
-        }
-
-        return imageObjectURL
-        
-    }
-
+    //Event Handlers
     const handleImageClick = (event) => {
         event.stopPropagation();
         if (onClick) {

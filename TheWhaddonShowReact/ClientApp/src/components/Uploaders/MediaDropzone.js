@@ -12,7 +12,7 @@ import MediaDisplay from './MediaDisplay';
 import { Icon } from '../../components/Icons/Icons';
 
 //data access
-import { uploadFiles, fetchFiles } from '../../dataAccess/generalUtils';
+import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils';
 
 
 //utils

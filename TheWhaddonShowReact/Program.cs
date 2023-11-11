@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Identity.Web;
 using MyApiMonitorClassLibrary.Interfaces;
 using MyApiMonitorClassLibrary.Models;
@@ -98,13 +97,7 @@ if (app.Environment.IsDevelopment())
 	app.UseCors("AllowDevelopmentOrigin");
 }
 
-//Configuration for file uploading
-app.UseStaticFiles(new StaticFileOptions
-{
-	FileProvider = new PhysicalFileProvider(
-				Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
-	RequestPath = "/uploads"
-});
+
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

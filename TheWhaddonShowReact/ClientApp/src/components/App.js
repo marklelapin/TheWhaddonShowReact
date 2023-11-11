@@ -27,6 +27,7 @@ import ErrorPage from '../pages/error';
 
 // Styles
 import '../styles/theme.scss';
+import CacheProcessing from '../dataAccess/CacheProcessing';
 
 
 
@@ -50,8 +51,9 @@ const currentUser = useSelector((state) => state.auth.currentUser)
 
     return (
         <>
-            <LocalServerSyncing />
+            <LocalServerSyncing /> 
             <ScriptEditorProcessing />
+            <CacheProcessing />
 
 
             <ToastContainer
