@@ -5,7 +5,7 @@ import {
 } from 'reactstrap';
 
 import Lightbox from 'react-images';
-import ImageDropzone from 'components/Uploaders/ImageDropzone';
+import ImageDropzone from '../../../components/Uploaders/ImageDropzone';
 
 import s from './Gallery.module.scss';
 

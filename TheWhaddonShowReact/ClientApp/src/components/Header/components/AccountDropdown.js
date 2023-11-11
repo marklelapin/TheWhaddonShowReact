@@ -1,13 +1,13 @@
 ﻿import React from 'react';
 import { useDispatch } from 'react-redux';
-import { logoutUser } from 'actions/auth';
+import { logoutUser } from '../../../actions/auth';
 import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import Avatar from 'components/Avatar/Avatar.js';
-import UserDefault from 'images/sidebar/basil/UserDefault';
-import CalendarIcon from 'images/sidebar/Outline/Calendar';
-import EnvelopeBlack from 'images/sidebar/basil/EnvelopeBlack';
-import PowerButton from 'images/sidebar/basil/PowerButton';
+import Avatar from '../../../components/Avatar/Avatar.js';
+import UserDefault from '../../../images/sidebar/basil/UserDefault';
+import CalendarIcon from '../../../images/sidebar/Outline/Calendar';
+import EnvelopeBlack from '../../../images/sidebar/basil/EnvelopeBlack';
+import PowerButton from '../../../images/sidebar/basil/PowerButton';
 
 
 

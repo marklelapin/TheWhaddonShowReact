@@ -1,20 +1,17 @@
 ﻿import React from 'react';
-import { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import { getLatest, } from 'dataAccess/localServerUtils';
-import Avatar from 'components/Avatar/Avatar';
-import { Col, Row, Input } from 'reactstrap';
+import { getLatest, } from '../../../dataAccess/localServerUtils';
+import Avatar from '../../../components/Avatar/Avatar';
+import {  Input } from 'reactstrap';
 
 import { addPersonInfo } from '../scripts/part'
 
-import { log } from 'helper';
-import { changeFocus } from 'actions/navigation'
+import { log } from '../../../helper';
 
 function PartNameAndAvatar(props) {
 
     const debug = false;
-    const dispatch = useDispatch()
 
     const { part, onNameChange, onAvatarClick, onClick, onKeyDown, onBlur, onFocus, avatar, partName, personName, size = "md" ,selected = false} = props;
 

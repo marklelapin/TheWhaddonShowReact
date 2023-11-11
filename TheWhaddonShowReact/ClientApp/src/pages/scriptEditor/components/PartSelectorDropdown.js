@@ -5,7 +5,7 @@ import {useSelector } from 'react-redux';
 
 //Components
 import { Button } from 'reactstrap';
-import { log } from 'helper'
+import { log } from '../../../helper'
 import PartNameAndAvatar from './PartNameAndAvatar';
 
 

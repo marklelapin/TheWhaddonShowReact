@@ -1,47 +1,82 @@
 ﻿import React from 'react';
-
+import {useEffect, useState} from 'react';
 
 function MediaDisplay(props) {
 
     const { file = null, youTubeUrl = null, width = null, height = null, alt, title } = props
 
     const youTubeVideoId = getVideoIdFromURL(youTubeUrl);
-
-
-
     const videoObjectURL = file?.type.startsWith('video/') ? URL.createObjectURL(file) : null;
     const audioObjectURL = file?.type.startsWith('audio/') ? URL.createObjectURL(file) : null;
     const imageObjectURL = file?.type.startsWith('image/') ? URL.createObjectURL(file) : null;
 
     const youTubeEmbedUrl = (youTubeVideoId) ? `https://www.youtube.com/embed/${youTubeVideoId}` : null;
 
-    const aspectRatio = () => {
+    const [aspectRatio, setAspectRatio] = useState(null)
+
+    useEffect(() => {
+
+        const getAspectRatio = async () => {
+            const result  = await calculateAspectRatio()
+            setAspectRatio(result)
+        }
+
+       getAspectRatio()
+
+    },[])
+
+
+
+
+
+    const calculateAspectRatio = async () => {
         if (audioObjectURL) {
             return
         }
         if (imageObjectURL) {
             const mediaElement = new Image()
-            return aspectRatioFromObject(mediaElement, imageObjectURL)
+            return await aspectRatioFromObject(mediaElement, imageObjectURL)
         }
         if (videoObjectURL) {
             const mediaElement = document.createElement('video')
-            return aspectRatioFromObject(mediaElement, videoObjectURL)
-        }
-    }
-
-    const aspectRatioFromObject = (mediaElement, objectURL) => {
-        mediaElement.src = objectURL
-        mediaElement.onLoad = function () {
-            const fileWidth = mediaElement.width;
-            const fileHeight = mediaElement.height;
-            return fileWidth / fileHeight
+            return await aspectRatioFromObject(mediaElement, videoObjectURL)
         }
 
-        objectURL.revokeObjectURL(objectURL)
     }
 
-    const finalWidth = width || (height) ? Math.floor(height * aspectRatio()) : '100%'
-    const finalHeight = height || (width) ? Math.floor(width / aspectRatio()) : null
+    const loadImageDimensions = async (mediaElement,objectURL) => {
+
+        return new Promise((resolve, reject) => {
+
+            mediaElement.onload = function () {
+                URL.revokeObjectURL(objectURL)
+                resolve({ width: this.width, height: this.height })
+            }
+
+            mediaElement.onerror = function () {
+                reject('Could not load image')
+            }
+
+            mediaElement.src = objectURL
+
+            
+
+        });
+    }
+
+    const aspectRatioFromObject = async (mediaElement, objectURL) => {
+
+        const dimensions = await loadImageDimensions(mediaElement, objectURL)
+
+        const fileWidth = dimensions.width;
+        const fileHeight = dimensions.height;
+        return fileWidth / fileHeight
+
+    };
+
+    
+    const finalWidth = width || ((height && aspectRatio) ? Math.floor(height * aspectRatio) : '100%')
+    const finalHeight = height || ((width && aspectRatio) ? Math.floor(width / aspectRatio) : null)
 
 
     if (videoObjectURL) {
@@ -74,7 +109,7 @@ function MediaDisplay(props) {
         return (
             <div className="media-display image">
 
-                <img src={imageObjectURL} className="img-fluid" alt={alt || ''} />
+                <img src={imageObjectURL} className="img-fluid" alt={alt || ''} width={finalWidth} height={finalHeight} />
             </div>
         )
     }
@@ -89,7 +124,7 @@ function MediaDisplay(props) {
                     src={youTubeEmbedUrl}
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    >
+                >
                 </iframe>
             </div>
 

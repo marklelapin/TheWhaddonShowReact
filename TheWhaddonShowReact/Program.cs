@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Identity.Web;
 using MyApiMonitorClassLibrary.Interfaces;
 using MyApiMonitorClassLibrary.Models;
@@ -23,21 +22,17 @@ builder.RequireAuthorizationThroughoutAsFallbackPolicy();
 builder.ByPassAuthenticationIfInDevelopment();
 
 // Add services to the container.
-if (builder.Environment.IsDevelopment()) //allows file upload from localhost:44442 in development.
+if (builder.Environment.IsDevelopment()) //allows file upload from localhost:56789 in development.
 {
 	builder.Services.AddCors(options =>
 	{
 		options.AddPolicy("AllowDevelopmentOrigin", builder =>
 	{
-		builder.WithOrigins("http://localhost:44442")
+		builder.WithOrigins("http://localhost:56789")
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();
-
-
-
-
-		//WithOrigins("http://localhost:44442")
+		//WithOrigins("http://localhost:56789")
 		//.AllowAnyHeader()
 		//	   .AllowAnyMethod();
 	});
@@ -81,6 +76,8 @@ builder.Services.AddTransient<IOpenAIControllerService, OpenAIControllerService>
 // File uploading services
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+//Configuration services
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 
 
@@ -100,15 +97,10 @@ if (app.Environment.IsDevelopment())
 	app.UseCors("AllowDevelopmentOrigin");
 }
 
-//Configuration for file uploading
-app.UseStaticFiles(new StaticFileOptions
-{
-	FileProvider = new PhysicalFileProvider(
-				Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
-	RequestPath = "/uploads"
-});
 
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 //Configuration for routing
 app.UseHttpsRedirection();

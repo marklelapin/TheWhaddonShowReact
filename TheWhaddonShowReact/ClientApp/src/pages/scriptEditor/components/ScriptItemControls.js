@@ -1,19 +1,19 @@
 ﻿//React and redux
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useState} from 'react';
+
 
 //Components
-import { Button, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from 'reactstrap';
-import { Icon } from 'components/Icons/Icons'
+import {  Dropdown, DropdownItem, DropdownMenu } from 'reactstrap';
+import { Icon } from '../../../components/Icons/Icons'
 
 //Constants
-import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from 'dataAccess/scriptItemTypes';
-import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
-import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
+import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from '../../../dataAccess/scriptItemTypes';
+import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
+import { CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 //utils
-import { log } from 'helper';
-import CheckBox from 'components/Forms/CheckBox';
+import { log } from '../../../helper';
+import CheckBox from '../../../components/Forms/CheckBox';
 
 function ScriptItemControls(props) {
 

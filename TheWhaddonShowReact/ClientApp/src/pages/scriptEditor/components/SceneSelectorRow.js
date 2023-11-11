@@ -4,11 +4,9 @@ import React from 'react';
 
 //Components
 import { Button } from 'reactstrap';
-import { Icon } from 'components/Icons/Icons';
 
 //utils
-import { log } from 'helper';
-import { moveFocusToId } from '../scripts/utility';
+import { log } from '../../../helper';
 
 function SceneSelectorRow(props) {
 

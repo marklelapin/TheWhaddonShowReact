@@ -3,21 +3,20 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 //Components
-import { Container } from 'reactstrap';
 import Scene from './Scene'
 
 //utitilites
 
-import { log } from 'helper';
-import { addUpdates } from 'actions/localServer';
+import { log } from '../../../helper';
+import { addUpdates } from '../../../actions/localServer';
 import { createHeaderScriptItems, newScriptItemsForSceneDelete } from '../scripts/scriptItem';
-import { prepareUpdates } from 'dataAccess/localServerUtils';
+import { prepareUpdates } from '../../../dataAccess/localServerUtils';
 import { moveFocusToId } from '../scripts/utility';
 
 //Constants
-import { SHOW, ACT } from 'dataAccess/scriptItemTypes';
+import { SHOW, ACT } from '../../../dataAccess/scriptItemTypes';
 import ScriptViewerHeader from './ScriptViewerHeader';
-import { START, END } from '../scripts/utility';
+import { START} from '../scripts/utility';
 
 function ScriptViewer(props) {
 

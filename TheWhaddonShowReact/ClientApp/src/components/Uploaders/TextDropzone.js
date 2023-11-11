@@ -1,20 +1,15 @@
 ﻿//React and redux
 import React from 'react';
-import { useState, useEffect } from 'react';
 
 
 //Components
-import { Input } from 'reactstrap';
 import Dropzone from 'react-dropzone'
 import TextareaAutosize from 'react-autosize-textarea';
 
-//data access
-import { axios } from 'axios';
-
 
 //utils
-import { getFileTextContents } from 'dataAccess/generalUtils';
-import { log } from 'helper';
+import { getFileTextContents } from '../../dataAccess/fileUtils';
+import { log } from '../../helper';
 
 //css
 import s from './Uploaders.module.css';

@@ -6,10 +6,8 @@ import {
     , toggleShowFailure
     , updateSearch
     , updateIsLoading
-} from 'actions/apiMonitor';
+} from '../../actions/apiMonitor';
 import Datetime from 'react-datetime';
-
-
 
 import {
     Row,
@@ -20,7 +18,7 @@ import {
     FormGroup
 } from 'reactstrap';
 
-import Widget from 'components/Widget';
+import Widget from '../../components/Widget';
 
 
 import ResultsTable from './components/ResultsTable';

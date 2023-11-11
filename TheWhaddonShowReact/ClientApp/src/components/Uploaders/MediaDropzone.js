@@ -2,28 +2,24 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 
-
 //Components
 import {
-    FormGroup,
-    Label,
-    Row,
-    Col,
     Button,
-    Input,
-    Container
+    Input
 } from 'reactstrap';
-import Widget from 'components/Widget'
 import Dropzone from 'react-dropzone'
 import MediaDisplay from './MediaDisplay';
-import { Icon } from 'components/Icons/Icons';
+import { Icon } from '../../components/Icons/Icons';
 
 //data access
-import { uploadFiles, fetchMediaFiles } from 'dataAccess/generalUtils';
+import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils';
 
 
 //utils
-import { log } from 'helper';
+import { log } from '../../helper';
+
+//constants
+import { MEDIA } from '../../dataAccess/storageContainerNames';
 
 //css
 import s from './Uploaders.module.css';
@@ -40,6 +36,8 @@ function MediaDropzone(props) {
         , removeMedia
         , showControls
         , autoLoad = false
+        , width = null
+        , height = 100
     } = props;
 
 
@@ -56,14 +54,14 @@ function MediaDropzone(props) {
 
     useEffect(() => {
         getMediaFiles()
-    }, [existingMediaURLs, newMediaFiles])
+    }, [existingMediaURLs, newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
 
     const getMediaFiles = async () => {
 
-        const youTubeURLs = existingMediaURLs.filter(url => url.includes('youtube.com'))
-        const fileURLs = existingMediaURLs.filter(url => !youTubeURLs.includes(url))
+        const youTubeURLs = existingMediaURLs.filter(url => url.includes('youtube.com')) || []
+        const fileURLs = existingMediaURLs.filter(url => !youTubeURLs.includes(url)) || []
 
-        const existingFiles = await fetchMediaFiles(fileURLs)
+        const existingFiles = await fetchFiles(MEDIA,fileURLs) || []
 
         const newFiles = [...youTubeURLs, ...existingFiles, ...newMediaFiles]
         setMediaFiles(newFiles)
@@ -109,9 +107,9 @@ function MediaDropzone(props) {
 
         //process file urls
         if (fileURLs.length > 0) {
-            const result = await uploadFiles(fileURLs, 'uploads/media')
-            if (result.pictureRefs) {
-                addMedia(result.pictureRefs)
+            const result = await uploadFiles(fileURLs, MEDIA)
+            if (result.blobNames) {
+                addMedia(result.blobNames)
             }
         }
 
@@ -201,7 +199,10 @@ function MediaDropzone(props) {
                                 <MediaDisplay
                                     file={isYouTube(media) ? null : media}
                                     youTubeUrl={isYouTube(media) ? media : null}
-                                    key={`drop-id-${idx}`} />
+                                    key={`drop-id-${idx}`}
+                                    width={width}
+                                    height={height}
+                                />
                                 <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} />
                             </div>
 

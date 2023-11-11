@@ -9,10 +9,10 @@
     SYNC,
     END_SYNC,
     CLOSE_POSTBACK
-} from 'actions/localServer';
+} from '../actions/localServer';
 
-import { CLEAR_IMPORT_UPDATES } from 'actions/scriptEditor';
-import { IMPORT_GUID } from 'pages/scriptEditor/ScriptImporter';
+import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
+import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
 import {
     //**LSMTypeInCode** */
@@ -20,10 +20,10 @@ import {
     , ScriptItem
     , Part
     , LocalServerModel
-} from 'dataAccess/localServerModels';
+} from '../dataAccess/localServerModels';
 import { v4 as uuidv4 } from 'uuid';
 
-import { log } from 'helper.js';
+import { log } from '../helper.js';
 
 const defaultState = {
     localCopyId: uuidv4(),

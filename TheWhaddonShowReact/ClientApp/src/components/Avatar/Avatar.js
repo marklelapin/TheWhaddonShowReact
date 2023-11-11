@@ -1,19 +1,27 @@
 ﻿import React from 'react';
-import s from './Avatar.module.scss'; // eslint-disable-line css-modules/no-unused-class
-import adminDefault from 'images/chat/chat2.png';
-import { uploadFiles } from 'dataAccess/generalUtils.js';
-import { uploads_avatars } from 'dataAccess/uploadLocations';
+import {  useSelector } from 'react-redux';
 
-//interface Props {
-//    person: {};
-//}
+//Components
+
+import { uploadFiles } from '../../dataAccess/fileUtils.js';
+
+//Constants
+import { AVATARS } from '../../dataAccess/storageContainerNames';
+import adminDefault from '../../images/chat/chat2.png';
+
+//utils
+import { log } from '../../helper';
+
+import s from './Avatar.module.scss'; 
+
 
 export function Avatar(props) {
+
+    const debug = true;
 
     const { person: draftPerson, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
 
     const person = draftPerson || {}
-
 
     const { firstName = null, email = null, pictureRef = null } = person;
 
@@ -25,32 +33,28 @@ export function Avatar(props) {
 
     const inputId = `avatar-image-upload-${person.id}`
 
-    const avatarImage = () => {
-        if (pictureRef !== null) return `${uploads_avatars}/${person.pictureRef}`
-        if (person && person.role === 'admin') return adminDefault // TODO used to bring back default photo when testing. remove when live
-        return false
-    }
+    const avatarImageObjectURL = useSelector(state => state.cache[AVATARS][pictureRef])
 
+    const avatarURL = avatarImageObjectURL ? avatarImageObjectURL : pictureRef 
+
+    log(debug, 'Avatar person', person)
+
+
+
+    //Event Handlers
     const handleImageClick = (event) => {
-
+        event.stopPropagation();
         if (onClick) {
             onClick(event, linkId)
         } else {
             if (person?.id !== null) {
                 const imageInput = document.getElementById(inputId)
-
                 if (imageInput) imageInput.click(); //trigger click event on hidden file upload element
-
             }
-
         }
-
-
     }
 
     const handleImageChange = async (event) => {
-
-        let pictureRef;
 
         const files = event.target.files
         if (files.length > 1) {
@@ -58,19 +62,12 @@ export function Avatar(props) {
         }
 
         if (files.length === 1) {
-            uploadFiles(files, uploads_avatars, { showSuccessAlerts: false })
-                .then(response => {
-                    console.log(response)
-                    console.log(response.pictureRefs[0].toString())
-                    pictureRef = response.pictureRefs[0]
-                    return pictureRef
-                })
-                .then(pictureRef => {
-                    console.log('picture ref within promises: ' + pictureRef)
-                    return pictureRef
-                }
-                )
-                .then(pictureRef => onChange(pictureRef))
+            const response = await uploadFiles(files, AVATARS, { showSuccessAlerts: false })
+
+            const pictureRef = response.blobNames[0].toString()
+
+            log(debug, 'handleImageChange pictureRef', pictureRef)
+            onChange(pictureRef)
 
         }
 
@@ -80,7 +77,7 @@ export function Avatar(props) {
     const avatarSize = () => {
 
         switch (size) {
-            case "md": return { height: '40px', width: '40px'}
+            case "md": return { height: '40px', width: '40px' }
             case "sm": return { height: '30px', width: '30px' }
             case "xs": return { height: '20px', width: '20px' }
             default: return { height: '40px', width: '40px' }
@@ -93,11 +90,10 @@ export function Avatar(props) {
         return (
 
             <span className={`${s.avatar} rounded-circle float-start avatar`} onClick={(e) => handleImageClick(e)} style={avatarSize()}>
-                {
-                    avatarImage() ?
-                        <img src={avatarImage()} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} />
-                        :
-                        < span title={avatarTitle} > {avatarText} </span>
+                {avatarURL ?
+                    <img src={avatarURL} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} />
+                    :
+                    < span title={avatarTitle} > {avatarText} </span>
                 }
             </span>
         )
@@ -111,7 +107,8 @@ export function Avatar(props) {
             //hidden image file upload element
             <div style={{ cursor: 'pointer' }}>
                 <input
-                    accept="image/*" onChange={handleImageChange}
+                    accept="image/*" onChange={(e)=>handleImageChange(e)}
+                   
                     className="avatar-image-upload"
                     id={inputId}
                     type="file" name="file" />

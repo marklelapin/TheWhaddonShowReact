@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useState, useCallback } from 'react';
-import { uploadFiles } from 'dataAccess/generalUtils';
+import { uploadFiles } from '../../dataAccess/fileUtils';
 
 import {
     FormGroup,
@@ -11,16 +11,22 @@ import {
     Input,
     Container
 } from 'reactstrap';
-import Widget from 'components/Widget'
+import Widget from '../../components/Widget'
 import Dropzone from 'react-dropzone'
-import s from 'pages/forms/elements/Elements.module.scss';
-function VideoDropzone(props) {
+import s from '../../pages/forms/elements/Elements.module.scss';
+
+function ImageDropzone(props) {
 
     const {
         singleFile = false
         , inputTags = true
         , dropZoneText = 'This dropzone accepts only images. Try dropping some here, or click to select files to upload.'
+        , containerName
     } = props;
+
+    if (!containerName) {
+        throw new Error('No container name provided to ImageDropzone');
+    }
 
 
     const [images, setImages] = useState([]);
@@ -48,7 +54,7 @@ function VideoDropzone(props) {
         if (images.length === 0) {
             alert('Please select at least 1 file to upload.')
         } else {
-            await uploadFiles(images, 'test')
+            await uploadFiles(images, containerName)
             this.setImages([])
             this.setSearchTags([])
         }
@@ -122,4 +128,4 @@ function VideoDropzone(props) {
     );
 
 }
-export default VideoDropzone;
+export default ImageDropzone;

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import PartSelector from './PartSelector';
 
 //utilities
-import { log } from 'helper';
+import { log } from '../../../helper';
 
 
 function Dialogue(props) {

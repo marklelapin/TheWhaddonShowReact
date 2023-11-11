@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
 import { Person, ScriptItem, Part } from '../../../dataAccess/localServerModels';
-import { NotificationAlert, Icon } from 'components/Icons/Icons';
+import { Icon } from '../../../components/Icons/Icons';
 
 function SyncDropdown(props) {
 

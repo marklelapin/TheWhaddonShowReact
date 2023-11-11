@@ -1,22 +1,21 @@
 import React from 'react';
-import { push } from 'connected-react-router';
 
 //Redux Hooks
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import isScreen from 'core/screenHelper';
+import { useSelector } from 'react-redux';
+import isScreen from '../../../core/screenHelper';
 
 //Data Access / Local Server Model
-import { getLatest } from 'dataAccess/localServerUtils';
+import { getLatest } from '../../../dataAccess/localServerUtils';
 //Components
-import DataLoading from 'components/DataLoading/DataLoading';
+import DataLoading from '../../../components/DataLoading/DataLoading';
 
-import { headers, row, modal } from './User';
+import { headers, row } from './User';
 import { Table, Button } from 'reactstrap';
 import User from './User';
-import { PersonUpdate } from 'dataAccess/localServerModels';
-import Widget from 'components/Widget';
-
+import { PersonUpdate } from '../../../dataAccess/localServerModels';
+import Widget from '../../../components/Widget';
+import { log } from '../../../helper';
 //SASS
 import s from '../Users.module.scss';
 
@@ -34,18 +33,21 @@ export function UsersTable() {
     const [showActive, setShowActive] = useState(null);
 
     //Access state from redux store
-    const personsSync = useSelector((state) => state.localServer.persons.sync)
-    const persons = useSelector((state) => getLatest(state.localServer.persons.history).map(person => ({id: person.id, isActive: person.isActive, isSample: person.isSample, firstName: person.firstName, lastName: person.lastName })) || [])
+    const personsSync = useSelector((state) => state.localServer.persons.sync);
+    const personsHistory = useSelector((state) => state.localServer.persons.history);
+    log(debug, 'UsersTable personsHistory', personsHistory)
 
-    
+    const persons = getLatest(personsHistory);
 
+    log(debug, 'UsersTable persons', persons)
+   
     useEffect(() => {
         setLoadingError();
     }, [])
 
     useEffect(() => {
         setLoadingError();
-    }, [persons]
+    }, [personsHistory] //es-lint disable-line react-hooks/exhaustive-deps
     )
 
 
@@ -60,7 +62,6 @@ export function UsersTable() {
 
     const handleResize = () => {
         if (isScreen('xs') || isScreen('sm') || isScreen('md')) { //thes screen sized should match those in index.css for the .
-
             switchTableBehaviour(true)
         } else {
             switchTableBehaviour(false)
@@ -81,6 +82,22 @@ export function UsersTable() {
         }
     }
 
+const setLoadingError = () => {
+        if (persons.length > 0) {
+            setIsLoading(false)
+            setError(null)
+        }
+        if (personsSync.isSyncing) {
+            setIsLoading(true);
+            setError(null);
+        }
+        else {
+            setIsLoading(false);
+            setError(personsSync.error);
+        }
+    }
+
+
     const openModal = (event) => {
         event.preventDefault();
 
@@ -99,8 +116,9 @@ export function UsersTable() {
 
     const addNewUser = () => {
         debug && console.log('Adding new user')
-        const userDefault = new PersonUpdate()
+        let userDefault = new PersonUpdate()
         debug && console.log(userDefault)
+        userDefault.newUser = true;
         setNewUser(userDefault)
     }
 
@@ -108,24 +126,11 @@ export function UsersTable() {
 
 
 
-    const setLoadingError = () => {
-        if (persons.length > 0) {
-            setIsLoading(false)
-            setError(null)
-        }
-        if (personsSync.isSyncing) {
-            setIsLoading(true);
-            setError(null);
-        }
-        else {
-            setIsLoading(false);
-            setError(personsSync.error);
-        }
-    }
+    
 
 
 
-    const personIds = () => {
+    const filteredPersons = () => {
 
        let filteredPersons = persons.filter((person) => person.isActive === (showActive || person.isActive))
        filteredPersons = filteredPersons.filter((person) => !(person.isSample === true))
@@ -139,7 +144,7 @@ export function UsersTable() {
             return 1;
         })
 
-        return sortedPersons.map((person) => person.id)
+        return sortedPersons
 
     }
 
@@ -151,7 +156,7 @@ export function UsersTable() {
 
 
 
-                <DataLoading isLoading={isLoading && (personIds().length === 0)} isError={error !== null && (personIds().length === 0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
+                <DataLoading isLoading={isLoading && (filteredPersons().length === 0)} isError={error !== null && (filteredPersons().length === 0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
                     <Button color="primary" onClick={addNewUser}>Add New User</Button>
                     
                     <div className="table-responsive" >
@@ -160,12 +165,12 @@ export function UsersTable() {
                                 <User type={headers} />
                             </thead>
                             <tbody>
-                                {personIds().map((id) => {
+                                {filteredPersons().map((person) => {
 
-                                    return <User type={row} id={id} key={id} openModal={(id === userModalToOpen)} closeModal={closeModal} />
+                                    return <User user={person} type={row} key={person.id} openModal={(person.id === userModalToOpen)} closeModal={closeModal} />
                                 }
                                 )}
-                                {(newUser !== null) && <User type={row} newUser={newUser} openModal={true} closeModal={closeModal} onCancelNewUser={closeModal} />}
+                                {(newUser !== null) && <User user={newUser} type={row} openModal={true} closeModal={closeModal} onCancelNewUser={closeModal} />}
                             </tbody>
                         </Table>
                     </div>

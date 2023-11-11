@@ -1,37 +1,28 @@
 ﻿
 //React and Redux
 import React from 'react';
-import { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 
 //Components
-import Dialogue from './Dialogue';
-import SceneTitle from './SceneTitle';
-import Synopsis from './Synopsis';
-import Staging from './Staging';
 import Comment from './Comment';
 
 import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
-import { Icon } from 'components/Icons/Icons';
+import { Icon } from '../../../components/Icons/Icons';
 import { Button } from 'reactstrap';
-import MediaDropzone from 'components/Uploaders/MediaDropzone';
+import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 //utilities
-import { log } from 'helper';
-import { addUpdates } from 'actions/localServer';
-import { prepareUpdate } from 'dataAccess/localServerUtils';
-import { moveFocusToId } from '../scripts/utility';
-import { changeFocus } from 'actions/navigation';
+import { log } from '../../../helper';
 
 //Constants
-import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from 'dataAccess/scriptItemTypes';
+import { SCENE, DIALOGUE } from '../../../dataAccess/scriptItemTypes';
 
 
 function ScriptItem(props) {
 
     //utility consts
     const debug = true;
-    const dispatch = useDispatch()
 
 
     // get specific props

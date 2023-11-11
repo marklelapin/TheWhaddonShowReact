@@ -2,29 +2,26 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { store } from 'index'
 
 //Components
-import SceneSelector from './components/SceneSelector';
 import ScriptViewer from './components/ScriptViewer';
-import TextDropzone from 'components/Uploaders/TextDropzone';
+
+import TextDropzone from '../../components/Uploaders/TextDropzone';
 import { Button } from 'reactstrap';
 
 //localServerModels
-import { ScriptItemUpdate, ScriptItem } from 'dataAccess/localServerModels';
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE, COMMENT } from 'dataAccess/scriptItemTypes';
-import { prepareUpdates } from 'dataAccess/localServerUtils';
+
+import { SCENE, COMMENT } from '../../dataAccess/scriptItemTypes';
+import { prepareUpdates } from '../../dataAccess/localServerUtils';
 import { sortLatestScriptItems } from './scripts/scriptItem';
-import { addUpdates } from 'actions/localServer';
-import { clearImportUpdates } from 'actions/scriptEditor';
+import { addUpdates } from '../../actions/localServer';
+import { clearImportUpdates } from '../../actions/scriptEditor';
 
 //Utils
-import { log } from 'helper.js';
-import isScreen from 'core/screenHelper';
-import ImportFileViewer from './components/ImportFileViewer';
+import { log } from '../../helper.js';
+import isScreen from '../../core/screenHelper';
 import { convertTextToHeaderScriptItems, getScriptItem, filterNonEmptyStrings } from './scripts/import';
-import { getLatest } from 'dataAccess/localServerUtils'
+import { getLatest } from '../../dataAccess/localServerUtils'
 
 import s from './ScriptImporter.module.scss';
 

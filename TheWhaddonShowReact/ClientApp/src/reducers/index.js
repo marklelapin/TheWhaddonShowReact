@@ -10,6 +10,7 @@ import chat from './chat';
 import users from './usersReducers';
 import localServer from './localServer';
 import scriptEditor from './scriptEditor';
+import cache from './cache';
 import { connectRouter } from 'connected-react-router';
 
 export default (history) =>
@@ -26,4 +27,5 @@ export default (history) =>
         chat,
         localServer,
         scriptEditor,
+        cache,
     });

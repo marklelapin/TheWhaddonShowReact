@@ -15,12 +15,12 @@ import {
     ModalFooter,
 } from 'reactstrap';
 
-import { getLatest, prepareUpdate } from 'dataAccess/localServerUtils'
-import 'index.css'
+import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils'
+import '../../../index.css'
 
-import { addUpdates } from 'actions/localServer';
-import { Person, PersonUpdate } from 'dataAccess/localServerModels';
-
+import { addUpdates } from '../../../actions/localServer';
+import { Person, PersonUpdate } from '../../../dataAccess/localServerModels';
+import { log } from '../../../helper'
 export const headers = 'headers'
 export const row = 'row'
 export const modal = 'modal'
@@ -31,28 +31,21 @@ function User(props) {
 
     const debug = true;
 
-    const { type, closeModal, openModal = false, newUser = null, onCancelNewUser } = props //type = modal, headers, row.
+    const { user: storedUser = {}, type, closeModal, openModal = false, onCancelNewUser } = props //type = modal, headers, row.
 
-    let { id } = props
-
-    if (newUser !== null) { id = newUser.id }
-
-    const storedUser = useSelector((state) => getLatest(state.localServer.persons.history).filter((person) => person.id === id)[0])
+    log(debug, 'User props', props)
+    log(debug, 'User storedUser', storedUser)
 
     //Set state for internal component.
     //This user state is used to track changes to the user and is not synced with the redux store until dispatch.
-    const [user, setUser] = useState(newUser || storedUser || new PersonUpdate());
+    const [user, setUser] = useState({});
     const [userChanged, setUserChanged] = useState(false)
 
     const dispatch = useDispatch()
 
-    //if storedUser changes then update the user state.
     useEffect(() => {
-
-        setUser((newUser !== null ? newUser : storedUser))
-        setUserChanged(false)
-
-    }, [storedUser])
+        setUser(storedUser)
+    }, [])
 
     useEffect(() => {
         if (user === storedUser) {
@@ -67,93 +60,6 @@ function User(props) {
 
 
     //Event Handlers
-
-    const handleNameChange = (event) => {
-
-        let firstName = null
-        let lastName = null
-
-        const originalText = event.target.value
-
-       let text = originalText
-
-        text = text.replace(/^\s+/, '') //remove leading spaces
-        text = text.replace(/\s+/g, ' ') //remove multiple spaces
-
-        const spaceArray = text.split(' ')
-
-        firstName = spaceArray[0] || ''
-
-        if (spaceArray.length > 1) {
-            lastName = spaceArray[1] 
-        }
-
-
-
-        setUser({ ...user, firstName: firstName, lastName: lastName })
-
- }
-
-    const handleEmailChange = (event) => {
-        console.log('EMail Change User:')
-        console.log({ user })
-        console.log('stored user')
-        console.log(storedUser)
-
-        setUser({ ...user, email: event.target.value })
-    }
-
-    const handleAvatarChange = (pictureRef) => {
-
-        setUser({ ...user, pictureRef: pictureRef })
-    }
-
-    const handleIsActorChange = (event) => {
-
-        setUser({ ...user, isActor: event.target.checked })
-    }
-
-    const handleIsSingerChange = (event) => {
-        setUser({ ...user, isSinger: event.target.checked })
-        console.log(user)
-    }
-
-    const handleIsWriterChange = (event) => {
-        setUser({ ...user, isWriter: event.target.checked })
-    }
-
-    const handleIsBandChange = (event) => {
-        console.log('handleIsBandChange')
-        console.log('user' + user.isBand)
-        console.log('checked' + event.target.checked)
-        setUser({ ...user, isBand: event.target.checked })
-    }
-
-    const handleIsTechnicalChange = (event) => {
-        setUser({ ...user, isTechnical: event.target.checked })
-    }
-
-    const handleIsAdminChange = (event) => {
-        setUser({ ...user, isAdmin: event.target.checked })
-    }
-
-    const handleIsActiveChange = (event) => {
-        console.log('IsActiveChnage user:')
-        console.log(user)
-        console.log('stored user')
-        console.log(storedUser)
-        setUser({ ...user, isActive: event.target.checked })
-    }
-
-
-    const handleAddTag = (tagOption) => {
-        setUser({ ...user, tags: [...user.tags, tagOption] })
-    }
-
-    const handleRemoveTag = (event) => {
-        setUser({ ...user, tags: user.tags.filter((tagOption) => tagOption !== event.target.textContent) })
-    }
-
 
     const handleClickUpdate = () => {
 
@@ -174,7 +80,60 @@ function User(props) {
 
     }
 
+    const handleChange = (type, value) => {
+        switch (type) {
+            case 'avatar': setUser({ ...user, pictureRef: value });
+                break;
+            case 'name': handleNameChange(value)
+                break;
+            case 'email': setUser({ ...user, email: value })
+                break;
+            case 'isActor': setUser({ ...user, isActor: value })
+                break;
+            case 'isSinger': setUser({ ...user, isSinger: value })
+                break;
+            case 'isWriter': setUser({ ...user, isWriter: value })
+                break;
+            case 'isBand': setUser({ ...user, isBand: value })
+                break;
+            case 'isTechnical': setUser({ ...user, isTechnical: value })
+                break;
+            case 'isAdmin': setUser({ ...user, isAdmin: value })
+                break;
+            case 'isActive': setUser({ ...user, isActive: value })
+                break;
+            case 'addTag': setUser({ ...user, tags: [...user.tags, value] })
+                break;
+            case 'removeTag': setUser({ ...user, tags: user.tags.filter((tagOption) => tagOption !== value) })
+                break;
 
+            default:
+                break;
+        }
+    }
+
+    const handleNameChange = (value) => {
+
+        let firstName = null
+        let lastName = null
+
+        const originalText = value
+
+        let text = originalText
+
+        text = text.replace(/^\s+/, '') //remove leading spaces
+        text = text.replace(/\s+/g, ' ') //remove multiple spaces
+
+        const spaceArray = text.split(' ')
+
+        firstName = spaceArray[0] || ''
+
+        if (spaceArray.length > 1) {
+            lastName = spaceArray[1]
+        }
+        setUser({ ...user, firstName: firstName, lastName: lastName })
+
+    }
 
 
     //Sections...
@@ -182,37 +141,35 @@ function User(props) {
         return (
 
             <PersonalDetails type={type} person={user}
-                onNameChange={handleNameChange}
-                onEmailChange={handleEmailChange}
-                onAvatarChange={handleAvatarChange}
+                onChange={(type, value) => handleChange(type, value)}
             />
         )
     }
     const roles = (type, show = false) => {
         return (
             <Roles type={type} person={user} strapColor="primary" className={(show) ? '' : 'd-none d-lg-table-cell'}
-                onIsActorChange={handleIsActorChange}
-                onIsSingerChange={handleIsSingerChange}
-                onIsWriterChange={handleIsWriterChange}
-                onIsBandChange={handleIsBandChange}
-                onIsTechnicalChange={handleIsTechnicalChange}
-                onIsAdminChange={handleIsAdminChange}
+                onChange={(type, value) => handleChange(type, value)}
             />
         )
     }
     const tags = (type, show = false) => {
         return (
             <Tags type={type} user={user} tagOptions={tagOptions} className={(show) ? '' : 'd-none d-lg-table-cell'}
-                onClickAdd={handleAddTag}
-                onClickRemove={handleRemoveTag}
+                onChange={(type, value) => handleChange(type, value)}
             />
         )
 
     }
     const update = (type, show = false) => {
         return (
-            <Update type={type} user={user} userChanged={userChanged} onClickCancel={handleClickCancel} onClickUpdate={handleClickUpdate} isNew={newUser!==null} className={(show) ? '' : 'd-none d-lg-table-cell'}
-                onChange={handleIsActiveChange}
+            <Update type={type}
+                user={user}
+                userChanged={userChanged}
+                onClickCancel={handleClickCancel}
+                onClickUpdate={handleClickUpdate}
+                isNew={user.newUser === true}
+                className={(show) ? '' : 'd-none d-lg-table-cell'}
+                onChange={(type, value) => handleChange(type, value)}
             />
         )
     }
@@ -239,7 +196,7 @@ function User(props) {
             <>
 
                 {(user &&
-                    <tr id={id} key={id}>
+                    <tr id={user.id} key={user.id}>
                         {personalDetails('row')}
                         {roles('row')}
                         {tags('row')}
@@ -270,5 +227,4 @@ function User(props) {
 
 
 }
-
 export default User;

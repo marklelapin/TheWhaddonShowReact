@@ -6,15 +6,15 @@ import { useSelector, useDispatch } from 'react-redux';
 
 //Components
 
-import TagsInput from 'components/Forms/TagsInput';
+import TagsInput from '../../../components/Forms/TagsInput';
 
 import PartNameAndAvatar from './PartNameAndAvatar';
 import ScriptItemControls from './ScriptItemControls';
 import PartSelectorDropdown from './PartSelectorDropdown';
 
 //Utilities
-import { log } from 'helper'
-import { changeFocus } from 'actions/scriptEditor';
+import { log } from '../../../helper'
+import { changeFocus } from '../../../actions/scriptEditor';
 import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART, PART_ID } from './PartEditor';
 import { DOWN, UP, START, END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';

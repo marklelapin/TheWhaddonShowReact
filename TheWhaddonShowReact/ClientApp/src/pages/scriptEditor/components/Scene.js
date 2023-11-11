@@ -1,37 +1,34 @@
 ﻿//React and Redux
 import React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'reselect';
-import { store } from 'index.js';
+
 
 //Components
-import { Row, Col } from 'reactstrap';
-import ScriptItem from 'pages/scriptEditor/components/ScriptItem.js';
-import PartEditor from 'pages/scriptEditor/components/PartEditor.js';
+import ScriptItem from '../../../pages/scriptEditor/components/ScriptItem.js';
+import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 
 
 //Utilities
-import { prepareUpdates, prepareUpdate, getLatest } from 'dataAccess/localServerUtils';
+import { prepareUpdates, prepareUpdate, getLatest } from '../../../dataAccess/localServerUtils';
 import { sortLatestScriptItems } from '../scripts/scriptItem';
-import { addUpdates } from 'actions/localServer';
-import { newScriptItemsForDelete, newScriptItemsForCreate, createHeaderScriptItems } from '../scripts/scriptItem';
-import { ScriptItemUpdate } from 'dataAccess/localServerModels';
+import { addUpdates } from '../../../actions/localServer';
+import { newScriptItemsForDelete, newScriptItemsForCreate } from '../scripts/scriptItem';
+import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
 
 import { getNextUndoDate, getNextRedoDate } from '../scripts/undo';
-import { log } from 'helper'
-import { moveFocusToId, removeFocusFromId } from '../scripts/utility';
-import { changeFocus } from 'actions/navigation'
-import { create } from 'lodash';
+import { log } from '../../../helper'
+import { moveFocusToId } from '../scripts/utility';
+
 
 import {
     updateShowComments,
-} from 'actions/scriptEditor';
+} from '../../../actions/scriptEditor';
 
 //Constants
-import { HEADER_TYPES } from 'dataAccess/scriptItemTypes';
-import { INITIAL_CURTAIN, DIALOGUE,COMMENT } from 'dataAccess/scriptItemTypes';
-import { CURTAIN_TYPES } from 'dataAccess/scriptItemTypes';
+import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
+import { DIALOGUE, COMMENT } from '../../../dataAccess/scriptItemTypes';
+import { CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 

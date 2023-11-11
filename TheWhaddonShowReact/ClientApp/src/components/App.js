@@ -7,31 +7,27 @@ import { ToastContainer } from 'react-toastify';
 import { ConnectedRouter } from 'connected-react-router';
 
 //dataAccess Components
-import LocalServerSyncing from 'dataAccess/LocalServerSyncing';
-import ScriptEditorProcessing from 'dataAccess/ScriptEditorProcessing';
-
-import {
-    QueryClient,
-    QueryClientProvider
-} from '@tanstack/react-query'
+import LocalServerSyncing from '../dataAccess/LocalServerSyncing';
+import ScriptEditorProcessing from '../dataAccess/ScriptEditorProcessing';
 
 //Components
-import LayoutComponent from 'components/Layout';
-import Login from 'pages/auth/login';
-import Verify from 'pages/auth/verify';
-import Register from 'pages/auth/register';
-import Reset from 'pages/auth/reset';
-import Forgot from 'pages/auth/forgot';
+import LayoutComponent from '../components/Layout';
+import Login from '../pages/auth/login';
+import Verify from '../pages/auth/verify';
+import Register from '../pages/auth/register';
+import Reset from '../pages/auth/reset';
+import Forgot from '../pages/auth/forgot';
 //Utils
-import { getHistory } from 'index';
+import { getHistory } from '../index.js';
 import { AdminRoute, UserRoute, AuthRoute } from './RouteComponents';
 
 /* eslint-disable */
-import ErrorPage from 'pages/error';
+import ErrorPage from '../pages/error';
 /* eslint-enable */
 
 // Styles
-import 'styles/theme.scss';
+import '../styles/theme.scss';
+import CacheProcessing from '../dataAccess/CacheProcessing';
 
 
 
@@ -39,9 +35,6 @@ import 'styles/theme.scss';
 
 
 
-
-// Create a client
-const queryClient = new QueryClient()
 
 const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
 
@@ -58,10 +51,11 @@ const currentUser = useSelector((state) => state.auth.currentUser)
 
     return (
         <>
-            <LocalServerSyncing />
+            <LocalServerSyncing /> 
             <ScriptEditorProcessing />
+            <CacheProcessing />
 
-        <QueryClientProvider client={queryClient}>
+
             <ToastContainer
                 autoClose={5000}
                 hideProgressBar
@@ -92,7 +86,6 @@ const currentUser = useSelector((state) => state.auth.currentUser)
                     </Switch>
                 </HashRouter>
             </ConnectedRouter>
-        </QueryClientProvider>
         
         
         </>

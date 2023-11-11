@@ -1,1 +1,0 @@
-﻿export const uploads_avatars = 'uploads/avatars'

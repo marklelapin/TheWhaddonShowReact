@@ -1,4 +1,4 @@
-﻿import { PartUpdate } from 'dataAccess/localServerModels'
+﻿import { PartUpdate } from '../../../dataAccess/localServerModels'
 
 
 

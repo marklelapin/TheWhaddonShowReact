@@ -1,17 +1,15 @@
 ﻿//React and Redux
-import React from 'react';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { createSelector } from 'react-redux';
 
-import { updatePartPersons, updateScenePartPersons, addUpdatesToSceneScriptItemHistory, addUpdatesToSceneHistory } from 'actions/scriptEditor';
+import { updatePartPersons, updateScenePartPersons, addUpdatesToSceneScriptItemHistory, addUpdatesToSceneHistory } from '../actions/scriptEditor';
 
 //utils
-import { log } from 'helper';
-import { getLatest, prepareUpdates } from 'dataAccess/localServerUtils';
-import { addPersonsInfo } from 'pages/scriptEditor/scripts/part';
-import { PartUpdate } from 'dataAccess/localServerModels';
-import { addUpdates } from 'actions/localServer'; 
+import { log } from '../helper';
+import { getLatest, prepareUpdates } from '../dataAccess/localServerUtils';
+import { addPersonsInfo } from '../pages/scriptEditor/scripts/part';
+import { PartUpdate } from '../dataAccess/localServerModels';
+import { addUpdates } from '../actions/localServer'; 
 export function ScriptEditorProcessing() {
 
     const _ = require('lodash');
