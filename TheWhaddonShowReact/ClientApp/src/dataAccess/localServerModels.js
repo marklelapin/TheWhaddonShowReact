@@ -4,9 +4,9 @@ import {  SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOU
 import { localServerDateNow } from './localServerUtils';
 
 // Identifies the types of LocalServerModel updates (works similarly to redux actions)
-export const Person = 'Person';
-export const ScriptItem = 'ScriptItem';
-export const Part = 'Part';
+export const PERSON = 'Person';
+export const SCRIPT_ITEM = 'ScriptItem';
+export const PART= 'Part';
 
 
 export class LocalServerModel {

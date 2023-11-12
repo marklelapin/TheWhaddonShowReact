@@ -19,7 +19,7 @@ import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils'
 import '../../../index.css'
 
 import { addUpdates } from '../../../actions/localServer';
-import { Person, PersonUpdate } from '../../../dataAccess/localServerModels';
+import { PERSON } from '../../../dataAccess/localServerModels';
 import { log } from '../../../helper'
 export const headers = 'headers'
 export const row = 'row'
@@ -65,7 +65,7 @@ function User(props) {
 
         const userUpdate = prepareUpdate(user)
 
-        dispatch(addUpdates(userUpdate, Person))  //saves the user to the redux store where it will be synced separately.
+        dispatch(addUpdates(userUpdate, PERSON))  //saves the user to the redux store where it will be synced separately.
         setUserChanged(false)
         closeModal()
     }

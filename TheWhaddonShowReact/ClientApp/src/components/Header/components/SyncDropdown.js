@@ -1,10 +1,16 @@
 ﻿import React from 'react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+
+//COmponents
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
-import { Person, ScriptItem, Part } from '../../../dataAccess/localServerModels';
 import { Icon } from '../../../components/Icons/Icons';
+
+//Constants
+import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
+
+//css
+import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
 
 function SyncDropdown(props) {
 
@@ -70,20 +76,28 @@ function SyncDropdown(props) {
 
         const now = new Date();
         const secondsPast = Math.floor((now - date) / 1000);
+
+
         if (secondsPast < 60) {
             return { text: 'Just synced.', seconds: secondsPast };
-        }
-        if (secondsPast < 3600) {
-            return { text: 'Last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago.', seconds: secondsPast };
-        }
-        if (secondsPast <= 86400) {
-            return { text: 'Last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago.', seconds: secondsPast };
-        }
-        if (secondsPast > 86400) {
-            const daysSince = parseInt(secondsPast / 86400);
-            if (daysSince === 1) return 'Last synced a day ago.'
-            return ({ text: 'Last synced ' + parseInt(secondsPast / 86400) + ' days ago', seconds: secondsPast });
-        }
+        } else
+            if (secondsPast < 3600) {
+                return { text: 'Last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago.', seconds: secondsPast };
+            } else
+                if (secondsPast <= 86400) {
+                    return { text: 'Last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago.', seconds: secondsPast };
+                } else
+                    if (secondsPast > 86400) {
+                        const daysSince = parseInt(secondsPast / 86400);
+                        if (daysSince === 1) {
+                            return { text: 'Last synced a day ago.', seconds: secondsPast }
+                        } else {
+                            return ({ text: 'Last synced ' + parseInt(secondsPast / 86400) + ' days ago', seconds: secondsPast });
+                        }
+                    } else {
+                        return {text: `Error reading date synced: ${date.toString()}`, seconds: null }
+                    }
+
     }
 
     const getTarget = (type) => {
@@ -93,9 +107,9 @@ function SyncDropdown(props) {
         switch (type) {
             //**LSMTypeinCode**
             case 'Summary': target = syncSummary(); break;
-            case Person: target = personsSync; break;
-            case ScriptItem: target = scriptItemsSync; break;
-            case Part: target = partsSync; break;
+            case PERSON: target = personsSync; break;
+            case SCRIPT_ITEM: target = scriptItemsSync; break;
+            case PART: target = partsSync; break;
             default: target = null;
         }
 
@@ -120,8 +134,8 @@ function SyncDropdown(props) {
             return (
                 <>
                     <Icon icon="cross" strapColor="danger" /> Syncing error...
-                    
-                    {(type!=='Summary') ? <p><small>{target.error}</small></p> : null}
+
+                    {(type !== 'Summary') ? <p><small>{target.error}</small></p> : null}
                 </>
 
             )
@@ -146,11 +160,11 @@ function SyncDropdown(props) {
             </DropdownToggle>
             <DropdownMenu end className={`${s.notificationsWrapper} py-0 animated animated-fast fadeInUp`}>
 
-                <DropdownItem >{syncText(Person)}</DropdownItem>
+                <DropdownItem >{syncText(PERSON)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem >{syncText(ScriptItem)}</DropdownItem>
+                <DropdownItem >{syncText(SCRIPT_ITEM)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem >{syncText(Part)}</DropdownItem>
+                <DropdownItem >{syncText(PART)}</DropdownItem>
                 {/*<>*/}
                 {/*    <p>Sync Status:</p>*/}
                 {/*    <br />*/}

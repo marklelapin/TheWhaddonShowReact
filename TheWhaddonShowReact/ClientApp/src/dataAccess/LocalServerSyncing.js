@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import {  useDispatch } from 'react-redux';
 import { useSync } from '../dataAccess/localServerUtils'; 
 import {sync } from '../actions/localServer';
-import {Person, ScriptItem, Part} from '../dataAccess/localServerModels';
+import {PERSON,SCRIPT_ITEM,PART } from '../dataAccess/localServerModels';
 
 export  function LocalServerSyncing() {
 
@@ -25,9 +25,9 @@ export  function LocalServerSyncing() {
 
     const syncWithServer = () => {
 
-        dispatch(sync(Person))
-        //dispatch(sync(ScriptItem))
-        //dispatch(sync(Part))
+        dispatch(sync(PERSON))
+        //dispatch(sync(SCRIPT_ITEM))
+        //dispatch(sync(PART))
     }
 
 

@@ -28,7 +28,7 @@ if (builder.Environment.IsDevelopment()) //allows file upload from localhost:567
 	{
 		options.AddPolicy("AllowDevelopmentOrigin", builder =>
 	{
-		builder.WithOrigins("http://localhost:56789")
+		builder.WithOrigins("http://localhost:55555")
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();

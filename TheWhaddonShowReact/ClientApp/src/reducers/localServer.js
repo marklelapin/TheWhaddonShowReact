@@ -16,9 +16,9 @@ import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
 import {
     //**LSMTypeInCode** */
-    Person
-    , ScriptItem
-    , Part
+    PERSON
+    , SCRIPT_ITEM
+    , PART
     , LocalServerModel
 } from '../dataAccess/localServerModels';
 import { v4 as uuidv4 } from 'uuid';
@@ -34,9 +34,9 @@ const defaultState = {
     },
     refresh: {},
     //**LSMTypeInCode**
-    persons: new LocalServerModel(Person), //object holding all information with regard to persons
-    scriptItems: new LocalServerModel(ScriptItem), //object holding all information with regard to scriptItems
-    parts: new LocalServerModel(Part),//object holding all information with regard to parts
+    persons: new LocalServerModel(PERSON), //object holding all information with regard to persons
+    scriptItems: new LocalServerModel(SCRIPT_ITEM), //object holding all information with regard to scriptItems
+    parts: new LocalServerModel(PART),//object holding all information with regard to parts
     connectionStatus: 'Ok'
 };
 
@@ -66,9 +66,9 @@ export default function localServerReducer(state = defaultState, action) {
         //Actions where a line needs to be added for each new LocalServerModel update type (e.g. persons, scriptItems, parts) **LSMTypeInCode**
         case RESET_LIST:
             switch (action.payloadType) {
-                case Person: return { ...state, persons: { ...state.persons, history: action.payload } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: action.payload } };
-                case Part: return { ...state, parts: { ...state.parts, history: action.payload } };
+                case PERSON: return { ...state, persons: { ...state.persons, history: action.payload } };
+                case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: action.payload } };
+                case PART: return { ...state, parts: { ...state.parts, history: action.payload } };
                 default: return state;
             }
         case PROCESS_LOCAL_TO_SERVER_POSTBACK:
@@ -79,9 +79,9 @@ export default function localServerReducer(state = defaultState, action) {
                 let searchArray = null;
                 switch (action.payloadType) {
                     //**LSMTypeInCode**
-                    case Person: searchArray = [...state.persons.history]; break
-                    case ScriptItem: searchArray = [...state.scriptItems.history]; break
-                    case Part: searchArray = [...state.parts.history]; break
+                    case PERSON: searchArray = [...state.persons.history]; break
+                    case SCRIPT_ITEM: searchArray = [...state.scriptItems.history]; break
+                    case PART: searchArray = [...state.parts.history]; break
                     default: return state;
                 }
 
@@ -98,9 +98,9 @@ export default function localServerReducer(state = defaultState, action) {
                 //update the correct array of data
                 switch (action.payloadType) {
                     //**LSMTypeInCode** */
-                    case Person: return { ...state, persons: { ...state.persons, history: updatedHistory } };
-                    case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: updatedHistory } };
-                    case Part: return { ...state, parts: { ...state.parts, history: updatedHistory } };
+                    case PERSON: return { ...state, persons: { ...state.persons, history: updatedHistory } };
+                    case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: updatedHistory } };
+                    case PART: return { ...state, parts: { ...state.parts, history: updatedHistory } };
                     default: return state;
                 };
             }
@@ -111,9 +111,9 @@ export default function localServerReducer(state = defaultState, action) {
             let data = null;
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: data = [...state.persons.history]; break
-                case ScriptItem: data = [...state.scriptItems.history]; break
-                case Part: data = [...state.parts.history]; break
+                case PERSON: data = [...state.persons.history]; break
+                case SCRIPT_ITEM: data = [...state.scriptItems.history]; break
+                case PART: data = [...state.parts.history]; break
                 default: return state;
             }
 
@@ -130,9 +130,9 @@ export default function localServerReducer(state = defaultState, action) {
             //update the correct array of data
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, history: updatedHistory } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: updatedHistory } };
-                case Part: return { ...state, parts: { ...state.parts, history: updatedHistory } };
+                case PERSON: return { ...state, persons: { ...state.persons, history: updatedHistory } };
+                case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: updatedHistory } };
+                case PART: return { ...state, parts: { ...state.parts, history: updatedHistory } };
                 default: return state;
             };
 
@@ -147,9 +147,9 @@ export default function localServerReducer(state = defaultState, action) {
             //pick correct data set to process
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: history = [...state.persons.history]; break
-                case ScriptItem: history = [...state.scriptItems.history]; break
-                case Part: history = [...state.parts.history]; break
+                case PERSON: history = [...state.persons.history]; break
+                case SCRIPT_ITEM: history = [...state.scriptItems.history]; break
+                case PART: history = [...state.parts.history]; break
                 default: return state
             };
 
@@ -164,17 +164,17 @@ export default function localServerReducer(state = defaultState, action) {
             if (updatesToAdd.length > 0) {
                 switch (action.payloadType) {
                     //**LSMTypeInCode** *//
-                    case Person: return {
+                    case PERSON: return {
                         ...state,
                         persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
                         refresh: { updates: updatesToAdd, type: action.payloadType }
                     };
-                    case ScriptItem: return {
+                    case SCRIPT_ITEM: return {
                         ...state,
                         scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
                         refresh: { updates: updatesToAdd, type: action.payloadType }
                     };
-                    case Part: return {
+                    case PART: return {
                         ...state,
                         parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
                         refresh: { updates: updatesToAdd, type: action.payloadType }
@@ -193,9 +193,9 @@ export default function localServerReducer(state = defaultState, action) {
             let searchArray = [];
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: searchArray = [...state.persons.history]; break
-                case ScriptItem: searchArray = [...state.scriptItems.history]; break
-                case Part: searchArray = [...state.parts.history]; break
+                case PERSON: searchArray = [...state.persons.history]; break
+                case SCRIPT_ITEM: searchArray = [...state.scriptItems.history]; break
+                case PART: searchArray = [...state.parts.history]; break
                 default: searchArray = [];
             }
 
@@ -217,9 +217,9 @@ export default function localServerReducer(state = defaultState, action) {
 
             switch (action.payloadType) {
                 //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, history: updatedArray } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, history: updatedArray } };
-                case Part: return { ...state, parts: { ...state.parts, history: updatedArray } };
+                case PERSON: return { ...state, persons: { ...state.persons, history: updatedArray } };
+                case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: updatedArray } };
+                case PART: return { ...state, parts: { ...state.parts, history: updatedArray } };
                 default: return state;
             };
         case SYNC:
@@ -227,9 +227,9 @@ export default function localServerReducer(state = defaultState, action) {
             switch (action.payloadType) {
 
                 //**LSMTypeInCode** */
-                case Person: return { ...state, persons: { ...state.persons, sync: { ...state.persons.sync, isSyncing: true } } };
-                case ScriptItem: return { ...state, scriptItems: { ...state.scriptItems, sync: { ...state.scriptItems.sync, isSyncing: true } } };
-                case Part: return { ...state, parts: { ...state.parts, sync: { ...state.parts.sync, isSyncing: true } } };
+                case PERSON: return { ...state, persons: { ...state.persons, sync: { ...state.persons.sync, isSyncing: true } } };
+                case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, sync: { ...state.scriptItems.sync, isSyncing: true } } };
+                case PART: return { ...state, parts: { ...state.parts, sync: { ...state.parts.sync, isSyncing: true } } };
                 default: return state;
             };
         case END_SYNC:
@@ -242,7 +242,7 @@ export default function localServerReducer(state = defaultState, action) {
             switch (action.payloadType) {
 
                 //**LSMTypeInCode** */
-                case Person:
+                case PERSON:
 
                     debug && console.log(`changing persons redux state: isSyncing: false , error: ${error}, ${lastSyncDate}`)
 
@@ -254,14 +254,14 @@ export default function localServerReducer(state = defaultState, action) {
                             }
                         }
                     };
-                case ScriptItem: return {
+                case SCRIPT_ITEM: return {
                     ...state, scriptItems: {
                         ...state.scriptItems, sync: {
                             ...state.scriptItems.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.scriptItems.sync.lastSyncDate
                         }
                     }
                 };
-                case Part: return {
+                case PART: return {
                     ...state, parts: {
                         ...state.parts, sync: {
                             ...state.parts.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.parts.sync.lastSyncDate

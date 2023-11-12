@@ -16,8 +16,8 @@ import { prepareUpdates } from '../../../dataAccess/localServerUtils';
 import { addUpdates } from '../../../actions/localServer';
 
 //Constants
-import { ScriptItem } from '../../../dataAccess/localServerModels';
-import { newMoveSceneScriptItems } from '../scripts/scriptItem';
+import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
+import { newScriptItemsForMoveScene } from '../scripts/scriptItem';
 
 function SceneSelector(props) {
     const debug = true;
@@ -100,11 +100,11 @@ function SceneSelector(props) {
 
     const moveScene = (sceneId, newPreviousId) => {
 
-        const updates = newMoveSceneScriptItems(sceneId, newPreviousId,scenes)
+        const updates = newScriptItemsForMoveScene(sceneId, newPreviousId,scenes)
 
         const preparedUpdates = prepareUpdates(updates)
 
-        dispatch(addUpdates(preparedUpdates, ScriptItem));
+        dispatch(addUpdates(preparedUpdates, SCRIPT_ITEM));
 
     }
 
