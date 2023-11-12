@@ -1,12 +1,13 @@
 import React from 'react';
-import {createRoot} from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { routerMiddleware } from 'connected-react-router';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux'
 import ReduxThunk from 'redux-thunk'
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
-
+import throttle from 'lodash/throttle';
+import { saveState, loadState } from './dataAccess/localStorage';
 import App from './components/App';
 import config from './config';
 import createRootReducer from './reducers';
@@ -17,7 +18,7 @@ import { createHashHistory } from 'history';
 const history = createHashHistory();
 
 export function getHistory() {
-  return history;
+    return history;
 }
 
 axios.defaults.baseURL = config.baseURLApi;
@@ -27,15 +28,22 @@ if (token) {
     axios.defaults.headers.common['Authorization'] = "Bearer " + token;
 }
 
+const preloadedState = loadState();
+
 export const store = createStore(
-  createRootReducer(history),
-  compose(
-    applyMiddleware(
-      routerMiddleware(history),
-      ReduxThunk
-    ),
-  )
+    createRootReducer(history),
+    preloadedState,
+    compose(
+        applyMiddleware(
+            routerMiddleware(history),
+            ReduxThunk
+        ),
+    )
 );
+
+store.subscribe(
+    throttle(() => saveState(store.getState()), 5000)
+)
 
 store.dispatch(doInit());
 
@@ -43,7 +51,7 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
     <Provider store={store}>
-        <App/>
+        <App />
     </Provider>
 );
 

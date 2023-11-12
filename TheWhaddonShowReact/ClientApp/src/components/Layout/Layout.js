@@ -110,8 +110,6 @@ class Layout extends React.Component {
                                         <Route path="/api/documentation" exact component={UnderConstruction} />
                                         <Route path="/api/dashboard" exact component={UnderConstruction} />
                                         <Route path="/api/testResults" exact component={ApiTestResults} />                                  
-
-
                                     </Switch>
                                 </CSSTransition>
                             </TransitionGroup>
