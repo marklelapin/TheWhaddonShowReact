@@ -142,7 +142,7 @@ function Sidebar() {
 
                     <LinksGroup
                         header="Home"
-                        link="/app/main/analytics"
+                        link="/app/main"
                         isHeader
                         iconElement={<Home />}
                         label=""
