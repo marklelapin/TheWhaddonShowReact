@@ -1,5 +1,15 @@
 @import '../../styles/app';
 
+.autogrow {
+    overflow: hidden;
+    resize: none;
+}
+
+
+
+
+
+
 .chatPage {
   flex-grow: 1;
   display: flex;

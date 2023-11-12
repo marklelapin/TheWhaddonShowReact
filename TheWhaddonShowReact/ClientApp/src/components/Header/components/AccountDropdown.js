@@ -1,6 +1,5 @@
 ﻿import React from 'react';
 import { useDispatch } from 'react-redux';
-import { logoutUser } from '../../../actions/auth';
 import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar.js';
@@ -18,7 +17,7 @@ function AccountDropdown(props) {
     const { user, menuOpen, onClick } = props;
 
     const doLogout = () => {
-        dispatch(logoutUser());
+       //
     }
 
     return (

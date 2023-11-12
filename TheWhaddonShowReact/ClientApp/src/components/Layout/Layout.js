@@ -107,9 +107,9 @@ class Layout extends React.Component {
                                         <Route path="/admin" exact render={() => <Redirect to="/admin/users" />} />
                                         <Route path="/admin/users" exact component={Users} />
 
-                                        <Route path="/apiMonitor/documentation" exact component={UnderConstruction} />
-                                        <Route path="/apiMonitor/dashboard" exact component={UnderConstruction} />
-                                        <Route path="/apiMonitor/testResults" exact component={ApiTestResults} />                                  
+                                        <Route path="/api/documentation" exact component={UnderConstruction} />
+                                        <Route path="/api/dashboard" exact component={UnderConstruction} />
+                                        <Route path="/api/testResults" exact component={ApiTestResults} />                                  
 
 
                                     </Switch>

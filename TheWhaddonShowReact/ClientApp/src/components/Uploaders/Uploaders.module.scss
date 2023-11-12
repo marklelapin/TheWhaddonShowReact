@@ -1,4 +1,5 @@
 
+
 .media-dropzone.show-controls .dropzone {
     border: 2px dashed #ccc;
     padding: 40px 10px;
@@ -14,7 +15,7 @@
 }
 
 .media-dropzone.hide-controls .controls {
-display: none;
+    display: none;
 }
 
 p {
@@ -30,11 +31,11 @@ p {
     cursor: pointer;
 }
 
-    .dropzone .img {
-        max-height: 100px;
-        max-width: 150px;
-        border-radius: 5px;
-    }
+.dropzone .img {
+    max-height: 100px;
+    max-width: 150px;
+    border-radius: 5px;
+}
 
 
 .media-dropzone-item {
@@ -48,19 +49,19 @@ p {
     position: relative;
 }
 
-    .media-dropzone-item-display i {
-        position: absolute;
-        top: 0px;
-        right: -20px;
-    }
+.media-dropzone-item-display i {
+    position: absolute;
+    top: 0px;
+    right: -20px;
+}
 
-    .youtube-input {
-        padding-left: 20px;
-        padding-right: 20px;
-        display: flex;
-        flex-direction: row;
-    }
-    .youtube-input input{
-            background-color: transparent;
-    }
-    
+.youtube-input {
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+.youtube-input input {
+    background-color: transparent;
+}

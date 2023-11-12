@@ -12,7 +12,7 @@ import { log } from '../../../helper';
 import { changeFocus } from '../../../actions/scriptEditor';
 
 //css
-import s from '../../../pages/forms/elements/Elements.module.scss';
+import s from '../Script.module.scss';
 import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
 
 function ScriptItemText(props) {
