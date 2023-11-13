@@ -1,9 +1,9 @@
 ﻿export const saveState = (state) => {
     try {
         //properties identified separately are exlcuded from ...stateToSaveToLocalStorage
-        const { localServer,layout } = state ;
+        const { localServer,layout,scriptEditor } = state ;
 
-        const stateToPersist = {localServer,layout} 
+        const stateToPersist = {localServer,layout, scriptEditor} 
 
         const serializedState = JSON.stringify(stateToPersist);
 
@@ -25,5 +25,14 @@ export const loadState = () => {
     catch (err) {
         console.log('Failed to get state from local Storage: ' +err);
         return undefined;
+    }
+}
+
+export const clearState = () => {
+try {
+        localStorage.removeItem('state');
+    }
+    catch (err) {
+        console.log('Failed to clear state from local Storage: ' +err);
     }
 }

@@ -28,6 +28,9 @@ export function sortScriptItems(head, scriptItems) {
 
     const debug = true
 
+    if (scriptItems.length === 1) return scriptItems;
+
+
     log(debug, 'Sort Head: ', head)
     log(debug, 'Sort ScriptItems', scriptItems)
 

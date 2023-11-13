@@ -6,16 +6,25 @@ import { useSelector } from 'react-redux';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons';
 
+
+//utils
+import {clearState} from '../../../dataAccess/localStorage'
+
 //Constants
 import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
+import { log } from '../../../helper';
 
 //css
 import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
 
 function SyncDropdown(props) {
 
+    const debug = true
+
     //Set state relating to internal component
     const [syncOpen, setSyncOpen] = useState(false);
+
+    log(debug, 'SyncDropdown: syncOpen', syncOpen)
 
 
     //Set state relating to redux store
@@ -153,28 +162,20 @@ function SyncDropdown(props) {
 
 
     return (
-        <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown" className={`${s.notificationsMenu}`}>
+        <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown">
             <DropdownToggle nav caret className={`${s.headerSvgFlipColor} text-center`} >
-
                 {syncText('Summary')}
             </DropdownToggle>
-            <DropdownMenu end className={`${s.notificationsWrapper} py-0 animated animated-fast fadeInUp`}>
+            <DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>
 
                 <DropdownItem >{syncText(PERSON)}</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem >{syncText(SCRIPT_ITEM)}</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem >{syncText(PART)}</DropdownItem>
-                {/*<>*/}
-                {/*    <p>Sync Status:</p>*/}
-                {/*    <br />*/}
-                {/*    {syncText(Person)}*/}
-                {/*    {syncText(ScriptItem)}*/}
-                {/*    {syncText(Part)}*/}
-
-                {/*</>*/}
-
-
+                <DropdownItem divider />
+                <DropdownItem onClick={()=>clearState()}>Clear Local Storage</DropdownItem>
+                
             </DropdownMenu>
         </Dropdown>
     )

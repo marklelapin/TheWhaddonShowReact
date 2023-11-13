@@ -121,6 +121,9 @@ function ScriptViewer(props) {
         setOpenPersonSelector(false)
     }
 
+    const handleClearScript = () => {
+        onClick('clearScript')
+    }
 
     return (
         <>
@@ -168,7 +171,8 @@ function ScriptViewer(props) {
                             : <Icon icon="comment-o" onClick={() => toggleShowComments()}></Icon>
                         }
 
-                        <Icon icon="print" onClick={() => handlePrint()}></Icon>
+                    <Icon icon="print" onClick={() => handlePrint()}></Icon>
+                        <Icon icon="remove" onClick={() => handleClearScript()}></Icon>
                     </div>
                
 

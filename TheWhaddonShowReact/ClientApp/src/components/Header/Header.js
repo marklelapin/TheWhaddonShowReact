@@ -67,7 +67,7 @@ function Header(props) {
     const user = currentUser;
 
     return (
-        <Navbar className={`${s.root} d-print-none ${navbarType === NavbarTypes.FLOATING ? s.navbarFloatingType : ''}`} style={{ zIndex: !openUsersList ? 100 : 0 }}>
+        <Navbar className={`${s.root} d-print-none ${navbarType === NavbarTypes.FLOATING ? s.navbarFloatingType : ''}`} style={{ zIndex: 100 }}>
             <Nav className="justify-content-start align-middle">
                 <SidebarToggle />
             </Nav>

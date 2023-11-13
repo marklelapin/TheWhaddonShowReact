@@ -75,17 +75,24 @@ function Script() {
             const scriptItems = newScriptItemsForCreateShow(newShowName)
             const preparedUpdates = prepareUpdates(scriptItems)
             dispatch(addUpdates(preparedUpdates, SCRIPT_ITEM))
-
-            setShow(scriptItems.find((item) => item.type === SHOW))
+            setNewShowName('')
 
         }
         
 
     }
 
+    const handleScriptViewerClick = (action) => {
+        switch (action) {
+            case 'clearScript': setShow(null); break;
+            default: return;
+        }
 
+
+    }
 
     const shows = getLatest(sceneHistory.filter((scene) => scene.type === SHOW))
+
     const scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
 
     log(debug, 'Scipt Rendering Scene', scenes)
@@ -95,7 +102,7 @@ function Script() {
 
         <div id="script-page" className="draft-border">
 
-            {(isLargerScreen) && <h1 className="page-title">Script - <span className="fw-semi-bold">Editor</span></h1>}
+            {(isLargerScreen) && <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>}
 
             {show &&
                 <div id="script-page-content">
@@ -107,7 +114,7 @@ function Script() {
 
                     {(!showSceneSelector || isLargerScreen) &&
                         <div id="script-viewer">
-                            <ScriptViewer scenes={scenes} />
+                            <ScriptViewer scenes={scenes} onClick={(action) => handleScriptViewerClick(action)} />
 
                         </div>
                     }

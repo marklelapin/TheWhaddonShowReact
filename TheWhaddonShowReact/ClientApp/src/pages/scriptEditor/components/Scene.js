@@ -28,7 +28,7 @@ import {
 //Constants
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { DIALOGUE, COMMENT } from '../../../dataAccess/scriptItemTypes';
-import { CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
+import { ACT, SCENE,SYNOPSIS,INITIAL_STAGING,CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 
@@ -332,13 +332,13 @@ function Scene(props) {
 
 
 
-    const currentScene = { ...scriptItems.find(item => item.type === 'Scene') || {}, undoDateTime: undoDateTime } //returns the synopsis scriptItem
-    const synopsis = scriptItems.find(item => item.type === 'Synopsis') || {} //returns the synopsis scriptItem
-    const staging = scriptItems.find(item => item.type === 'InitialStaging') || {}//returns the staging scriptItem')
+    const currentScene = { ...scriptItems.find(item => item.type === SCENE || item.type === ACT) || {}, undoDateTime: undoDateTime } //returns the synopsis scriptItem
+    const synopsis = scriptItems.find(item => item.type === SYNOPSIS) || {} //returns the synopsis scriptItem
+    const staging = scriptItems.find(item => item.type === INITIAL_STAGING) || {}//returns the staging scriptItem')
 
     const body = () => {
 
-        const bodyScriptItems = [...scriptItems].filter(item => item.type !== 'Scene' && item.type !== 'Synopsis' && item.type !== 'InitialStaging') || []//returns the body scriptItems
+        const bodyScriptItems = [...scriptItems].filter(item => item.type !== SCENE && item.type !== SYNOPSIS && item.type !== INITIAL_STAGING && item.type !== ACT) || []//returns the body scriptItems
 
         //work out alignment
         const partIdsOrder = [...new Set(bodyScriptItems.map(item => item.partIds[0]))]
@@ -366,8 +366,8 @@ function Scene(props) {
     return (
         <div id={`scene-${currentScene.id}`}>
             <div className={`scene-header ${(scene.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
-                {
-                    (currentScene) &&
+ 
+                {(currentScene) &&
                     <ScriptItem scriptItem={currentScene}
                         onClick={(action) => handleClick(action, currentScene)}
                         onChange={(type, value) => handleChange(type, value, currentScene)}
@@ -376,7 +376,7 @@ function Scene(props) {
                     />
 
                 }
-                {synopsis &&
+                {currentScene.type === SCENE && synopsis &&
                     <ScriptItem scriptItem={synopsis}
                         onClick={(action) => handleClick(action, synopsis)}
                     onChange={(type, value) => handleChange(type, value, synopsis)}
@@ -384,17 +384,18 @@ function Scene(props) {
                         moveFocus={(direction, position) => handleMoveFocus(direction, position, synopsis, null, currentScene.partIds[0])}
                     />
                 }
-                <PartEditor
-                    scene={currentScene}
-                    onChange={(type, value) => handleChange(type, value, currentScene)}
-                    onClick={(action)=>handleClick(action,currentScene) }
-                    undoDateTime={undoDateTime}
-                    previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
-                    nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
+                {(currentScene.type === SCENE) &&
+                    <PartEditor
+                        scene={currentScene}
+                        onChange={(type, value) => handleChange(type, value, currentScene)}
+                        onClick={(action) => handleClick(action, currentScene)}
+                        undoDateTime={undoDateTime}
+                        previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
+                        nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
 
-                />
-
-                {staging &&
+                    />
+                }
+                {currentScene.type === SCENE && staging &&
                     <>
                         <ScriptItem
                             scriptItem={staging}

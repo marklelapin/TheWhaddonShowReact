@@ -10,6 +10,11 @@ import { getLatest, prepareUpdates } from '../dataAccess/localServerUtils';
 import { addPersonsInfo } from '../pages/scriptEditor/scripts/part';
 import { PartUpdate } from '../dataAccess/localServerModels';
 import { addUpdates } from '../actions/localServer'; 
+
+import { SHOW, ACT, SCENE } from '../dataAccess/scriptItemTypes'
+
+import { SCRIPT_ITEM } from '../dataAccess/localServerModels'
+
 export function ScriptEditorProcessing() {
 
     const _ = require('lodash');
@@ -35,9 +40,9 @@ export function ScriptEditorProcessing() {
     useEffect(() => {
         log(debug, 'EventsCheck ScriptEditorProcessing useEffect refreshTrigger', refreshTrigger)
 
-        if (refreshTrigger.updates && refreshTrigger.type === 'ScriptItem') {
+        if (refreshTrigger.updates && refreshTrigger.type === SCRIPT_ITEM) {
             const scriptItemUpdates = refreshTrigger.updates
-            const sceneUpdates = scriptItemUpdates.filter(update => update.type === 'Show' || update.type === 'Act' || update.type === 'Scene')
+            const sceneUpdates = scriptItemUpdates.filter(update => update.type === SHOW || update.type === ACT || update.type === SCENE)
 
 
             //Update scriptEditor.sceneScriptItemsHistory

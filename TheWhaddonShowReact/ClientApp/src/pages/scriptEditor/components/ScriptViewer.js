@@ -25,7 +25,7 @@ function ScriptViewer(props) {
     const dispatch = useDispatch()
 
     //props
-    const { scenes } = props;
+    const { scenes, onClick } = props;
 
     //Redux 
     const showComments = useSelector(state => state.scriptEditor.showComments)
@@ -55,7 +55,10 @@ function ScriptViewer(props) {
                 newUpdates = newScriptItemsForSceneDelete(sceneToDelete, scenes)
                 newFocusId = sceneToDelete.nextId || sceneToDelete.previousId
                 break;
-            default:
+            case 'clearScript':
+                onClick('clearScript')
+                break;
+            default: return;
         }
         log(debug, 'UpdatingScenes ScriptViewer Updates', newUpdates)
         if (newUpdates) {
@@ -72,7 +75,7 @@ function ScriptViewer(props) {
 
     return (
         <>
-            <ScriptViewerHeader />
+            <ScriptViewerHeader onClick={(action) => handleClick(action, null)} />
 
             <div id="script-viewer-main" className="draft-border">
 
@@ -82,21 +85,21 @@ function ScriptViewer(props) {
                         if (scene.type === SHOW) {
                             return <h1 key={scene.id}>{scene.text}</h1>
                         }
-                        else if (scene.type === ACT) {
-                            return (
-                                <>
-                                    <h2 key={scene.id} >{scene.text}</h2>
-                                    <div className={`scene-footer curtain-closed'}`}>
-                                        <div className="add-new-scene clickable" onClick={() => handleClick('addNewScene',scene)}>
-                                            (add new scene)
-                                        </div>
-                                    </div>
-                                </>
+                        //else if (scene.type === ACT) {
+                        //    return (
+                        //        <div key={scene.id }>
+                        //            <h2>{scene.text}</h2>
+                        //            <div className={`scene-footer curtain-closed'}`}>
+                        //                <div className="add-new-scene clickable" onClick={() => handleClick('addNewScene',scene)}>
+                        //                    (add new scene)
+                        //                </div>
+                        //            </div>
+                        //        </div>
 
-                            )
+                        //    )
 
 
-                        }
+                        //}
                         else {
                             return <Scene key={scene.id} scene={scene} onClick={(action) => handleClick(action, scene)} />
                         }
