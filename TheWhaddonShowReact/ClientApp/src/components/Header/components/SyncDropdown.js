@@ -5,10 +5,10 @@ import { useSelector } from 'react-redux';
 //COmponents
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons';
-
+import Loader from '../../../components/Loader/Loader';
 
 //utils
-import {clearState} from '../../../dataAccess/localStorage'
+import { clearState } from '../../../dataAccess/localStorage'
 
 //Constants
 import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
@@ -31,14 +31,22 @@ function SyncDropdown(props) {
     const personsSync = useSelector((store) => store.localServer.persons.sync);
     const scriptItemsSync = useSelector((store) => store.localServer.scriptItems.sync);
     const partsSync = useSelector((store) => store.localServer.parts.sync);
+    const scriptItems = useSelector((store) => store.localServer.scriptItems.history);
+    const persons = useSelector((store) => store.localServer.persons.history);
+    const parts = useSelector((store) => store.localServer.parts.history);
 
+    const unsyncedScriptItemUpdates = scriptItems?.filter(item => item.updatedOnServer === null).length || 0
+    const unsyncedPersonUpdates = persons?.filter(item => item.updatedOnServer === null).length || 0
+    const unsyncedPartUpdates = parts?.filter(item => item.updatedOnServer === null).length || 0
+  
+    log(debug, 'SyncDropdown: unsyncedUpdates', { parts: unsyncedPartUpdates, persons: unsyncedPersonUpdates, scriptItems: unsyncedScriptItemUpdates })
 
 
     const syncSummary = () => {
 
         const syncArray = [personsSync, scriptItemsSync, partsSync]
 
-        const result = syncArray.reduce((acc, item) => {
+        let result = syncArray.reduce((acc, item) => {
             // Check isSyncing
             if (item.isSyncing === true) {
                 acc.isSyncing = true;
@@ -62,6 +70,9 @@ function SyncDropdown(props) {
             error: null,
             lastSyncDate: null,
         });
+
+        result.unsyncedUpdates = unsyncedPersonUpdates + unsyncedScriptItemUpdates + unsyncedPartUpdates
+
 
         return result;
 
@@ -104,7 +115,7 @@ function SyncDropdown(props) {
                             return ({ text: 'Last synced ' + parseInt(secondsPast / 86400) + ' days ago', seconds: secondsPast });
                         }
                     } else {
-                        return {text: `Error reading date synced: ${date.toString()}`, seconds: null }
+                        return { text: `Error reading date synced: ${date.toString()}`, seconds: null }
                     }
 
     }
@@ -116,9 +127,9 @@ function SyncDropdown(props) {
         switch (type) {
             //**LSMTypeinCode**
             case 'Summary': target = syncSummary(); break;
-            case PERSON: target = personsSync; break;
-            case SCRIPT_ITEM: target = scriptItemsSync; break;
-            case PART: target = partsSync; break;
+            case PERSON: target = { ...personsSync, unsyncedUpdates: unsyncedPersonUpdates }; break;
+            case SCRIPT_ITEM: target = { ...scriptItemsSync, unsyncedUpdates: unsyncedScriptItemUpdates }; break;
+            case PART: target = { ...partsSync, unsyncedUpdates: unsyncedPartUpdates }; break;
             default: target = null;
         }
 
@@ -129,16 +140,12 @@ function SyncDropdown(props) {
     const syncText = (type) => {
 
         const target = getTarget(type)
+        log(debug, 'SyncDropdown: syncTexttarget', { ...target, type: type })
 
         if (target === null) return (<></>);
 
         const { text, seconds } = timeSince(target.lastSyncDate)
 
-        const morethan5mins = seconds > (60 * 5)
-
-        if (target.isSyncing) {
-            return <><Icon icon="sync" strapColor="secondary" />Syncing</>
-        }
         if (target.error !== null) {
             return (
                 <>
@@ -149,12 +156,24 @@ function SyncDropdown(props) {
 
             )
         }
-        if (seconds === null) return <><Icon icon="cross" strapColor="danger" /> Never synced</>
+        
         return (
 
-            <>{(morethan5mins) ? < Icon icon="warning" strapColor="warning" ></Icon >
-                : <Icon icon="tick" strapColor="success" />}
-                {text}</>
+            <>
+                {target.isSyncing && <Loader size={16} />}
+                
+                {(target.unsyncedUpdates === 0) && <><Icon icon="tick" strapColor="success" />Synced</>}
+             
+                {target.unsyncedUpdates > 0 &&
+                    <>
+                        <Icon icon="warning" strapColor="warning" />
+                        {target.unsyncedUpdates} unsynced updates
+                        {seconds > 60 && {text}}
+                    </>
+
+                }
+                {(seconds === null && (target.unsyncedUpdates !== 0)) && <><Icon icon="cross" strapColor="danger" /> Never synced</>}
+            </>
         )
 
     }
@@ -164,18 +183,19 @@ function SyncDropdown(props) {
     return (
         <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown">
             <DropdownToggle nav caret className={`${s.headerSvgFlipColor} text-center`} >
+
                 {syncText('Summary')}
             </DropdownToggle>
             <DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>
 
-                <DropdownItem >{syncText(PERSON)}</DropdownItem>
+                <DropdownItem >Persons: {syncText(PERSON)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem >{syncText(SCRIPT_ITEM)}</DropdownItem>
+                <DropdownItem >ScriptItems: {syncText(SCRIPT_ITEM)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem >{syncText(PART)}</DropdownItem>
+                <DropdownItem >Parts: {syncText(PART)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem onClick={()=>clearState()}>Clear Local Storage</DropdownItem>
-                
+                <DropdownItem onClick={() => clearState()}>Clear Local Storage</DropdownItem>
+
             </DropdownMenu>
         </Dropdown>
     )
