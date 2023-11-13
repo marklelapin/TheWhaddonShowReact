@@ -1,12 +1,14 @@
 ﻿
-import { SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE, COMMENT } from "../../../dataAccess/scriptItemTypes";
+import { SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, CURTAIN, INITIAL_CURTAIN, DIALOGUE, COMMENT } from "../../../dataAccess/scriptItemTypes";
 
 import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { log } from '../../../helper';
 
 import { ABOVE, BELOW } from './utility';
+import { addUpdates } from "../../../actions/localServer";
 
+import { SCRIPT_ITEM } from "../../../dataAccess/localServerModels";
 
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
 //--------------------------------------------------------------------------------------------------
@@ -25,6 +27,9 @@ export function sortLatestScriptItems(head, scriptItems, undoDateTime = null) {
 export function sortScriptItems(head, scriptItems) {
 
     const debug = true
+
+    if (scriptItems.length === 1) return scriptItems;
+
 
     log(debug, 'Sort Head: ', head)
     log(debug, 'Sort ScriptItems', scriptItems)
@@ -100,12 +105,40 @@ const closesCurtain = (scriptItem) => {
     return false
 }
 
+
+
+
+
+//Functions to create scriptItem updates for various crud style operations
 //----------------------------------------------------------------------------------
 
+export function newScriptItemsForCreateShow(title) {
+
+    const show = new ScriptItemUpdate(SHOW, title)
+    const act1 = new ScriptItemUpdate(ACT, 'Act 1')
+    const act2 = new ScriptItemUpdate(ACT, 'Act 2')
+
+    show.nextId = act1.id
+    act1.previousId = show.id
+
+    act1.nextId = act2.id
+    act2.previousId = act1.id
+
+    show.parentId = show.id
+    act1.parentId = show.id
+    act2.parentId = show.id
+
+    const scriptItems = [show, act1, act2]
 
 
-//Functions to create scriptItem updates for various crud operations
-//----------------------------------------------------------------------------------
+
+    return scriptItems
+
+}
+
+
+
+
 export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = 'Dialogue') {
 
     const currentScriptItems = [..._currentScriptItems]
@@ -233,7 +266,7 @@ export function newScriptItemsForSceneDelete(sceneToDelete, currentScenes) {
 
 }
 
-export function createHeaderScriptItems(previousScene, nextScene = null) {
+export function newScriptItemsForCreateHeader(previousScene, nextScene = null) {
 
     let newPreviousScene = { ...previousScene }
     let newNextScene = (nextScene) ? { ...nextScene } : null
@@ -279,7 +312,7 @@ export function createHeaderScriptItems(previousScene, nextScene = null) {
 }
 
 
-export function newMoveSceneScriptItems(sceneId, newPreviousId, scenes) {
+export function newScriptItemsForMoveScene(sceneId, newPreviousId, scenes) {
 
     const scene = scenes.find(scene => scene.id === sceneId)
 

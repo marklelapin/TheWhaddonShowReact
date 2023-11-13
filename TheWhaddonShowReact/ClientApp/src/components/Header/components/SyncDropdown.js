@@ -1,15 +1,30 @@
 ﻿import React from 'react';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+
+//COmponents
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
-import { Person, ScriptItem, Part } from '../../../dataAccess/localServerModels';
 import { Icon } from '../../../components/Icons/Icons';
+
+
+//utils
+import {clearState} from '../../../dataAccess/localStorage'
+
+//Constants
+import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
+import { log } from '../../../helper';
+
+//css
+import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
 
 function SyncDropdown(props) {
 
+    const debug = true
+
     //Set state relating to internal component
     const [syncOpen, setSyncOpen] = useState(false);
+
+    log(debug, 'SyncDropdown: syncOpen', syncOpen)
 
 
     //Set state relating to redux store
@@ -70,20 +85,28 @@ function SyncDropdown(props) {
 
         const now = new Date();
         const secondsPast = Math.floor((now - date) / 1000);
+
+
         if (secondsPast < 60) {
             return { text: 'Just synced.', seconds: secondsPast };
-        }
-        if (secondsPast < 3600) {
-            return { text: 'Last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago.', seconds: secondsPast };
-        }
-        if (secondsPast <= 86400) {
-            return { text: 'Last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago.', seconds: secondsPast };
-        }
-        if (secondsPast > 86400) {
-            const daysSince = parseInt(secondsPast / 86400);
-            if (daysSince === 1) return 'Last synced a day ago.'
-            return ({ text: 'Last synced ' + parseInt(secondsPast / 86400) + ' days ago', seconds: secondsPast });
-        }
+        } else
+            if (secondsPast < 3600) {
+                return { text: 'Last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago.', seconds: secondsPast };
+            } else
+                if (secondsPast <= 86400) {
+                    return { text: 'Last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago.', seconds: secondsPast };
+                } else
+                    if (secondsPast > 86400) {
+                        const daysSince = parseInt(secondsPast / 86400);
+                        if (daysSince === 1) {
+                            return { text: 'Last synced a day ago.', seconds: secondsPast }
+                        } else {
+                            return ({ text: 'Last synced ' + parseInt(secondsPast / 86400) + ' days ago', seconds: secondsPast });
+                        }
+                    } else {
+                        return {text: `Error reading date synced: ${date.toString()}`, seconds: null }
+                    }
+
     }
 
     const getTarget = (type) => {
@@ -93,9 +116,9 @@ function SyncDropdown(props) {
         switch (type) {
             //**LSMTypeinCode**
             case 'Summary': target = syncSummary(); break;
-            case Person: target = personsSync; break;
-            case ScriptItem: target = scriptItemsSync; break;
-            case Part: target = partsSync; break;
+            case PERSON: target = personsSync; break;
+            case SCRIPT_ITEM: target = scriptItemsSync; break;
+            case PART: target = partsSync; break;
             default: target = null;
         }
 
@@ -120,8 +143,8 @@ function SyncDropdown(props) {
             return (
                 <>
                     <Icon icon="cross" strapColor="danger" /> Syncing error...
-                    
-                    {(type!=='Summary') ? <p><small>{target.error}</small></p> : null}
+
+                    {(type !== 'Summary') ? <p><small>{target.error}</small></p> : null}
                 </>
 
             )
@@ -139,28 +162,20 @@ function SyncDropdown(props) {
 
 
     return (
-        <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown" className={`${s.notificationsMenu}`}>
+        <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown">
             <DropdownToggle nav caret className={`${s.headerSvgFlipColor} text-center`} >
-
                 {syncText('Summary')}
             </DropdownToggle>
-            <DropdownMenu end className={`${s.notificationsWrapper} py-0 animated animated-fast fadeInUp`}>
+            <DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>
 
-                <DropdownItem >{syncText(Person)}</DropdownItem>
+                <DropdownItem >{syncText(PERSON)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem >{syncText(ScriptItem)}</DropdownItem>
+                <DropdownItem >{syncText(SCRIPT_ITEM)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem >{syncText(Part)}</DropdownItem>
-                {/*<>*/}
-                {/*    <p>Sync Status:</p>*/}
-                {/*    <br />*/}
-                {/*    {syncText(Person)}*/}
-                {/*    {syncText(ScriptItem)}*/}
-                {/*    {syncText(Part)}*/}
-
-                {/*</>*/}
-
-
+                <DropdownItem >{syncText(PART)}</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={()=>clearState()}>Clear Local Storage</DropdownItem>
+                
             </DropdownMenu>
         </Dropdown>
     )

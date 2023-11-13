@@ -35,38 +35,41 @@ export function findScriptItem(element, scriptItems) {
 
 export function moveFocusToId(id, position = START) {
     console.log(`moveFocusToId id: ${id} position: ${position}`)
+    try {
+        if (position === SCENE_END) {
 
-    if (position === SCENE_END) {
+            const sceneElement = document.getElementById(`scene-${id}`)
 
-        const sceneElement = document.getElementById(`scene-${id}`)
+            const sceneTextInputs = sceneElement.querySelectorAll('.text-input')
 
-        const sceneTextInputs = sceneElement.querySelectorAll('.text-input')
+            const lastTextInput = sceneTextInputs[sceneTextInputs.length - 1]
 
-        const lastTextInput = sceneTextInputs[sceneTextInputs.length - 1]
+            if (lastTextInput) {
+                lastTextInput.focus();
+                lastTextInput.selectionStart = lastTextInput.value.length
+            }
 
-        if (lastTextInput) {
-            lastTextInput.focus();
-            lastTextInput.selectionStart = lastTextInput.value.length
+            return
+        }
+        const newTextInput = getTextInputElement(id);
+
+        if (newTextInput) {
+            newTextInput.focus();
+            if (position === START) {
+                newTextInput.selectionStart = 0
+                newTextInput.selectionEnd = 0
+            } else {
+                newTextInput.selectionStart = newTextInput.value.length
+                newTextInput.selectionEnd = newTextInput.value.length
+            }
         }
 
-        return
+
     }
-
-
-
-
-    const newTextInput = getTextInputElement(id);
-
-    if (newTextInput) {
-        newTextInput.focus();
-        if (position === START) {
-            newTextInput.selectionStart = 0
-            newTextInput.selectionEnd = 0
-        } else {
-            newTextInput.selectionStart = newTextInput.value.length
-            newTextInput.selectionEnd = newTextInput.value.length
-        }
+    catch {
+      console.log(`Move Focus Error: Cant locate the text-input for id: ${id}`)
     }
+ 
 }
 
 export function removeFocusFromId(id) {

@@ -9,14 +9,14 @@ import Scene from './Scene'
 
 import { log } from '../../../helper';
 import { addUpdates } from '../../../actions/localServer';
-import { createHeaderScriptItems, newScriptItemsForSceneDelete } from '../scripts/scriptItem';
+import { newScriptItemsForCreateHeader, newScriptItemsForSceneDelete } from '../scripts/scriptItem';
 import { prepareUpdates } from '../../../dataAccess/localServerUtils';
 import { moveFocusToId } from '../scripts/utility';
 
 //Constants
 import { SHOW, ACT } from '../../../dataAccess/scriptItemTypes';
 import ScriptViewerHeader from './ScriptViewerHeader';
-import { START} from '../scripts/utility';
+import { START } from '../scripts/utility';
 
 function ScriptViewer(props) {
 
@@ -25,7 +25,7 @@ function ScriptViewer(props) {
     const dispatch = useDispatch()
 
     //props
-    const { scenes } = props;
+    const { scenes, onClick } = props;
 
     //Redux 
     const showComments = useSelector(state => state.scriptEditor.showComments)
@@ -46,18 +46,21 @@ function ScriptViewer(props) {
                 log(debug, 'UpdatingScenes ScriptViewer Add Scene', scene)
                 const previousScene = scene
                 const nextScene = scenes.find(scene => scene.id === previousScene.nextId)
-                newUpdates = createHeaderScriptItems(previousScene,nextScene)
-                newFocusId = newUpdates[0].id      
+                newUpdates = newScriptItemsForCreateHeader(previousScene, nextScene)
+                newFocusId = newUpdates[0].id
                 break;
             case 'deleteScene':
-                log(debug,'UpdateingScenes ScriptViewer Delete Scene', scene)
+                log(debug, 'UpdateingScenes ScriptViewer Delete Scene', scene)
                 const sceneToDelete = scene;
                 newUpdates = newScriptItemsForSceneDelete(sceneToDelete, scenes)
                 newFocusId = sceneToDelete.nextId || sceneToDelete.previousId
                 break;
-            default: 
+            case 'clearScript':
+                onClick('clearScript')
+                break;
+            default: return;
         }
-        log(debug,'UpdatingScenes ScriptViewer Updates', newUpdates)
+        log(debug, 'UpdatingScenes ScriptViewer Updates', newUpdates)
         if (newUpdates) {
             const preparedUpdates = prepareUpdates(newUpdates)
             dispatch(addUpdates(preparedUpdates, 'ScriptItem'));
@@ -65,47 +68,59 @@ function ScriptViewer(props) {
         if (newFocusId) {
             moveFocusToId(newFocusId, newFocusPosition)
         }
-                    
+
     }
 
 
 
-        return (
-            <>
-                <ScriptViewerHeader />
+    return (
+        <>
+            <ScriptViewerHeader onClick={(action) => handleClick(action, null)} />
 
-                <div id="script-viewer-main" className="draft-border">
+            <div id="script-viewer-main" className="draft-border">
 
-                    <div id="script-body" className="draft-border">
-                        {(scenes && scenes.length > 0) && scenes.map(scene => {
+                <div id="script-body" className="draft-border">
+                    {(scenes && scenes.length > 0) && scenes.map(scene => {
 
-                            if (scene.type === SHOW) {
-                                return <h1 key={scene.id}>{scene.text}</h1>
-                            }
-                            else if (scene.type === ACT) {
-                                return <h2 key={scene.id} >{scene.text}</h2>
-                            }
-                            else {
-                                return <Scene key={scene.id} scene={scene} onClick={(action) => handleClick(action, scene)} />
-                            }
+                        if (scene.type === SHOW) {
+                            return <h1 key={scene.id}>{scene.text}</h1>
                         }
+                        //else if (scene.type === ACT) {
+                        //    return (
+                        //        <div key={scene.id }>
+                        //            <h2>{scene.text}</h2>
+                        //            <div className={`scene-footer curtain-closed'}`}>
+                        //                <div className="add-new-scene clickable" onClick={() => handleClick('addNewScene',scene)}>
+                        //                    (add new scene)
+                        //                </div>
+                        //            </div>
+                        //        </div>
 
-                        )}
+                        //    )
 
 
-                    </div>
-                    <div id="script-comment" className={`${(showComments) ? "show-comments" : 'hide-comments'} draft-border`}>
+                        //}
+                        else {
+                            return <Scene key={scene.id} scene={scene} onClick={(action) => handleClick(action, scene)} />
+                        }
+                    }
 
-                    </div>
+                    )}
+
+
                 </div>
+                <div id="script-comment" className={`${(showComments) ? "show-comments" : 'hide-comments'} draft-border`}>
 
-            </>
+                </div>
+            </div>
+
+        </>
 
 
 
 
 
-        )
-    }
+    )
+}
 
-    export default ScriptViewer;
+export default ScriptViewer;

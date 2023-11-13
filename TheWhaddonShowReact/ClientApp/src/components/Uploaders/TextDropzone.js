@@ -12,7 +12,7 @@ import { getFileTextContents } from '../../dataAccess/fileUtils';
 import { log } from '../../helper';
 
 //css
-import s from './Uploaders.module.css';
+import s from './Uploaders.module.scss';
 
 function TextDropzone(props) {
 

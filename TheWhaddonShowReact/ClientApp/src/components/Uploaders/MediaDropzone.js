@@ -22,7 +22,7 @@ import { log } from '../../helper';
 import { MEDIA } from '../../dataAccess/storageContainerNames';
 
 //css
-import s from './Uploaders.module.css';
+import s from './Uploaders.module.scss';
 
 function MediaDropzone(props) {
 

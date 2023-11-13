@@ -33,7 +33,7 @@ function Header(props) {
     const sidebarOpened = useSelector(store => store.navigation.sidebarOpened);
     const navbarType = useSelector(store => store.layout.navbarType);
     const navbarColor = useSelector(store => store.layout.navbarColor);
-    const openUsersList = useSelector(store => store.chat.openUsersList);
+    const openUsersList = 100 //useSelector(store => store.auth.openUsersList); //TODO add on who's logged in list.
     const currentUser = useSelector(store => store.auth.currentUser);
 
     const dispatch = useDispatch();
@@ -67,7 +67,7 @@ function Header(props) {
     const user = currentUser;
 
     return (
-        <Navbar className={`${s.root} d-print-none ${navbarType === NavbarTypes.FLOATING ? s.navbarFloatingType : ''}`} style={{ zIndex: !openUsersList ? 100 : 0 }}>
+        <Navbar className={`${s.root} d-print-none ${navbarType === NavbarTypes.FLOATING ? s.navbarFloatingType : ''}`} style={{ zIndex: 100 }}>
             <Nav className="justify-content-start align-middle">
                 <SidebarToggle />
             </Nav>

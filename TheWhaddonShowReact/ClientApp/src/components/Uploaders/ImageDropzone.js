@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 import Widget from '../../components/Widget'
 import Dropzone from 'react-dropzone'
-import s from '../../pages/forms/elements/Elements.module.scss';
+import s from './Uploaders.module.scss';
 
 function ImageDropzone(props) {
 

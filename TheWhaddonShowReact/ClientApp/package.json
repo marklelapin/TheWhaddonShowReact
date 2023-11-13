@@ -8,6 +8,7 @@
     "start:backend": "cross-env REACT_APP_BACKEND=true node scripts/start.js",
     "test": "node scripts/test.js"
   },
+  "proxy": "http://localhost:55555",
   "browserslist": [
     ">0.2%",
     "not dead",

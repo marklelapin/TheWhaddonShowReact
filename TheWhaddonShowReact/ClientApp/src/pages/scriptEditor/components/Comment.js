@@ -14,7 +14,7 @@ import { moveFocusToId } from '../scripts/utility';
 import { prepareUpdate } from '../../../dataAccess/localServerUtils';
 import { addUpdates } from '../../../actions/localServer';
 //css
-import s from '../../../pages/forms/elements/Elements.module.scss';
+import s from '../Script.module.scss';
 
 function Comment(props) {
 
