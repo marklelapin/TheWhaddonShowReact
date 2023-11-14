@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 //COmponents
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
@@ -9,7 +9,7 @@ import Loader from '../../../components/Loader/Loader';
 
 //utils
 import { clearState } from '../../../dataAccess/localStorage'
-
+import { setPauseSync } from '../../../actions/localServer';
 //Constants
 import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
 import { log } from '../../../helper';
@@ -20,6 +20,8 @@ import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unu
 function SyncDropdown(props) {
 
     const debug = true
+    const dispatch = useDispatch(); 
+
 
     //Set state relating to internal component
     const [syncOpen, setSyncOpen] = useState(false);
@@ -35,10 +37,12 @@ function SyncDropdown(props) {
     const persons = useSelector((store) => store.localServer.persons.history);
     const parts = useSelector((store) => store.localServer.parts.history);
 
+    const pauseSync = useSelector((store) => store.localServer.sync.pauseSync);
+
     const unsyncedScriptItemUpdates = scriptItems?.filter(item => item.updatedOnServer === null).length || 0
     const unsyncedPersonUpdates = persons?.filter(item => item.updatedOnServer === null).length || 0
     const unsyncedPartUpdates = parts?.filter(item => item.updatedOnServer === null).length || 0
-  
+
     log(debug, 'SyncDropdown: unsyncedUpdates', { parts: unsyncedPartUpdates, persons: unsyncedPersonUpdates, scriptItems: unsyncedScriptItemUpdates })
 
 
@@ -82,7 +86,9 @@ function SyncDropdown(props) {
 
 
 
-
+    const togglePauseSync = () => {
+        dispatch(setPauseSync(!pauseSync))
+    }
 
     const toggleSync = () => {
         setSyncOpen(!syncOpen);
@@ -95,29 +101,31 @@ function SyncDropdown(props) {
         if (date === null) return { text: 'Never synced.', seconds: null }
 
         const now = new Date();
-        const secondsPast = Math.floor((now - date) / 1000);
+        let secondsPast = Math.floor((now - date) / 1000);
 
+        let textTimeSince;
 
-        if (secondsPast < 60) {
-            return { text: 'Just synced.', seconds: secondsPast };
+        if (secondsPast < 15) {
+            textTimeSince = '';
         } else
             if (secondsPast < 3600) {
-                return { text: 'Last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago.', seconds: secondsPast };
+                textTimeSince = ', last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago';
             } else
                 if (secondsPast <= 86400) {
-                    return { text: 'Last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago.', seconds: secondsPast };
+                    textTimeSince = ', last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago';
                 } else
                     if (secondsPast > 86400) {
                         const daysSince = parseInt(secondsPast / 86400);
                         if (daysSince === 1) {
-                            return { text: 'Last synced a day ago.', seconds: secondsPast }
+                            textTimeSince = ', last synced a day ago';
                         } else {
-                            return ({ text: 'Last synced ' + parseInt(secondsPast / 86400) + ' days ago', seconds: secondsPast });
+                            textTimeSince = ', last synced ' + parseInt(secondsPast / 86400) + ' days ago';
                         }
                     } else {
-                        return { text: `Error reading date synced: ${date.toString()}`, seconds: null }
+                        textTimeSince = `, no last synced date`;
                     }
 
+        return { textTimeSince, secondsPast }
     }
 
     const getTarget = (type) => {
@@ -144,7 +152,7 @@ function SyncDropdown(props) {
 
         if (target === null) return (<></>);
 
-        const { text, seconds } = timeSince(target.lastSyncDate)
+        const { textTimeSince, secondsPast } = timeSince(target.lastSyncDate)
 
         if (target.error !== null) {
             return (
@@ -156,23 +164,26 @@ function SyncDropdown(props) {
 
             )
         }
-        
+
         return (
 
             <>
                 {target.isSyncing && <Loader size={16} />}
-                
+
                 {(target.unsyncedUpdates === 0) && <><Icon icon="tick" strapColor="success" />Synced</>}
-             
+
                 {target.unsyncedUpdates > 0 &&
                     <>
-                        <Icon icon="warning" strapColor="warning" />
-                        {target.unsyncedUpdates} unsynced updates
-                        {seconds > 60 && {text}}
+                        {((secondsPast === null) || (secondsPast > 60 * 60 * 2))
+                            ? <Icon icon="warning" strapColor="danger" />
+                            : <Icon icon="warning" strapColor="warning" />
+                        }
+
+                        {target.unsyncedUpdates} unsynced updates 
+                        {textTimeSince}
                     </>
 
                 }
-                {(seconds === null && (target.unsyncedUpdates !== 0)) && <><Icon icon="cross" strapColor="danger" /> Never synced</>}
             </>
         )
 
@@ -195,6 +206,7 @@ function SyncDropdown(props) {
                 <DropdownItem >Parts: {syncText(PART)}</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={() => clearState()}>Clear Local Storage</DropdownItem>
+                <DropdownItem onClick={() => togglePauseSync()}>{pauseSync ? 'Resume Sync' : 'Pause Sync'}</DropdownItem> 
 
             </DropdownMenu>
         </Dropdown>

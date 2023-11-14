@@ -30,7 +30,7 @@ import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
 export async function useSync() {
 
-    const debug = false;
+    const debug = true;
 
 
     //Set up state internal to this component
@@ -45,7 +45,10 @@ export async function useSync() {
     const scriptItems = useSelector((state) => state.localServer.scriptItems)
     const parts = useSelector((state) => state.localServer.parts)
 
-    debug && console.log('Use Sync: persons.sync.isSyncing: ' + persons.sync.isSyncing)
+    const pauseSync = useSelector((state) => state.localServer.sync.pauseSync);
+
+
+    log(debug, 'Use Sync: isSyncing: ', { persons: persons.sync.isSyncing, scriptItems: scriptItems.sync.isSyncing, parts: parts.sync.isSyncing })
     const dispatch = useDispatch();
 
     //Use Effect Hooks to assing the data and url to be used in the sync operation. **LSMTypeInCode**
@@ -62,7 +65,7 @@ export async function useSync() {
 
     useEffect(() => {
         if (scriptItems.sync.isSyncing) {
-            setData(scriptItems.history.filter(item=>item.parentId !== IMPORT_GUID))
+            setData(scriptItems.history.filter(item => item.parentId !== IMPORT_GUID))
             setType(scriptItems.type)
             setTriggerSync(!triggerSync)
         }
@@ -91,12 +94,12 @@ export async function useSync() {
 
                 const syncData = await createSyncData(data, localCopyId, debug)
 
-                const response = await postSyncData(syncData, type, dispatch, debug)
+                const syncResponse = await postSyncData(syncData, type, dispatch, debug)
 
-                if (response.status === 200) {
-                    const cbpSuccess = await closePostBacks(syncData.postBacks, type, dispatch, debug)
+                if (syncResponse.status === 200) {
+                    const cbpSuccess = await closePostBacks(syncResponse.data.postBacks, type, dispatch, debug)
 
-                    const psrSuccess = await processSyncResponse(response.data, type, dispatch, debug)
+                    const psrSuccess = await processSyncResponse(syncResponse.data, type, dispatch, debug)
 
                     if (cbpSuccess && psrSuccess) {
                         finishSync(null, type, dispatch)
@@ -106,7 +109,7 @@ export async function useSync() {
 
 
                 } else {
-                    finishSync(`Error: ${response.message}`, type, dispatch)
+                    finishSync(`Error: ${syncResponse.message}`, type, dispatch)
 
                 }
 
@@ -116,7 +119,9 @@ export async function useSync() {
             }
         }
 
+
         sync()
+
 
     }, [triggerSync]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -152,14 +157,13 @@ const postSyncData = async (syncData, type, dispatch, debug) => {
 
     try {
 
-        debug && console.log("Posting Sync Data: " + JSON.stringify(syncData));
+        log(debug, "postSyncData: ", { type, syncData });
 
-        const json = JSON.stringify(syncData);
-
+      
+        log(debug, 'postSyncData: url', url)
         const response = await axios.post(url, syncData);
 
-        debug && console.log("ResponseStatus from server:  " + response.status)
-        debug && console.log("Response from server:  " + JSON.stringify(response.data))
+        log(debug, 'postSyncData response: ', { status: response.status, data: response.data })
 
         //dispatch(updateConnectionStatus('Ok'))
 
@@ -170,8 +174,9 @@ const postSyncData = async (syncData, type, dispatch, debug) => {
     }
 }
 
-const closePostBacks = (postBacks, type, dispatch) => {
+const closePostBacks = (postBacks, type, dispatch, debug) => {
 
+    log(debug, 'sync closePostBacks: ', { postBacks: postBacks, type: type })
 
     try {
         const postBacksArray = Object.values(postBacks)
@@ -188,7 +193,7 @@ const closePostBacks = (postBacks, type, dispatch) => {
 const processSyncResponse = async (responseData, type, dispatch, debug) => {
 
     let process = ''
-    debug && console.log("Processing Sync Response: ")
+    log(debug, 'processSyncResponse:', { responseData, type })
 
     try {
         process = 'postBacks'
@@ -249,8 +254,8 @@ const processSyncResponse = async (responseData, type, dispatch, debug) => {
 
 }
 
-const finishSync = (error, type, dispatch) => {
-
+const finishSync = (error, type, dispatch,debug) => {
+    log(debug,'finishSync: ', { error, type })
     dispatch(endSync(error, type))
 }
 
@@ -274,7 +279,7 @@ export function getLatest(history, undoDateTime = null, includeInActive = false,
         if (!acc[update.id] || update.created > acc[update.id].created) {
             acc[update.id] = update;
         }
-         
+
         return acc;
     }, {})
 

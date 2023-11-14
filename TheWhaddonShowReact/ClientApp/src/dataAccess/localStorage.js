@@ -1,9 +1,19 @@
 ﻿export const saveState = (state) => {
     try {
         //properties identified separately are exlcuded from ...stateToSaveToLocalStorage
-        const { localServer,layout,scriptEditor } = state ;
+        let { localServer,layout,scriptEditor } = state ;
+
+        //ensure isSyncing is set to false before saving to local storage (otherwise it will be set to true on load and never change)
+        localServer = {
+            ...localServer, sync: { ...localServer.sync, isSyncing: false }
+            , persons: { ...localServer.persons, sync: { ...localServer.persons.sync, isSyncing: false } }
+            , scriptItems: { ...localServer.scriptItems, sync: { ...localServer.scriptItems.sync, isSyncing: false } }
+            , parts: { ...localServer.parts, sync: { ...localServer.parts.sync, isSyncing: false } }
+            }
 
         const stateToPersist = {localServer,layout, scriptEditor} 
+
+
 
         const serializedState = JSON.stringify(stateToPersist);
 

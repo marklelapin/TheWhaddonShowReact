@@ -2,7 +2,7 @@
 export const UPDATE_LASTSYNCDATE = 'UPDATE_LASTSYNCDATE';
 export const SET_LOCALCOPYID = 'SET_LOCALCOPYID';
 export const UPDATE_CONNECTION_STATUS = 'UPDATE_CONNECTION_STATUS';
-
+export const SET_PAUSE_SYNC = 'SET_PAUSE_SYNC';
 
 export function updateLastSyncDate(payload) {
     return {
@@ -21,6 +21,13 @@ export function setLocalCopyId(payload) {
 export function updateConnectionStatus(payload) {
     return {
         type: UPDATE_CONNECTION_STATUS,
+        payload
+    }
+}
+
+export function setPauseSync(payload) {
+return {
+        type: SET_PAUSE_SYNC,
         payload
     }
 }
