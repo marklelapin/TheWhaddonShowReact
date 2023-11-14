@@ -28,8 +28,8 @@ function Script() {
 
 
     //Redux State
-    const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
-    const sceneHistory = useSelector((state) => state.scriptEditor.sceneHistory)
+    const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector) 
+    const sceneHistory = useSelector((state) => state.scriptEditor.sceneHistory) ||[]
     //Internal State
     const [isLargerScreen, setIsLargerScreen] = useState(null)
     const [show, setShow] = useState(null)
@@ -91,7 +91,7 @@ function Script() {
 
     }
 
-    const shows = getLatest(sceneHistory.filter((scene) => scene.type === SHOW))
+    const shows = getLatest(sceneHistory.filter((scene) => scene.type === SHOW)) 
 
     const scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
 

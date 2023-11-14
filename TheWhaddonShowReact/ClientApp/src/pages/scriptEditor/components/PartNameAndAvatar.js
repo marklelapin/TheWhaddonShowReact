@@ -47,6 +47,7 @@ function PartNameAndAvatar(props) {
 
     //EVENT HANDLERS
     const handleAvatarClick = (e) => {
+        e.stopPropagation();
         if (props.onAvatarClick) {
 
             onAvatarClick(e)

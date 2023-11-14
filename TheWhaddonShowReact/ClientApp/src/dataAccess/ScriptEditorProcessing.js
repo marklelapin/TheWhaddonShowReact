@@ -139,7 +139,7 @@ export function ScriptEditorProcessing() {
             }
         })
 
-        const oldScenePartPersons = scenePartPersons
+        const oldScenePartPersons = scenePartPersons || {}
 
         log(debug, 'PartPersons: oldScenePartPersons', oldScenePartPersons)
 

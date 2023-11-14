@@ -1,4 +1,4 @@
-import { UPDATE_SEARCH_PARAMETERS } from '../actions/scriptEditor';
+import { CLEAR_SCRIPT_EDITOR_STATE, UPDATE_SEARCH_PARAMETERS } from '../actions/scriptEditor';
 import { UPDATE_VIEW_COMMENTS } from '../actions/scriptEditor';
 import { UPDATE_DIALOGUE_RIGHT_ID } from '../actions/scriptEditor';
 import { TOGGLE_SCENE_SELECTOR } from '../actions/scriptEditor';
@@ -15,7 +15,8 @@ import { CHANGE_FOCUS } from '../actions/scriptEditor';
 
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
-const initialState = {
+
+export const initialState = {
     searchParameters: {
         tags: [],
         characters: [],
@@ -29,7 +30,7 @@ const initialState = {
     scenePartPersons: {},
     sceneHistory: [],
     sceneScriptItemHistory: {},
-focus: {},
+    focus: {},
 
 }
 
@@ -72,15 +73,21 @@ export default function scriptEditorReducer(state = initialState, action) {
                 partPersons: action.partPersons,
             };
         case ADD_UPDATES_SCENE_HISTORY:
-            return {
-                ...state,
-                sceneHistory: [...state.sceneHistory, ...action.updates]  //[action.id]: [...state.sceneHistory[action.id], ...action.updates]
-            };
-        case ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY:
+
+            const workingSceneHistory = state.sceneHistory || []
 
             return {
                 ...state,
-                sceneScriptItemHistory: { ...state.sceneScriptItemHistory, [action.id]: [...state.sceneScriptItemHistory[action.id] || [], ...action.updates] }
+                sceneHistory: [...workingSceneHistory, ...action.updates]  //[action.id]: [...state.sceneHistory[action.id], ...action.updates]
+            };
+        case ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY:
+
+            const workingSceneScriptItemHistory = { ...state.sceneScriptItemHistory } || {}
+
+           
+            return {
+                ...state,
+                sceneScriptItemHistory: { ...state.sceneScriptItemHistory, [action.id]: [...workingSceneScriptItemHistory[action.id] || [], ...action.updates] }
             }
         case UPDATE_SCENE_PART_PERSONS:
             return {
@@ -99,9 +106,12 @@ export default function scriptEditorReducer(state = initialState, action) {
                 sceneHistory: [...state.sceneHistory.filter(item => item.id !== IMPORT_GUID)],
                 sceneScriptItemHistory: { ...state.sceneScriptItemHistory, [IMPORT_GUID]: [] },
                 scenePartPersons: { ...state.scenePartPersons, [IMPORT_GUID]: [] },
+            }          
+        case CLEAR_SCRIPT_EDITOR_STATE:
+
+            return {
+                ...initialState 
             }
- 
-            default:
-            return state;
+        default: return state;
     }
 }

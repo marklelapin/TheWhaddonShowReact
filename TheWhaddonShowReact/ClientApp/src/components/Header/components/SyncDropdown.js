@@ -205,7 +205,7 @@ function SyncDropdown(props) {
                 <DropdownItem divider />
                 <DropdownItem >Parts: {syncText(PART)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem onClick={() => clearState()}>Clear Local Storage</DropdownItem>
+                <DropdownItem onClick={() => clearState(dispatch)}>Clear Local Storage</DropdownItem>
                 <DropdownItem onClick={() => togglePauseSync()}>{pauseSync ? 'Resume Sync' : 'Pause Sync'}</DropdownItem> 
 
             </DropdownMenu>

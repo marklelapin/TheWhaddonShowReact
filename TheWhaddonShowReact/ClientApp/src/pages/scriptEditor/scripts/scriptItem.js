@@ -17,8 +17,8 @@ export function sortLatestScriptItems(head, scriptItems, undoDateTime = null) {
     const latestScriptItems = getLatest(scriptItems, undoDateTime);
     const sortedScriptItems = sortScriptItems(head, latestScriptItems);
 
-    const activeComments = latestScriptItems.filter(item=> item.isActive && item.type === COMMENT)
-    const commentedScriptItems = sortedScriptItems.map(item => ({...item, comment: activeComments.find(comment => comment.id === item.commentId) }))
+    const activeComments = latestScriptItems.filter(item => item.isActive && item.type === COMMENT)
+    const commentedScriptItems = sortedScriptItems.map(item => ({ ...item, comment: activeComments.find(comment => comment.id === item.commentId) }))
 
     return commentedScriptItems;
 
@@ -188,7 +188,7 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 
         newScriptItems = [existingScriptItem, newScriptItem]
 
-        if (nextScriptItem) {newScriptItems.push(nextScriptItem) }    
+        if (nextScriptItem) { newScriptItems.push(nextScriptItem) }
 
     }
 
@@ -200,6 +200,7 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) {
 
     let deleteScriptItem = { ...scriptItemToDelete }
+    const newScriptItems = [];
 
     let previousScriptItem = currentScriptItems.find(item => item.id === deleteScriptItem.previousId)
     let nextScriptItem = currentScriptItems.find(item => item.id === deleteScriptItem.nextId)
@@ -213,21 +214,24 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) 
         }
 
         previousScriptItem.changed = true
+
+        newScriptItems.push(previousScriptItem)
     }
 
     if (nextScriptItem) {
         nextScriptItem.previousId = previousScriptItem.id
         nextScriptItem.changed = true
+
+        newScriptItems.push(nextScriptItem)
     }
 
     deleteScriptItem.isActive = false
     deleteScriptItem.changed = true
-
-
-    const newScriptItems = [];
-    newScriptItems.push(previousScriptItem)
-    newScriptItems.push(nextScriptItem)
     newScriptItems.push(deleteScriptItem)
+
+
+
+
 
     //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
     return newScriptItems
@@ -237,9 +241,11 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) 
 export function newScriptItemsForSceneDelete(sceneToDelete, currentScenes) {
 
     let deleteScene = { ...sceneToDelete }
+    const newScriptItems = [];
 
     let previousScene = currentScenes.find(scene => scene.id === deleteScene.previousId)
     let nextScene = currentScenes.find(scene => scene.id === deleteScene.nextId)
+
 
 
     if (previousScene) {
@@ -249,17 +255,18 @@ export function newScriptItemsForSceneDelete(sceneToDelete, currentScenes) {
         } else {
             previousScene.nextId = null
         }
+
+        newScriptItems.push(previousScene)
     }
 
     if (nextScene) {
         nextScene.previousId = previousScene.id
+
+        newScriptItems.push(nextScene)
     }
 
     deleteScene.isActive = false
 
-    const newScriptItems = [];
-    newScriptItems.push(previousScene)
-    newScriptItems.push(nextScene)
     newScriptItems.push(deleteScene)
 
     //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
@@ -333,7 +340,7 @@ export function newScriptItemsForMoveScene(sceneId, newPreviousId, scenes) {
             return idToObjectMap;
         }, {})
 
-    updateObjects[sceneId].previousId =  newPreviousId //handles case where swaping with element directly next to it.
+    updateObjects[sceneId].previousId = newPreviousId //handles case where swaping with element directly next to it.
     updateObjects[sceneId].nextId = newNextId //handles case where swaping with element directly next to it.
     updateObjects[sceneId].parentId = updateObjects[newPreviousId].parentId
 

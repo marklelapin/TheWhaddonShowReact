@@ -150,13 +150,6 @@
     flex: 1;
 }
 
-#script-comment.hide-comments {
-    display: none;
-}
-
-#script-comment.show-comments {
-    flex: 0 0 310px;
-}
 
 
 
@@ -506,6 +499,7 @@ _____________________________
 .comment-header {
     display: flex;
     flex-direction: row;
+    color: black;
 }
 
 .comment-header .created-by {
@@ -520,6 +514,7 @@ _____________________________
 .comment-footer{
     display: flex;
     flex-direction: row;
+    color: black;
 }
 
 .comment-footer .tags-input {

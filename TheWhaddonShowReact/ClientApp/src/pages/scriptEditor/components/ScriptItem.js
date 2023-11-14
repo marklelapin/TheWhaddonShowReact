@@ -32,7 +32,7 @@ function ScriptItem(props) {
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene?.id])
-    const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
+    const focus = useSelector(state => (state.scriptEditor.focus[scriptItem.id]))
 
     //Refs
     const textInputRef = useRef(null)

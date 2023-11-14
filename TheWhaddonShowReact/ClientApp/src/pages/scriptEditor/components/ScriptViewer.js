@@ -18,6 +18,7 @@ import { SHOW, ACT } from '../../../dataAccess/scriptItemTypes';
 import ScriptViewerHeader from './ScriptViewerHeader';
 import { START } from '../scripts/utility';
 
+import  s  from '../Script.module.scss'
 function ScriptViewer(props) {
 
     //utility consts
@@ -85,21 +86,6 @@ function ScriptViewer(props) {
                         if (scene.type === SHOW) {
                             return <h1 key={scene.id}>{scene.text}</h1>
                         }
-                        //else if (scene.type === ACT) {
-                        //    return (
-                        //        <div key={scene.id }>
-                        //            <h2>{scene.text}</h2>
-                        //            <div className={`scene-footer curtain-closed'}`}>
-                        //                <div className="add-new-scene clickable" onClick={() => handleClick('addNewScene',scene)}>
-                        //                    (add new scene)
-                        //                </div>
-                        //            </div>
-                        //        </div>
-
-                        //    )
-
-
-                        //}
                         else {
                             return <Scene key={scene.id} scene={scene} onClick={(action) => handleClick(action, scene)} />
                         }
@@ -109,7 +95,7 @@ function ScriptViewer(props) {
 
 
                 </div>
-                <div id="script-comment" className={`${(showComments) ? "show-comments" : 'hide-comments'} draft-border`}>
+                <div id="script-comment" className={`${s['script-comments']} ${(showComments) ? 'show-comments' : 'hide-comments'} draft-border`}>
 
                 </div>
             </div>

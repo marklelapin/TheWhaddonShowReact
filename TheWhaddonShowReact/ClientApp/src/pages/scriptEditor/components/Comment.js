@@ -20,7 +20,7 @@ function Comment(props) {
 
     //constants
     const dispatch = useDispatch();
-    const tagOptions = ['GuyToDo', 'MarkToDo', 'HeatherToDo'];
+    const tagOptions = ['Guy ToDo', 'Mark C ToDo', 'Heather ToDo','Mark B ToDo'];
 
     //props
     const { comment = {} } = props;
@@ -115,7 +115,7 @@ function Comment(props) {
                 onKeyDown={(e) => handleKeyDown(e)}
             />
 
-            <div className="comment-footer">
+            <div className={`comment-header`}>
 
 <TagsInput key={comment.id} tags={comment.tags} tagOptions={tagOptions} onClickRemove={(tag) => handleChange('removeTag', tag)} onClickAdd={(tag) => handleChange('addTag', tag)} />
                 <Icon icon="play" onClick={() => handleChange('confirm', text())} />

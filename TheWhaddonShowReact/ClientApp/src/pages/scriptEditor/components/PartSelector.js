@@ -91,11 +91,11 @@ setOpenPartSelector(!openPartSelector)
             <div className="part-selector-avatars clickable" onClick={(e) => toggleDropdown(e)}>
 
                 {partsArray.filter(part => part.allocated === true).map(part => {
-                    return (<Avatar size={size} key={part.id} person={part} avatar />
+                    return (<Avatar onClick={(e) => toggleDropdown(e)} size={size} key={part.id} person={part} avatar />
                     )
                 })}
                 {(partsArray.some(part => part.allocated === true)) === false &&
-                    < Avatar person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
+                    < Avatar onClick={(e) => toggleDropdown(e)} person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
                 }
             </div>
             {(openPartSelector) &&
