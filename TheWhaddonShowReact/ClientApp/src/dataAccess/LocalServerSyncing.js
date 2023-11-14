@@ -29,7 +29,7 @@ export function LocalServerSyncing() {
 
         dispatch(sync(PERSON))
         dispatch(sync(SCRIPT_ITEM))
-        //dispatch(sync(PART))
+        dispatch(sync(PART))
 
     }
 

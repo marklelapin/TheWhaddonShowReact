@@ -103,7 +103,7 @@ export class PartUpdate extends LocalServerModelUpdate {
 
     constructor() {
         super();
-        this.name = null
+        this.name = ''
         this.personId = null;
         this.tags = [];
     }
