@@ -186,7 +186,9 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
             nextScriptItem.changed = true
         }
 
-        newScriptItems = [existingScriptItem, newScriptItem, nextScriptItem]
+        newScriptItems = [existingScriptItem, newScriptItem]
+
+        if (nextScriptItem) {newScriptItems.push(nextScriptItem) }    
 
     }
 

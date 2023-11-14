@@ -83,7 +83,7 @@ export class PersonUpdate extends LocalServerModelUpdate {
 
 export class ScriptItemUpdate extends LocalServerModelUpdate {
 
-    constructor(type, text = null) {
+    constructor(type, text = '') {
         super();
         this.type = type;
         this.text = text;
@@ -103,7 +103,7 @@ export class PartUpdate extends LocalServerModelUpdate {
 
     constructor() {
         super();
-        this.name = null
+        this.name = ''
         this.personId = null;
         this.tags = [];
     }

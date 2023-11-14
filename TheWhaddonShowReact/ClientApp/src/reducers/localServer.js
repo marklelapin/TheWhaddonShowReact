@@ -8,7 +8,8 @@
     UPDATE_CONNECTION_STATUS,
     SYNC,
     END_SYNC,
-    CLOSE_POSTBACK
+    CLOSE_POSTBACK,
+    SET_PAUSE_SYNC
 } from '../actions/localServer';
 
 import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
@@ -30,7 +31,9 @@ const defaultState = {
     sync: {
         isSyncing: false,
         error: null,
-        lastSyncDate: null
+        lastSyncDate: null,
+        pauseSync: false
+
     },
     refresh: {},
     //**LSMTypeInCode**
@@ -62,7 +65,10 @@ export default function localServerReducer(state = defaultState, action) {
             return Object.assign({}, state, {
                 connectionStatus: action.payload
             });
-
+        case SET_PAUSE_SYNC:
+            return Object.assign({}, state, {
+                sync: { ...state.sync, pauseSync: action.payload }
+            });
         //Actions where a line needs to be added for each new LocalServerModel update type (e.g. persons, scriptItems, parts) **LSMTypeInCode**
         case RESET_LIST:
             switch (action.payloadType) {
@@ -158,7 +164,7 @@ export default function localServerReducer(state = defaultState, action) {
             const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => (existingUpdate.id === update.id && existingUpdate.created === update.created)))
 
 
-             console.log('adding updates via ADD_UPDATE in localserver reducer')
+            console.log('adding updates via ADD_UPDATE in localserver reducer')
             //update correct data set to update
 
             if (updatesToAdd.length > 0) {
@@ -185,7 +191,7 @@ export default function localServerReducer(state = defaultState, action) {
 
             }
             return state;
-  
+
 
         case CLEAR_CONFLICTS: //TODO Complete Clear Conflicts
             if (action.payload.length === 0) { return state }
@@ -276,7 +282,7 @@ export default function localServerReducer(state = defaultState, action) {
 
             return {
                 ...state,
-                scriptItems: {...state.scriptItems, history: state.scriptItems.history.filter((item) => item.parentId !== IMPORT_GUID)}
+                scriptItems: { ...state.scriptItems, history: state.scriptItems.history.filter((item) => item.parentId !== IMPORT_GUID) }
             }
 
         default:

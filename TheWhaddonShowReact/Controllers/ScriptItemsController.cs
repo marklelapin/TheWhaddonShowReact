@@ -2,6 +2,7 @@
 using MyClassLibrary.LocalServerMethods.Interfaces;
 using System.Text.Json;
 using TheWhaddonShowClassLibrary.Models;
+using TheWhaddonShowReact.Models;
 using TheWhaddonShowReact.Models.LocalServer;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,20 +16,7 @@ namespace TheWhaddonShowReact.Controllers
 
 		private readonly ReactLocalDataAccess<ScriptItemUpdate> _localDataAccess;
 		private readonly ILocalServerEngine<ScriptItemUpdate> _localServerEngine;
-
-		// Create JsonSerializerOptions with CamelCaseNamingPolicy
-		private JsonSerializerOptions jsonOptions
-		{
-			get
-			{
-
-				return new JsonSerializerOptions()
-				{
-					PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-					WriteIndented = true // Optional: for pretty-printing
-				};
-			}
-		}
+		private readonly JsonSerializerOptions jsonOptions = new SyncJsonOptions().JsonOptions;
 
 		public ScriptItemsController(ILocalDataAccess<ScriptItemUpdate> localDataAccess, ILocalServerEngine<ScriptItemUpdate> localServerEngine)
 		{
