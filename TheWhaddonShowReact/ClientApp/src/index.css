@@ -1,4 +1,6 @@
 ﻿body {
+    max-height: 100vh;
+   overflow-y:hidden;
 }
 
 .draft-border {
@@ -524,7 +526,7 @@ z-index: 10;
 }
 
 .tags-input * {
-    z-index: 100;
+    z-index: 2;
 }
 
 /*INDIVIDUAL STYLING OF SCRIPT ITEM TYPES*/
@@ -546,4 +548,43 @@ z-index: 10;
     width: 100%;
     z-index: 2;
     background-color: yellowgreen;
+}
+
+
+
+.page-content{
+    flex: 1;
+    display: flex;
+    flex-direction:column;
+    overflow-y: hidden;
+}
+
+.flex-full-height{
+    flex: 1;
+    display: flex;
+    flex-direction:column;
+    overflow-y: hidden;
+}
+
+.flex-full-width{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow-x:hidden;
+}
+
+.full-height-overflow{
+height: 100%;
+    overflow-y: auto;
+}
+
+.table {
+    background-color: white;
+}
+
+.sticky {
+    position: sticky;
+    top: 0px;
+    background-color: inherit;
+z-index: 10;
 }

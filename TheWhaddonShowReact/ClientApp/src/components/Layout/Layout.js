@@ -79,14 +79,14 @@ class Layout extends React.Component {
                     <Hammer onSwipe={this.handleSwipe}>
                         <main className={s.content}>
                             {/*<BreadcrumbHistory url={this.props.location.pathname} />*/}
-                            <TransitionGroup>
-                                <CSSTransition
+                            <TransitionGroup className="flex-full-height">
+                                <CSSTransition 
                                     key={this.props.location.key}
                                     classNames="fade"
                                     timeout={200}
                                 >
                                     <Switch>
-                                        <Route path="/app/main" exact component={Home} />
+                                        <Route path="/app/main" exact component={Home}  />
                                       
                                         <Route path="/app/script" exact component={Script} />
                                         <Route path="/app/script/import" exact component={ScriptImporter} />

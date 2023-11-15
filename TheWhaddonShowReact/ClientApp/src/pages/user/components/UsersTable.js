@@ -40,7 +40,7 @@ export function UsersTable() {
     const persons = getLatest(personsHistory);
 
     log(debug, 'UsersTable persons', persons)
-   
+
     useEffect(() => {
         setLoadingError();
     }, [])
@@ -82,7 +82,7 @@ export function UsersTable() {
         }
     }
 
-const setLoadingError = () => {
+    const setLoadingError = () => {
         if (persons.length > 0) {
             setIsLoading(false)
             setError(null)
@@ -126,21 +126,21 @@ const setLoadingError = () => {
 
 
 
-    
+
 
 
 
     const filteredPersons = () => {
 
-       let filteredPersons = persons.filter((person) => person.isActive === (showActive || person.isActive))
-       filteredPersons = filteredPersons.filter((person) => !(person.isSample === true))
+        let filteredPersons = persons.filter((person) => person.isActive === (showActive || person.isActive))
+        filteredPersons = filteredPersons.filter((person) => !(person.isSample === true))
 
-       const sortedPersons = filteredPersons.sort((a, b) => {
+        const sortedPersons = filteredPersons.sort((a, b) => {
             const nameA = (a.firstName + a.lastName).toUpperCase(); // ignore upper and lowercase
             const nameB = (b.firstName + b.lastName).toUpperCase(); // ignore upper and lowercase
             if (nameA < nameB) {
                 return -1;
-            } 
+            }
             return 1;
         })
 
@@ -152,30 +152,26 @@ const setLoadingError = () => {
     return (
 
         <>
-            <Widget title="Users" collapse close>
+            <DataLoading isLoading={isLoading && (filteredPersons().length === 0)} isError={error !== null && (filteredPersons().length === 0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
+                <Button color="primary" onClick={addNewUser}>Add New User</Button>
 
+                
+                    <Table id="user-table" responsive className="table-hover">
+                        <thead className="sticky">
+                            <User type={headers} />
+                        </thead>
+                        <tbody className="full-height-overflow" >
+                            {filteredPersons().map((person) => {
 
+                                return <User user={person} type={row} key={person.id} openModal={(person.id === userModalToOpen)} closeModal={closeModal} />
+                            }
+                            )}
+                            {(newUser !== null) && <User user={newUser} type={row} openModal={true} closeModal={closeModal} onCancelNewUser={closeModal} />}
+                        </tbody>
+                    </Table>
+               
+            </DataLoading>
 
-                <DataLoading isLoading={isLoading && (filteredPersons().length === 0)} isError={error !== null && (filteredPersons().length === 0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
-                    <Button color="primary" onClick={addNewUser}>Add New User</Button>
-                    
-                    <div className="table-responsive" >
-                        <Table id="user-table" className="table-hover">
-                            <thead>
-                                <User type={headers} />
-                            </thead>
-                            <tbody>
-                                {filteredPersons().map((person) => {
-
-                                    return <User user={person} type={row} key={person.id} openModal={(person.id === userModalToOpen)} closeModal={closeModal} />
-                                }
-                                )}
-                                {(newUser !== null) && <User user={newUser} type={row} openModal={true} closeModal={closeModal} onCancelNewUser={closeModal} />}
-                            </tbody>
-                        </Table>
-                    </div>
-                </DataLoading>
-            </Widget>
 
 
         </ >
