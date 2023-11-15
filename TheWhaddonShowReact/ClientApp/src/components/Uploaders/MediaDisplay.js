@@ -82,7 +82,7 @@ function MediaDisplay(props) {
     if (videoObjectURL) {
 
         return (
-            <div classaName="media-display video" >
+            <div  className="media-display video" >
                 <video controls width={finalWidth} height={finalHeight}>
                     <source src={videoObjectURL} type={file.type} />
                     Your browser does not support the video tag.
@@ -95,7 +95,7 @@ function MediaDisplay(props) {
     if (audioObjectURL) {
 
         return (
-            <div className="media-display audio">
+            <div  className="media-display audio">
                 <audio controls>
                     <source src={audioObjectURL} type={file.type} />
                     Your browser does not support the audio tag.
@@ -117,12 +117,13 @@ function MediaDisplay(props) {
     if (youTubeEmbedUrl) {
 
         return (
-            <div className="media-display youtube">
+            <div  className = "media-display youtube">
                 <iframe
                     title={title || youTubeUrl}
-                    width={finalWidth || 560} height={finalHeight || 315}
+                  
+                    height={finalHeight || 315}
                     src={youTubeEmbedUrl}
-                    frameborder="0"
+                 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 >
                 </iframe>
