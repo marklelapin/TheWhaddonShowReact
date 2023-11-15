@@ -28,7 +28,7 @@ import {
 //Constants
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { DIALOGUE, COMMENT } from '../../../dataAccess/scriptItemTypes';
-import { ACT, SCENE,SYNOPSIS,INITIAL_STAGING,CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
+import { SHOW, ACT, SCENE,SYNOPSIS,INITIAL_STAGING,CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 
@@ -46,8 +46,9 @@ function Scene(props) {
     const dispatch = useDispatch()
 
     //props
-    const { scene, onClick, previousSceneEndId } = props;
+    const { scene, sceneNumber, onClick, previousSceneEndId } = props;
 
+    
     log(debug, 'Scene Passed into Scene', scene)
 
     //Redux state
@@ -68,8 +69,8 @@ function Scene(props) {
 //useEffect Hooks
     useEffect(() => {
 
-      const newScriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
-
+      let newScriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
+      
       setScriptItems(newScriptItems)
       
     },[undoDateTime,sceneScriptItemHistory,scene])
@@ -332,7 +333,7 @@ function Scene(props) {
 
 
 
-    const currentScene = { ...scriptItems.find(item => item.type === SCENE || item.type === ACT) || {}, undoDateTime: undoDateTime } //returns the synopsis scriptItem
+    let currentScene = { ...scriptItems.find(item => item.type === SCENE || item.type === ACT || item.type === SHOW) || {}, undoDateTime: undoDateTime, sceneNumber : sceneNumber } //returns the synopsis scriptItem
     const synopsis = scriptItems.find(item => item.type === SYNOPSIS) || {} //returns the synopsis scriptItem
     const staging = scriptItems.find(item => item.type === INITIAL_STAGING) || {}//returns the staging scriptItem')
 

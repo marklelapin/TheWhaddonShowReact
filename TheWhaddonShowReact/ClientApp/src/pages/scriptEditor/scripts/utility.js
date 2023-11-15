@@ -33,7 +33,7 @@ export function findScriptItem(element, scriptItems) {
 
 }
 
-export function moveFocusToId(id, position = START) {
+export function moveFocusToId(id, position = START,scroll = false) {
     console.log(`moveFocusToId id: ${id} position: ${position}`)
     try {
         if (position === SCENE_END) {
@@ -54,6 +54,10 @@ export function moveFocusToId(id, position = START) {
         const newTextInput = getTextInputElement(id);
 
         if (newTextInput) {
+            if (scroll) {
+                const offset = newTextInput.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo({ top: offset, behaviour: 'smooth' })
+            }
             newTextInput.focus();
             if (position === START) {
                 newTextInput.selectionStart = 0

@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 
 //Components
 import TextareaAutosize from 'react-autosize-textarea';
@@ -34,7 +35,7 @@ function ScriptItemText(props) {
 
 
     //Props
-    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia, undoDateTime } = props;
+    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia, undoDateTime, label } = props;
 
     const { id, type, tags } = scriptItem
 
@@ -104,6 +105,9 @@ function ScriptItemText(props) {
         } else {
             finalText = overrideText || tempTextValue || scriptItem.text || ''
         }
+
+        if (scriptItem.sceneNumber) { finalText = `${scriptItem.sceneNumber}. ${finalText}` } 
+
         log(debug, `EventsCheck: final text: ${finalText}`)
 
         return finalText
@@ -352,9 +356,11 @@ function ScriptItemText(props) {
                 </div>
             }
 
+            {label && <label for={uuidv4}>{label}</label>}
 
             <TextareaAutosize
                 key={id}
+                name={uuidv4()}
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
                 className={`form-control ${s.autogrow} transition-height text-input`}

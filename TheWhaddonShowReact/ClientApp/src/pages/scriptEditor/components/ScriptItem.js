@@ -69,7 +69,16 @@ function ScriptItem(props) {
         }
 
     }
+    const label = () => {
 
+        let label = null //default
+
+        if ((scriptItem.type  === SCENE) && scriptItem.number) {
+            label = `Scene ${scriptItem.number}: `
+        }
+        //else
+        return label
+    }
     const handleShowMedia = (value = null) => {
 
         if (undoDateTime) { onClick('confirmUndo') }
@@ -130,7 +139,8 @@ function ScriptItem(props) {
                 <div ref={textInputRef} className="script-item-text-area">
 
                     <ScriptItemText
-                        key={id}
+                    key={id}
+                        label={label()}
                         maxWidth={textInputRef.current?.offsetWidth}
                         scriptItem={scriptItem}
                         header={header()}

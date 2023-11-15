@@ -11,7 +11,7 @@ import { FormGroup, Input, Button } from 'reactstrap';
 import { ScriptItemUpdate, SCRIPT_ITEM } from '../../dataAccess/localServerModels';
 import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from '../../dataAccess/scriptItemTypes';
 import { prepareUpdates, getLatest } from '../../dataAccess/localServerUtils';
-import { sortLatestScriptItems, newScriptItemsForCreateShow } from './scripts/scriptItem';
+import { sortLatestScriptItems, newScriptItemsForCreateShow, addSceneNumbers } from './scripts/scriptItem';
 import { addUpdates } from '../../actions/localServer';
 
 //Utils
@@ -93,9 +93,12 @@ function Script() {
 
     const shows = getLatest(sceneHistory.filter((scene) => scene.type === SHOW))
 
-    const scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
+    let scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
 
-    log(debug, 'Scipt Rendering Scene', scenes)
+    scenes = addSceneNumbers(scenes)
+
+
+    log(debug, 'Script Rendering Scene', scenes)
 
     //-----------------------------------------------------------------------
     return (

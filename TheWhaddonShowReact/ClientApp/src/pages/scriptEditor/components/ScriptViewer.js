@@ -81,14 +81,9 @@ function ScriptViewer(props) {
             <div id="script-viewer-main" className={`full-height-overflow`}>
                 <div id="script-body" className={`${(showComments) ? 'show-comments' : 'hide-comments'}`}>
                     {(scenes && scenes.length > 0) && scenes.map(scene => {
-
-                        if (scene.type === SHOW) {
-                            return <h1 key={scene.id}>{scene.text}</h1>
-                        }
-                        else {
-                            return <Scene key={scene.id} scene={scene} onClick={(action) => handleClick(action, scene)} />
-                        }
-                    }
+                                             
+                        return <Scene key={scene.id} scene={scene} sceneNumber={scene.sceneNumber} onClick={(action) => handleClick(action, scene)} />
+                     }
 
                     )}
                 </div>

@@ -106,7 +106,23 @@ const closesCurtain = (scriptItem) => {
 }
 
 
+export function addSceneNumbers (scenes) {
 
+    let i = 1;
+    const numberedScenes = scenes.map(scene => {
+        if (scene.type === SCENE) {
+            const numberedScene = { ...scene, sceneNumber: i }
+            i++;
+            return numberedScene
+            
+        } else {
+            return scene }
+        
+        
+    })
+
+    return numberedScenes
+}
 
 
 //Functions to create scriptItem updates for various crud style operations
