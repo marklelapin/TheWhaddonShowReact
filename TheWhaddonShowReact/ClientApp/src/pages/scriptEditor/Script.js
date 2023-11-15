@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 //Components
 import SceneSelector from './components/SceneSelector';
 import ScriptViewer from './components/ScriptViewer';
-import {FormGroup, Input, Button} from 'reactstrap';
+import { FormGroup, Input, Button } from 'reactstrap';
 //localServerModels
 import { ScriptItemUpdate, SCRIPT_ITEM } from '../../dataAccess/localServerModels';
 import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from '../../dataAccess/scriptItemTypes';
@@ -28,8 +28,8 @@ function Script() {
 
 
     //Redux State
-    const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector) 
-    const sceneHistory = useSelector((state) => state.scriptEditor.sceneHistory) ||[]
+    const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
+    const sceneHistory = useSelector((state) => state.scriptEditor.sceneHistory) || []
     //Internal State
     const [isLargerScreen, setIsLargerScreen] = useState(null)
     const [show, setShow] = useState(null)
@@ -37,7 +37,7 @@ function Script() {
 
     log(debug, 'Script: sceneHistory', sceneHistory)
 
-  
+
     //UseEffect Hooks
     useEffect(() => {
         window.addEventListener('resize', handleScriptScreenResize);
@@ -63,7 +63,7 @@ function Script() {
 
     const isSmallerScreen = () => {
 
-        return (isScreen('xs') || isScreen('sm'))
+        return (isScreen('xs') || isScreen('sm') || isScreen('md'))
 
     }
 
@@ -78,7 +78,7 @@ function Script() {
             setNewShowName('')
 
         }
-        
+
 
     }
 
@@ -91,7 +91,7 @@ function Script() {
 
     }
 
-    const shows = getLatest(sceneHistory.filter((scene) => scene.type === SHOW)) 
+    const shows = getLatest(sceneHistory.filter((scene) => scene.type === SHOW))
 
     const scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
 
@@ -100,23 +100,26 @@ function Script() {
     //-----------------------------------------------------------------------
     return (
 
-        <div id="script-page" className="draft-border">
+        <div id="script-page" className="flex-full-height">
 
-            {(isLargerScreen) && <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>}
+            {(isLargerScreen) &&
+                <div className="page-top">
+                    <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>
+                </div>
+            }
 
             {show &&
-                <div id="script-page-content">
+                <div id="script-page-content" className="page-content flex-full-width">
                     {(showSceneSelector || isLargerScreen) &&
-                        <div id="script-selector" >
+                       
                             <SceneSelector scenes={scenes} />
-                        </div>
+                     
                     }
 
                     {(!showSceneSelector || isLargerScreen) &&
-                        <div id="script-viewer">
+                       
                             <ScriptViewer scenes={scenes} onClick={(action) => handleScriptViewerClick(action)} />
 
-                        </div>
                     }
 
                 </div>
@@ -131,18 +134,18 @@ function Script() {
                                 <Button key={show.id} onClick={() => setShow(show)}>{show.text}</Button>
                             )
                         })}
-                    <FormGroup>
-                        <Input type="text" name="newShow" id="newShow" value={newShowName}  placeholder="New Show Name" onChange={((e) => setNewShowName(e.target.value))} />
-                        <Button type = "submit" key={"createNew"} onClick={() => createNewShow()}>Create New Show!</Button>
+                        <FormGroup>
+                            <Input type="text" name="newShow" id="newShow" value={newShowName} placeholder="New Show Name" onChange={((e) => setNewShowName(e.target.value))} />
+                            <Button type="submit" key={"createNew"} onClick={() => createNewShow()}>Create New Show!</Button>
                         </FormGroup>
 
 
-                        
+
                     </div>
                 </>
             }
-                          
-           
+
+
         </div>
 
 

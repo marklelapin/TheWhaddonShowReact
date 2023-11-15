@@ -100,7 +100,7 @@ function SceneSelector(props) {
 
     const moveScene = (sceneId, newPreviousId) => {
 
-        const updates = newScriptItemsForMoveScene(sceneId, newPreviousId,scenes)
+        const updates = newScriptItemsForMoveScene(sceneId, newPreviousId, scenes)
 
         const preparedUpdates = prepareUpdates(updates)
 
@@ -129,32 +129,37 @@ function SceneSelector(props) {
     log(debug, 'SceneSelector Rendering: filteredScenes', filteredScenes())
 
     return (
-        <div id="scene-selector" className="draft-border">
+        <div id="scene-selector" className="flex-full-height">
             <h2>Search</h2>
             <ScriptSearch onChange={(type, value) => handleSearchParameterChange(type, value)} />
 
             <h2>Scenes</h2>
+            <div className="full-height-overflow">
 
-            {filteredScenes().map(scene => {
+                {filteredScenes().map(scene => {
 
-                if (scene.type === ACT) {
+                    if (scene.type === ACT) {
 
-                    return <h2 key={scene.id}>{scene.text}</h2>
-                }
+                        return <h2 key={scene.id}>{scene.text}</h2>
+                    }
 
-                return <SceneSelectorRow
-                    key={scene.id}
-                    scene={scene}
-                    onClick={(action, id) => handleClick(action, id)}
-                    onDragStart={handleDragStart}
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
+                    return <SceneSelectorRow
+                        key={scene.id}
+                        scene={scene}
+                        onClick={(action, id) => handleClick(action, id)}
+                        onDragStart={handleDragStart}
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
 
-                />
+                    />
 
 
-            })}
+                })}
+
+
+            </div>
+
 
 
         </div>

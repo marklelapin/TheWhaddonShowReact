@@ -127,7 +127,7 @@ function ScriptViewer(props) {
 
     return (
         <>
-            <div id="script-viewer-header" className="bg-light script-viewer-header">
+            <div id="script-viewer-header" className="bg-light flex-full-width script-viewer-header">
                 
                     <div className="left-controls justify-content-start align-items-center">
                         <Icon icon="arrow-left" onClick={() => handleArrowLeft()}></Icon>

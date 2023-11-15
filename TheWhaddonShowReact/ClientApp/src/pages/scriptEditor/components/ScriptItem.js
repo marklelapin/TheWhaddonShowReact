@@ -26,7 +26,7 @@ function ScriptItem(props) {
 
 
     // get specific props
-    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus,undoDateTime, previousFocus = null, nextFocus = null } = props;
+    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus, undoDateTime, previousFocus = null, nextFocus = null } = props;
 
     log(debug, 'ScriptItemComment: scriptItem', scriptItem)
     //Redux state
@@ -116,74 +116,70 @@ function ScriptItem(props) {
     return (
         <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
 
-            {showParts() &&
-                <div className="script-item-parts">
-                    <PartSelector
-                        scene={scene}
-                        allocatedPartIds={scriptItem.partIds}
-                        undoDateTime={undoDateTime}
+                {showParts() &&
+                    <div className="script-item-parts">
+                        <PartSelector
+                            scene={scene}
+                            allocatedPartIds={scriptItem.partIds}
+                            undoDateTime={undoDateTime}
+                            onClick={onClick}
+                            onChange={(selectedPartIds) => onChange('partIds', selectedPartIds)}
+                        />
+                    </div>
+                }
+                <div ref={textInputRef} className="script-item-text-area">
+
+                    <ScriptItemText
+                        key={id}
+                        maxWidth={textInputRef.current?.offsetWidth}
+                        scriptItem={scriptItem}
+                        header={header()}
                         onClick={onClick}
-                        onChange={(selectedPartIds) => onChange('partIds', selectedPartIds)}
+                        toggleMedia={(value) => handleShowMedia(value)}
+                        onChange={onChange}
+                        undoDateTime={undoDateTime}
+                        moveFocus={moveFocus}
                     />
-                </div>
-            }
-            <div ref={textInputRef} className="script-item-text-area">
-
-                <ScriptItemText
-                    key={id}
-                    maxWidth={textInputRef.current?.offsetWidth}
-                    scriptItem={scriptItem}
-                    header={header()}
-                    onClick={onClick}
-                    toggleMedia={(value) => handleShowMedia(value)}
-                    onChange={onChange}
-                    undoDateTime={undoDateTime}
-                    moveFocus={moveFocus}
-                />
-
-            </div>
-            {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
-                <MediaDropzone
-                    existingMediaURLs={scriptItem.attachments}
-                    addMedia={(media) => handleMedia('add', media)}
-                    removeMedia={(media) => handleMedia('remove', media)}
-                    showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
-                    autoLoad={true}
-                />
-            }
-
-            {(comment) &&
-
-                <div id={comment.id} key={comment.id} className="script-item-comment">
-                    <Comment comment={comment} />
-                </div>
-
-            }
-
-            {/*Elements specific for each scriptItem type*/}
-
-            {(type === SCENE) &&
-                <div className="scene-controls">
-                    {scriptItem.undoDateTime &&
-                        <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
-                    }
-                    <Icon icon="undo" onClick={() => onClick('undo')} />
-                    {scriptItem.undoDateTime &&
-                        <Icon icon="redo" onClick={() => onClick('redo')} />
-                    }
-                    <Icon icon="trash" onClick={() => onClick('deleteScene', null)} />
-
-
 
                 </div>
-            }
+                {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
+                    <MediaDropzone
+                        existingMediaURLs={scriptItem.attachments}
+                        addMedia={(media) => handleMedia('add', media)}
+                        removeMedia={(media) => handleMedia('remove', media)}
+                        showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
+                        autoLoad={true}
+                    />
+                }
+
+                {(comment) && (showComments) &&
+
+                    <div id={comment.id} key={comment.id} className="script-item-comment">
+                        <Comment comment={comment} />
+                    </div>
+
+                }
+
+                {/*Elements specific for each scriptItem type*/}
+
+                {(type === SCENE) &&
+                    <div className="scene-controls">
+                        {scriptItem.undoDateTime &&
+                            <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
+                        }
+                        <Icon icon="undo" onClick={() => onClick('undo')} />
+                        {scriptItem.undoDateTime &&
+                            <Icon icon="redo" onClick={() => onClick('redo')} />
+                        }
+                        <Icon icon="trash" onClick={() => onClick('deleteScene', null)} />
 
 
 
+                    </div>
+                }
 
-
+            
         </div>
-
     )
 }
 

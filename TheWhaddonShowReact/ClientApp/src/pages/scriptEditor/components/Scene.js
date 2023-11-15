@@ -364,8 +364,8 @@ function Scene(props) {
     //---------------------------------
 
     return (
-        <div id={`scene-${currentScene.id}`}>
-            <div className={`scene-header ${(scene.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
+        <div id={`scene-${currentScene.id} scene-group`}>
+            <div className={`scene-header ${(scene.curtainOpen) ? 'curtain-open' : 'curtain-closed'}`}>
  
                 {(currentScene) &&
                     <ScriptItem scriptItem={currentScene}
@@ -436,6 +436,7 @@ function Scene(props) {
                 </div>
             </div>
         </div>
+
     )
 }
 

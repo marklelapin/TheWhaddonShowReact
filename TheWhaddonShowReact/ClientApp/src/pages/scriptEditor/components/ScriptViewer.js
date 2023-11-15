@@ -18,7 +18,7 @@ import { SHOW, ACT } from '../../../dataAccess/scriptItemTypes';
 import ScriptViewerHeader from './ScriptViewerHeader';
 import { START } from '../scripts/utility';
 
-import  s  from '../Script.module.scss'
+import s from '../Script.module.scss'
 function ScriptViewer(props) {
 
     //utility consts
@@ -75,12 +75,11 @@ function ScriptViewer(props) {
 
 
     return (
-        <>
+        <div id="script-viewer" className="flex-full-height">
             <ScriptViewerHeader onClick={(action) => handleClick(action, null)} />
 
-            <div id="script-viewer-main" className="draft-border">
-
-                <div id="script-body" className="draft-border">
+            <div id="script-viewer-main" className={`full-height-overflow`}>
+                <div id="script-body" className={`${(showComments) ? 'show-comments' : 'hide-comments'}`}>
                     {(scenes && scenes.length > 0) && scenes.map(scene => {
 
                         if (scene.type === SHOW) {
@@ -92,15 +91,9 @@ function ScriptViewer(props) {
                     }
 
                     )}
-
-
-                </div>
-                <div id="script-comment" className={`${s['script-comments']} ${(showComments) ? 'show-comments' : 'hide-comments'} draft-border`}>
-
                 </div>
             </div>
-
-        </>
+        </div>
 
 
 
