@@ -132,13 +132,7 @@ function ScriptItem(props) {
 
 
     return (
-        <div id={id} className={`script-item 
-                                ${s['script-item']}
-                                ${s[type?.toLowerCase()]}
-                                ${type?.toLowerCase()}
-                                ${(alignRight) ? s['align-right'] : ''}
-                                ${(alignRight) ? 'align-right' : ''} 
-                                ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'}`}> 
+        <div id={id} className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]} ${type?.toLowerCase()} ${(alignRight) ? s['align-right'] : ''} ${(alignRight) ? 'align-right' : ''}`} >                             
 
             {showParts() &&
                 <div className="script-item-parts">
@@ -151,7 +145,7 @@ function ScriptItem(props) {
                     />
                 </div>
             }
-            <div ref={textInputRef} className="script-item-text-area">
+            <div ref={textInputRef} className={s['script-item-text-area']}>
 
                 <ScriptItemText
                     key={id}
@@ -203,8 +197,8 @@ function ScriptItem(props) {
                 </div>
             }
 
-            <div className={s['left-curtain']}></div>
-            <div className={s['right-curtain']}></div>
+            <div className={`${s['left']} ${s['stage-curtain']} ${(scriptItem.curtainOpen) ? s['curtain-open'] : s['curtain-closed']}`}></div>
+            <div className={`${s['right']} ${s['stage-curtain']} ${(scriptItem.curtainOpen) ? s['curtain-open'] : s['curtain-closed']}`}></div>
         </div>
     )
 }

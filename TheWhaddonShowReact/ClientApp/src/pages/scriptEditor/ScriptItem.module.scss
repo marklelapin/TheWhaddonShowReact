@@ -1,11 +1,72 @@
 @import '../../styles/app';
 
 //General ScriptItem Styles
-.script-item{
+.script-item {
+    padding: 10px 40px 10px 40px;
+    display: flex;
+    flex-direction: column;
     position: relative;
+    background-color: $gray-inverse;
+    z-index: 2;
+
+    .text-input {
+        text-align: center;
+    }
+}
+
+.stage-curtain {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    z-index: 1;
+    overflow:hidden;
+    background-color: $danger;
+
+    &.left {
+        left: 0
+    }
+
+    &.right {
+        right: 0;
+    }
+
+    &.curtain-closed {
+        width: 50%;
+        transition: width 1s ease-in-out;
+    }
+
+    &.curtain-open  {
+        width: 0;
+        transition: width 1s ease-in-out;
+    }
+}
+
+
+.script-item.parts {
+    z-index: 2;
+}
+
+/*Layout*/
+.script-item-text-area {
+    flex: 1;
+    display: flex;
+    position: relative;
+    justify-content: center;
+    max-width: 100%;
+    z-index: 2;
+}
+
+
+
+
+
+.script-item-text-area {
 }
 
 .script-item-header {
+    z-index: 2;
 }
 
 .script-item-text {
@@ -14,6 +75,7 @@
     align-items: center;
     justify-content: center;
     position: relative;
+    z-index: 2;
 }
 
 .align-right {
@@ -39,12 +101,7 @@
     }
 }
 
-.left-curtain {
-    position:absolute;
-}
-.right-curtain {
 
-}
 
 //Type Specific ScriptItem Styles
 .show {
@@ -76,17 +133,31 @@
 
 .staging,
 .initial {
-        .script-item-header {
-            font-size: $h6-font-size;
-            font-weight: $font-weight-bold;
-            text-align: center;
-        }
+    .script-item-header {
+        font-size: $h6-font-size;
+        font-weight: $font-weight-bold;
+        text-align: center;
+    }
 }
 
 .dialogue {
 
-    .script-item-text {
+    &.script-item {
+        padding-left: 10px;
+        padding-right: 70px;
+        flex-direction: row;
 
+        &.align-right {
+            padding-left: 70px;
+            padding-right: 10px;
+        }
+    }
+
+    .script-item-text-area {
+        justify-content: flex-start;
+    }
+
+    .script-item-text {
         align-items: flex-start;
 
         .text-input {
@@ -95,11 +166,17 @@
             font-size: 16px;
             width: 100%;
             z-index: 2;
-            
         }
     }
 
+
     &.align-right {
+
+        .script-item-text-area {
+            justify-content: flex-end;
+            order: -1;
+        }
+
         .script-item-text {
             .text-input {
                 border-radius: 20px 0px 20px 20px;
@@ -108,8 +185,7 @@
         }
     }
 
-    .script-item-header{
+    .script-item-header {
         font-size: $small-font-size;
     }
 }
-

@@ -8,7 +8,7 @@ import { log } from '../../../helper';
 import { ABOVE, BELOW } from './utility';
 import { addUpdates } from "../../../actions/localServer";
 
-import { SCRIPT_ITEM } from "../../../dataAccess/localServerModels";
+import { SCRIPT_ITEM } from "../../../dataAccess/localServerModels"
 
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
 //--------------------------------------------------------------------------------------------------

@@ -353,6 +353,7 @@ function Scene(props) {
         return alignedScriptItems
     }
 
+    const finalScriptItem = scriptItems[scriptItems.length - 1] || {}
 
     log(debugRenderProps, 'Scene bodyScriptItems', body())
     log(debugRenderProps, 'Scene scriptItems', scriptItems)
@@ -431,7 +432,7 @@ function Scene(props) {
                 }
             </div>
 
-            <div className={`scene-footer ${currentScene.finalCurtain ? 'curtain-open' : 'curtain-closed'}`}>
+            <div className={`scene-footer ${finalScriptItem.curtainOpen ? 'curtain-open' : 'curtain-closed'}`}>
                 <div className="add-new-scene clickable" onClick={() => onClick('addNewScene')}>
                     (add new scene)
                 </div>

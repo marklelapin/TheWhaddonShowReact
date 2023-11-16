@@ -9,9 +9,9 @@ import { log } from '../helper';
 import { getLatest, prepareUpdates } from '../dataAccess/localServerUtils';
 import { addPersonsInfo } from '../pages/scriptEditor/scripts/part';
 import { PartUpdate } from '../dataAccess/localServerModels';
-import { addUpdates } from '../actions/localServer'; 
+import { addUpdates } from '../actions/localServer';
 
-import { SHOW, ACT, SCENE } from '../dataAccess/scriptItemTypes'
+import { SHOW, ACT, SCENE, CURTAIN_TYPES } from '../dataAccess/scriptItemTypes'
 
 import { SCRIPT_ITEM } from '../dataAccess/localServerModels'
 
@@ -42,16 +42,19 @@ export function ScriptEditorProcessing() {
 
         if (refreshTrigger.updates && refreshTrigger.type === SCRIPT_ITEM) {
             const scriptItemUpdates = refreshTrigger.updates
-            const sceneUpdates = scriptItemUpdates.filter(update => update.type === SHOW || update.type === ACT || update.type === SCENE)
+            const sceneUpdates = scriptItemUpdates.filter(update => update.type === SHOW ||
+                                                                    update.type === ACT ||
+                                                                    update.type === SCENE)
 
-
+            const sceneCurtainUpdates = scriptItemUpdates.some(update=>CURTAIN_TYPES.includes(update.type))
+            
             //Update scriptEditor.sceneScriptItemsHistory
             if (scriptItemUpdates) {
 
                 const scriptItemIds = [...scriptItemUpdates].map(update => update.parentId || update.id)
                 const sceneIds = sceneUpdates.map(update => update.id)
 
-                const uniqueSceneIds = [...new Set([...scriptItemIds,...sceneIds])]
+                const uniqueSceneIds = [...new Set([...scriptItemIds, ...sceneIds])]
 
                 uniqueSceneIds.forEach(sceneId => {
                     const updates = scriptItemUpdates.filter(update => update.parentId === sceneId || update.id === sceneId)
@@ -81,15 +84,15 @@ export function ScriptEditorProcessing() {
 
     //Update PartPersons 
     useEffect(() => {
-        log(debug,'PartPersons: storedParts', storedParts)
+        log(debug, 'PartPersons: storedParts', storedParts)
         const latestPersons = getLatest(storedPersons || [])
         const latestParts = getLatest(storedParts || [])
 
-        
+
 
         const partPersons = addPersonsInfo(latestParts, latestPersons)
 
-        
+
 
         dispatch(updatePartPersons(partPersons))
 
@@ -107,7 +110,7 @@ export function ScriptEditorProcessing() {
 
 
         //Adds new partPersons if not already in redux store
-        const storedPartIds = [...new Set( [...storedParts].map(partPerson => partPerson.id))];
+        const storedPartIds = [...new Set([...storedParts].map(partPerson => partPerson.id))];
         let newPartIds = [];
 
         latestScenes.forEach(scene => {
@@ -128,7 +131,7 @@ export function ScriptEditorProcessing() {
 
         dispatch(addUpdates(deletePartUpdates, 'Part'))
 
-        
+
 
         const newScenePartPersons = latestScenes.map(scene => {
             return {
@@ -154,10 +157,10 @@ export function ScriptEditorProcessing() {
 
         })
 
-}, [partPersons, sceneHistory])
+    }, [partPersons, sceneHistory])
 
 
-return (null)
+    return (null)
 }
 
 export default ScriptEditorProcessing;
