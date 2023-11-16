@@ -62,7 +62,7 @@ export function ScriptEditorProcessing() {
             }
 
 
-            if (sceneUpdates) {
+            if (sceneUpdates && sceneUpdates.length > 0) {
                 //const sceneIds = [...new Set(sceneUpdates.map(update => update.parentId))]
                 //Update scriptEditor.scenesHistory
                 //sceneIds.forEach(sceneId => {
