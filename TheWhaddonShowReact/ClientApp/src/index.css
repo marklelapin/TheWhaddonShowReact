@@ -273,23 +273,13 @@ max-width: 1100px;
     order: -1;
 }
 
-.script-item-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    position: relative;
-}
+
 
 .script-item-parts {
     width: auto;
 }
 
 
-.script-item .media-dropzone {
-
-
-
-}
 
 /*PART SELECTOR*/
 .part-selector {
@@ -390,14 +380,7 @@ _____________________________
 
 
 
-/*SCRIPT ITEM HEADER*/
-.script-item-header {
-}
 
-.align-right .script-item-header {
-    left: 10px;
-    right: 10px;
-}
 
 
 
@@ -502,24 +485,7 @@ z-index: 10;
 
 /*INDIVIDUAL STYLING OF SCRIPT ITEM TYPES*/
 
-/*DIALOGUE*/
-.script-item.dialogue .script-item-text .text-input {
-    /* border: 1px solid #ccc;*/
-    border-radius: 0px 20px 20px 20px;
-    padding: 10px 15px;
-    font-size: 16px;
-    width: 100%;
-    z-index: 2;
-}
 
-.script-item.dialogue.align-right .script-item-text .text-input {
-    /*  border: 1px solid #ccc;*/
-    border-radius: 20px 0px 20px 20px;
-    font-size: 16px;
-    width: 100%;
-    z-index: 2;
-    background-color: yellowgreen;
-}
 
 
 /*basic layout css*/

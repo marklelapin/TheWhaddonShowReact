@@ -16,8 +16,10 @@ import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import { log } from '../../../helper';
 
 //Constants
-import { SCENE, DIALOGUE } from '../../../dataAccess/scriptItemTypes';
+import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING , } from '../../../dataAccess/scriptItemTypes';
 
+//styling
+import s from '../ScriptItem.module.scss';
 
 function ScriptItem(props) {
 
@@ -65,6 +67,13 @@ function ScriptItem(props) {
 
                     return partNames || '-'
                 }; break;
+            case SCENE:
+                return `Scene ${scriptItem.sceneNumber}.` || null
+            case STAGING:
+                return 'Staging' || null
+            case INITIAL_STAGING:
+                return 'Initial Staging' || null
+
             default: return null;
         }
 
@@ -73,7 +82,7 @@ function ScriptItem(props) {
 
         let label = null //default
 
-        if ((scriptItem.type  === SCENE) && scriptItem.number) {
+        if ((scriptItem.type === SCENE) && scriptItem.number) {
             label = `Scene ${scriptItem.number}: `
         }
         //else
@@ -123,72 +132,79 @@ function ScriptItem(props) {
 
 
     return (
-        <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
+        <div id={id} className={`script-item 
+                                ${s['script-item']}
+                                ${s[type?.toLowerCase()]}
+                                ${type?.toLowerCase()}
+                                ${(alignRight) ? s['align-right'] : ''}
+                                ${(alignRight) ? 'align-right' : ''} 
+                                ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'}`}> 
 
-                {showParts() &&
-                    <div className="script-item-parts">
-                        <PartSelector
-                            scene={scene}
-                            allocatedPartIds={scriptItem.partIds}
-                            undoDateTime={undoDateTime}
-                            onClick={onClick}
-                            onChange={(selectedPartIds) => onChange('partIds', selectedPartIds)}
-                        />
-                    </div>
-                }
-                <div ref={textInputRef} className="script-item-text-area">
-
-                    <ScriptItemText
-                    key={id}
-                        label={label()}
-                        maxWidth={textInputRef.current?.offsetWidth}
-                        scriptItem={scriptItem}
-                        header={header()}
-                        onClick={onClick}
-                        toggleMedia={(value) => handleShowMedia(value)}
-                        onChange={onChange}
+            {showParts() &&
+                <div className="script-item-parts">
+                    <PartSelector
+                        scene={scene}
+                        allocatedPartIds={scriptItem.partIds}
                         undoDateTime={undoDateTime}
-                        moveFocus={moveFocus}
+                        onClick={onClick}
+                        onChange={(selectedPartIds) => onChange('partIds', selectedPartIds)}
                     />
+                </div>
+            }
+            <div ref={textInputRef} className="script-item-text-area">
+
+                <ScriptItemText
+                    key={id}
+                    label={label()}
+                    maxWidth={textInputRef.current?.offsetWidth}
+                    scriptItem={scriptItem}
+                    header={header()}
+                    onClick={onClick}
+                    toggleMedia={(value) => handleShowMedia(value)}
+                    onChange={onChange}
+                    undoDateTime={undoDateTime}
+                    moveFocus={moveFocus}
+                />
+
+            </div>
+            {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
+                <MediaDropzone
+                    existingMediaURLs={scriptItem.attachments}
+                    addMedia={(media) => handleMedia('add', media)}
+                    removeMedia={(media) => handleMedia('remove', media)}
+                    showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
+                    autoLoad={true}
+                />
+            }
+
+            {(comment) && (showComments) &&
+
+                <div id={comment.id} key={comment.id} className="script-item-comment">
+                    <Comment comment={comment} />
+                </div>
+
+            }
+
+            {/*Elements specific for each scriptItem type*/}
+
+            {(type === SCENE) &&
+                <div className="scene-controls">
+                    {scriptItem.undoDateTime &&
+                        <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
+                    }
+                    <Icon icon="undo" onClick={() => onClick('undo')} />
+                    {scriptItem.undoDateTime &&
+                        <Icon icon="redo" onClick={() => onClick('redo')} />
+                    }
+                    <Icon icon="trash" onClick={() => onClick('deleteScene', null)} />
+
+
 
                 </div>
-                {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
-                    <MediaDropzone
-                        existingMediaURLs={scriptItem.attachments}
-                        addMedia={(media) => handleMedia('add', media)}
-                        removeMedia={(media) => handleMedia('remove', media)}
-                        showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
-                        autoLoad={true}
-                    />
-                }
+            }
 
-                {(comment) && (showComments) &&
-
-                    <div id={comment.id} key={comment.id} className="script-item-comment">
-                        <Comment comment={comment} />
-                    </div>
-
-                }
-
-                {/*Elements specific for each scriptItem type*/}
-
-                {(type === SCENE) &&
-                    <div className="scene-controls">
-                        {scriptItem.undoDateTime &&
-                            <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
-                        }
-                        <Icon icon="undo" onClick={() => onClick('undo')} />
-                        {scriptItem.undoDateTime &&
-                            <Icon icon="redo" onClick={() => onClick('redo')} />
-                        }
-                        <Icon icon="trash" onClick={() => onClick('deleteScene', null)} />
-
-
-
-                    </div>
-                }
-
-            
+            <div className={s['left-curtain']}></div>
+            <div className={s['right-curtain']}></div>
         </div>
     )
 }

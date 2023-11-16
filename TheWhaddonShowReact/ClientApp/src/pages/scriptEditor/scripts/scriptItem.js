@@ -331,7 +331,7 @@ export function newScriptItemsForCreateHeader(previousScene, nextScene = null) {
 
 
     const newUpdates = [newPreviousScene, scene, synopsis, initialStaging, initialCurtain, dialogue]
-    newUpdates.push(newNextScene)
+    if (newNextScene) { newUpdates.push(newNextScene) }
 
     return newUpdates
 }
