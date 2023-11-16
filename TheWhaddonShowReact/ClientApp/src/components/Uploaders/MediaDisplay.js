@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 
 function MediaDisplay(props) {
 
@@ -17,13 +17,13 @@ function MediaDisplay(props) {
     useEffect(() => {
 
         const getAspectRatio = async () => {
-            const result  = await calculateAspectRatio()
+            const result = await calculateAspectRatio()
             setAspectRatio(result)
         }
 
-       getAspectRatio()
+        getAspectRatio()
 
-    },[])
+    }, [])
 
 
 
@@ -44,7 +44,7 @@ function MediaDisplay(props) {
 
     }
 
-    const loadImageDimensions = async (mediaElement,objectURL) => {
+    const loadImageDimensions = async (mediaElement, objectURL) => {
 
         return new Promise((resolve, reject) => {
 
@@ -59,7 +59,7 @@ function MediaDisplay(props) {
 
             mediaElement.src = objectURL
 
-            
+
 
         });
     }
@@ -74,7 +74,7 @@ function MediaDisplay(props) {
 
     };
 
-    
+
     const finalWidth = width || ((height && aspectRatio) ? Math.floor(height * aspectRatio) : '100%')
     const finalHeight = height || ((width && aspectRatio) ? Math.floor(width / aspectRatio) : null)
 
@@ -82,7 +82,7 @@ function MediaDisplay(props) {
     if (videoObjectURL) {
 
         return (
-            <div  className="media-display video" >
+            <div className="media-display video" >
                 <video controls width={finalWidth} height={finalHeight}>
                     <source src={videoObjectURL} type={file.type} />
                     Your browser does not support the video tag.
@@ -95,7 +95,7 @@ function MediaDisplay(props) {
     if (audioObjectURL) {
 
         return (
-            <div  className="media-display audio">
+            <div className="media-display audio">
                 <audio controls>
                     <source src={audioObjectURL} type={file.type} />
                     Your browser does not support the audio tag.
@@ -117,13 +117,10 @@ function MediaDisplay(props) {
     if (youTubeEmbedUrl) {
 
         return (
-            <div  className = "media-display youtube">
+            <div className="media-display youtube">
                 <iframe
                     title={title || youTubeUrl}
-                  
-                    height={finalHeight || 315}
                     src={youTubeEmbedUrl}
-                 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 >
                 </iframe>
@@ -133,7 +130,7 @@ function MediaDisplay(props) {
     }
     return (
         <div className="media-display unsupported">
-            <p>{`Unsupported media type - ${file.type}`}</p>
+            <p>{`Unsupported media type - ${(file) ? file.type : 'unknown'}`}</p>
         </div>
     )
 }
@@ -145,6 +142,15 @@ export default MediaDisplay;
 function getVideoIdFromURL(url) {
 
     if (!url || !url.includes('youtube.com')) { return null; }
+    if (url.includes('youtube.com/shorts/')) {
+        const urlParts = url.split("/")
+        const shortsIndex = urlParts.indexOf('shorts')
+
+        const videoId = urlParts[shortsIndex + 1]
+
+        return videoId
+            ;
+    }
 
     const videoIdMatch = url.match(/[?&]v=([^?&]+)/);
     if (videoIdMatch && videoIdMatch[1]) {
