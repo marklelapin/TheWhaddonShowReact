@@ -7,17 +7,20 @@ import { addUpdates } from '../../../actions/localServer';
 //Components
 
 import PersonSelector from './PersonSelector';
-
 import PartEditorRow from './PartEditorRow';
+import CurtainBackground from './CurtainBackground';
 //Utilities
 import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
 import { PartUpdate } from '../../../dataAccess/localServerModels';
 import { log } from '../../../helper'
 import { moveFocusToId } from '../scripts/utility';
 import {UP,DOWN,END,ABOVE,BELOW} from '../scripts/utility';
-
-
 import { PART_IDS,PARTS }  from './Scene';
+
+
+//styling
+import s from '../ScriptItem.module.scss'
+
 //ChangeTypes
 export const NAME = 'name';
 
@@ -37,7 +40,7 @@ function PartEditor(props) {
     const dispatch = useDispatch();
 
     //props
-    const { scene = null, onChange, previousFocus, nextFocus, undoDateTime, onClick} = props;
+    const { scene = null, onChange, previousFocus, nextFocus, undoDateTime, onClick, curtainOpen} = props;
 
     log(debug, 'PartEditorProps', props)
 
@@ -261,9 +264,9 @@ function PartEditor(props) {
 
         <>
 
-            <div className={`part-editor  draft-border`}>
+            <div className={s[`part-editor`]}>
 
-                <h5>Parts:</h5>
+                <p>Parts:</p>
                 {activeSceneParts().map(part => {
 
                     return (
@@ -283,6 +286,8 @@ function PartEditor(props) {
 
                     )
                 })}
+
+                <CurtainBackground curtainOpen={curtainOpen}/>
             </div >
 
             {(modalPersons) &&

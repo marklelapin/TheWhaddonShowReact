@@ -14,20 +14,26 @@ import { log } from '../../../helper';
 import { moveFocusToId } from '../scripts/utility'
 import { prepareUpdates } from '../../../dataAccess/localServerUtils';
 import { addUpdates } from '../../../actions/localServer';
-
+import { sortLatestScriptItems, addSceneNumbers, newScriptItemsForMoveScene } from '../scripts/scriptItem';
 //Constants
 import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
-import { newScriptItemsForMoveScene } from '../scripts/scriptItem';
+
 
 function SceneSelector(props) {
     const debug = true;
 
-    const { scenes } = props;
+    const { show } = props;
 
     const dispatch = useDispatch();
 
-
+    const sceneHistory = useSelector(state => state.scriptEditor.sceneHistory)
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
+
+
+    let scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
+
+    scenes = addSceneNumbers(scenes)
+
 
     const handleSearchParameterChange = (type, value) => {
         let newSearchParameters = { ...searchParameters }
@@ -47,12 +53,6 @@ function SceneSelector(props) {
         }
 
         dispatch(updateSearchParameters(newSearchParameters))
-    }
-
-
-    const handleDragSceneSelector = (e) => {
-        //TODO: Add drag and drop functionality - to change scene order
-
     }
 
 

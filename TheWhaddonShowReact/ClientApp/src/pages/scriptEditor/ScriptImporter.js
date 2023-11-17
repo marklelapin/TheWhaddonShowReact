@@ -169,6 +169,7 @@ function ScriptImporter() {
     }
 
     const sendToScript = () => {
+        throw new error('sendToScript needs to be changed to reflect head requirement in sortLatestScriptItems')
         const latestScenes = sortLatestScriptItems(sceneHistory)
         const lastScene = latestScenes.filter(item => item.nextId === null && item.type !== COMMENT)
         const importScene = getLatest(latestScenes.filter(item => item.id === IMPORT_GUID))

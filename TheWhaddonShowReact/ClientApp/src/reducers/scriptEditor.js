@@ -1,4 +1,4 @@
-import { CLEAR_SCRIPT_EDITOR_STATE, UPDATE_SEARCH_PARAMETERS } from '../actions/scriptEditor';
+import { ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY, CLEAR_SCRIPT_EDITOR_STATE, UPDATE_SEARCH_PARAMETERS } from '../actions/scriptEditor';
 import { UPDATE_VIEW_COMMENTS } from '../actions/scriptEditor';
 import { UPDATE_DIALOGUE_RIGHT_ID } from '../actions/scriptEditor';
 import { TOGGLE_SCENE_SELECTOR } from '../actions/scriptEditor';
@@ -9,6 +9,7 @@ import { ADD_UPDATES_SCENE_HISTORY } from '../actions/scriptEditor';
 import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from '../actions/scriptEditor';
 import { UPDATE_SCENE_PART_PERSONS } from '../actions/scriptEditor';
 import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
+import { UPDATE_PREVIOUS_CURTAIN } from '../actions/scriptEditor';
 
 
 import { CHANGE_FOCUS } from '../actions/scriptEditor';
@@ -30,7 +31,9 @@ export const initialState = {
     scenePartPersons: {},
     sceneHistory: [],
     sceneScriptItemHistory: {},
+    scriptItemHistory: {},
     focus: {},
+    previousCurtain: {},
 
 }
 
@@ -111,6 +114,18 @@ export default function scriptEditorReducer(state = initialState, action) {
 
             return {
                 ...initialState 
+            }
+        case UPDATE_PREVIOUS_CURTAIN:
+            return {
+                ...state,
+                previousCurtain: { ...state.previousCurtain, [action.nextSceneId]: action.previousCurtainOpen }
+            }
+
+        case ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY:
+            return {
+                ...state,
+                scriptItemHistory: {
+                    ...state.scriptItemHistory, [action.update.id]: [...state.scriptItemHistory[action.update.id] || [], action.update] }
             }
         default: return state;
     }

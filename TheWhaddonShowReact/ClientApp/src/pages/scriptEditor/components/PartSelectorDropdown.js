@@ -8,7 +8,8 @@ import { Button } from 'reactstrap';
 import { log } from '../../../helper'
 import PartNameAndAvatar from './PartNameAndAvatar';
 
-
+//styles
+import s from '../ScriptItem.module.scss';
 
 function PartSelectorDropdown(props) {
 
@@ -86,8 +87,7 @@ function PartSelectorDropdown(props) {
 
 
     return (
-        <>
-
+        < div className={s['part-selector-dropdown']} >
 
             {(finalPartsArray.length === 0) &&
                 <h3 onClick={() => onClick('togglePartSelectorDropdown')} >No parts setup for this scene</h3>}
@@ -116,7 +116,7 @@ function PartSelectorDropdown(props) {
                 <small>(use Ctrl to multi-select)</small>
             }
 
-        </>
+        </div>
 
     )
 

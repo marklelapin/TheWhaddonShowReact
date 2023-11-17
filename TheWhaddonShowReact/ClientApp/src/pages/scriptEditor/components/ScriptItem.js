@@ -12,6 +12,7 @@ import PartSelector from './PartSelector';
 import { Icon } from '../../../components/Icons/Icons';
 import { Button } from 'reactstrap';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
+import CurtainBackground from './CurtainBackground';
 //utilities
 import { log } from '../../../helper';
 
@@ -28,7 +29,7 @@ function ScriptItem(props) {
 
 
     // get specific props
-    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus, undoDateTime, previousFocus = null, nextFocus = null } = props;
+    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus, undoDateTime, curtainOpen = null } = props;
 
     log(debug, 'ScriptItemComment: scriptItem', scriptItem)
     //Redux state
@@ -129,13 +130,13 @@ function ScriptItem(props) {
 
     const { id, type, comment } = scriptItem;
 
-
+    const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
     return (
-        <div id={id} className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]} ${type?.toLowerCase()} ${(alignRight) ? s['align-right'] : ''} ${(alignRight) ? 'align-right' : ''}`} >                             
+        <div id={id} className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight) ? s['align-right'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed'] }`} >                             
 
             {showParts() &&
-                <div className="script-item-parts">
+                <div className={s['script-item-parts']}>
                     <PartSelector
                         scene={scene}
                         allocatedPartIds={scriptItem.partIds}
@@ -162,13 +163,15 @@ function ScriptItem(props) {
 
             </div>
             {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
+                <div className={s['dropzone']}>
                 <MediaDropzone
                     existingMediaURLs={scriptItem.attachments}
                     addMedia={(media) => handleMedia('add', media)}
                     removeMedia={(media) => handleMedia('remove', media)}
                     showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
                     autoLoad={true}
-                />
+                    />
+                </div>
             }
 
             {(comment) && (showComments) &&
@@ -197,8 +200,7 @@ function ScriptItem(props) {
                 </div>
             }
 
-            <div className={`${s['left']} ${s['stage-curtain']} ${(scriptItem.curtainOpen) ? s['curtain-open'] : s['curtain-closed']}`}></div>
-            <div className={`${s['right']} ${s['stage-curtain']} ${(scriptItem.curtainOpen) ? s['curtain-open'] : s['curtain-closed']}`}></div>
+            <CurtainBackground curtainOpen={finalCurtainOpen} />
         </div>
     )
 }

@@ -5,8 +5,10 @@ import { useSelector } from 'react-redux';
 
 //Components
 import Avatar from '../../../components/Avatar/Avatar';
-import PartSelectorDropdown  from './PartSelectorDropdown';
+import PartSelectorDropdown from './PartSelectorDropdown';
 
+//styles
+import s from '../ScriptItem.module.scss';
 //Utilities
 
 import { log } from '../../../helper'
@@ -19,7 +21,7 @@ function PartSelector(props) {
 
     log(debug, 'PartSelectorProps', props)
     //Props
-    const { scene = {}, allocatedPartIds = [], onChange, size = "md" ,undoDateTime,onClick} = props;
+    const { scene = {}, allocatedPartIds = [], onChange, size = "md", undoDateTime, onClick } = props;
 
     //REdux
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
@@ -42,7 +44,7 @@ function PartSelector(props) {
 
         //add click event listener to document to close dropdown
         //TODOD
-    }, [scene,sceneParts, allocatedPartIds])
+    }, [scene, sceneParts, allocatedPartIds])
 
     log(debug, 'PartSelector partsArray:', partsArray)
 
@@ -80,31 +82,39 @@ function PartSelector(props) {
     const toggleDropdown = (e) => {
         if (undoDateTime) { onClick('confirmUndo') }
         e.stopPropagation();
-setOpenPartSelector(!openPartSelector)
+        setOpenPartSelector(!openPartSelector)
 
     }
 
 
     log(debug, 'PartSelector openPartSelector:', openPartSelector)
     return (
-        <div className="part-selector" >
-            <div className="part-selector-avatars clickable" onClick={(e) => toggleDropdown(e)}>
+        <div className={s['part-selector']} >
+            <div className={`${s['part-selector-avatars']} clickable`} onClick={(e) => toggleDropdown(e)}>
 
                 {partsArray.filter(part => part.allocated === true).map(part => {
-                    return (<Avatar onClick={(e) => toggleDropdown(e)} size={size} key={part.id} person={part} avatar />
+                    return (
+                        <div className={s['avatar']} key={part.id}>
+                            <Avatar onClick={(e) => toggleDropdown(e)} size={size} key={part.id} person={part} avatar />
+                        </div>
                     )
                 })}
                 {(partsArray.some(part => part.allocated === true)) === false &&
-                    < Avatar onClick={(e) => toggleDropdown(e)} person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
+                    <div className={s['avatar']}>
+                        < Avatar onClick={(e) => toggleDropdown(e)} person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
+                    </div>
                 }
+
+
+
             </div>
             {(openPartSelector) &&
-                < div className="part-selector-dropdown" >
 
-                    <PartSelectorDropdown
-                        partsArray={partsArray}
-                        onClick={(action, value) => handleSelectorClick(action, value)} />
-                </div>
+
+                <PartSelectorDropdown
+                    partsArray={partsArray}
+                    onClick={(action, value) => handleSelectorClick(action, value)} />
+
             }
 
 

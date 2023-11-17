@@ -6,15 +6,14 @@ import { getLatest } from '../../../dataAccess/localServerUtils';
 import { log } from '../../../helper';
 
 import { ABOVE, BELOW } from './utility';
-import { addUpdates } from "../../../actions/localServer";
-
-import { SCRIPT_ITEM } from "../../../dataAccess/localServerModels"
+import { updatePreviousCurtain } from '../../../actions/scriptEditor';
 
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
 //--------------------------------------------------------------------------------------------------
 export function sortLatestScriptItems(head, scriptItems, undoDateTime = null) {
 
     const latestScriptItems = getLatest(scriptItems, undoDateTime);
+
     const sortedScriptItems = sortScriptItems(head, latestScriptItems);
 
     const activeComments = latestScriptItems.filter(item => item.isActive && item.type === COMMENT)
@@ -57,7 +56,8 @@ export function sortScriptItems(head, scriptItems) {
     //Sort the targetArray by nextId
     const sortedLinkedList = [];
     let currentId = head.id
-    let curtainOpen = false; //TODO need to be able to work out starting position of curtain from previous scene.
+    const initialCurtain = scriptItems.find(item => item.type === INITIAL_CURTAIN)
+    let curtainOpen = (initialCurtain) ? initialCurtain.tags.includes('OpenCurtain') : false
     let previousCurtainOpen;
 
     while (currentId !== null) {
@@ -155,7 +155,7 @@ export function newScriptItemsForCreateShow(title) {
 
 
 
-export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = 'Dialogue') {
+export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = DIALOGUE) {
 
     const currentScriptItems = [..._currentScriptItems]
     const existingScriptItem = { ..._existingScriptItem }
@@ -300,6 +300,7 @@ export function newScriptItemsForCreateHeader(previousScene, nextScene = null) {
     let synopsis = new ScriptItemUpdate(SYNOPSIS)
     let initialStaging = new ScriptItemUpdate(INITIAL_STAGING)
     let initialCurtain = new ScriptItemUpdate(INITIAL_CURTAIN)
+    initialCurtain = opensCurtain(initialCurtain)
 
     let dialogue = new ScriptItemUpdate(DIALOGUE)
 
@@ -369,5 +370,18 @@ export function newScriptItemsForMoveScene(sceneId, newPreviousId, scenes) {
     const updates = Object.values(updateObjects)
 
     return updates
+
+}
+
+
+
+export function updatePreviousCurtainValue(scene, scriptItems, dispatch) {
+
+    const sortedScriptItems = sortLatestScriptItems(scene, scriptItems)
+    
+    if (scene.nextId) {
+        const finalCurtainOpen = sortedScriptItems[sortedScriptItems.length - 1].curtainOpen
+        dispatch(updatePreviousCurtain(scene.nextId, finalCurtainOpen))
+    }
 
 }

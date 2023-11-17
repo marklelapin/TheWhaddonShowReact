@@ -9,7 +9,7 @@ import Scene from './Scene'
 
 import { log } from '../../../helper';
 import { addUpdates } from '../../../actions/localServer';
-import { newScriptItemsForCreateHeader, newScriptItemsForSceneDelete } from '../scripts/scriptItem';
+import { sortLatestScriptItems, addSceneNumbers, newScriptItemsForCreateHeader, newScriptItemsForSceneDelete } from '../scripts/scriptItem';
 import { prepareUpdates } from '../../../dataAccess/localServerUtils';
 import { moveFocusToId } from '../scripts/utility';
 
@@ -26,15 +26,17 @@ function ScriptViewer(props) {
     const dispatch = useDispatch()
 
     //props
-    const { scenes, onClick } = props;
+    const { show, onClick } = props;
 
     //Redux 
     const showComments = useSelector(state => state.scriptEditor.showComments)
-
-    log(debug, 'ScriptViewer Rendering')
-
+    const sceneHistory = useSelector(state => state.scriptEditor.sceneHistory)
 
 
+    let scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
+    scenes = addSceneNumbers(scenes)
+
+    log(debug,"ScriptViewer scenes", scenes)
 
     const handleClick = (action, scene) => {
 
@@ -82,7 +84,10 @@ function ScriptViewer(props) {
                 <div id="script-body" className={`${(showComments) ? 'show-comments' : 'hide-comments'}`}>
                     {(scenes && scenes.length > 0) && scenes.map(scene => {
                                              
-                        return <Scene key={scene.id} scene={scene} sceneNumber={scene.sceneNumber} onClick={(action) => handleClick(action, scene)} />
+                        return <Scene key={scene.id}
+                            id={scene.id}
+                            sceneNumber={scene.sceneNumber}
+                            onClick={(action) => handleClick(action, scene)} />
                      }
 
                     )}
