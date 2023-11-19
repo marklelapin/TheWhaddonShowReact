@@ -21,10 +21,10 @@ function PartSelector(props) {
 
     log(debug, 'PartSelectorProps', props)
     //Props
-    const { scene = {}, allocatedPartIds = [], onChange, size = "md", undoDateTime, onClick } = props;
+    const { sceneId, allocatedPartIds = [], onChange, size = "md", undoDateTime, onClick } = props;
 
     //REdux
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId])
 
     //Internal State
     const [partsArray, setPartsArray] = useState([])
@@ -44,7 +44,7 @@ function PartSelector(props) {
 
         //add click event listener to document to close dropdown
         //TODOD
-    }, [scene, sceneParts, allocatedPartIds])
+    }, [sceneId, sceneParts, allocatedPartIds])
 
     log(debug, 'PartSelector partsArray:', partsArray)
 

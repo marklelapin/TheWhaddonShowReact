@@ -359,7 +359,7 @@ function ScriptItemText(props) {
                 key={id}
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
-                className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']}`}
+                className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input`}
                 value={text()}
                 onChange={(e) => handleTextChange(e)}
                 onBlur={() => handleBlur()}

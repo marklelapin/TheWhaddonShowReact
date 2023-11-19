@@ -26,16 +26,26 @@ function ScriptItem(props) {
 
     //utility consts
     const debug = true;
-
+    const moment = require('moment');
 
     // get specific props
-    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus, undoDateTime, curtainOpen = null } = props;
+    const { id = null, created = null, sceneId = null,sceneNumber=null, alignRight = false, onClick, onChange, moveFocus, undoDateTime, curtainOpen = null } = props;
 
-    log(debug, 'ScriptItemComment: scriptItem', scriptItem)
+    const createdString = moment(created).format('YYYY-MM-DDTHH:mm:ss.SSS')
+
+    log(debug, 'Component:ScriptItem', { id, created })
+
     //Redux state
-    const showComments = useSelector(state => state.scriptEditor.showComments)
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene?.id])
-    const focus = useSelector(state => (state.scriptEditor.focus[scriptItem.id]))
+    const showComments = useSelector(state => state.scriptEditor.showComments) || true
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId]) || []
+    const focus = useSelector(state => (state.scriptEditor.focus[id])) || false
+
+    const scriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id]) || []
+    const scriptItem = scriptItemHistory.find(item => item.created === createdString) || {}
+    const { type, comment } = scriptItem;
+
+    log (debug,'Component:ScriptItem scriptItemHistory:',scriptItemHistory)
+    log (debug,'Component:ScriptItem scriptItem:',scriptItem)
 
     //Refs
     const textInputRef = useRef(null)
@@ -50,14 +60,14 @@ function ScriptItem(props) {
 
     //calculations functions
     const showParts = () => {
-        switch (scriptItem.type) {
+        switch (type) {
             case DIALOGUE: return true;
             default: return false;
         }
     }
 
     const header = () => {
-        switch (scriptItem.type) {
+        switch (type) {
             case DIALOGUE:
                 if (scenePartPersons) {
                     log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
@@ -69,7 +79,7 @@ function ScriptItem(props) {
                     return partNames || '-'
                 }; break;
             case SCENE:
-                return `Scene ${scriptItem.sceneNumber}.` || null
+                return `Scene ${sceneNumber}.` || null
             case STAGING:
                 return 'Staging' || null
             case INITIAL_STAGING:
@@ -79,16 +89,7 @@ function ScriptItem(props) {
         }
 
     }
-    const label = () => {
-
-        let label = null //default
-
-        if ((scriptItem.type === SCENE) && scriptItem.number) {
-            label = `Scene ${scriptItem.number}: `
-        }
-        //else
-        return label
-    }
+    
     const handleShowMedia = (value = null) => {
 
         if (undoDateTime) { onClick('confirmUndo') }
@@ -128,7 +129,7 @@ function ScriptItem(props) {
     log(debug, 'ScriptItem: showMedia', { showMedia: showMedia })
     log(debug, 'ScriptItem: focus', { focus: focus })
 
-    const { id, type, comment } = scriptItem;
+    
 
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
@@ -138,7 +139,7 @@ function ScriptItem(props) {
             {showParts() &&
                 <div className={s['script-item-parts']}>
                     <PartSelector
-                        scene={scene}
+                        sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
                         undoDateTime={undoDateTime}
                         onClick={onClick}
@@ -150,7 +151,6 @@ function ScriptItem(props) {
 
                 <ScriptItemText
                     key={id}
-                    label={label()}
                     maxWidth={textInputRef.current?.offsetWidth}
                     scriptItem={scriptItem}
                     header={header()}

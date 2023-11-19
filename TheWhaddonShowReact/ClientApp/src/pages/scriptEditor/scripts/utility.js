@@ -1,11 +1,15 @@
-﻿export const START = 'start';
+﻿import { log } from '../../../helper.js';
+
+export const START = 'start';
 export const END = 'end';
 export const UP = 'up';
 export const DOWN = 'down';
 export const ABOVE = 'above';
 export const BELOW = 'below';
 export const SCENE_END = 'sceneEnd';
+
 export function findScriptItem(element, scriptItems) {
+    
 
     let currentElement = element;
     let scriptItemId = null;
@@ -33,16 +37,20 @@ export function findScriptItem(element, scriptItems) {
 
 }
 
-export function moveFocusToId(id, position = START,scroll = false) {
+export function moveFocusToId(id, position = START, scroll = false) {
+    const debug = true;
     console.log(`moveFocusToId id: ${id} position: ${position}`)
     try {
         if (position === SCENE_END) {
 
             const sceneElement = document.getElementById(`scene-${id}`)
-
+            //log(debug, 'moveFocusToId sceneElement', sceneElement)
+            
             const sceneTextInputs = sceneElement.querySelectorAll('.text-input')
+            //log(debug, 'moveFocusToId sceneTextInputs', sceneTextInputs)
 
             const lastTextInput = sceneTextInputs[sceneTextInputs.length - 1]
+            //log(debug, 'moveFocusToId lastTextInput', lastTextInput)
 
             if (lastTextInput) {
                 lastTextInput.focus();
@@ -70,8 +78,8 @@ export function moveFocusToId(id, position = START,scroll = false) {
 
 
     }
-    catch {
-      console.log(`Move Focus Error: Cant locate the text-input for id: ${id}`)
+    catch(error) {
+        log(debug, 'Move Focus Error: Cant locate the text-input:', { id, position, scroll, error })
     }
  
 }
