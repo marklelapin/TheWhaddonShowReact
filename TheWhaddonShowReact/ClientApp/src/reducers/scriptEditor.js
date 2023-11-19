@@ -10,7 +10,7 @@ import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from '../actions/scriptEditor';
 import { UPDATE_SCENE_PART_PERSONS } from '../actions/scriptEditor';
 import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
 import { UPDATE_PREVIOUS_CURTAIN } from '../actions/scriptEditor';
-
+import { SET_SHOW } from '../actions/scriptEditor';
 
 import { CHANGE_FOCUS } from '../actions/scriptEditor';
 
@@ -26,6 +26,7 @@ export const initialState = {
     showComments: true,
     dialogueRightId: null,
     showSceneSelector: true,
+    show: null,
     viewAsPartPerson: null,
     partPersons: [],
     scenePartPersons: {},
@@ -127,6 +128,11 @@ export default function scriptEditorReducer(state = initialState, action) {
                 scriptItemHistory: {
                     ...state.scriptItemHistory, [action.update.id]: [...state.scriptItemHistory[action.update.id] || [], action.update] }
             }
+        case SET_SHOW:
+            return {
+                ...state,
+                show: action.show,
+            };
         default: return state;
     }
 }

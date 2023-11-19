@@ -15,6 +15,7 @@ export const CLEAR_IMPORT_UPDATES = 'CLEAR_IMPORT_UPDATES';
 export const CLEAR_SCRIPT_EDITOR_STATE = 'CLEAR_SCRIPT_EDITOR_STATE';
 export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
 export const ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_TO_SCRIPT_ITEM_HISTORY';
+export const SET_SHOW = 'SET_SHOW';
 
 export function updateSearchParameters(searchParameters) {
     return {
@@ -122,5 +123,12 @@ export function addUpdateToScriptItemHistory(update) {
     return {
         type: ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY,
         update,
+    }
+}
+
+export function setShow(show) {
+    return {
+        type: SET_SHOW,
+        show,
     }
 }

@@ -5,9 +5,40 @@
     resize: none;
 }
 
-.script-comments {
+
+
+.scene-footer {
+    position: relative;
+    background-color: $gray-inverse;
+}
+
+
+.script-viewer-main {
+    position: relative;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: $gray-700;
+}
+
+
+.script-body {
+    flex: 1;
+    position: relative;
+    max-width: $script-body-max-width;
+
+
     &.show-comments {
-        flex: 0 0 310px;
+        background-color: $gray-default;
+        padding-right: $script-comments-width;
+        max-width: $script-body-max-width + $script-comments-width;
+    }
+}
+
+.script-comments {
+
+    &.show-comments {
+        flex: 0 0 $script-comments-width;
     }
 
     &.hide-comments {
@@ -15,7 +46,15 @@
     }
 }
 
-.scene-footer{
-    position: relative;
-    background-color: $gray-inverse;
+.comments-title {
+    position: absolute;
+    right: ($script-comments-width / 2) - 35px;
+    color: white;
+    height: 0;
+}
+
+.hide-comments {
+    .comments-title {
+        display: none;
+    }
 }

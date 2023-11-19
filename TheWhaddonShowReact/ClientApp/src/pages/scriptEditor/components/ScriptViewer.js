@@ -36,7 +36,7 @@ function ScriptViewer(props) {
     let scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
     scenes = addSceneNumbers(scenes)
 
-    log(debug,"ScriptViewer scenes", scenes)
+    log(debug, "ScriptViewer scenes", scenes)
 
     const handleClick = (action, scene) => {
 
@@ -80,18 +80,21 @@ function ScriptViewer(props) {
         <div id="script-viewer" className="flex-full-height">
             <ScriptViewerHeader onClick={(action) => handleClick(action, null)} />
 
-            <div id="script-viewer-main" className={`full-height-overflow`}>
-                <div id="script-body" className={`${(showComments) ? 'show-comments' : 'hide-comments'}`}>
+            <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
+                <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']}`}>
+                    <p className={`${s['comments-title']}`}>Comments</p>
                     {(scenes && scenes.length > 0) && scenes.map(scene => {
-                                             
+
                         return <Scene key={scene.id}
                             id={scene.id}
                             sceneNumber={scene.sceneNumber}
                             onClick={(action) => handleClick(action, scene)} />
-                     }
+                    }
 
                     )}
+                    
                 </div>
+
             </div>
         </div>
 

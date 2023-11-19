@@ -1,7 +1,10 @@
 //React & Redux
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+
+import {setShow} from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
@@ -17,14 +20,13 @@ function Script() {
 
     //constants
     const debug = true;
-
+    const dispatch = useDispatch();
 
     //Redux State
     const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
-
+    const show = useSelector((state) => state.scriptEditor.show)
     //Internal State
     const [isLargerScreen, setIsLargerScreen] = useState(null)
-    const [show, setShow] = useState(null)
 
 
     //UseEffect Hooks
@@ -59,7 +61,7 @@ function Script() {
 
     const handleScriptViewerClick = (action) => {
         switch (action) {
-            case 'clearScript': setShow(null); break;
+            case 'clearScript': dispatch(setShow(null)); break;
             default: return;
         }
 
@@ -73,7 +75,7 @@ function Script() {
 
         <div id="script-page" className="flex-full-height">
 
-            {(isLargerScreen) &&
+            {(isLargerScreen) && !show &&
                 <div className="page-top">
                     <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>
                 </div>
@@ -94,7 +96,7 @@ function Script() {
 
             {!show &&
        
-                <ShowSelector onClick={(show) => setShow(show)} />            
+                <ShowSelector onClick={(show) => dispatch(setShow(show))} />            
    
             }
 

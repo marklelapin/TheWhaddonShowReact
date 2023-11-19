@@ -96,20 +96,8 @@
     flex: 0 0 50px;
 }
 
-#script-viewer-main{
-    background-color:black;
-}
 
-#script-body.show-comments{
-padding-right: 300px;
-max-width: 1100px;
 
-}
-
-#script-body {
-    max-width: 800px;
-    margin: auto;
-}
 
 .script-viewer-header .left-controls {
     flex: 0 0 20px;
