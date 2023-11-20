@@ -9,7 +9,7 @@ import Scene from './Scene'
 
 import { log } from '../../../helper';
 import { addUpdates } from '../../../actions/localServer';
-import { newScriptItemsForCreateHeader, newScriptItemsForSceneDelete } from '../scripts/scriptItem';
+import { sortLatestScriptItems, addSceneNumbers, newScriptItemsForCreateHeader, newScriptItemsForSceneDelete } from '../scripts/scriptItem';
 import { prepareUpdates } from '../../../dataAccess/localServerUtils';
 import { moveFocusToId } from '../scripts/utility';
 
@@ -18,6 +18,7 @@ import { SHOW, ACT } from '../../../dataAccess/scriptItemTypes';
 import ScriptViewerHeader from './ScriptViewerHeader';
 import { START } from '../scripts/utility';
 
+import s from '../Script.module.scss'
 function ScriptViewer(props) {
 
     //utility consts
@@ -25,15 +26,17 @@ function ScriptViewer(props) {
     const dispatch = useDispatch()
 
     //props
-    const { scenes, onClick } = props;
+    const { show, onClick } = props;
 
     //Redux 
     const showComments = useSelector(state => state.scriptEditor.showComments)
-
-    log(debug, 'ScriptViewer Rendering')
-
+    const sceneHistory = useSelector(state => state.scriptEditor.sceneHistory)
 
 
+    let scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
+    scenes = addSceneNumbers(scenes)
+
+    log(debug, "ScriptViewer scenes", scenes)
 
     const handleClick = (action, scene) => {
 
@@ -74,47 +77,26 @@ function ScriptViewer(props) {
 
 
     return (
-        <>
+        <div id="script-viewer" className="flex-full-height">
             <ScriptViewerHeader onClick={(action) => handleClick(action, null)} />
 
-            <div id="script-viewer-main" className="draft-border">
-
-                <div id="script-body" className="draft-border">
+            <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
+                <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']}`}>
+                    <p className={`${s['comments-title']}`}>Comments</p>
                     {(scenes && scenes.length > 0) && scenes.map(scene => {
 
-                        if (scene.type === SHOW) {
-                            return <h1 key={scene.id}>{scene.text}</h1>
-                        }
-                        //else if (scene.type === ACT) {
-                        //    return (
-                        //        <div key={scene.id }>
-                        //            <h2>{scene.text}</h2>
-                        //            <div className={`scene-footer curtain-closed'}`}>
-                        //                <div className="add-new-scene clickable" onClick={() => handleClick('addNewScene',scene)}>
-                        //                    (add new scene)
-                        //                </div>
-                        //            </div>
-                        //        </div>
-
-                        //    )
-
-
-                        //}
-                        else {
-                            return <Scene key={scene.id} scene={scene} onClick={(action) => handleClick(action, scene)} />
-                        }
+                        return <Scene key={scene.id}
+                            id={scene.id}
+                            sceneNumber={scene.sceneNumber}
+                            onClick={(action) => handleClick(action, scene)} />
                     }
 
                     )}
-
-
+                    
                 </div>
-                <div id="script-comment" className={`${(showComments) ? "show-comments" : 'hide-comments'} draft-border`}>
 
-                </div>
             </div>
-
-        </>
+        </div>
 
 
 

@@ -8,6 +8,7 @@ import {  Input } from 'reactstrap';
 import { addPersonInfo } from '../scripts/part'
 
 import { log } from '../../../helper';
+import s from '../ScriptItem.module.scss';
 
 function PartNameAndAvatar(props) {
 
@@ -47,6 +48,7 @@ function PartNameAndAvatar(props) {
 
     //EVENT HANDLERS
     const handleAvatarClick = (e) => {
+        e.stopPropagation();
         if (props.onAvatarClick) {
 
             onAvatarClick(e)
@@ -69,10 +71,10 @@ function PartNameAndAvatar(props) {
 
     return (
 
-        <div className={`part-avatar-name ${onClick ? 'clickable' : ''} ${(selected)? 'selected' : ''}` } onClick={onClick} >
+        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected)? 'selected' : ''}` } onClick={onClick} >
 
             {(avatar) &&
-                <div className="part-avatar">
+                <div className={s["part-avatar"]}>
                     < Avatar
                         size={size}
                         avatarInitials={partPerson.avatarInitials}
@@ -83,7 +85,7 @@ function PartNameAndAvatar(props) {
 
 
             {(partName) &&
-                <div className="part-name">
+                <div className={s["part-name"]}>
                     {(onNameChange) &&
                      
                         <Input

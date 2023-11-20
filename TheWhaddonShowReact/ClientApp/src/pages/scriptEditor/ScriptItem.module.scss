@@ -1,0 +1,414 @@
+@import '../../styles/app';
+
+//General ScriptItem Styles
+.script-item {
+    padding: 10px 40px 10px 40px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-color: $gray-inverse;
+
+    .text-input {
+        text-align: center;
+    }
+
+    .script-item-parts {
+        position: relative;
+        width: auto;
+    }
+
+    .dropzone {
+        z-index: 2;
+    }
+}
+
+.stage-curtain {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    z-index: 1;
+    background-color: $danger;
+
+    &.left {
+        left: 0
+    }
+
+    &.right {
+        right: 0;
+    }
+
+    &.curtain-closed {
+        width: 50%;
+        transition: width 1s ease-in-out;
+    }
+
+    &.curtain-open {
+        width: 0;
+        transition: width 1s ease-in-out;
+    }
+}
+
+.part-editor {
+    padding: 0px 40px 0px 40px;
+    background-color: $gray-inverse;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+
+    p {
+        z-index: 2;
+        background-color: white;
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .part {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0px 0px 10px 20px;
+        z-index: 2;
+        background-color: white;
+    }
+}
+
+
+
+.part-editor .part-avatar-name {
+    flex: 1;
+    z-index: 2;
+}
+
+.part-controls {
+    text-align: start;
+}
+
+.part-tags {
+    flex: 1;
+    text-align: start;
+    z-index: 2;
+}
+
+/*PART AVATAR NAME*/
+.part-avatar-name {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.part-avatar {
+}
+
+.part-name {
+    flex: 1;
+    text-align: start;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+}
+
+
+
+
+
+
+
+
+
+
+/*Layout*/
+.script-item-text-area {
+    flex: 1;
+    display: flex;
+    position: relative;
+    justify-content: center;
+    max-width: 100%;
+    z-index: 2;
+}
+
+.script-item-header {
+    z-index: 2;
+}
+
+.script-item-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.align-right {
+
+    .script-item-header {
+        left: 10px;
+        right: 10px;
+    }
+}
+
+.autogrow {
+    overflow: hidden;
+    resize: none;
+}
+
+.script-comments {
+    &.show-comments {
+        flex: 0 0 310px;
+    }
+
+    &.hide-comments {
+        display: none;
+    }
+}
+
+
+/*PART SELECTOR*/
+.part-selector {
+    position: relative;
+    z-index: 5;
+
+    .part-selector-avatars {
+position: relative;
+z-index: -5;
+        width: auto;
+        display: flex;
+        flex-direction: row;
+
+
+        .avatar {
+            position:relative;
+z-index: -5;
+            margin: 0px;
+            $avatar-count: length(&);
+            $overlap: -15px; /*overlap the avatars by this amount*/
+
+            @for $i from 1 through $avatar-count {
+                &:nth-child(#{$i}) {
+                    --index: #{$i};
+                    --n: calc(#{$overlap} * (var(--index) - 1));
+                    transform: translateX(var(--n));
+                }
+            }
+        }
+    }
+}
+
+
+/*multiple avatars css_________*/
+
+.part-selector-dropdown {
+    position: absolute;
+    display: flex;
+    top: 100%;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 10;
+    background-color: white;
+    padding: 15px;
+
+
+    .part-avatar-name {
+        position: relative;
+        white-space: nowrap;
+        z-index: 1000;
+        margin-bottom: 10px;
+    }
+}
+
+.align-right {
+    .part-selector-dropdown {
+        right: 0;
+    }
+}
+
+
+
+
+.part-selector-dropdown .part-avatar {
+    z-index: 11;
+}
+
+.part-selector-dropdown .avatar {
+    z-index: 11;
+}
+
+
+.part-selector-dropdown .part-name {
+    z-index: 11;
+}
+
+.part-selector-dropdown .part-avatar-name:hover {
+    background-color: #f0f0f0;
+}
+
+.part-selector-dropdown .part-avatar-name.selected {
+    background-color: #ffc107;
+}
+
+.part-selector-dropdown p {
+    margin: 0px;
+}
+
+
+
+
+
+//Type Specific ScriptItem Styles
+.show {
+
+    textarea {
+        font-size: $h2-font-size;
+    }
+}
+
+.act {
+    textarea {
+        font-size: $h2-font-size;
+    }
+}
+
+.scene {
+    padding-bottom: 0px;
+
+    .script-item-header {
+        font-size: $h6-font-size;
+        font-weight: $font-weight-bold;
+        text-align: center;
+    }
+
+    .script-item-text-area {
+        background-color: white;
+    }
+
+    .dropzone {
+        background-color: white;
+    }
+
+    textarea {
+        font-size: $h5-font-size;
+        font-weight: $font-weight-bold;
+        background-color: white;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+}
+
+.synopsis {
+    padding-top: 0px;
+    padding-bottom: 0px;
+
+    .script-item-text-area {
+        background-color: white;
+    }
+
+    .dropzone {
+        background-color: white;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+
+    textarea {
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+}
+
+.initialstaging {
+    padding-top: 0px;
+
+    .script-item-text-area {
+        background-color: white
+    }
+
+    .dropzone {
+        background-color: white;
+    }
+
+    textarea {
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+}
+
+.staging,
+.initialstaging {
+    .script-item-header {
+        font-size: $h6-font-size;
+        font-weight: $font-weight-bold;
+        text-align: center;
+    }
+}
+
+.curtain,
+.initialcurtain {
+
+    &.curtain-open * {
+        color: white;
+
+        .text-input {
+            background-color: transparent;
+        }
+    }
+
+    &.curtain-closed * {
+        .text-input {
+            background-color: transparent;
+        }
+    }
+}
+
+.dialogue {
+
+    &.script-item {
+        padding-left: 10px;
+        padding-right: 70px;
+        flex-direction: row;
+
+        &.align-right {
+            padding-left: 70px;
+            padding-right: 10px;
+        }
+    }
+
+    .script-item-text-area {
+        justify-content: flex-start;
+    }
+
+    .script-item-text {
+        align-items: flex-start;
+
+        .text-input {
+            border-radius: 0px 20px 20px 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            width: 100%;
+            z-index: 2;
+        }
+    }
+
+
+    &.align-right {
+
+        .script-item-text-area {
+            justify-content: flex-end;
+            order: -1;
+        }
+
+        .script-item-text {
+            .text-input {
+                border-radius: 20px 0px 20px 20px;
+                background-color: yellowgreen;
+            }
+        }
+    }
+
+    .script-item-header {
+        font-size: $small-font-size;
+    }
+}

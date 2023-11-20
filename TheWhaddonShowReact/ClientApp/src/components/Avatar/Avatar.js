@@ -89,7 +89,7 @@ export function Avatar(props) {
     const imageJSX = () => {
         return (
 
-            <span className={`${s.avatar} rounded-circle float-start avatar`} onClick={(e) => handleImageClick(e)} style={avatarSize()}>
+            <span className={`${s.avatar} rounded-circle float-start avatar ${(onClick) ? 'clickable' : ''}`} onClick={(e) => handleImageClick(e)} style={avatarSize()}>
                 {avatarURL ?
                     <img src={avatarURL} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} />
                     :

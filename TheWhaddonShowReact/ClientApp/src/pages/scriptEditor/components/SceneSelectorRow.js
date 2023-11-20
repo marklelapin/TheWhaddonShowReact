@@ -32,7 +32,7 @@ function SceneSelectorRow(props) {
         >
 
               <div className="information" onClick={()=>onClick('goto',scene.id) }>
-                    <h5>{scene.text}</h5>
+                <h5>{(scene.sceneNumber) ? `${scene.sceneNumber}. ` : ``} {scene.text}</h5>
                    {/* <small>{synopsis.text}</small>*/}
                     {scene.tags.map((tag) => <Button key={`${scene.id}-${tag}`} size='xs'>tag</Button>)}
                 </div>

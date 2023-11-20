@@ -1,4 +1,6 @@
 ﻿body {
+    max-height: 100vh;
+   overflow-y:hidden;
 }
 
 .draft-border {
@@ -78,45 +80,24 @@
 
 
 
-
-
-
-/* The containger for the script page*/
-#script-page {
-}
-
-
-
-#script-page-content {
-    display: flex;
-    flex-direction: row;
-}
-
-#script-selector {
+#scene-selector {
     flex: 0 0 300px;
 }
 
 
 /* The container for the script-viewer component*/
 #script-viewer {
-    flex: 1;
-    display: flex;
-    max-width: 100%;
-    flex-direction: column;
-    height: 100vh;
-    overflow-y: scroll;
     background-color: #f0f0f0;
 }
 
 #script-viewer-header {
-    display: flex;
-    flex-direction: row;
-    padding: 0px;
     text-align: end;
     align-items: center;
-    position: sticky;
-    top: 0px;
+    flex: 0 0 50px;
 }
+
+
+
 
 .script-viewer-header .left-controls {
     flex: 0 0 20px;
@@ -139,34 +120,6 @@
 
 
 
-#script-viewer-main {
-    flex: 1;
-    display: flex;
-    max-width: 100%;
-    flex-direction: row;
-}
-
-#script-body {
-    flex: 1;
-}
-
-#script-comment.hide-comments {
-    display: none;
-}
-
-#script-comment.show-comments {
-    flex: 0 0 310px;
-}
-
-
-
-
-/* The container for scene-selector component*/
-#scene-selector {
-    height: 100vh;
-    overflow-y: scroll;
-}
-
 
 
 /*SCENE HEADER*/
@@ -178,79 +131,12 @@
         background-color: white;
     }
 
-/*PART EDITOR*/
-
-.part-editor {
-    padding: 10px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-}
-
-.part {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0px 0px 10px 0px;
-}
-
-.part-editor .part-avatar-name {
-    flex: 1;
-}
-
-.part-controls {
-    text-align: start;
-}
-
-.part-tags {
-    flex: 1;
-    text-align: start;
-}
-
-/*PART AVATAR NAME*/
-.part-avatar-name {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-
-.part-avatar {
-}
-
-.part-name {
-    flex: 1;
-    text-align: start;
-    display: flex;
-    align-self: stretch;
-    align-items: center;
-}
 
 
 
 
-/*SCRIPT ITEM*/
-.script-item {
-    padding: 10px 40px 10px 40px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
 
-    .script-item.dialogue {
-        padding-left: 10px;
-        padding-right: 70px;
-        flex-direction: row;
-    }
 
-        .script-item.dialogue.align-right {
-            padding-left: 70px;
-            padding-right: 10px;
-        }
-
-    .script-item .text-input {
-        text-align: center;
-    }
 
 .scene-controls {
     position: absolute;
@@ -275,163 +161,10 @@
 
 
 
-/*Curtain background styles*/
-.curtain-open {
-    color: white;
-    background-color: #30324c;
-}
-
-.curtain-closed {
-    background-color: #ff5574;
-}
-
-
-/*Layout*/
-.script-item-text-area {
-    flex: 1;
-    display: flex;
-    position: relative;
-    justify-content: center;
-}
-
-
-.dialogue .script-item-text-area {
-    flex: 1;
-    display: flex;
-    position: relative;
-    justify-content: flex-start;
-}
-
-.dialogue.align-right .script-item-text-area {
-    justify-content: flex-end;
-    order: -1;
-}
-
-.script-item-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    position: relative;
-}
-
-.script-item-parts {
-    width: auto;
-}
-
-
-.script-item .media-dropzone {
 
 
 
-}
 
-/*PART SELECTOR*/
-.part-selector {
-    position: relative;
-    color: rgb(41, 50, 58);
-}
-
-    .part-selector .avatar {
-        margin: 0px;
-    }
-
-/*multiple avatars css_________*/
-.part-selector-avatars {
-    width: auto;
-    display: flex;
-    flex-direction: row;
-    --overlap: -15px; /*overlap the avatars by this amount*/
-}
-
-.part-selector-avatars {
-}
-
-    .part-selector-avatars .part-avatar-name:nth-child(n) {
-        --n: calc(var(--overlap) * (var(--index) - 1));
-        transform: translateX(var(--n))
-    }
-
-
-.part-avatar-name:nth-child(1) {
-    --index: 1;
-}
-
-.part-avatar-name:nth-child(2) {
-    --index: 2;
-}
-
-.part-avatar-name:nth-child(3) {
-    --index: 3;
-}
-
-.part-avatar-name:nth-child(4) {
-    --index: 4;
-}
-
-.part-avatar-name:nth-child(5) {
-    --index: 5;
-}
-
-_____________________________
-
-
-.part-selector-avatars .avatar {
-}
-
-.part-selector-dropdown {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    z-index: 11;
-    background-color: white;
-    padding: 15px;
-}
-
-    .part-selector-dropdown .part-avatar-name {
-        white-space: nowrap;
-        z-index: 12;
-        margin-bottom: 10px;
-    }
-
-    .part-selector-dropdown :hover {
-    }
-
-    .part-selector-dropdown .part-avatar {
-        z-index: 11;
-    }
-
-    .part-selector-dropdown .avatar {
-        z-index: 11;
-    }
-
-
-    .part-selector-dropdown .part-name {
-        z-index: 11;
-    }
-
-    .part-selector-dropdown .part-avatar-name:hover {
-        background-color: #f0f0f0;
-    }
-
-    .part-selector-dropdown .part-avatar-name.selected {
-        background-color: #ffc107;
-    }
-
-    .part-selector-dropdown p {
-        margin: 0px;
-    }
-
-
-
-/*SCRIPT ITEM HEADER*/
-.script-item-header {
-}
-
-.align-right .script-item-header {
-    left: 10px;
-    right: 10px;
-}
 
 
 
@@ -506,6 +239,7 @@ _____________________________
 .comment-header {
     display: flex;
     flex-direction: row;
+    color: black;
 }
 
 .comment-header .created-by {
@@ -520,6 +254,7 @@ _____________________________
 .comment-footer{
     display: flex;
     flex-direction: row;
+    color: black;
 }
 
 .comment-footer .tags-input {
@@ -529,26 +264,50 @@ z-index: 10;
 }
 
 .tags-input * {
-    z-index: 100;
+    z-index: 2;
 }
 
 /*INDIVIDUAL STYLING OF SCRIPT ITEM TYPES*/
 
-/*DIALOGUE*/
-.script-item.dialogue .script-item-text .text-input {
-    /* border: 1px solid #ccc;*/
-    border-radius: 0px 20px 20px 20px;
-    padding: 10px 15px;
-    font-size: 16px;
-    width: 100%;
-    z-index: 2;
+
+
+
+/*basic layout css*/
+.page-content{
+    flex: 1;
+    display: flex;
+    flex-direction:column;
+    overflow: hidden;
 }
 
-.script-item.dialogue.align-right .script-item-text .text-input {
-    /*  border: 1px solid #ccc;*/
-    border-radius: 20px 0px 20px 20px;
-    font-size: 16px;
-    width: 100%;
-    z-index: 2;
-    background-color: yellowgreen;
+.flex-full-height{
+    flex: 1;
+    display: flex;
+    flex-direction:column;
+    overflow: hidden;
+}
+
+.flex-full-width{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    
+}
+
+.full-height-overflow{
+   flex:1;
+    height: 100%;
+    overflow: auto;
+}
+
+.table {
+    background-color: white;
+}
+
+.sticky {
+    position: sticky;
+    top: 0px;
+    background-color: inherit;
+z-index: 10;
 }

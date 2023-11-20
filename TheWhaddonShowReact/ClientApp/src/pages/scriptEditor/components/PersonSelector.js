@@ -41,8 +41,8 @@ function PersonSelector(props) {
         const { id, friendlyName } = person;
 
         return (
-            <div key={id}className="person-button" onClick={() => onClick(person)}>
-                <Avatar person={person} avatarInitials={(person.avatarInitials) || null} />
+            <div key={id}className="person-button" >
+                <Avatar onClick={() => onClick(person)} person={person} avatarInitials={(person.avatarInitials) || null} />
                 <span >{friendlyName}</span>
             </div>
         )

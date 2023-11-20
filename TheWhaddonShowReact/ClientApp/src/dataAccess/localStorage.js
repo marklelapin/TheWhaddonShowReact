@@ -1,4 +1,10 @@
-﻿export const saveState = (state) => {
+﻿import { initial } from 'lodash';
+import { clearLocalServerState } from '../actions/localServer'
+import { clearScriptEditorState } from '../actions/scriptEditor'
+
+import { initialState as scriptEditorInitialState} from '../reducers/scriptEditor';
+
+export const saveState = (state) => {
     try {
         //properties identified separately are exlcuded from ...stateToSaveToLocalStorage
         let { localServer,layout,scriptEditor } = state ;
@@ -11,7 +17,7 @@
             , parts: { ...localServer.parts, sync: { ...localServer.parts.sync, isSyncing: false } }
             }
 
-        const stateToPersist = {localServer,layout, scriptEditor} 
+        const stateToPersist = {localServer,layout,scriptEditor} 
 
 
 
@@ -30,7 +36,9 @@ export const loadState = () => {
 
         if (serializedState === null) return undefined;
 
-        return JSON.parse(serializedState);
+        const deserializedState = JSON.parse(serializedState);
+
+        return deserializedState;
     }
     catch (err) {
         console.log('Failed to get state from local Storage: ' +err);
@@ -38,9 +46,11 @@ export const loadState = () => {
     }
 }
 
-export const clearState = () => {
+export const clearState = (dispatch) => {
 try {
-        localStorage.removeItem('state');
+    localStorage.removeItem('state')
+    dispatch(clearLocalServerState())
+    dispatch(clearScriptEditorState())
     }
     catch (err) {
         console.log('Failed to clear state from local Storage: ' +err);

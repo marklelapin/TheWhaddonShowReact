@@ -12,7 +12,10 @@ export const ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_SCENE_SCRIPT_I
 export const UPDATE_SCENE_PART_PERSONS = 'UPDATE_SCENE_PART_PERSONS';
 export const CHANGE_FOCUS = 'CHANGE_FOCUS';
 export const CLEAR_IMPORT_UPDATES = 'CLEAR_IMPORT_UPDATES';
-
+export const CLEAR_SCRIPT_EDITOR_STATE = 'CLEAR_SCRIPT_EDITOR_STATE';
+export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
+export const ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_TO_SCRIPT_ITEM_HISTORY';
+export const SET_SHOW = 'SET_SHOW';
 
 export function updateSearchParameters(searchParameters) {
     return {
@@ -99,5 +102,33 @@ export function changeFocus(focus) {
 export function clearImportUpdates() {
     return {
         type: CLEAR_IMPORT_UPDATES,
+    }
+}
+
+export function clearScriptEditorState() {
+    return {
+        type: CLEAR_SCRIPT_EDITOR_STATE,
+    }
+}
+
+export function updatePreviousCurtain(nextSceneId,curtainOpen) {
+    return {
+        type: UPDATE_PREVIOUS_CURTAIN,
+        nextSceneId: nextSceneId,
+        previousCurtainOpen: curtainOpen,
+    }
+}
+
+export function addUpdateToScriptItemHistory(update) {
+    return {
+        type: ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY,
+        update,
+    }
+}
+
+export function setShow(show) {
+    return {
+        type: SET_SHOW,
+        show,
     }
 }

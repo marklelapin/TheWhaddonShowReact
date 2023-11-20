@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 
 //Components
 import TextareaAutosize from 'react-autosize-textarea';
@@ -12,7 +13,7 @@ import { log } from '../../../helper';
 import { changeFocus } from '../../../actions/scriptEditor';
 
 //css
-import s from '../Script.module.scss';
+import s from '../ScriptItem.module.scss';
 import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
 
 function ScriptItemText(props) {
@@ -29,6 +30,10 @@ function ScriptItemText(props) {
     const UP = 'up'
     const DOWN = 'down'
 
+    const endMargin = 50;
+
+
+
     //Props
     const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia, undoDateTime } = props;
 
@@ -43,7 +48,6 @@ function ScriptItemText(props) {
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
     const [textAreaRows, setTextAreaRows] = useState(1)
-
     let finalPlaceholder;
 
     switch (type) {
@@ -58,26 +62,30 @@ function ScriptItemText(props) {
 
     useEffect(() => {
 
-        
+
         adjustTextareaWidth()
 
-        
         //makes the textarea the focus when created unless during an undo.
-        
+
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
         if (textInputRef && undoDateTime === null) {
             textInputRef.focus();
         }
     }, [])
 
+
+
+
     //Calculations / Utitlity functions
 
-    const adjustTextareaWidth = () => {
+    const adjustTextareaWidth = (overrideText = null) => {
         const textareaRef = document.getElementById(`script-item-text-${id}`)
         if (textareaRef) {
-            const textWidth = getTextWidth();
+            const textWidth = getTextWidth(overrideText);
 
-            const finalWidth = Math.max(50, Math.min(maxWidth || textWidth, textWidth))
+            const minWidth = (finalPlaceholder.length || 0) + endMargin
+
+            const finalWidth = Math.max(minWidth, Math.min(maxWidth || textWidth, textWidth))
             //let percentageWidth = '20%'
 
             //if (maxWidth) {
@@ -91,21 +99,22 @@ function ScriptItemText(props) {
     };
 
 
-    const text = () => {
+    const text = (overrideText = null) => {
         let finalText;
         if (tempTextValue === '') {
-            finalText = tempTextValue
+            finalText = overrideText || tempTextValue
         } else {
-            finalText = tempTextValue || scriptItem.text || ''
+            finalText = overrideText || tempTextValue || scriptItem.text || ''
         }
+
         log(debug, `EventsCheck: final text: ${finalText}`)
 
         return finalText
     }
 
 
-    const getTextAreaRows = () => {
-        const latestText = text()
+    const getTextAreaRows = (overrideText = null) => {
+        const latestText = text(overrideText)
 
         let textRows = latestText.split('\n') || []
 
@@ -115,19 +124,19 @@ function ScriptItemText(props) {
 
 
 
-    const getTextWidth = () => {
+    const getTextWidth = (overrideText = null) => {
         const textInputRef = document.getElementById(`script-item-text-input-${id}`)
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         context.font = window.getComputedStyle(textInputRef).font;
 
-        let textOfLongestLine = getTextAreaRows().reduce((a, b) => (a.length > b.length) ? a : b, '');
+        let textOfLongestLine = getTextAreaRows(overrideText).reduce((a, b) => (a.length > b.length) ? a : b, '');
 
-        if (textOfLongestLine === '') {textOfLongestLine = finalPlaceholder }
+        if (textOfLongestLine === '') { textOfLongestLine = finalPlaceholder }
 
         const textMetrics = context.measureText(textOfLongestLine);
-        log(debug, `getTextWidth: ${textMetrics.width + 50}`)
-        return textMetrics.width + 50;
+        log(debug, `getTextWidth: ${textMetrics.width + endMargin}`)
+        return textMetrics.width + endMargin;
     };
 
 
@@ -142,10 +151,9 @@ function ScriptItemText(props) {
 
         log(debug, `EventsCheck: handleTextChange: ${e.target.value || ''} `)
         setTempTextValue(e.target.value || '')
-        const textareaRef = document.getElementById(`script-item-text-${id}`)
-        if (textareaRef) {
-            adjustTextareaWidth(textareaRef)
-        }
+
+        adjustTextareaWidth(e.target.value)
+
     }
 
     const handleControlsClick = (action, value) => {
@@ -182,7 +190,7 @@ function ScriptItemText(props) {
     const handleKeyDown = (e, scriptItem) => {
 
         log(debug, `EventsCheck: ScriptItemTextKeyDown: key: ${e.key}`)
-               const closestPosition = () => {
+        const closestPosition = () => {
             const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
             const closestPosition = (percentageAcoss > 0.5) ? END : START
             return closestPosition
@@ -217,7 +225,7 @@ function ScriptItemText(props) {
 
 
             if (e.target.selectionEnd === 0) {
-               
+
                 onChange('addScriptItemAbove', text)
             } else {
                 onChange('addScriptItemBelow', text)
@@ -311,7 +319,7 @@ function ScriptItemText(props) {
             setTempTextValue(null)
             onClick('undo')
         }
-        
+
         if (e.ctrlKey && e.key === 'y' && undoDateTime !== null) {
             onClick('redo')
         }
@@ -334,25 +342,24 @@ function ScriptItemText(props) {
         }
         setTempTextValue(null)
         adjustTextareaWidth()
-        log(debug,'showMedia handleBlur')
+        log(debug, 'showMedia handleBlur')
         toggleMedia(false)
     }
 
     return (
-        <div id={`script-item-text-${id}`} className="script-item-text">
+        <div id={`script-item-text-${id}`} className={s['script-item-text']}>
 
             {(header || type === DIALOGUE) &&
-                <div className="script-item-header">
-                    <small>{header || 'no part'}</small>
+                <div className={s['script-item-header']}>
+                    {header || 'no part'}
                 </div>
             }
-
 
             <TextareaAutosize
                 key={id}
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
-                className={`form-control ${s.autogrow} transition-height text-input`}
+                className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input`}
                 value={text()}
                 onChange={(e) => handleTextChange(e)}
                 onBlur={() => handleBlur()}

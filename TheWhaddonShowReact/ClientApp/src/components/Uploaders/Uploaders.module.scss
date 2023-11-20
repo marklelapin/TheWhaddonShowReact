@@ -37,12 +37,18 @@ p {
     border-radius: 5px;
 }
 
+.media-dropzone-items {
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 
 .media-dropzone-item {
+    flex: 0 0 auto;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    padding-bottom: 20px;
+    padding: 20px;
 }
 
 .media-dropzone-item-display {

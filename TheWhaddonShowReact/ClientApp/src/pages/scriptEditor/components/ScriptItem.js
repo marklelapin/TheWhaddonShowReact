@@ -12,27 +12,40 @@ import PartSelector from './PartSelector';
 import { Icon } from '../../../components/Icons/Icons';
 import { Button } from 'reactstrap';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
+import CurtainBackground from './CurtainBackground';
 //utilities
 import { log } from '../../../helper';
 
 //Constants
-import { SCENE, DIALOGUE } from '../../../dataAccess/scriptItemTypes';
+import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING , } from '../../../dataAccess/scriptItemTypes';
 
+//styling
+import s from '../ScriptItem.module.scss';
 
 function ScriptItem(props) {
 
     //utility consts
     const debug = true;
-
+    const moment = require('moment');
 
     // get specific props
-    const { scriptItem, scene, alignRight = false, onClick, onChange, moveFocus,undoDateTime, previousFocus = null, nextFocus = null } = props;
+    const { id = null, created = null, sceneId = null,sceneNumber=null, alignRight = false, onClick, onChange, moveFocus, undoDateTime, curtainOpen = null } = props;
 
-    log(debug, 'ScriptItemComment: scriptItem', scriptItem)
+    const createdString = moment(created).format('YYYY-MM-DDTHH:mm:ss.SSS')
+
+    log(debug, 'Component:ScriptItem', { id, created })
+
     //Redux state
-    const showComments = useSelector(state => state.scriptEditor.showComments)
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene?.id])
-    const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
+    const showComments = useSelector(state => state.scriptEditor.showComments) || true
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId]) || []
+    const focus = useSelector(state => (state.scriptEditor.focus[id])) || false
+
+    const scriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id]) || []
+    const scriptItem = scriptItemHistory.find(item => item.created === createdString) || {}
+    const { type, comment } = scriptItem;
+
+    log (debug,'Component:ScriptItem scriptItemHistory:',scriptItemHistory)
+    log (debug,'Component:ScriptItem scriptItem:',scriptItem)
 
     //Refs
     const textInputRef = useRef(null)
@@ -47,14 +60,14 @@ function ScriptItem(props) {
 
     //calculations functions
     const showParts = () => {
-        switch (scriptItem.type) {
+        switch (type) {
             case DIALOGUE: return true;
             default: return false;
         }
     }
 
     const header = () => {
-        switch (scriptItem.type) {
+        switch (type) {
             case DIALOGUE:
                 if (scenePartPersons) {
                     log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
@@ -65,11 +78,18 @@ function ScriptItem(props) {
 
                     return partNames || '-'
                 }; break;
+            case SCENE:
+                return `Scene ${sceneNumber}.` || null
+            case STAGING:
+                return 'Staging' || null
+            case INITIAL_STAGING:
+                return 'Initial Staging' || null
+
             default: return null;
         }
 
     }
-
+    
     const handleShowMedia = (value = null) => {
 
         if (undoDateTime) { onClick('confirmUndo') }
@@ -109,17 +129,17 @@ function ScriptItem(props) {
     log(debug, 'ScriptItem: showMedia', { showMedia: showMedia })
     log(debug, 'ScriptItem: focus', { focus: focus })
 
-    const { id, type, comment } = scriptItem;
+    
 
-
+    const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
     return (
-        <div id={id} className={`script-item ${type?.toLowerCase()} ${(alignRight) ? 'align-right' : ''} ${(scriptItem.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
+        <div id={id} className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight) ? s['align-right'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed'] }`} >                             
 
             {showParts() &&
-                <div className="script-item-parts">
+                <div className={s['script-item-parts']}>
                     <PartSelector
-                        scene={scene}
+                        sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
                         undoDateTime={undoDateTime}
                         onClick={onClick}
@@ -127,7 +147,7 @@ function ScriptItem(props) {
                     />
                 </div>
             }
-            <div ref={textInputRef} className="script-item-text-area">
+            <div ref={textInputRef} className={s['script-item-text-area']}>
 
                 <ScriptItemText
                     key={id}
@@ -143,16 +163,18 @@ function ScriptItem(props) {
 
             </div>
             {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
+                <div className={s['dropzone']}>
                 <MediaDropzone
                     existingMediaURLs={scriptItem.attachments}
                     addMedia={(media) => handleMedia('add', media)}
                     removeMedia={(media) => handleMedia('remove', media)}
                     showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
                     autoLoad={true}
-                />
+                    />
+                </div>
             }
 
-            {(comment) &&
+            {(comment) && (showComments) &&
 
                 <div id={comment.id} key={comment.id} className="script-item-comment">
                     <Comment comment={comment} />
@@ -178,12 +200,8 @@ function ScriptItem(props) {
                 </div>
             }
 
-
-
-
-
+            <CurtainBackground curtainOpen={finalCurtainOpen} />
         </div>
-
     )
 }
 

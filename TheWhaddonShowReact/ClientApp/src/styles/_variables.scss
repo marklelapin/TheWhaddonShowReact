@@ -236,7 +236,6 @@ $padding-small-horizontal:  0.75rem !default;
 
 $screen-lg-height: 670px !default;
 
-
 //== Chat Sidebar
 //
 $chat-sidebar-width-open: 250px;
@@ -249,3 +248,9 @@ $hr-border-color:             rgba($black, .1) !default;
 $table-cell-padding:          .75rem !default;
 $emphasized-link-hover-darken-percentage: 15% !default;
 $badge-focus-width:          .2rem !default;
+
+// Script
+// -------------------------
+$script-comments-width: 310px !default;
+$script-body-max-width: 800px !default;
+

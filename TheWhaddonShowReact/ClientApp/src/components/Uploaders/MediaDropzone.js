@@ -1,6 +1,7 @@
 ﻿//React and redux
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 //Components
 import {
@@ -61,7 +62,7 @@ function MediaDropzone(props) {
         const youTubeURLs = existingMediaURLs.filter(url => url.includes('youtube.com')) || []
         const fileURLs = existingMediaURLs.filter(url => !youTubeURLs.includes(url)) || []
 
-        const existingFiles = await fetchFiles(MEDIA,fileURLs) || []
+        const existingFiles = await fetchFiles(MEDIA, fileURLs) || []
 
         const newFiles = [...youTubeURLs, ...existingFiles, ...newMediaFiles]
         setMediaFiles(newFiles)
@@ -102,7 +103,7 @@ function MediaDropzone(props) {
                 return false;
             }
         })
-        
+
         const fileURLs = urls.filter(url => !youTubeURLs.includes(url))
 
         //process file urls
@@ -193,27 +194,30 @@ function MediaDropzone(props) {
             >
 
                 <>
-                    {mediaFiles.map((media, idx) => (
-                        <div className={s['media-dropzone-item']}>
-                            <div className={s['media-dropzone-item-display']}>
-                                <MediaDisplay
-                                    file={isYouTube(media) ? null : media}
-                                    youTubeUrl={isYouTube(media) ? media : null}
-                                    key={`drop-id-${idx}`}
-                                    width={width}
-                                    height={height}
-                                />
-                                <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} />
+                    <div className={s['media-dropzone-items']}>
+                        {mediaFiles.map((media, idx) => (
+                            <div key={idx} className={s['media-dropzone-item']}>
+                                <div className={s['media-dropzone-item-display']}>
+                                    <MediaDisplay
+                                        file={isYouTube(media) ? null : media}
+                                        youTubeUrl={isYouTube(media) ? media : null}
+                                        key={`drop-id-${idx}`}
+                                        width={width}
+                                        height={height}
+                                    />
+                                    <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} />
+                                </div>
+
                             </div>
 
-                        </div>
-
-                    ))}
+                        ))}
+                    </div>
                     <div className={s['controls']}>
                         <p>{dropZoneText}</p>
                         <div className={s['youtube-input']}>
                             <Input
                                 type="text"
+                                label="youTubeUrl"
                                 name="youTubeUrl"
                                 id="youTubeUrl"
                                 placeholder="or enter YouTube URL"

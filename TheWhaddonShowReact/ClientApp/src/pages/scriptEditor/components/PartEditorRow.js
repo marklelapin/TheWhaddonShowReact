@@ -18,6 +18,10 @@ import { changeFocus } from '../../../actions/scriptEditor';
 import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART, PART_ID } from './PartEditor';
 import { DOWN, UP, START, END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
+
+//styling
+import s from '../ScriptItem.module.scss'
+
 function PartEditorRow(props) {
 
     //utility consts
@@ -220,7 +224,7 @@ function PartEditorRow(props) {
 
         <>
 
-            <div key={part.id} id={part.id} className="part">
+            <div key={part.id} id={part.id} className={s["part"]}>
                 <PartNameAndAvatar avatar partName personName
 
                     avatarInitials={part.avatarInitials}
@@ -250,7 +254,7 @@ function PartEditorRow(props) {
                         }
                     </div>
                 }
-                <div className="part-tags">
+                <div className={s['part-tags']}>
                     <TagsInput
                         strapColor="primary"
                         tags={part.tags}

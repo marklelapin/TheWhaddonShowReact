@@ -1,17 +1,20 @@
 import React from 'react';
 import UsersTable from './components/UsersTable';
 
-function UsersListPage () {
-  
+function UsersListPage() {
+
     return (
-    	<div>
-        <div className="page-top-line">
-          <h2 className="page-title">User - <span className="fw-semi-bold">Management</span></h2>
-        </div>
-            <UsersTable />
-      	</div>
+        <>
+            <div className="page-top">
+                <h2 className="page-title">User - <span className="fw-semi-bold">Management</span></h2>
+            </div>
+            <div className="page-content">
+                <UsersTable />
+            </div>
+
+        </>
     );
-  
+
 }
 
 export default UsersListPage;

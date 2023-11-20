@@ -14,20 +14,26 @@ import { log } from '../../../helper';
 import { moveFocusToId } from '../scripts/utility'
 import { prepareUpdates } from '../../../dataAccess/localServerUtils';
 import { addUpdates } from '../../../actions/localServer';
-
+import { sortLatestScriptItems, addSceneNumbers, newScriptItemsForMoveScene } from '../scripts/scriptItem';
 //Constants
 import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
-import { newScriptItemsForMoveScene } from '../scripts/scriptItem';
+
 
 function SceneSelector(props) {
     const debug = true;
 
-    const { scenes } = props;
+    const { show } = props;
 
     const dispatch = useDispatch();
 
-
+    const sceneHistory = useSelector(state => state.scriptEditor.sceneHistory)
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
+
+
+    let scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
+
+    scenes = addSceneNumbers(scenes)
+
 
     const handleSearchParameterChange = (type, value) => {
         let newSearchParameters = { ...searchParameters }
@@ -47,12 +53,6 @@ function SceneSelector(props) {
         }
 
         dispatch(updateSearchParameters(newSearchParameters))
-    }
-
-
-    const handleDragSceneSelector = (e) => {
-        //TODO: Add drag and drop functionality - to change scene order
-
     }
 
 
@@ -100,7 +100,7 @@ function SceneSelector(props) {
 
     const moveScene = (sceneId, newPreviousId) => {
 
-        const updates = newScriptItemsForMoveScene(sceneId, newPreviousId,scenes)
+        const updates = newScriptItemsForMoveScene(sceneId, newPreviousId, scenes)
 
         const preparedUpdates = prepareUpdates(updates)
 
@@ -129,32 +129,37 @@ function SceneSelector(props) {
     log(debug, 'SceneSelector Rendering: filteredScenes', filteredScenes())
 
     return (
-        <div id="scene-selector" className="draft-border">
+        <div id="scene-selector" className="flex-full-height">
             <h2>Search</h2>
             <ScriptSearch onChange={(type, value) => handleSearchParameterChange(type, value)} />
 
             <h2>Scenes</h2>
+            <div className="full-height-overflow">
 
-            {filteredScenes().map(scene => {
+                {filteredScenes().map(scene => {
 
-                if (scene.type === ACT) {
+                    if (scene.type === ACT) {
 
-                    return <h2 key={scene.id}>{scene.text}</h2>
-                }
+                        return <h2 key={scene.id}>{scene.text}</h2>
+                    }
 
-                return <SceneSelectorRow
-                    key={scene.id}
-                    scene={scene}
-                    onClick={(action, id) => handleClick(action, id)}
-                    onDragStart={handleDragStart}
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
+                    return <SceneSelectorRow
+                        key={scene.id}
+                        scene={scene}
+                        onClick={(action, id) => handleClick(action, id)}
+                        onDragStart={handleDragStart}
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
 
-                />
+                    />
 
 
-            })}
+                })}
+
+
+            </div>
+
 
 
         </div>

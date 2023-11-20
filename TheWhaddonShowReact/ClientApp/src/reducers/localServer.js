@@ -9,7 +9,8 @@
     SYNC,
     END_SYNC,
     CLOSE_POSTBACK,
-    SET_PAUSE_SYNC
+    SET_PAUSE_SYNC,
+    CLEAR_LOCAL_SERVER_STATE
 } from '../actions/localServer';
 
 import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
@@ -284,7 +285,10 @@ export default function localServerReducer(state = defaultState, action) {
                 ...state,
                 scriptItems: { ...state.scriptItems, history: state.scriptItems.history.filter((item) => item.parentId !== IMPORT_GUID) }
             }
-
+        case CLEAR_LOCAL_SERVER_STATE:
+            return {
+                ...defaultState,
+            }
         default:
             return state;
     }

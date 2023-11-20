@@ -1,18 +1,15 @@
 //React & Redux
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+
+import {setShow} from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
 import ScriptViewer from './components/ScriptViewer';
-import {FormGroup, Input, Button} from 'reactstrap';
-//localServerModels
-import { ScriptItemUpdate, SCRIPT_ITEM } from '../../dataAccess/localServerModels';
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE } from '../../dataAccess/scriptItemTypes';
-import { prepareUpdates, getLatest } from '../../dataAccess/localServerUtils';
-import { sortLatestScriptItems, newScriptItemsForCreateShow } from './scripts/scriptItem';
-import { addUpdates } from '../../actions/localServer';
+import ShowSelector from './components/ShowSelector';
 
 //Utils
 import { log } from '../../helper.js';
@@ -22,22 +19,16 @@ import isScreen from '../../core/screenHelper';
 function Script() {
 
     //constants
-    const [testAct, setTestAct] = useState(null)
     const debug = true;
     const dispatch = useDispatch();
 
-
     //Redux State
     const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
-    const sceneHistory = useSelector((state) => state.scriptEditor.sceneHistory)
+    const show = useSelector((state) => state.scriptEditor.show)
     //Internal State
     const [isLargerScreen, setIsLargerScreen] = useState(null)
-    const [show, setShow] = useState(null)
-    const [newShowName, setNewShowName] = useState('')
 
-    log(debug, 'Script: sceneHistory', sceneHistory)
 
-  
     //UseEffect Hooks
     useEffect(() => {
         window.addEventListener('resize', handleScriptScreenResize);
@@ -63,86 +54,53 @@ function Script() {
 
     const isSmallerScreen = () => {
 
-        return (isScreen('xs') || isScreen('sm'))
+        return (isScreen('xs') || isScreen('sm') || isScreen('md'))
 
     }
 
-    const createNewShow = () => {
-
-        if (newShowName.length === 0) {
-            alert('Please enter a show name')
-        } else {
-            const scriptItems = newScriptItemsForCreateShow(newShowName)
-            const preparedUpdates = prepareUpdates(scriptItems)
-            dispatch(addUpdates(preparedUpdates, SCRIPT_ITEM))
-            setNewShowName('')
-
-        }
-        
-
-    }
 
     const handleScriptViewerClick = (action) => {
         switch (action) {
-            case 'clearScript': setShow(null); break;
+            case 'clearScript': dispatch(setShow(null)); break;
             default: return;
         }
 
 
     }
 
-    const shows = getLatest(sceneHistory.filter((scene) => scene.type === SHOW))
 
-    const scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
-
-    log(debug, 'Scipt Rendering Scene', scenes)
-
+    log(debug, 'Script: show', show)
     //-----------------------------------------------------------------------
     return (
 
-        <div id="script-page" className="draft-border">
+        <div id="script-page" className="flex-full-height">
 
-            {(isLargerScreen) && <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>}
+            {(isLargerScreen) && !show &&
+                <div className="page-top">
+                    <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>
+                </div>
+            }
 
             {show &&
-                <div id="script-page-content">
+                <div id="script-page-content" className="page-content flex-full-width">
                     {(showSceneSelector || isLargerScreen) &&
-                        <div id="script-selector" >
-                            <SceneSelector scenes={scenes} />
-                        </div>
+                            <SceneSelector show={show} />
                     }
 
-                    {(!showSceneSelector || isLargerScreen) &&
-                        <div id="script-viewer">
-                            <ScriptViewer scenes={scenes} onClick={(action) => handleScriptViewerClick(action)} />
-
-                        </div>
+                    {(!showSceneSelector || isLargerScreen) &&   
+                            <ScriptViewer show={show} onClick={(action) => handleScriptViewerClick(action)} />
                     }
 
                 </div>
             }
 
             {!show &&
-                <>
-                    <h2>Choose a show...</h2>
-                    <div id="show-selector">
-                        {shows.map((show) => {
-                            return (
-                                <Button key={show.id} onClick={() => setShow(show)}>{show.text}</Button>
-                            )
-                        })}
-                    <FormGroup>
-                        <Input type="text" name="newShow" id="newShow" value={newShowName}  placeholder="New Show Name" onChange={((e) => setNewShowName(e.target.value))} />
-                        <Button type = "submit" key={"createNew"} onClick={() => createNewShow()}>Create New Show!</Button>
-                        </FormGroup>
-
-
-                        
-                    </div>
-                </>
+       
+                <ShowSelector onClick={(show) => dispatch(setShow(show))} />            
+   
             }
-                          
-           
+
+
         </div>
 
 

@@ -1,13 +1,13 @@
 ﻿//React and Redux
 import React from 'react';
-import { useState, useEffect, } from 'react';
+import { useState, useEffect,useLayoutEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
 //Components
 import ScriptItem from '../../../pages/scriptEditor/components/ScriptItem.js';
 import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
-
+import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
 import { prepareUpdates, prepareUpdate, getLatest } from '../../../dataAccess/localServerUtils';
@@ -20,15 +20,18 @@ import { getNextUndoDate, getNextRedoDate } from '../scripts/undo';
 import { log } from '../../../helper'
 import { moveFocusToId } from '../scripts/utility';
 
-
 import {
     updateShowComments,
 } from '../../../actions/scriptEditor';
 
+//styling
+import s from '../Script.module.scss'
+
+
 //Constants
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { DIALOGUE, COMMENT } from '../../../dataAccess/scriptItemTypes';
-import { ACT, SCENE,SYNOPSIS,INITIAL_STAGING,CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 
@@ -46,36 +49,40 @@ function Scene(props) {
     const dispatch = useDispatch()
 
     //props
-    const { scene, onClick, previousSceneEndId } = props;
+    const { id, sceneNumber, onClick } = props;
 
-    log(debug, 'Scene Passed into Scene', scene)
+
 
     //Redux state
-    const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory[scene.id])
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
+    const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory[id])
+    const currentSceneScriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id])
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[id])
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
+    const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtain[id])
 
-
-    log(debug, 'EventsCheck Scene_sceneScriptItemHistory ', sceneScriptItemHistory)
+    log(debug, 'SceneRedux ', { sceneScriptItemHistory, currentSceneScriptItemHistory })
 
     //Internal State
     const [undoDateTime, setUndoDateTime] = useState(null); //if this is null then will just show latest version other wise will show all updates before this date time
     const [scriptItems, setScriptItems] = useState([]); //
+    const [loaded, setLoaded] = useState(false); //]
+
+    const currentScene = { ...getLatest(currentSceneScriptItemHistory)[0], undoDateTime: undoDateTime, sceneNumber: sceneNumber }
+
+    log(debug, 'Scene_currentScene', { currentScene, previousCurtainOpen })
 
 
-
-
-//useEffect Hooks
+    //useEffect Hooks
     useEffect(() => {
 
-      const newScriptItems = sortLatestScriptItems(scene, [...sceneScriptItemHistory], undoDateTime)
+        let newScriptItems = sortLatestScriptItems(currentScene, [...sceneScriptItemHistory], undoDateTime)
 
-      setScriptItems(newScriptItems)
-      
-    },[undoDateTime,sceneScriptItemHistory,scene])
+        setScriptItems(newScriptItems)
+
+    }, [undoDateTime, sceneScriptItemHistory, id])
 
 
-   
+
     //EVENT HANDLERS
     //--------------------------------------------------------------------------------------------------------
 
@@ -117,7 +124,7 @@ function Scene(props) {
 
 
         //update these scriptItems
-        const updates = prepareUpdates([...changeScriptItems,...deleteScriptItems]);
+        const updates = prepareUpdates([...changeScriptItems, ...deleteScriptItems]);
 
         dispatch(addUpdates(updates, 'ScriptItem'));
 
@@ -127,7 +134,7 @@ function Scene(props) {
 
     const handleClick = (action, scriptItem) => {
 
-        if (['undo', 'redo','confirmUndo'].includes(action) === false && undoDateTime !== null) {
+        if (['undo', 'redo', 'confirmUndo'].includes(action) === false && undoDateTime !== null) {
             handleConfirmUndo();
         }
 
@@ -138,11 +145,11 @@ function Scene(props) {
             case 'undo': handleUndo(); break;
             case 'redo': handleRedo(); break;
             case 'confirmUndo': handleConfirmUndo(); break;
-            case 'deleteScene': onClick('deleteScene',null); break;
+            case 'deleteScene': onClick('deleteScene', null); break;
             case 'goToComment':
                 dispatch(updateShowComments(true))
                 moveFocusToId(scriptItem.comment?.id)
-                ; break;
+                    ; break;
 
             default: return;
         }
@@ -222,7 +229,7 @@ function Scene(props) {
                 } else if (CURTAIN_TYPES.includes(scriptItemToUpdate.type)) { //i.e. its coming from a curtain type
                     draft.text = "";
                 }
-             
+
                 newUpdates = draft
                 break;
             case 'toggleCurtain':
@@ -317,10 +324,15 @@ function Scene(props) {
     }
 
 
+
+
+
+
     const handleMoveFocus = (direction, position, scriptItem, previousFocusOverrideId = null, nextFocusOverrideId = null) => {
         const newId = (direction === DOWN) ? nextFocusOverrideId || scriptItem.nextId : previousFocusOverrideId || scriptItem.previousId
         let newPosition = position || END
-
+        log(debug, 'Component:Scene handleMoveFocus input:', { direction, position, scriptItem, previousFocusOverrideId, nextFocusOverrideId })
+        log(debug, 'Component:Scene handleMoveFocus output:', { newId, newPosition })
         if (newId) {
             moveFocusToId(newId, newPosition)
         }
@@ -332,9 +344,8 @@ function Scene(props) {
 
 
 
-    const currentScene = { ...scriptItems.find(item => item.type === SCENE || item.type === ACT) || {}, undoDateTime: undoDateTime } //returns the synopsis scriptItem
-    const synopsis = scriptItems.find(item => item.type === SYNOPSIS) || {} //returns the synopsis scriptItem
-    const staging = scriptItems.find(item => item.type === INITIAL_STAGING) || {}//returns the staging scriptItem')
+    const synopsis = { ...scriptItems.find(item => item.type === SYNOPSIS), curtainOpen: previousCurtainOpen } || {}
+    const staging = { ...scriptItems.find(item => item.type === INITIAL_STAGING), curtainOpen: previousCurtainOpen } || {}
 
     const body = () => {
 
@@ -352,6 +363,8 @@ function Scene(props) {
         return alignedScriptItems
     }
 
+    const finalScriptItem = scriptItems[scriptItems.length - 1] || {}
+
 
     log(debugRenderProps, 'Scene bodyScriptItems', body())
     log(debugRenderProps, 'Scene scriptItems', scriptItems)
@@ -359,67 +372,86 @@ function Scene(props) {
     log(debugRenderProps, 'Scene synopsis', synopsis)
     log(debugRenderProps, 'Scene staging', staging)
 
-
+    log(debugRenderProps, 'ScenePreviousCurtainOpen', previousCurtainOpen)
 
     //---------------------------------
 
     return (
-        <div id={`scene-${currentScene.id}`}>
-            <div className={`scene-header ${(scene.curtainOpen) ? 'curtain-open' : 'curtain-closed'} draft-border`}>
- 
-                {(currentScene) &&
-                    <ScriptItem scriptItem={currentScene}
-                        onClick={(action) => handleClick(action, currentScene)}
-                        onChange={(type, value) => handleChange(type, value, currentScene)}
-                        undoDateTime={undoDateTime}
-                        moveFocus={(direction, position) => handleMoveFocus(direction, (direction === UP) ? SCENE_END : position, currentScene, currentScene.previousId, synopsis.id)}
-                    />
+        <div id={`scene-${currentScene.id}`} className={`scene-group`}>
+            {/* <div className={`scene-header`}>*/}
 
-                }
-                {currentScene.type === SCENE && synopsis &&
-                    <ScriptItem scriptItem={synopsis}
-                        onClick={(action) => handleClick(action, synopsis)}
+            {(currentScene) &&
+                <ScriptItem
+                    id={currentScene.id}
+                    created={currentScene.created}
+                    key={currentScene.id + currentScene.created}
+                    sceneId={currentScene.id}
+                    sceneNumber={currentScene.sceneNumber}
+                    curtainOpen={previousCurtainOpen}
+                    onClick={(action) => handleClick(action, currentScene)}
+                    onChange={(type, value) => handleChange(type, value, currentScene)}
+                    undoDateTime={undoDateTime}
+
+                    moveFocus={(direction, position) => handleMoveFocus(direction, (direction === UP) ? SCENE_END : position, currentScene, currentScene.previousId, synopsis.id)}
+                />
+
+            }
+            {currentScene.type === SCENE && synopsis &&
+                <ScriptItem
+                    id={synopsis.id}
+                    created={synopsis.created}
+                    key={synopsis.id + synopsis.created}
+                    sceneId={currentScene.id}
+                    curtainOpen={previousCurtainOpen}
+                    onClick={(action) => handleClick(action, synopsis)}
                     onChange={(type, value) => handleChange(type, value, synopsis)}
                     undoDateTime={undoDateTime}
-                        moveFocus={(direction, position) => handleMoveFocus(direction, position, synopsis, null, currentScene.partIds[0])}
-                    />
-                }
-                {(currentScene.type === SCENE) &&
-                    <PartEditor
-                        scene={currentScene}
-                        onChange={(type, value) => handleChange(type, value, currentScene)}
-                        onClick={(action) => handleClick(action, currentScene)}
-                        undoDateTime={undoDateTime}
-                        previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
-                        nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
+                    moveFocus={(direction, position) => handleMoveFocus(direction, position, synopsis, null, currentScene.partIds[0])}
+                />
+            }
+            {(currentScene.type === SCENE) &&
+                <PartEditor
+                    scene={currentScene}
+                    onChange={(type, value) => handleChange(type, value, currentScene)}
+                    onClick={(action) => handleClick(action, currentScene)}
+                    undoDateTime={undoDateTime}
+                    curtainOpen={previousCurtainOpen}
+                    previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
+                    nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
 
-                    />
-                }
-                {currentScene.type === SCENE && staging &&
-                    <>
-                        <ScriptItem
-                            scriptItem={staging}
-                            onClick={(action) => handleClick(action, staging)}
+                />
+            }
+            {currentScene.type === SCENE && staging &&
+                <>
+                    <ScriptItem
+                        id={staging.id}
+                        created={staging.created}
+                        key={staging.id + staging.created}
+                        sceneId={currentScene.id}
+                        curtainOpen={previousCurtainOpen}
+                        onClick={(action) => handleClick(action, staging)}
                         onChange={(type, value) => handleChange(type, value, staging)}
                         undoDateTime={undoDateTime}
-                            moveFocus={(direction, position) => handleMoveFocus(direction, position, staging, currentScene.partIds[currentScene.partIds.length - 1], null)}
-                        />
-                    </>
+                        moveFocus={(direction, position) => handleMoveFocus(direction, position, staging, currentScene.partIds[currentScene.partIds.length - 1], null)}
+                    />
+                </>
 
-                }
+            }
 
-            </div>
+            {/*</div>*/}
 
 
             <div className="scene-body">
                 {body().map((scriptItem, index) => {
                     return (
                         <ScriptItem
+                            id={scriptItem.id}
+                            created={scriptItem.created}
+                            key={scriptItem.id + scriptItem.created}
+                            sceneId={currentScene.id}
+                            curtainOpen={scriptItem.curtainOpen}
                             onClick={(action) => handleClick(action, scriptItem)}
                             onChange={(type, value) => handleChange(type, value, scriptItem)}
-                            key={scriptItem.id}
-                            scriptItem={scriptItem}
-                            scene={currentScene}
                             alignRight={scriptItem.alignRight}
                             undoDateTime={undoDateTime}
                             moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, (scriptItem.nextId === null) ? currentScene.nextId : null)}
@@ -430,12 +462,15 @@ function Scene(props) {
                 }
             </div>
 
-            <div className={`scene-footer ${currentScene.finalCurtain ? 'curtain-open' : 'curtain-closed'}`}>
+            <div id={`scene-footer-${currentScene.id}`} className={s['scene-footer']}>
                 <div className="add-new-scene clickable" onClick={() => onClick('addNewScene')}>
                     (add new scene)
                 </div>
+                <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />
             </div>
+
         </div>
+
     )
 }
 
