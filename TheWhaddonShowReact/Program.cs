@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Identity.Web;
 using MyApiMonitorClassLibrary.Interfaces;
@@ -19,26 +20,23 @@ builder.ConfigureMicrosoftIdentityWebAuthenticationAndUI("AzureAdB2C");
 
 builder.RequireAuthorizationThroughoutAsFallbackPolicy();
 
-builder.ByPassAuthenticationIfInDevelopment();
-
+//builder.ByPassAuthenticationIfInDevelopment();
+builder.Services.AddSingleton<IAuthorizationHandler, ByPassAuthorization>();
 // Add services to the container.
-if (builder.Environment.IsDevelopment()) //allows file upload from localhost:56789 in development.
+if (builder.Environment.IsDevelopment())
 {
 	builder.Services.AddCors(options =>
 	{
 		options.AddPolicy("AllowDevelopmentOrigin", builder =>
 	{
-		builder.WithOrigins("http://localhost:55555")
+		builder.WithOrigins("http://localhost:50000")
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();
-		//WithOrigins("http://localhost:56789")
-		//.AllowAnyHeader()
-		//	   .AllowAnyMethod();
 	});
 	});
-}
 
+}
 builder.Services.AddDownstreamApi("TheWhaddonShowApi", builder.Configuration.GetSection("TheWhaddonShowApi"));
 
 builder.Services.AddHttpClient("OpenAI", opts =>
