@@ -1,14 +1,14 @@
-const hostApi = process.env.NODE_ENV === "development" ? "https://localhost" : "https://sing-generator-node.herokuapp.com";
+const hostApi = process.env.NODE_ENV === "development" ? "https://localhost" : "https://thewhaddonshowapp.azurewebsites.net";
 const portApi = process.env.NODE_ENV === "development" ? 44368 : "";
 const baseURLApi = `${hostApi}${portApi ? `:${portApi}` : ``}/api`;
-const redirectUrl = process.env.NODE_ENV === "development" ? "http://localhost:3000/sing-app-react" : "https://demo.flatlogic.com/sing-app-react";
+const redirectUrl = process.env.NODE_ENV === "development" ? "http://localhost:3000/sing-app-react" : "https://thewhaddonshowapp.azurewebsites.net";
 
 export default {
   redirectUrl,
   hostApi,
   portApi,
   baseURLApi,
-  remote: "https://sing-generator-node.herokuapp.com",
+    remote: "https://thewhaddonshowapp.azurewebsites.net",
   isBackend: process.env.REACT_APP_BACKEND,
   auth: {
     email: 'admin@flatlogic.com',

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Identity.Web;
 using MyApiMonitorClassLibrary.Interfaces;
@@ -19,8 +20,8 @@ builder.ConfigureMicrosoftIdentityWebAuthenticationAndUI("AzureAdB2C");
 
 builder.RequireAuthorizationThroughoutAsFallbackPolicy();
 
-builder.ByPassAuthenticationIfInDevelopment();
-
+//builder.ByPassAuthenticationIfInDevelopment();
+builder.Services.AddSingleton<IAuthorizationHandler, ByPassAuthorization>();
 // Add services to the container.
 if (builder.Environment.IsDevelopment())
 {
