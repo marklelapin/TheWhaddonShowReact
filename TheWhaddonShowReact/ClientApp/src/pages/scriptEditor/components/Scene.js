@@ -216,17 +216,6 @@ function Scene(props) {
                 )
                 break;
             
-            case 'toggleCurtain':
-                const open = value
-                const newTags = (open) ? getOpenCurtainTags(scriptItem) : getCloseCurtainTags(scriptItem)
-                const newText = newCurtainText(open, scriptItem)
-                newUpdates = prepareUpdate({
-                    ...scriptItemToUpdate
-                    , tags: newTags
-                    , text: newText
-                    , changed: true
-                })
-                break;
             case 'addScriptItemBelow':
                 addScriptItem(BELOW, scriptItemToUpdate)
                 break;
