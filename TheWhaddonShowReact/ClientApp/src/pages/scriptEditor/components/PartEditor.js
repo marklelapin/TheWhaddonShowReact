@@ -40,7 +40,15 @@ function PartEditor(props) {
     const dispatch = useDispatch();
 
     //props
-    const { scene = null, onChange, previousFocus, nextFocus, undoDateTime, onClick, curtainOpen} = props;
+    const { scene = null,
+        onChange,
+        previousFocus,
+        nextFocus,
+        undoDateTime,
+        onClick,
+        curtainOpen,
+        zIndex,
+    } = props;
 
     log(debug, 'PartEditorProps', props)
 
@@ -260,14 +268,16 @@ function PartEditor(props) {
     log(debug, 'ModalPersons', modalPersons)
 
 
+    const totalItems = activeSceneParts().length 
+
     return (
 
         <>
 
-            <div className={s[`part-editor`]}>
+            <div className={s[`part-editor`]} style={{zIndex: zIndex} }>
 
                 <p>Parts:</p>
-                {activeSceneParts().map(part => {
+                {activeSceneParts().map((part,idx) => {
 
                     return (
 
@@ -280,6 +290,7 @@ function PartEditor(props) {
                             onChange={(type, value) => handleChange(type, value, part)}
                             onClick={(action, value) => handleClick(action, value, part)}
                             undoDateTime={undoDateTime}
+                            zIndex={totalItems-idx+1} //+1 to get them above the curtain.
                             moveFocus={(direction, position) => handleMoveFocus(direction, position, part) }
                         />
 

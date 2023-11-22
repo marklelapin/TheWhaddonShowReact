@@ -72,7 +72,7 @@ function PartNameAndAvatar(props) {
 
     return (
 
-        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected)? 'selected' : ''}` } onClick={onClick} >
+        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected)? s['selected'] : ''}` } onClick={onClick} >
 
             {(avatar) &&
                 <div className={s["part-avatar"]}>

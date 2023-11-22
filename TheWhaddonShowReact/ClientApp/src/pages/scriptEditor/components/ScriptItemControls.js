@@ -15,6 +15,8 @@ import { CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { log } from '../../../helper';
 import CheckBox from '../../../components/Forms/CheckBox';
 
+
+import s from '../ScriptItem.module.scss';
 function ScriptItemControls(props) {
 
     //utils
@@ -66,10 +68,10 @@ function ScriptItemControls(props) {
 
 
     return (
-        <>
-            <div className={`header-controls ${header ? 'header-exists' : ''}`}>
+        <div className={s['script-item-controls']}>
+            <div className={`${s['header-controls']} ${header ? s['header-exists'] : ''}`}>
 
-                <div className="header-left-controls">
+                <div className={s['header-left-controls']}>
                     {scriptItem && attachTypes.includes(scriptItem.type) &&
                         <>
                             <Icon icon="attach" onClick={() => handleClick('attach')} />
@@ -81,7 +83,7 @@ function ScriptItemControls(props) {
                         <CheckBox checked={scriptItem.curtainOpen} onChange={() => handleClick('toggleCurtain')} ios={true} />
                     }
                 </div>
-                <div className="header-right-controls">
+                <div className={s['header-right-controls']}>
 
                     {scriptItem && HEADER_TYPES.includes(scriptItem.type) === false &&
                         < Dropdown isOpen={dropdownOpen} toggle={toggle}>
@@ -117,7 +119,7 @@ function ScriptItemControls(props) {
             </div>
 
 
-            <div className="bottom-right-controls">
+            <div className={s['bottom-right-controls']}>
                 {scriptItem && <Icon icon="play" onClick={() => onClick('confirm', null)} />}
 
                 {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add', null)}  />}
@@ -127,7 +129,7 @@ function ScriptItemControls(props) {
 
             </div>
 
-            <div className="outside-right-controls">
+            <div className={s['outside-right-controls']}>
                 {part &&
                     <>
                     <Icon icon="play" onClick={() => onClick('confirm', null)} />
@@ -140,7 +142,7 @@ function ScriptItemControls(props) {
 
             {children}
 
-        </>
+        </div>
     )
 }
 

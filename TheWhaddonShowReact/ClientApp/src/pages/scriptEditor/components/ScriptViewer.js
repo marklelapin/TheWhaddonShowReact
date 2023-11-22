@@ -74,6 +74,7 @@ function ScriptViewer(props) {
 
     }
 
+    const totalItems = scenes.length;
 
 
     return (
@@ -83,12 +84,14 @@ function ScriptViewer(props) {
             <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
                 <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']}`}>
                     <p className={`${s['comments-title']}`}>Comments</p>
-                    {(scenes && scenes.length > 0) && scenes.map(scene => {
+                    {(scenes && scenes.length > 0) && scenes.map((scene,idx) => {
 
                         return <Scene key={scene.id}
                             id={scene.id}
                             sceneNumber={scene.sceneNumber}
-                            onClick={(action) => handleClick(action, scene)} />
+                            onClick={(action) => handleClick(action, scene)}
+                            zIndex={totalItems - idx }
+                        />
                     }
 
                     )}

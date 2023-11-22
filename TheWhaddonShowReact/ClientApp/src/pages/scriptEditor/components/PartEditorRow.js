@@ -32,7 +32,7 @@ function PartEditorRow(props) {
 
 
     //props
-    const { nextPart, sceneId, isFirst, onClick, onChange, moveFocus, undoDateTime } = props;
+    const { nextPart, sceneId, isFirst, onClick, onChange, moveFocus, undoDateTime, zIndex } = props;
     log(debug, 'PartEditorProps', props)
 
     let { part } = props;
@@ -224,7 +224,7 @@ function PartEditorRow(props) {
 
         <>
 
-            <div key={part.id} id={part.id} className={s["part"]}>
+            <div key={part.id} id={part.id} className={s["part"]} style={{zIndex:zIndex} }>
                 <PartNameAndAvatar avatar partName personName
 
                     avatarInitials={part.avatarInitials}
@@ -237,20 +237,18 @@ function PartEditorRow(props) {
                 />
                 
                 {(focus) &&
-                    <div className="part-editor-controls">
+                    <div className={s['part-editor-controls']} >
                         <ScriptItemControls
-                        part={part}
-                        onClick={(action, value,e) => handleControlsClick(action, value,e)}
+                            part={part}
+                            onClick={(action, value, e) => handleControlsClick(action, value, e)}
                         />
 
                         {(openPartSelector) &&
-                            < div className="part-selector-dropdown" >
-
-                                <PartSelectorDropdown
+                            <PartSelectorDropdown
                                     allowMultiSelect={false}
                                     allowClear={false}
+                                    centered
                                     onClick={(action, partIds) => handleControlsClick(action, partIds)} />
-                            </div>
                         }
                     </div>
                 }
