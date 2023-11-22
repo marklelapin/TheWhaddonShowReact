@@ -5,20 +5,60 @@
     padding: 10px 40px 10px 40px;
     display: flex;
     flex-direction: column;
-    position: relative;
     background-color: $gray-inverse;
+    position: relative;
+
 
     .text-input {
-        text-align: center;
+        text-align: start;
     }
 
     .script-item-parts {
         position: relative;
+        z-index: 3;
         width: auto;
+ 
+        
     }
 
     .dropzone {
         z-index: 2;
+    }
+    /*Layout*/
+    .script-item-text-area {
+        flex: 1;
+        display: flex;
+        position: relative;
+        justify-content: center;
+        max-width: 100%;
+        z-index: 2;
+
+        .script-item-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 3;
+
+            .script-item-header {
+                position: relative;
+                z-index: 4;
+            }
+
+            &.align-right {
+
+                .script-item-header {
+                    left: 10px;
+                    right: 10px;
+                }
+            }
+
+            .text-input {
+                position: relative;
+                z-index: 4;
+            }
+        }
     }
 }
 
@@ -50,12 +90,79 @@
     }
 }
 
+.curtain-open {
+    color: white;
+}
+
+.curtain-closed {
+    color: black;
+}
+
+
+
+.text-input {
+    position: relative;
+}
+
+.script-item-controls {
+    position: relative;
+
+    .header-controls {
+        position: absolute;
+        top: -20px;
+        right: 0px;
+        z-index: 10;
+        display: flex;
+        flex-direction: row;
+        justify-content: end;
+    }
+
+    .header-controls.header-exists {
+        top: 0px;
+    }
+
+    .header-right-controls {
+        flex: 1;
+        text-align: end;
+        position: relative;
+        z-index: 10;
+        padding-left: 10px;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .header-left-controls {
+        flex: 1;
+        text-align: end;
+        position: relative;
+        z-index: 10;
+    }
+
+    .bottom-right-controls {
+        position: absolute;
+        bottom: 0px;
+        right: -37px;
+        z-index: 10;
+    }
+
+    .header-controls .checkbox-ios i {
+        height: 15px;
+        background-color: black;
+    }
+
+    .header-controls i::before {
+        height: 15px !important;
+        width: 15px !important;
+    }
+}
+
 .part-editor {
     padding: 0px 40px 0px 40px;
     background-color: $gray-inverse;
     display: flex;
     flex-direction: column;
     position: relative;
+    z-index: 3;
 
 
     p {
@@ -71,17 +178,26 @@
         flex-direction: row;
         align-items: center;
         padding: 0px 0px 10px 20px;
+        position: relative;
         z-index: 2;
         background-color: white;
+
+
+        .part-editor-controls {
+            position: relative;
+            z-index: 5;
+        }
+    }
+
+
+
+    .part-avatar-name {
+        flex: 1;
+        z-index: 2;
     }
 }
 
 
-
-.part-editor .part-avatar-name {
-    flex: 1;
-    z-index: 2;
-}
 
 .part-controls {
     text-align: start;
@@ -90,6 +206,7 @@
 .part-tags {
     flex: 1;
     text-align: start;
+    position: relative;
     z-index: 2;
 }
 
@@ -114,43 +231,53 @@
 
 
 
+/* Script-Item-Comments*/
 
-
-
-
-
-
-
-/*Layout*/
-.script-item-text-area {
-    flex: 1;
-    display: flex;
-    position: relative;
-    justify-content: center;
-    max-width: 100%;
-    z-index: 2;
-}
-
-.script-item-header {
-    z-index: 2;
-}
-
-.script-item-text {
+.script-item-comment {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 2;
-}
+    position: absolute;
+    width: 250px;
+    top: 0px;
+    right: -280px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
 
-.align-right {
 
-    .script-item-header {
-        left: 10px;
-        right: 10px;
+    .comment-header {
+        display: flex;
+        flex-direction: row;
+        color: black;
+
+        .created-by {
+            flex: 1;
+        }
+    }
+
+    .text-input {
+        text-align: justify;
+        font-size: $font-size-base;
+        font-weight: $font-weight-base;
+    }
+
+    .comment-footer {
+        display: flex;
+        flex-direction: row;
+        color: black;
+
+        .tags-input {
+            flex: 1;
+            z-index: 10;
+        }
     }
 }
+
+
+
+
+
 
 .autogrow {
     overflow: hidden;
@@ -166,24 +293,22 @@
         display: none;
     }
 }
-
-
 /*PART SELECTOR*/
 .part-selector {
     position: relative;
-    z-index: 5;
+    z-index: 2;
+    color: $text-color;
 
     .part-selector-avatars {
-position: relative;
-z-index: -5;
+        position: relative;
+        z-index: 0;
         width: auto;
         display: flex;
         flex-direction: row;
 
 
         .avatar {
-            position:relative;
-z-index: -5;
+            position: relative;
             margin: 0px;
             $avatar-count: length(&);
             $overlap: -15px; /*overlap the avatars by this amount*/
@@ -198,8 +323,6 @@ z-index: -5;
         }
     }
 }
-
-
 /*multiple avatars css_________*/
 
 .part-selector-dropdown {
@@ -209,9 +332,9 @@ z-index: -5;
     flex-direction: column;
     justify-content: center;
     z-index: 10;
-    background-color: white;
     padding: 15px;
 
+    @include dropdown-box;
 
     .part-avatar-name {
         position: relative;
@@ -219,6 +342,21 @@ z-index: -5;
         z-index: 1000;
         margin-bottom: 10px;
     }
+
+    .parts-container {
+        position: relative;
+        z-index: 1000;
+        max-height: 400px;
+        overflow: auto;
+        column-count: 2;
+        column-gap: 10px;
+    }
+
+    &.centered {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
 }
 
 .align-right {
@@ -226,6 +364,8 @@ z-index: -5;
         right: 0;
     }
 }
+
+
 
 
 
@@ -259,6 +399,8 @@ z-index: -5;
 
 
 
+
+
 //Type Specific ScriptItem Styles
 .show {
 
@@ -270,32 +412,42 @@ z-index: -5;
 .act {
     textarea {
         font-size: $h2-font-size;
+        text-align: center;
     }
 }
 
 .scene {
     padding-bottom: 0px;
+    
 
     .script-item-header {
         font-size: $h6-font-size;
         font-weight: $font-weight-bold;
-        text-align: center;
+       
     }
 
     .script-item-text-area {
-        background-color: white;
+        background-color: white;text-align: center;
+
     }
 
     .dropzone {
         background-color: white;
     }
 
-    textarea {
+    .text-input{
         font-size: $h5-font-size;
         font-weight: $font-weight-bold;
         background-color: white;
         padding-top: 0px;
         padding-bottom: 0px;
+    }
+
+    .scene-controls {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        z-index: 5;
     }
 }
 
@@ -316,6 +468,7 @@ z-index: -5;
     textarea {
         padding-top: 0px;
         padding-bottom: 0px;
+        text-align: center;
     }
 }
 
@@ -333,6 +486,7 @@ z-index: -5;
     textarea {
         padding-top: 0px;
         padding-bottom: 0px;
+        text-align:center;
     }
 }
 

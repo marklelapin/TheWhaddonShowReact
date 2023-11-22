@@ -300,7 +300,7 @@ export function newScriptItemsForCreateHeader(previousScene, nextScene = null) {
     let synopsis = new ScriptItemUpdate(SYNOPSIS)
     let initialStaging = new ScriptItemUpdate(INITIAL_STAGING)
     let initialCurtain = new ScriptItemUpdate(INITIAL_CURTAIN)
-    initialCurtain = opensCurtain(initialCurtain)
+    initialCurtain.tags.push('OpenCurtain')
 
     let dialogue = new ScriptItemUpdate(DIALOGUE)
 

@@ -1,4 +1,6 @@
-﻿export const SHOW = 'Show';
+﻿import { SCRIPT_ITEM } from "./localServerModels";
+
+export const SHOW = 'Show';
 export const ACT = 'Act';
 export const SCENE = 'Scene';
 export const SYNOPSIS = 'Synopsis';
@@ -16,3 +18,5 @@ export const COMMENT = 'Comment';
 export const HEADER_TYPES = [SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN]
 
 export const CURTAIN_TYPES = [CURTAIN, INITIAL_CURTAIN]
+
+export const SCRIPT_ITEM_TYPES = [SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, SONG, DIALOGUE,ACTION,SOUND,LIGHTING,CURTAIN,INITIAL_CURTAIN,COMMENT]

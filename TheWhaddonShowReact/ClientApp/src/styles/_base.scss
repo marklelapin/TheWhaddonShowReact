@@ -307,3 +307,12 @@ table > thead > tr > th {
 .fill {
   fill: var(--sidebar-color);
 }
+
+
+.dropdown-box{
+    @include dropdown-box;
+}
+
+.dropdown-divider{
+    @include dropdown-divider;
+}

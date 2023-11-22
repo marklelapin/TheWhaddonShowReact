@@ -49,7 +49,7 @@ function Scene(props) {
     const dispatch = useDispatch()
 
     //props
-    const { id, sceneNumber, onClick } = props;
+    const { id, sceneNumber, onClick, zIndex } = props;
 
 
 
@@ -243,7 +243,6 @@ function Scene(props) {
                     , changed: true
                 })
                 break;
-
             case 'addScriptItemBelow':
                 addScriptItem(BELOW, scriptItemToUpdate)
                 break;
@@ -263,7 +262,7 @@ function Scene(props) {
                 let newComment = new ScriptItemUpdate(COMMENT)
                 newComment.parentId = currentScene.id
                 newComment.previousId = scriptItemToUpdate.id
-                let newScriptItem = { ...scriptItemToUpdate, commentId: newComment.id, comment: newComment }
+                let newScriptItem = { ...scriptItemToUpdate, commentId: newComment.id }
                 newUpdates = prepareUpdates([newComment, newScriptItem])
                 dispatch(updateShowComments(true))
                 break;
@@ -274,8 +273,7 @@ function Scene(props) {
 
             default: return;
         }
-        log(debug, `EventsCheck: newUpdates count ${newUpdates.length}`)
-        log(debug, `EVentsCheck: changePart new Updates: + ${JSON.stringify(newUpdates)}`)
+        log(debug, `Component:Scene handleChange: ${type}. dispatch:`, { count: newUpdates.length, newUpdates })
 
         dispatch(addUpdates(newUpdates, 'ScriptItem'));
 
@@ -349,7 +347,7 @@ function Scene(props) {
 
     const body = () => {
 
-        const bodyScriptItems = [...scriptItems].filter(item => item.type !== SCENE && item.type !== SYNOPSIS && item.type !== INITIAL_STAGING && item.type !== ACT) || []//returns the body scriptItems
+        const bodyScriptItems = [...scriptItems].filter(item => item.type !== SCENE && item.type !== SYNOPSIS && item.type !== INITIAL_STAGING && item.type !== ACT && item.type !==SHOW) || []//returns the body scriptItems
 
         //work out alignment
         const partIdsOrder = [...new Set(bodyScriptItems.map(item => item.partIds[0]))]
@@ -365,6 +363,7 @@ function Scene(props) {
 
     const finalScriptItem = scriptItems[scriptItems.length - 1] || {}
 
+    const totalItems = scriptItems.length + 2 //+1 for the partEditor and scene-footer
 
     log(debugRenderProps, 'Scene bodyScriptItems', body())
     log(debugRenderProps, 'Scene scriptItems', scriptItems)
@@ -377,8 +376,8 @@ function Scene(props) {
     //---------------------------------
 
     return (
-        <div id={`scene-${currentScene.id}`} className={`scene-group`}>
-            {/* <div className={`scene-header`}>*/}
+        <div id={`scene-${currentScene.id}`} className={s[`scene-group`]} style={{zIndex:zIndex} }>
+             <div className={s[`scene-header`]}>
 
             {(currentScene) &&
                 <ScriptItem
@@ -391,7 +390,7 @@ function Scene(props) {
                     onClick={(action) => handleClick(action, currentScene)}
                     onChange={(type, value) => handleChange(type, value, currentScene)}
                     undoDateTime={undoDateTime}
-
+                    zIndex={totalItems}
                     moveFocus={(direction, position) => handleMoveFocus(direction, (direction === UP) ? SCENE_END : position, currentScene, currentScene.previousId, synopsis.id)}
                 />
 
@@ -406,6 +405,7 @@ function Scene(props) {
                     onClick={(action) => handleClick(action, synopsis)}
                     onChange={(type, value) => handleChange(type, value, synopsis)}
                     undoDateTime={undoDateTime}
+                    zIndex={totalItems-1}
                     moveFocus={(direction, position) => handleMoveFocus(direction, position, synopsis, null, currentScene.partIds[0])}
                 />
             }
@@ -416,6 +416,7 @@ function Scene(props) {
                     onClick={(action) => handleClick(action, currentScene)}
                     undoDateTime={undoDateTime}
                     curtainOpen={previousCurtainOpen}
+                    zIndex={totalItems-2}
                     previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
                     nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
 
@@ -432,16 +433,17 @@ function Scene(props) {
                         onClick={(action) => handleClick(action, staging)}
                         onChange={(type, value) => handleChange(type, value, staging)}
                         undoDateTime={undoDateTime}
+                        zIndex={totalItems-3}
                         moveFocus={(direction, position) => handleMoveFocus(direction, position, staging, currentScene.partIds[currentScene.partIds.length - 1], null)}
                     />
                 </>
 
             }
 
-            {/*</div>*/}
+            </div>
 
 
-            <div className="scene-body">
+            <div className={s['scene-body']}>
                 {body().map((scriptItem, index) => {
                     return (
                         <ScriptItem
@@ -454,6 +456,7 @@ function Scene(props) {
                             onChange={(type, value) => handleChange(type, value, scriptItem)}
                             alignRight={scriptItem.alignRight}
                             undoDateTime={undoDateTime}
+                            zIndex={totalItems-index-4}
                             moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, (scriptItem.nextId === null) ? currentScene.nextId : null)}
 
                         />
@@ -462,8 +465,11 @@ function Scene(props) {
                 }
             </div>
 
-            <div id={`scene-footer-${currentScene.id}`} className={s['scene-footer']}>
-                <div className="add-new-scene clickable" onClick={() => onClick('addNewScene')}>
+            <div id={`scene-footer-${currentScene.id}`}
+                className={`${s['scene-footer']} ${finalScriptItem.curtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
+                style={{ zIndex: 0 }}>
+               
+                <div className={`${s['add-new-scene']} clickable`} onClick={() => onClick('addNewScene')}>
                     (add new scene)
                 </div>
                 <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />

@@ -17,7 +17,8 @@ import LayoutComponent from '../components/Layout';
 //import Register from '../pages/auth/register';
 //import Reset from '../pages/auth/reset';
 //import Forgot from '../pages/auth/forgot';
-
+import CacheProcessing from '../dataAccess/CacheProcessing';
+import TextAreaContexts from '../dataAccess/TextAreaContexts';
 
 //Utils
 import { getHistory } from '../index.js';
@@ -29,7 +30,8 @@ import ErrorPage from '../pages/error';
 
 // Styles
 import '../styles/theme.scss';
-import CacheProcessing from '../dataAccess/CacheProcessing';
+
+ 
 
 
 
@@ -56,6 +58,7 @@ const currentUser = useSelector((state) => state.auth.currentUser)
             <LocalServerSyncing /> 
             <ScriptEditorProcessing />
             <CacheProcessing />
+            <TextAreaContexts />
 
 
             <ToastContainer

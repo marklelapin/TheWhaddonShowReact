@@ -50,8 +50,9 @@ function PartNameAndAvatar(props) {
     const handleAvatarClick = (e) => {
         e.stopPropagation();
         if (props.onAvatarClick) {
-
-            onAvatarClick(e)
+            onAvatarClick(e);
+        } else if (props.onClick) {
+            onClick(e);
         }
 
     }
@@ -71,7 +72,7 @@ function PartNameAndAvatar(props) {
 
     return (
 
-        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected)? 'selected' : ''}` } onClick={onClick} >
+        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected)? s['selected'] : ''}` } onClick={onClick} >
 
             {(avatar) &&
                 <div className={s["part-avatar"]}>

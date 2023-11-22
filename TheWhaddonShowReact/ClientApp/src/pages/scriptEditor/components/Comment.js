@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch , useSelector} from 'react-redux';
 
 //Components
 import { Icon } from '../../../components/Icons/Icons';
@@ -11,21 +11,27 @@ import TextareaAutosize from 'react-autosize-textarea';
 import { changeFocus } from '../../../actions/scriptEditor';
 import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
-import { prepareUpdate } from '../../../dataAccess/localServerUtils';
+import { prepareUpdate, getLatest } from '../../../dataAccess/localServerUtils';
 import { addUpdates } from '../../../actions/localServer';
+import { log } from '../../../helper';
 //css
-import s from '../Script.module.scss';
+import s from '../ScriptItem.module.scss';
 
 function Comment(props) {
 
     //constants
+    const debug = true;
     const dispatch = useDispatch();
-    const tagOptions = ['Guy ToDo', 'Mark C ToDo', 'Heather ToDo','Mark B ToDo'];
+    const tagOptions = ['Guy ToDo', 'Mark C ToDo', 'Heather ToDo', 'Mark B ToDo'];
 
     //props
-    const { comment = {} } = props;
+    const { id, onChange } = props;
 
+    //redux
+    const commentHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id]) || [];
+    const comment = getLatest(commentHistory)[0]
 
+    log(debug, 'Component:Comment:', { id, comment })
 
     //internal state
     const [tempText, setTempText] = useState(null);
@@ -60,7 +66,9 @@ function Comment(props) {
                 break;
             case 'delete':
                 newComment.isActive = false;
+                newComment.previousId = null;
                 newFocusId = comment.previousId;
+                onChange('deleteComment', null)
                 break;
             default: return;
         }
@@ -86,6 +94,8 @@ function Comment(props) {
     const handleBlur = () => {
 
         if (tempText || tempText === '') {
+
+            log(debug, 'Component:Comment handleBlur', { tempText })
             handleChange('text', tempText)
         }
         setTempText(null)
@@ -95,9 +105,11 @@ function Comment(props) {
 
     return (
 
-        <>
-            <div className="comment-header">
-                <div className="created-by">Mark Carter</div>
+        (comment) &&
+
+        <div id={comment.id} key={comment.id} className={s['script-item-comment']}>
+            <div className={s['comment-header']}>
+                <div className={s['created-by']}>Mark Carter</div>
                 <Icon icon="trash" onClick={() => handleChange('delete', null)} />
             </div>
 
@@ -107,7 +119,7 @@ function Comment(props) {
                 key={comment.id}
                 id={`comment-text-input-${comment.id}`}
                 placeholder='Enter comment...'
-                className={`form-control ${s.autogrow} transition-height text-input`}
+                className={`form-control ${s.autogrow} transition-height ${s['text-input']} text-input`}
                 value={text()}
                 onChange={(e) => handleTextChange(e)}
                 onBlur={() => handleBlur()}
@@ -115,16 +127,21 @@ function Comment(props) {
                 onKeyDown={(e) => handleKeyDown(e)}
             />
 
-            <div className={`comment-header`}>
+                <div className={s['comment-header']}>
 
-<TagsInput key={comment.id} tags={comment.tags} tagOptions={tagOptions} onClickRemove={(tag) => handleChange('removeTag', tag)} onClickAdd={(tag) => handleChange('addTag', tag)} />
+                    <TagsInput key={comment.id}
+                        tags={comment.tags}
+                        tagOptions={tagOptions}
+                        onClickRemove={(tag) => handleChange('removeTag', tag)}
+                        onClickAdd={(tag) => handleChange('addTag', tag)}
+                        strapColor='primary'
+
+                    />
                 <Icon icon="play" onClick={() => handleChange('confirm', text())} />
             </div>
 
+        </div>
 
-            
-
-        </>
     )
 
 }
