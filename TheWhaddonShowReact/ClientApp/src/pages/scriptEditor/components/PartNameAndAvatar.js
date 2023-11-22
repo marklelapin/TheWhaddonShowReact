@@ -50,8 +50,9 @@ function PartNameAndAvatar(props) {
     const handleAvatarClick = (e) => {
         e.stopPropagation();
         if (props.onAvatarClick) {
-
-            onAvatarClick(e)
+            onAvatarClick(e);
+        } else if (props.onClick) {
+            onClick(e);
         }
 
     }

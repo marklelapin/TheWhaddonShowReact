@@ -122,14 +122,6 @@
 
 
 
-/*SCENE HEADER*/
-.scene-header {
-    padding: 10px;
-}
-
-    .scene-header .script-item {
-        background-color: white;
-    }
 
 
 
@@ -137,12 +129,6 @@
 
 
 
-
-.scene-controls {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-}
 
 
 
@@ -221,51 +207,10 @@
 
 
 
-
-/* Script-Item-Comments*/
-
-.script-item-comment {
-    display:flex;
-    flex-direction: column;
-    position: absolute;
-    width: 250px;
-    top: 0px;
-    right: -280px;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    text-align: justify;
-}
-.comment-header {
-    display: flex;
-    flex-direction: row;
-    color: black;
-}
-
-.comment-header .created-by {
-    flex:1;
-}
-
-.script-item-comment .text-input{
-
-    text-align: justify;
-}
-
-.comment-footer{
-    display: flex;
-    flex-direction: row;
-    color: black;
-}
-
-.comment-footer .tags-input {
-flex: 1;
-z-index: 10;
-
-}
-
 .tags-input * {
     z-index: 2;
 }
+
 
 /*INDIVIDUAL STYLING OF SCRIPT ITEM TYPES*/
 

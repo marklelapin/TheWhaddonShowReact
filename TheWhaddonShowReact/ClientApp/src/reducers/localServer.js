@@ -146,7 +146,7 @@ export default function localServerReducer(state = defaultState, action) {
 
         case ADD_UPDATES:
 
-            log(debug, 'PartPersons addUpdates', action.payload)
+            log(debug, 'localServer reducer ADD_UPDATES', action.payload)
 
             if (action.payload.length === 0) { return state }
 
@@ -164,8 +164,6 @@ export default function localServerReducer(state = defaultState, action) {
 
             const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => (existingUpdate.id === update.id && existingUpdate.created === update.created)))
 
-
-            console.log('adding updates via ADD_UPDATE in localserver reducer')
             //update correct data set to update
 
             if (updatesToAdd.length > 0) {

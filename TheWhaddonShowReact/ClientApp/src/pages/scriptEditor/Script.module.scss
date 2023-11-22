@@ -7,15 +7,12 @@
 
 
 
-.scene-footer {
-    position: relative;
-    background-color: $gray-inverse;
-}
+
 
 
 .script-viewer-main {
     position: relative;
-    display:flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
     background-color: $gray-700;
@@ -26,7 +23,7 @@
     flex: 1;
     position: relative;
     max-width: $script-body-max-width;
-
+    width: 100%;
 
     &.show-comments {
         background-color: $gray-default;
@@ -56,5 +53,28 @@
 .hide-comments {
     .comments-title {
         display: none;
+    }
+}
+
+
+.scene-footer {
+    position: relative;
+    background-color: $gray-inverse;
+    text-align: center;
+}
+
+.add-new-scene {
+}
+
+.curtain-open {
+    color: white;
+}
+
+.curtain-closed {
+    color: black;
+
+    .add-new-scene {
+        position:relative;
+        z-index: 5;
     }
 }

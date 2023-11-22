@@ -16,6 +16,7 @@ export const CLEAR_SCRIPT_EDITOR_STATE = 'CLEAR_SCRIPT_EDITOR_STATE';
 export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
 export const ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_TO_SCRIPT_ITEM_HISTORY';
 export const SET_SHOW = 'SET_SHOW';
+export const ADD_TEXT_AREA_CONTEXT = 'ADD_TEXT_AREA_CONTEXT';
 
 export function updateSearchParameters(searchParameters) {
     return {
@@ -130,5 +131,13 @@ export function setShow(show) {
     return {
         type: SET_SHOW,
         show,
+    }
+}
+
+export function addTextAreaContext(scriptItemType, context) {
+    return {
+        type: ADD_TEXT_AREA_CONTEXT,
+        scriptItemType,
+        context,
     }
 }

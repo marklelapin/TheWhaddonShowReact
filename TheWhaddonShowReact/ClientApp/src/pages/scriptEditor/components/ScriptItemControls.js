@@ -27,7 +27,7 @@ function ScriptItemControls(props) {
     //Props
     const { onClick, scriptItem = null, part = null, header = null, children } = props;
 
-    const hasComment = scriptItem?.comment || part?.comment || false;
+    const hasComment = scriptItem?.commentId || part?.commentId || false;
 
     log(debug, 'ScriptItemControlsProps', props)
 

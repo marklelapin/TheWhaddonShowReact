@@ -1,4 +1,4 @@
-import { ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY, CLEAR_SCRIPT_EDITOR_STATE, UPDATE_SEARCH_PARAMETERS } from '../actions/scriptEditor';
+import { ADD_TEXT_AREA_CONTEXT, ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY, CLEAR_SCRIPT_EDITOR_STATE, UPDATE_SEARCH_PARAMETERS } from '../actions/scriptEditor';
 import { UPDATE_VIEW_COMMENTS } from '../actions/scriptEditor';
 import { UPDATE_DIALOGUE_RIGHT_ID } from '../actions/scriptEditor';
 import { TOGGLE_SCENE_SELECTOR } from '../actions/scriptEditor';
@@ -35,6 +35,7 @@ export const initialState = {
     scriptItemHistory: {},
     focus: {},
     previousCurtain: {},
+    textAreaContext: {},
 
 }
 
@@ -133,6 +134,11 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 show: action.show,
             };
+        case ADD_TEXT_AREA_CONTEXT:
+            return {
+                ...state,
+                textAreaContext: { ...state.textAreaContext, [action.scriptItemType]: action.context }
+            }
         default: return state;
     }
 }

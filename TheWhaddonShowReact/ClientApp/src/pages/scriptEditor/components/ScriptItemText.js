@@ -30,7 +30,7 @@ function ScriptItemText(props) {
     const UP = 'up'
     const DOWN = 'down'
 
-    const endMargin = 50;
+    const endMargin = 100;
 
 
 
@@ -39,15 +39,17 @@ function ScriptItemText(props) {
 
     const { id, type, tags } = scriptItem
 
-    log(debug, 'ScriptItemTextProps', props)
+    log(debug, 'Component:ScriptItemText props', props)
 
 
     //REdux
     const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
 
+
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
-    const [textAreaRows, setTextAreaRows] = useState(1)
+
+
     let finalPlaceholder;
 
     switch (type) {
@@ -58,86 +60,119 @@ function ScriptItemText(props) {
         default: finalPlaceholder = placeholder;
     }
 
-
-
     useEffect(() => {
 
-
-        adjustTextareaWidth()
-
         //makes the textarea the focus when created unless during an undo.
-
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
         if (textInputRef && undoDateTime === null) {
             textInputRef.focus();
         }
     }, [])
 
+    const getContext = (type) => {
+        try {
+            const textInputRef = document.getElementById(`text-area-context-${type?.toLowerCase()}`)
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            context.font = window.getComputedStyle(textInputRef).font;
+            return context;
+        }
+        catch  {
+            return null
+        }
+       
+    }
+
+    const finalText = tempTextValue || scriptItem.text
+
+    const textToMeasure = finalText || finalPlaceholder
+
+    const textToMeasureRows = textToMeasure.split('\n') || []
+
+    const longestRow = textToMeasureRows.reduce((a, b) => (a.length > b.length) ? a : b, '');
+
+    const context = getContext(type)
+
+    const textMetrics = (context) ? context.measureText(longestRow) : { width: 0 }
+
+    const idealWidth = textMetrics.width + endMargin
+
+    const finalWidth = Math.max(endMargin, Math.min(maxWidth || idealWidth, idealWidth))
+
+    const finalWidthPx = `${Math.floor(finalWidth)}px`
+
+
+
+
+
+
+
+
 
 
 
     //Calculations / Utitlity functions
 
-    const adjustTextareaWidth = (overrideText = null) => {
-        const textareaRef = document.getElementById(`script-item-text-${id}`)
-        if (textareaRef) {
-            const textWidth = getTextWidth(overrideText);
+    //const adjustTextareaWidth = (overrideText = null) => {
+    //    const textareaRef = document.getElementById(`script-item-text-${id}`)
+    //    if (textareaRef) {
+    //       // const textWidth = getTextWidth(overrideText);
 
-            const minWidth = (finalPlaceholder.length || 0) + endMargin
+    //       // const minWidth = (finalPlaceholder.length || 0) + endMargin
 
-            const finalWidth = Math.max(minWidth, Math.min(maxWidth || textWidth, textWidth))
-            //let percentageWidth = '20%'
+    //       // const finalWidth = Math.max(minWidth, Math.min(maxWidth || textWidth, textWidth))
+    //        //let percentageWidth = '20%'
 
-            //if (maxWidth) {
-            //    const percentage = Math.max(20, Math.min(100, (textWidth / maxWidth) * 100))
-            //    percentageWidth = `${percentage}%`
-            //}
-            const finalWidthString = `${Math.floor(finalWidth)}px`
-            log(debug, ` adjustTextareaWidth: ${textareaRef.id} : ${finalWidthString}`)
-            textareaRef.style.width = finalWidthString;
-        }
-    };
-
-
-    const text = (overrideText = null) => {
-        let finalText;
-        if (tempTextValue === '') {
-            finalText = overrideText || tempTextValue
-        } else {
-            finalText = overrideText || tempTextValue || scriptItem.text || ''
-        }
-
-        log(debug, `EventsCheck: final text: ${finalText}`)
-
-        return finalText
-    }
+    //        //if (maxWidth) {
+    //        //    const percentage = Math.max(20, Math.min(100, (textWidth / maxWidth) * 100))
+    //        //    percentageWidth = `${percentage}%`
+    //        //}
+    //        //const finalWidthString = `${Math.floor(finalWidth)}px`
+    //       // log(debug, ` adjustTextareaWidth: ${textareaRef.id} : ${finalWidthString}`)
+    //        textareaRef.style.width = finalWidthString;
+    //    }
+    //};
 
 
-    const getTextAreaRows = (overrideText = null) => {
-        const latestText = text(overrideText)
+    //const text = (overrideText = null) => {
+    //    let finalText;
+    //    if (tempTextValue === '') {
+    //        finalText = overrideText || tempTextValue
+    //    } else {
+    //        finalText = overrideText || tempTextValue || scriptItem.text || ''
+    //    }
 
-        let textRows = latestText.split('\n') || []
+    //    log(debug, `EventsCheck: final text: ${finalText}`)
 
-        return textRows
-
-    }
-
+    //    return finalText
+    //}
 
 
-    const getTextWidth = (overrideText = null) => {
-        const textInputRef = document.getElementById(`script-item-text-input-${id}`)
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        context.font = window.getComputedStyle(textInputRef).font;
+    //const getTextAreaRows = (overrideText = null) => {
+    //    const latestText = text(overrideText)
 
-        let textOfLongestLine = getTextAreaRows(overrideText).reduce((a, b) => (a.length > b.length) ? a : b, '');
+    //    let textRows = latestText.split('\n') || []
 
-        if (textOfLongestLine === '') { textOfLongestLine = finalPlaceholder }
+    //    return textRows
 
-        const textMetrics = context.measureText(textOfLongestLine);
-        log(debug, `getTextWidth: ${textMetrics.width + endMargin}`)
-        return textMetrics.width + endMargin;
-    };
+    //}
+
+
+
+    //const getTextWidth = (overrideText = null) => {
+    //    const textInputRef = document.getElementById(`script-item-text-input-${id}`)
+    //    const canvas = document.createElement('canvas');
+    //    const context = canvas.getContext('2d');
+    //    context.font = window.getComputedStyle(textInputRef).font;
+
+    //    //let textOfLongestLine = getTextAreaRows(overrideText).reduce((a, b) => (a.length > b.length) ? a : b, '');
+
+    //  //  if (textOfLongestLine === '') { textOfLongestLine = finalPlaceholder }
+
+    //    const textMetrics = context.measureText(textOfLongestLine);
+    //    log(debug, `getTextWidth: ${textMetrics.width + endMargin}`)
+    //    return textMetrics.width + endMargin;
+    //};
 
 
 
@@ -148,12 +183,8 @@ function ScriptItemText(props) {
     //Event Handlers
 
     const handleTextChange = (e) => {
-
         log(debug, `EventsCheck: handleTextChange: ${e.target.value || ''} `)
         setTempTextValue(e.target.value || '')
-
-        adjustTextareaWidth(e.target.value)
-
     }
 
     const handleControlsClick = (action, value) => {
@@ -257,7 +288,7 @@ function ScriptItemText(props) {
 
         if (e.key === 'Backspace') {
 
-            if (!text() || text() === null || text() === '') {
+            if (!finalText || finalText === null || finalText === '') {
                 e.preventDefault()
                 onChange('deleteScriptItem', UP)
                 return
@@ -276,7 +307,7 @@ function ScriptItemText(props) {
             if (e.target.selectionStart === e.target.value.length) {
                 e.preventDefault()
                 log(debug, `eventsCheck: Delete STage 1:`)
-                if (text() === null || text().length === 0) {
+                if (finalText === null || finalText.length === 0) {
                     log(debug, 'eventsCheck: Delete STage 2')
                     onChange('deleteScriptItem', DOWN)
                     return
@@ -301,13 +332,8 @@ function ScriptItemText(props) {
 
                     }
 
-
-
                 }
-
             }
-
-
 
         }
 
@@ -340,8 +366,6 @@ function ScriptItemText(props) {
         if (tempTextValue || tempTextValue === '') {
             onChange('text', tempTextValue)
         }
-        setTempTextValue(null)
-        adjustTextareaWidth()
         log(debug, 'showMedia handleBlur')
         toggleMedia(false)
     }
@@ -360,12 +384,13 @@ function ScriptItemText(props) {
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
                 className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input`}
-                value={text()}
+                value={finalText}
                 onChange={(e) => handleTextChange(e)}
                 onBlur={() => handleBlur()}
                 onFocus={() => handleFocus()}
                 onKeyDown={(e) => handleKeyDown(e, scriptItem)}
-                rows={getTextAreaRows().length}
+                style={{ width: finalWidthPx }}
+            //rows={getTextAreaRows().length}
             >
             </TextareaAutosize>
 

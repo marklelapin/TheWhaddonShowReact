@@ -1,4 +1,5 @@
 ﻿//React and Redux
+import React from 'react';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -10,6 +11,9 @@ import {
     addUpdatesToSceneHistory
 } from '../actions/scriptEditor';
 
+//components
+import TextareaAutosize from 'react-autosize-textarea';
+
 //utils
 import { log } from '../helper';
 import { getLatest, prepareUpdates } from '../dataAccess/localServerUtils';
@@ -19,7 +23,12 @@ import { addUpdates } from '../actions/localServer';
 import { updatePreviousCurtainValue } from '../pages/scriptEditor/scripts/scriptItem'
 import { SHOW, ACT, SCENE, CURTAIN_TYPES } from '../dataAccess/scriptItemTypes'
 
-import { SCRIPT_ITEM } from '../dataAccess/localServerModels'
+import { SCRIPT_ITEM, PART } from '../dataAccess/localServerModels'
+
+//styling
+import s from '../pages/scriptEditor/ScriptItem.module.scss';
+
+
 export function ScriptEditorProcessing() {
 
     const _ = require('lodash');
@@ -43,9 +52,10 @@ export function ScriptEditorProcessing() {
     const refreshTrigger = useSelector((state) => state.localServer.refresh)
 
 
+
     //Refresh trigger used to update scriptEdiotorScenes with additional partPerson info.
     useEffect(() => {
-        log(debug, 'EventsCheck ScriptEditorProcessing useEffect refreshTrigger', refreshTrigger)
+        log(debug, 'Component:ScriptEditorProcessing useEffect refreshTrigger', refreshTrigger)
 
         if (refreshTrigger.updates && refreshTrigger.type === SCRIPT_ITEM) {
             const scriptItemUpdates = refreshTrigger.updates
@@ -112,7 +122,7 @@ export function ScriptEditorProcessing() {
 
     //Update PartPersons 
     useEffect(() => {
-        log(debug, 'PartPersons: storedParts', storedParts)
+        log(debug, 'Component:ScriptEditorProcessing: PartPersons: storedParts', storedParts)
         const latestPersons = getLatest(storedPersons || [])
         const latestParts = getLatest(storedParts || [])
         const partPersons = addPersonsInfo(latestParts, latestPersons)
@@ -124,13 +134,11 @@ export function ScriptEditorProcessing() {
     //Update ScenePartPersons
     useEffect(() => {
 
+        log(debug, 'Component:ScriptEditorProcessing: scenePartPersons')
+
         const latestScenes = getLatest(sceneHistory || [])
         const latestParts = getLatest(storedParts || [])
-        log(debug, 'PartPersons: latestScenes', latestScenes)
-        log(debug, 'PartPersons: scenes history ', sceneHistory)
-        log(debug, 'PartPersons: partPersons', partPersons)
 
-        //Adds new partPersons if not already in redux store
         const storedPartIds = [...new Set([...storedParts].map(partPerson => partPerson.id))];
         let newPartIds = [];
 
@@ -177,7 +185,6 @@ export function ScriptEditorProcessing() {
         })
 
     }, [partPersons, sceneHistory])
-
 
 
     return (null)

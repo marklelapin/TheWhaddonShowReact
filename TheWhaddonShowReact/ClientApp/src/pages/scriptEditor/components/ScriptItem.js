@@ -42,7 +42,7 @@ function ScriptItem(props) {
 
     const scriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id]) || []
     const scriptItem = scriptItemHistory.find(item => item.created === createdString) || {}
-    const { type, comment } = scriptItem;
+    const { type, commentId } = scriptItem;
 
     log (debug,'Component:ScriptItem scriptItemHistory:',scriptItemHistory)
     log (debug,'Component:ScriptItem scriptItem:',scriptItem)
@@ -168,24 +168,20 @@ function ScriptItem(props) {
                     existingMediaURLs={scriptItem.attachments}
                     addMedia={(media) => handleMedia('add', media)}
                     removeMedia={(media) => handleMedia('remove', media)}
-                    showControls={(showMedia && focus) || (scriptItem.attachments.length > 0 && focus)}
+                    showControls={(showMedia && focus) }
                     autoLoad={true}
                     />
                 </div>
             }
 
-            {(comment) && (showComments) &&
-
-                <div id={comment.id} key={comment.id} className="script-item-comment">
-                    <Comment comment={comment} />
-                </div>
-
+            {(commentId) && (showComments) &&
+                <Comment id={commentId} onChange={onChange} />
             }
 
             {/*Elements specific for each scriptItem type*/}
 
             {(type === SCENE) &&
-                <div className="scene-controls">
+                <div className={s['scene-controls'] }>
                     {scriptItem.undoDateTime &&
                         <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
                     }

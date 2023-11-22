@@ -50,6 +50,16 @@
     }
 }
 
+.curtain-open {
+    color: white;
+}
+
+.curtain-closed {
+    color: black;
+}
+
+
+
 .part-editor {
     padding: 0px 40px 0px 40px;
     background-color: $gray-inverse;
@@ -114,11 +124,48 @@
 
 
 
+/* Script-Item-Comments*/
+
+.script-item-comment {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: 250px;
+    top: 0px;
+    right: -280px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
 
 
+    .comment-header {
+        display: flex;
+        flex-direction: row;
+        color: black;
 
+        .created-by {
+            flex: 1;
+        }
+    }
 
+    .text-input {
+        text-align: justify;
+        font-size: $font-size-base;
+        font-weight: $font-weight-base;
+    }
 
+    .comment-footer {
+        display: flex;
+        flex-direction: row;
+        color: black;
+
+        .tags-input {
+            flex: 1;
+            z-index: 10;
+        }
+    }
+}
 
 
 /*Layout*/
@@ -166,24 +213,22 @@
         display: none;
     }
 }
-
-
 /*PART SELECTOR*/
 .part-selector {
     position: relative;
     z-index: 5;
 
     .part-selector-avatars {
-position: relative;
-z-index: -5;
+        position: relative;
+        z-index: -5;
         width: auto;
         display: flex;
         flex-direction: row;
 
 
         .avatar {
-            position:relative;
-z-index: -5;
+            position: relative;
+            z-index: -5;
             margin: 0px;
             $avatar-count: length(&);
             $overlap: -15px; /*overlap the avatars by this amount*/
@@ -198,8 +243,6 @@ z-index: -5;
         }
     }
 }
-
-
 /*multiple avatars css_________*/
 
 .part-selector-dropdown {
@@ -254,11 +297,6 @@ z-index: -5;
 .part-selector-dropdown p {
     margin: 0px;
 }
-
-
-
-
-
 //Type Specific ScriptItem Styles
 .show {
 
@@ -296,6 +334,13 @@ z-index: -5;
         background-color: white;
         padding-top: 0px;
         padding-bottom: 0px;
+    }
+
+    .scene-controls {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        z-index: 5;
     }
 }
 
