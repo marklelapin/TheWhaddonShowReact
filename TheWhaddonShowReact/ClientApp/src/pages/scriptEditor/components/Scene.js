@@ -205,10 +205,7 @@ function Scene(props) {
         }
 
         switch (type) {
-            case 'text':
-                log(debug, `EventsCheck handleChange text: ${value}`)
-                newUpdates = prepareUpdate({ ...scriptItemToUpdate, text: value }); break;
-            case PART_IDS: newUpdates = prepareUpdate({ ...scriptItemToUpdate, partIds: value }); break;
+           
             case PARTS:
                 const oldPartId = value.oldPartId
                 const newPartId = value.newPartId
@@ -218,20 +215,7 @@ function Scene(props) {
                     [...scriptItems].map(item => ({ ...item, partIds: [...item.partIds].map(partId => (partId === oldPartId) ? newPartId : partId) }))
                 )
                 break;
-            case 'tags': newUpdates = prepareUpdate({ ...scriptItemToUpdate, tags: value }); break;
-            case 'attachments': newUpdates = prepareUpdate({ ...scriptItemToUpdate, attachments: value }); break;
-            case 'type':
-                let draft = prepareUpdate({ ...scriptItemToUpdate, type: value })
-
-                if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
-                    draft.tags = getOpenCurtainTags(draft)
-                    draft.text = newCurtainText(true, scriptItemToUpdate)
-                } else if (CURTAIN_TYPES.includes(scriptItemToUpdate.type)) { //i.e. its coming from a curtain type
-                    draft.text = "";
-                }
-
-                newUpdates = draft
-                break;
+            
             case 'toggleCurtain':
                 const open = value
                 const newTags = (open) ? getOpenCurtainTags(scriptItem) : getCloseCurtainTags(scriptItem)
@@ -290,36 +274,7 @@ function Scene(props) {
     }
 
 
-    const newCurtainText = (open, scriptItem) => {
-
-        const previousCurtainOpen = scriptItem.previousCurtainOpen
-
-        if (open) { // curtain is opening
-            if (previousCurtainOpen === true) return 'Curtain remains open'
-            else return 'Curtain opens'
-        } else { //curtain is closing
-            if (previousCurtainOpen === false) return 'Curtain remains closed'
-            else return 'Curtain closes'
-        }
-    }
-
-    const getOpenCurtainTags = (scriptItem) => {
-        const tags = scriptItem.tags || [];
-
-        let newTags = tags.filter(tag => tag !== 'CloseCurtain')
-        newTags.push('OpenCurtain')
-
-        return newTags;
-    }
-
-    const getCloseCurtainTags = (scriptItem) => {
-        const tags = scriptItem.tags;
-
-        let newTags = tags.filter(tag => tag !== 'OpenCurtain')
-        newTags.push('CloseCurtain')
-
-        return newTags;
-    }
+    
 
 
 

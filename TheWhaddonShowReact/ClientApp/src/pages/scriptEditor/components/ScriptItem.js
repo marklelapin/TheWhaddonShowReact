@@ -2,7 +2,9 @@
 //React and Redux
 import React from 'react';
 import { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+import {addUpdates } from '../../../actions/localServer'; 
 
 //Components
 import Comment from './Comment';
@@ -15,19 +17,21 @@ import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 //utilities
 import { log } from '../../../helper';
-
+import { prepareUpdate } from '../../../dataAccess/prepareUpdate';
+import { newScriptItemsForToggleCurtain, clearCurtainTags } from '../scripts/scriptItem';
 //Constants
-import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING , } from '../../../dataAccess/scriptItemTypes';
-
+import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING , CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
+import {SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
 //styling
 import s from '../ScriptItem.module.scss';
+
 
 function ScriptItem(props) {
 
     //utility consts
     const debug = true;
     const moment = require('moment');
-
+    const dispatch = useDispatch();
     // get specific props
     const { id = null,
         created = null,
@@ -102,7 +106,7 @@ function ScriptItem(props) {
     
     const handleShowMedia = (value = null) => {
 
-        if (undoDateTime) { onClick('confirmUndo') }
+        if (undoDateTime) { onClick('confirmUndo') } //automatically confirms undo if started to add media.
 
         log(debug, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
@@ -114,7 +118,7 @@ function ScriptItem(props) {
 
     const handleMedia = (type, media) => {
 
-        if (undoDateTime) { onClick('confirmUndo') }
+        if (undoDateTime) { onClick('confirmUndo') } //automatically confirms undo if started to add media.
 
         let urls = []
 
@@ -132,14 +136,39 @@ function ScriptItem(props) {
             default: return;
         }
 
-        onChange('attachments', updatedAttachments)
+        handleChange('attachments', updatedAttachments)
     }
 
-    log(debug, 'ScriptItemProps', props)
-    log(debug, 'ScriptItem: showMedia', { showMedia: showMedia })
-    log(debug, 'ScriptItem: focus', { focus: focus })
 
-    
+
+    const handleChange = (type, value) => {
+
+        let newUpdate = { ...scriptItem };
+
+        switch (type) {
+            case 'text': newUpdate.text = value; break;
+            case 'partIds': newUpdate.partIds =  value; break;
+            case 'tags': newUpdate.tags =  value ; break;
+            case 'attachments': newUpdate.attachments = value; break;
+            case 'type': newUpdate.type = value;
+
+                if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
+                    newUpdate = newScriptItemsForToggleCurtain(newUpdate, true) //set it to open curtain.
+                } else if (CURTAIN_TYPES.includes(scriptItem.type)) { //i.e. its coming from a curtain type
+                    newUpdate.text = '';
+                    newUpdate = clearCurtainTags(newUpdate)
+                }
+                break;
+            default: return;
+        }
+
+        const preparedUpdates = prepareUpdate(newUpdate)
+
+        dispatch(addUpdates(preparedUpdates, SCRIPT_ITEM));
+
+    }
+
+   
 
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
@@ -158,7 +187,7 @@ function ScriptItem(props) {
                         allocatedPartIds={scriptItem.partIds}
                         undoDateTime={undoDateTime}
                         onClick={onClick}
-                        onChange={(selectedPartIds) => onChange('partIds', selectedPartIds)}
+                        onChange={(selectedPartIds) => handleChange('partIds', selectedPartIds)}
                     />
                 </div>
             }
@@ -171,7 +200,7 @@ function ScriptItem(props) {
                     header={header()}
                     onClick={onClick}
                     toggleMedia={(value) => handleShowMedia(value)}
-                    onChange={onChange}
+                    onChange={(type,value) => handleChange(type,value)}
                     undoDateTime={undoDateTime}
                     moveFocus={moveFocus}
                 />

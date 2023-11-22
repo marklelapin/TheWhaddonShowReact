@@ -77,10 +77,10 @@ function ScriptItemText(props) {
             context.font = window.getComputedStyle(textInputRef).font;
             return context;
         }
-        catch  {
+        catch {
             return null
         }
-       
+
     }
 
     const finalText = tempTextValue || scriptItem.text
@@ -102,90 +102,16 @@ function ScriptItemText(props) {
     const finalWidthPx = `${Math.floor(finalWidth)}px`
 
 
-
-
-
-
-
-
-
-
-
-    //Calculations / Utitlity functions
-
-    //const adjustTextareaWidth = (overrideText = null) => {
-    //    const textareaRef = document.getElementById(`script-item-text-${id}`)
-    //    if (textareaRef) {
-    //       // const textWidth = getTextWidth(overrideText);
-
-    //       // const minWidth = (finalPlaceholder.length || 0) + endMargin
-
-    //       // const finalWidth = Math.max(minWidth, Math.min(maxWidth || textWidth, textWidth))
-    //        //let percentageWidth = '20%'
-
-    //        //if (maxWidth) {
-    //        //    const percentage = Math.max(20, Math.min(100, (textWidth / maxWidth) * 100))
-    //        //    percentageWidth = `${percentage}%`
-    //        //}
-    //        //const finalWidthString = `${Math.floor(finalWidth)}px`
-    //       // log(debug, ` adjustTextareaWidth: ${textareaRef.id} : ${finalWidthString}`)
-    //        textareaRef.style.width = finalWidthString;
-    //    }
-    //};
-
-
-    //const text = (overrideText = null) => {
-    //    let finalText;
-    //    if (tempTextValue === '') {
-    //        finalText = overrideText || tempTextValue
-    //    } else {
-    //        finalText = overrideText || tempTextValue || scriptItem.text || ''
-    //    }
-
-    //    log(debug, `EventsCheck: final text: ${finalText}`)
-
-    //    return finalText
-    //}
-
-
-    //const getTextAreaRows = (overrideText = null) => {
-    //    const latestText = text(overrideText)
-
-    //    let textRows = latestText.split('\n') || []
-
-    //    return textRows
-
-    //}
-
-
-
-    //const getTextWidth = (overrideText = null) => {
-    //    const textInputRef = document.getElementById(`script-item-text-input-${id}`)
-    //    const canvas = document.createElement('canvas');
-    //    const context = canvas.getContext('2d');
-    //    context.font = window.getComputedStyle(textInputRef).font;
-
-    //    //let textOfLongestLine = getTextAreaRows(overrideText).reduce((a, b) => (a.length > b.length) ? a : b, '');
-
-    //  //  if (textOfLongestLine === '') { textOfLongestLine = finalPlaceholder }
-
-    //    const textMetrics = context.measureText(textOfLongestLine);
-    //    log(debug, `getTextWidth: ${textMetrics.width + endMargin}`)
-    //    return textMetrics.width + endMargin;
-    //};
-
-
-
-
-
-
-
     //Event Handlers
 
     const handleTextChange = (e) => {
         log(debug, `EventsCheck: handleTextChange: ${e.target.value || ''} `)
         setTempTextValue(e.target.value || '')
     }
+
+    
+
+
 
     const handleControlsClick = (action, value) => {
 

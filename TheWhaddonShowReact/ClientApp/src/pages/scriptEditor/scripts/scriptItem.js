@@ -1,6 +1,6 @@
 ﻿
 import { SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, CURTAIN, INITIAL_CURTAIN, DIALOGUE, COMMENT } from "../../../dataAccess/scriptItemTypes";
-
+import {OPEN_CURTAIN, CLOSE_CURTAIN } from "../../../dataAccess/scriptItemTypes";
 import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { log } from '../../../helper';
@@ -57,7 +57,7 @@ export function sortScriptItems(head, scriptItems) {
     const sortedLinkedList = [];
     let currentId = head.id
     const initialCurtain = scriptItems.find(item => item.type === INITIAL_CURTAIN)
-    let curtainOpen = (initialCurtain) ? initialCurtain.tags.includes('OpenCurtain') : false
+    let curtainOpen = (initialCurtain) ? initialCurtain.tags.includes(OPEN_CURTAIN) : false
     let previousCurtainOpen;
 
     while (currentId !== null) {
@@ -87,26 +87,10 @@ export function sortScriptItems(head, scriptItems) {
     return sortedLinkedList;
 }
 
-const opensCurtain = (scriptItem) => {
-
-    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
-        return scriptItem.tags.includes('OpenCurtain')
-    }
-
-    return false
-}
-
-const closesCurtain = (scriptItem) => {
-
-    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
-        return scriptItem.tags.includes('CloseCurtain')
-    }
-
-    return false
-}
 
 
-export function addSceneNumbers (scenes) {
+
+export function addSceneNumbers(scenes) {
 
     let i = 1;
     const numberedScenes = scenes.map(scene => {
@@ -114,11 +98,12 @@ export function addSceneNumbers (scenes) {
             const numberedScene = { ...scene, sceneNumber: i }
             i++;
             return numberedScene
-            
+
         } else {
-            return scene }
-        
-        
+            return scene
+        }
+
+
     })
 
     return numberedScenes
@@ -378,10 +363,98 @@ export function newScriptItemsForMoveScene(sceneId, newPreviousId, scenes) {
 export function updatePreviousCurtainValue(scene, scriptItems, dispatch) {
 
     const sortedScriptItems = sortLatestScriptItems(scene, scriptItems)
-    
+
     if (scene.nextId) {
         const finalCurtainOpen = sortedScriptItems[sortedScriptItems.length - 1].curtainOpen
         dispatch(updatePreviousCurtain(scene.nextId, finalCurtainOpen))
     }
 
+}
+
+///Curtain Functions
+//----------------------------------------------------------------------------------
+
+export const newScriptItemsForToggleCurtain = (scriptItem,overrideNewValue=null) => {
+
+
+    if (scriptItem.curtainOpen === undefined) {
+        console.error('toggle Curtain called on scriptItem with no curtainOpen value. Assumed closed.')
+    }
+    const currentlyOpen = scriptItem.curtainOpen || false
+
+    const currentlyOpensCurtain = (overrideNewValue) ? !overrideNewValue : opensCurtain(scriptItem)
+
+    let newScriptItem = { ...scriptItem }
+
+
+
+    if (currentlyOpen === false && currentlyOpensCurtain) {
+
+        newScriptItem = changeToCloseCurtain(newScriptItem)
+        newScriptItem.text = 'Curtain remains closed.'
+    }
+
+    if (currentlyOpen && currentlyOpensCurtain === false) {
+
+        newScriptItem = changeToOpenCurtain(newScriptItem)
+        newScriptItem.text = 'Curtain remains open.'
+    }
+
+    if (currentlyOpen === false && currentlyOpensCurtain === false) {
+        newScriptItem = changeToOpenCurtain(newScriptItem)
+        newScriptItem.text = 'Curtain opens.'
+    }
+
+    if (currentlyOpen && currentlyOpensCurtain) {
+        newScriptItem = changeToCloseCurtain(newScriptItem)
+        newScriptItem.text = 'Curtain closes.'
+    }
+
+    return newScriptItem;
+}
+
+
+const changeToOpenCurtain = (scriptItem) => {
+
+    let newScriptItem = { ...scriptItem }
+
+    newScriptItem.tags = newScriptItem.tags.filter(tag => tag !== CLOSE_CURTAIN)
+    newScriptItem.tags.push(OPEN_CURTAIN)
+
+    return newScriptItem;
+}
+
+const changeToCloseCurtain = (scriptItem) => {
+
+    let newScriptItem = { ...scriptItem }
+
+    newScriptItem.tags = newScriptItem.tags.filter(tag => tag !== OPEN_CURTAIN)
+    newScriptItem.tags.push(CLOSE_CURTAIN)
+
+    return newScriptItem;
+}
+
+const opensCurtain = (scriptItem) => {
+
+    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
+        return scriptItem.tags.includes(OPEN_CURTAIN)
+    }
+
+    return false
+}
+
+const closesCurtain = (scriptItem) => {
+
+    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
+        return scriptItem.tags.includes(CLOSE_CURTAIN)
+    }
+
+    return false
+}
+
+export const clearCurtainTags = (scriptItem) => {
+
+    let newScriptItem = { ...scriptItem }
+
+    newScriptItem.tags = newScriptItem.tags.filter(tag => tag !== OPEN_CURTAIN && tag !== CLOSE_CURTAIN)
 }
