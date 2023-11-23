@@ -5,7 +5,7 @@ import { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {addUpdates } from '../../../actions/localServer'; 
-
+import {updateShowComments } from '../../../actions/scriptEditor';
 //Components
 import Comment from './Comment';
 
@@ -17,11 +17,17 @@ import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 //utilities
 import { log } from '../../../helper';
-import { prepareUpdate } from '../../../dataAccess/prepareUpdate';
-import { newScriptItemsForToggleCurtain, clearCurtainTags } from '../scripts/scriptItem';
+import { prepareUpdate, prepareUpdates } from '../../../dataAccess/prepareUpdate';
+import {
+    newScriptItemsForToggleCurtain,
+    newScriptItemsForAddComment,
+    clearCurtainTags
+} from '../scripts/scriptItem';
+import { moveFocusToId } from '../scripts/utility';
 //Constants
 import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING , CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
-import {SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
+import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
+import { DOWN } from '../scripts/utility';
 //styling
 import s from '../ScriptItem.module.scss';
 
@@ -38,10 +44,7 @@ function ScriptItem(props) {
         sceneId = null,
         sceneNumber = null,
         alignRight = false,
-        onClick,
-        onChange,
         moveFocus,
-        undoDateTime,
         curtainOpen = null,
         zIndex=0} = props;
 
@@ -53,6 +56,8 @@ function ScriptItem(props) {
     const showComments = useSelector(state => state.scriptEditor.showComments) || true
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId]) || []
     const focus = useSelector(state => (state.scriptEditor.focus[id])) || false
+    const isUndoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress) || null
+
 
     const scriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id]) || []
     const scriptItem = scriptItemHistory.find(item => item.created === createdString) || {}
@@ -106,7 +111,7 @@ function ScriptItem(props) {
     
     const handleShowMedia = (value = null) => {
 
-        if (undoDateTime) { onClick('confirmUndo') } //automatically confirms undo if started to add media.
+        if (isUndoInProgress) { dispatch(triggerConfirmUndo()); } //automatically confirms undo if started to add media.
 
         log(debug, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
@@ -118,7 +123,7 @@ function ScriptItem(props) {
 
     const handleMedia = (type, media) => {
 
-        if (undoDateTime) { onClick('confirmUndo') } //automatically confirms undo if started to add media.
+        if (isUndoInProgress) { dispatch(triggerConfirmUndo()); } //automatically confirms undo if started to add media.
 
         let urls = []
 
@@ -143,14 +148,15 @@ function ScriptItem(props) {
 
     const handleChange = (type, value) => {
 
-        let newUpdate = { ...scriptItem };
+        let newUpdate = null;
+        let newUpdates = [];
 
         switch (type) {
-            case 'text': newUpdate.text = value; break;
-            case 'partIds': newUpdate.partIds =  value; break;
-            case 'tags': newUpdate.tags =  value ; break;
-            case 'attachments': newUpdate.attachments = value; break;
-            case 'type': newUpdate.type = value;
+            case 'text': newUpdate = { ...scriptItem, text : value }; break;                ;
+            case 'partIds': newUpdate = { ...scriptItem, partIds: value }; break;
+            case 'tags': newUpdate = { ...scriptItem, tags: value } ; break;
+            case 'attachments': newUpdate = { ...scriptItem, attachments: value }; break;
+            case 'type': newUpdate = { ...scriptItem, type : value };
 
                 if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
                     newUpdate = newScriptItemsForToggleCurtain(newUpdate, true) //set it to open curtain.
@@ -159,16 +165,70 @@ function ScriptItem(props) {
                     newUpdate = clearCurtainTags(newUpdate)
                 }
                 break;
+            case 'toggleCurtain': newUpdate = newScriptItemsForToggleCurtain(scriptItem); break;
+            case 'addComment':
+                newUpdates = newScriptItemsForAddComment(scriptItem)
+                dispatch(updateShowComments(true))
+                break;
+
+            //These actions require access to scriptItems outside of this one and are processed in ScriptEditorProcesser component to avoid continual re-rendering of this component.
+            case 'deleteComment':
+                dispatch(triggerDeleteComment(scriptItem))
+                break;
+            case 'addScriptItemBelow':
+                dispatch(triggerAddScriptItem(BELOW, scriptItem))
+                break;
+            case 'addScriptItemAbove':
+                dispatch(triggerAddScriptItem(ABOVE, scriptItem))
+                break;
+            case 'deleteScriptItem':
+                dispatch(triggerDeleteScriptItem(value,scriptItem)) //value = direction of deletion (UP or DOWN)
+                break;
+            case 'deleteNextScriptItem':
+                dispatch(triggerDeleteNextScriptItem(scriptItem))
+                break;
+            case 'deleteScene':
+                dispatch(triggerDeleteScene(scriptItem))
+                break;
             default: return;
         }
 
-        const preparedUpdates = prepareUpdate(newUpdate)
+        if (newUpdate) {
+            const preparedUpdate = prepareUpdate(newUpdate)
+            dispatch(addUpdates(preparedUpdate, SCRIPT_ITEM));
+        }
 
-        dispatch(addUpdates(preparedUpdates, SCRIPT_ITEM));
+        if (newUpdates) {
+            const preparedUpdates = prepareUpdates(newUpdates)
+            dispatch(addUpdates(preparedUpdates,SCRIPT_ITEM))
+        }
+        
 
     }
 
-   
+    const handleClick = (e,action) => {
+
+        //if undoDateTime is set, then confirm undo if user is moving on different action.
+        if (['undo', 'redo', 'confirmUndo'].includes(action) === false && isUndoInProgress) {
+            dispatch(triggerConfirmUndo());
+        }
+
+        log(debug, `EventsCheck: handleClick: ${action},${scriptItem.id}`)
+        switch (action) {
+            case 'delete': handleChange('deleteScriptItem', DOWN); break;
+            case 'deleteScene': handleChange('deleteScene', null); break;
+
+            case 'undo': dispatch(triggerUndo()); break;
+            case 'redo': dispatch(triggerRedo()); break;
+            case 'confirmUndo': dispatch(triggerConfirmUndo()); break;
+            case 'goToComment':
+                dispatch(updateShowComments(true))
+                moveFocusToId(scriptItem.commentid)
+                    ; break;
+
+            default: return;
+        }
+    }
 
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
@@ -185,8 +245,6 @@ function ScriptItem(props) {
                         scriptItemId={id}
                         sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
-                        undoDateTime={undoDateTime}
-                        onClick={onClick}
                         onChange={(selectedPartIds) => handleChange('partIds', selectedPartIds)}
                     />
                 </div>
@@ -198,10 +256,9 @@ function ScriptItem(props) {
                     maxWidth={textInputRef.current?.offsetWidth}
                     scriptItem={scriptItem}
                     header={header()}
-                    onClick={onClick}
+                    onClick={(action,value) => handleClick(action,value)}
                     toggleMedia={(value) => handleShowMedia(value)}
                     onChange={(type,value) => handleChange(type,value)}
-                    undoDateTime={undoDateTime}
                     moveFocus={moveFocus}
                 />
 
@@ -219,7 +276,7 @@ function ScriptItem(props) {
             }
 
             {(commentId) && (showComments) &&
-                <Comment id={commentId} onChange={onChange} />
+                <Comment id={commentId} onChange={(action,value)=>handleChange(action,value)} />
             }
 
             {/*Elements specific for each scriptItem type*/}
@@ -227,13 +284,13 @@ function ScriptItem(props) {
             {(type === SCENE) &&
                 <div className={s['scene-controls'] }>
                     {scriptItem.undoDateTime &&
-                        <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
+                        <Button size='xs' color="primary" onClick={(e) => handleClick(e,'confirmUndo')} >confirm undo</Button>
                     }
-                    <Icon icon="undo" onClick={() => onClick('undo')} />
+                    <Icon icon="undo" onClick={(e) => handleClick(e,'undo')} />
                     {scriptItem.undoDateTime &&
-                        <Icon icon="redo" onClick={() => onClick('redo')} />
+                        <Icon icon="redo" onClick={(e) => handleClick(e,'redo')} />
                     }
-                    <Icon icon="trash" onClick={() => onClick('deleteScene', null)} />
+                    <Icon icon="trash" onClick={(e) => handleClick(e,'deleteScene', null)} />
 
 
 

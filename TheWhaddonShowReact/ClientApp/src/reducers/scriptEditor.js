@@ -1,18 +1,24 @@
-import { ADD_TEXT_AREA_CONTEXT, ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY, CLEAR_SCRIPT_EDITOR_STATE, UPDATE_SEARCH_PARAMETERS } from '../actions/scriptEditor';
-import { UPDATE_VIEW_COMMENTS } from '../actions/scriptEditor';
-import { UPDATE_DIALOGUE_RIGHT_ID } from '../actions/scriptEditor';
-import { TOGGLE_SCENE_SELECTOR } from '../actions/scriptEditor';
-import { UPDATE_SHOW_COMMENTS } from '../actions/scriptEditor';
-import { UPDATE_VIEW_AS_PART_PERSON } from '../actions/scriptEditor';
-import { UPDATE_PART_PERSONS } from '../actions/scriptEditor';
-import { ADD_UPDATES_SCENE_HISTORY } from '../actions/scriptEditor';
-import { ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY } from '../actions/scriptEditor';
-import { UPDATE_SCENE_PART_PERSONS } from '../actions/scriptEditor';
-import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
-import { UPDATE_PREVIOUS_CURTAIN } from '../actions/scriptEditor';
-import { SET_SHOW } from '../actions/scriptEditor';
+import {
+    ADD_TEXT_AREA_CONTEXT,
+    ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY,
+    CLEAR_SCRIPT_EDITOR_STATE,
+    UPDATE_IS_UNDO_IN_PROGRESS,
+    UPDATE_SEARCH_PARAMETERS,
+    UPDATE_VIEW_COMMENTS,
+    UPDATE_DIALOGUE_RIGHT_ID,
+    TOGGLE_SCENE_SELECTOR,
+    UPDATE_SHOW_COMMENTS,
+    UPDATE_VIEW_AS_PART_PERSON,
+    UPDATE_PART_PERSONS,
+    ADD_UPDATES_SCENE_HISTORY,
+    ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY,
+    UPDATE_SCENE_PART_PERSONS,
+    CHANGE_FOCUS,
+    CLEAR_IMPORT_UPDATES,
+    UPDATE_PREVIOUS_CURTAIN,
+    SET_SHOW,
+} from '../actions/scriptEditor';
 
-import { CHANGE_FOCUS } from '../actions/scriptEditor';
 
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
@@ -36,6 +42,7 @@ export const initialState = {
     focus: {},
     previousCurtain: {},
     textAreaContext: {},
+    isUndoInProgress: false,
 
 }
 
@@ -89,7 +96,7 @@ export default function scriptEditorReducer(state = initialState, action) {
 
             const workingSceneScriptItemHistory = { ...state.sceneScriptItemHistory } || {}
 
-           
+
             return {
                 ...state,
                 sceneScriptItemHistory: { ...state.sceneScriptItemHistory, [action.id]: [...workingSceneScriptItemHistory[action.id] || [], ...action.updates] }
@@ -111,11 +118,11 @@ export default function scriptEditorReducer(state = initialState, action) {
                 sceneHistory: [...state.sceneHistory.filter(item => item.id !== IMPORT_GUID)],
                 sceneScriptItemHistory: { ...state.sceneScriptItemHistory, [IMPORT_GUID]: [] },
                 scenePartPersons: { ...state.scenePartPersons, [IMPORT_GUID]: [] },
-            }          
+            }
         case CLEAR_SCRIPT_EDITOR_STATE:
 
             return {
-                ...initialState 
+                ...initialState
             }
         case UPDATE_PREVIOUS_CURTAIN:
             return {
@@ -127,7 +134,8 @@ export default function scriptEditorReducer(state = initialState, action) {
             return {
                 ...state,
                 scriptItemHistory: {
-                    ...state.scriptItemHistory, [action.update.id]: [...state.scriptItemHistory[action.update.id] || [], action.update] }
+                    ...state.scriptItemHistory, [action.update.id]: [...state.scriptItemHistory[action.update.id] || [], action.update]
+                }
             }
         case SET_SHOW:
             return {
@@ -139,6 +147,12 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 textAreaContext: { ...state.textAreaContext, [action.scriptItemType]: action.context }
             }
+
+        case UPDATE_IS_UNDO_IN_PROGRESS:
+            return {
+                ...state,
+                isUndoInProgress: action.payload,
+            };
         default: return state;
     }
 }

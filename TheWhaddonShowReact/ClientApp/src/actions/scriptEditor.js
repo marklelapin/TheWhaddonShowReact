@@ -17,7 +17,7 @@ export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
 export const ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_TO_SCRIPT_ITEM_HISTORY';
 export const SET_SHOW = 'SET_SHOW';
 export const ADD_TEXT_AREA_CONTEXT = 'ADD_TEXT_AREA_CONTEXT';
-
+export const UPDATE_IS_UNDO_IN_PROGRESS = 'UPDATE_IS_UNDO_IN_PROGRESS';
 export function updateSearchParameters(searchParameters) {
     return {
         type: UPDATE_SEARCH_PARAMETERS,
@@ -27,7 +27,7 @@ export function updateSearchParameters(searchParameters) {
 }
 
 export function updateViewComments(viewComments) {
-return {
+    return {
         type: UPDATE_VIEW_COMMENTS,
         viewComments,
 
@@ -35,7 +35,7 @@ return {
 }
 
 export function updateDialogueRightId(dialogueRightId) {
-return {
+    return {
         type: UPDATE_DIALOGUE_RIGHT_ID,
         dialogueRightId,
 
@@ -64,14 +64,14 @@ export function updateViewAsPartPerson(partPerson) {
 
 
 export function updatePartPersons(partPersons) {
-return {
+    return {
         type: UPDATE_PART_PERSONS,
         partPersons,
     }
 }
 
-export function addUpdatesToSceneHistory( updates) {
-return {
+export function addUpdatesToSceneHistory(updates) {
+    return {
         type: ADD_UPDATES_SCENE_HISTORY,
         updates,
     }
@@ -79,7 +79,7 @@ return {
 
 export function addUpdatesToSceneScriptItemHistory(sceneId, updates) {
     return {
-type: ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY,
+        type: ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY,
         id: sceneId,
         updates,
     }
@@ -87,7 +87,7 @@ type: ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY,
 
 export function updateScenePartPersons(sceneId, partPersons) {
     return {
-type: UPDATE_SCENE_PART_PERSONS,
+        type: UPDATE_SCENE_PART_PERSONS,
         id: sceneId,
         partPersons,
     }
@@ -112,7 +112,7 @@ export function clearScriptEditorState() {
     }
 }
 
-export function updatePreviousCurtain(nextSceneId,curtainOpen) {
+export function updatePreviousCurtain(nextSceneId, curtainOpen) {
     return {
         type: UPDATE_PREVIOUS_CURTAIN,
         nextSceneId: nextSceneId,
@@ -139,5 +139,12 @@ export function addTextAreaContext(scriptItemType, context) {
         type: ADD_TEXT_AREA_CONTEXT,
         scriptItemType,
         context,
+    }
+}
+
+export function updateIsUndoInProgress(payload) {
+    return {
+        type: UPDATE_IS_UNDO_IN_PROGRESS,
+        payload,
     }
 }

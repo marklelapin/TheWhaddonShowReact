@@ -35,7 +35,7 @@ function ScriptItemText(props) {
 
 
     //Props
-    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia, undoDateTime } = props;
+    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia } = props;
 
     const { id, type, tags } = scriptItem
 
@@ -44,7 +44,7 @@ function ScriptItemText(props) {
 
     //REdux
     const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
-
+    const isUndoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress)
 
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
@@ -64,7 +64,7 @@ function ScriptItemText(props) {
 
         //makes the textarea the focus when created unless during an undo.
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
-        if (textInputRef && undoDateTime === null) {
+        if (textInputRef && !isUndoInProgress) {
             textInputRef.focus();
         }
     }, [])
@@ -131,11 +131,6 @@ function ScriptItemText(props) {
             case 'redo': onClick('redo'); break;
             case 'toggleMedia':
                 toggleMedia()
-                break;
-            case 'link':
-                //TODO get linkg
-                const linksToAdd = []
-                onChange('addLinks', linksToAdd);
                 break;
             case 'addComment': onChange('addComment', null); break;
             case 'goToComment': onClick('goToComment', null); break;
@@ -272,7 +267,7 @@ function ScriptItemText(props) {
             onClick('undo')
         }
 
-        if (e.ctrlKey && e.key === 'y' && undoDateTime !== null) {
+        if (e.ctrlKey && e.key === 'y' && isUndoInProgress) {
             onClick('redo')
         }
 
@@ -280,7 +275,7 @@ function ScriptItemText(props) {
     }
 
     const handleFocus = () => {
-        if (undoDateTime) { onClick('confirmUndo') }
+        if (isUndoInProgress) { onClick('confirmUndo') }
         dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
         toggleMedia(false)
     }

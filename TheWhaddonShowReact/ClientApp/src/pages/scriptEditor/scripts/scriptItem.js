@@ -358,6 +358,20 @@ export function newScriptItemsForMoveScene(sceneId, newPreviousId, scenes) {
 
 }
 
+export const newScriptItemsForAddComment=(_scriptItem) => {
+
+    let newScriptItem = { ..._scriptItem }
+    let newComment = new ScriptItemUpdate(COMMENT)
+
+    newComment.parentId = newScriptItem.parentId
+    newComment.previousId = newScriptItem.id
+
+    newScriptItem.commentId = newComment.id
+
+    const newUpdates = [newComment, newScriptItem]
+
+    return newUpdates
+} 
 
 
 export function updatePreviousCurtainValue(scene, scriptItems, dispatch) {

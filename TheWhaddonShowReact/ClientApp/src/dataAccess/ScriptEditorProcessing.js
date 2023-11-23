@@ -187,6 +187,57 @@ export function ScriptEditorProcessing() {
     }, [partPersons, sceneHistory])
 
 
+    ///Undo processing
+    const handleUndo = () => {
+
+        const nextUndoDate = getNextUndoDate([...sceneScriptItemHistory], undoDateTime)
+
+        setUndoDateTime(nextUndoDate)
+
+    }
+
+    const handleRedo = () => {
+
+        const nextUndoDate = getNextRedoDate([...sceneScriptItemHistory], undoDateTime)
+
+        setUndoDateTime(nextUndoDate)
+
+    }
+
+    const handleConfirmUndo = () => {
+
+        //process changed scriptItems
+        if (undoDateTime === null) return;
+
+        const idsToUpdate = new Set([...sceneScriptItemHistory].filter(item => new Date(item.created) >= undoDateTime).map(item => item.id))
+
+        //convert to array
+        const arrayIds = [...idsToUpdate];
+
+        //filter the scriptItems matching the ids
+        const changeScriptItems = scriptItems.filter((item) => arrayIds.includes(item.id));
+        const changeScriptItemIds = changeScriptItems.map(item => item.id)
+
+        const deleteScriptItemIds = arrayIds.filter(id => !changeScriptItemIds.includes(id))
+
+        let deleteScriptItems = getLatest([...sceneScriptItemHistory].filter(item => deleteScriptItemIds.includes(item.id)))
+
+        deleteScriptItems = deleteScriptItems.map(item => ({ ...item, isActive: false }))
+
+
+        //update these scriptItems
+        const updates = prepareUpdates([...changeScriptItems, ...deleteScriptItems]);
+
+        dispatch(addUpdates(updates, 'ScriptItem'));
+
+        setUndoDateTime(null)
+
+    }
+
+
+
+
+
     return (null)
 }
 

@@ -1,7 +1,7 @@
 ﻿//React and Redux
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 //Components
 import Avatar from '../../../components/Avatar/Avatar';
@@ -18,10 +18,11 @@ function PartSelector(props) {
 
 
     const debug = false;
+    const dispatch = useDispatch();
 
     log(debug, 'PartSelectorProps', props)
     //Props
-    const { sceneId, allocatedPartIds = [], onChange, size = "md", undoDateTime, onClick } = props;
+    const { sceneId, allocatedPartIds = [], onChange, size = "md"} = props;
 
     //REdux
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId])
@@ -80,8 +81,8 @@ function PartSelector(props) {
 
 
     const toggleDropdown = (e) => {
-        if (undoDateTime) { onClick('confirmUndo') }
         e.stopPropagation();
+        dispatch(triggerConfirmUndo()) //confirms undo if user has moved on to another field
         setOpenPartSelector(!openPartSelector)
 
     }
