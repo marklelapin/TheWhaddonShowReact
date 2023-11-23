@@ -17,7 +17,20 @@ export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
 export const ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_TO_SCRIPT_ITEM_HISTORY';
 export const SET_SHOW = 'SET_SHOW';
 export const ADD_TEXT_AREA_CONTEXT = 'ADD_TEXT_AREA_CONTEXT';
-export const UPDATE_IS_UNDO_IN_PROGRESS = 'UPDATE_IS_UNDO_IN_PROGRESS';
+export const UPDATE_UNDO_DATE_TIME = 'UPDATE_IS_UNDO_IN_PROGRESS';
+
+export const TRIGGER = 'TRIGGER';
+
+//Trigger types
+export const REDO = 'REDO';
+export const UNDO = 'UNDO';
+export const CONFIRM_UNDO = 'CONFIRM_UNDO';
+export const DELETE_COMMENT = 'DELETE_COMMENT';
+export const ADD_SCRIPT_ITEM = 'ADD_SCRIPT_ITEM';
+export const DELETE_SCRIPT_ITEM = 'DELETE_SCRIPT_ITEM';
+export const DELETE_NEXT_SCRIPT_ITEM = 'DELETE_NEXT_SCRIPT_ITEM';
+export const DELETE_SCENE = 'DELETE_SCENE';
+
 export function updateSearchParameters(searchParameters) {
     return {
         type: UPDATE_SEARCH_PARAMETERS,
@@ -142,9 +155,18 @@ export function addTextAreaContext(scriptItemType, context) {
     }
 }
 
-export function updateIsUndoInProgress(payload) {
+export function updateUndoDateTime(undoDateTime) {
     return {
-        type: UPDATE_IS_UNDO_IN_PROGRESS,
+        type: UPDATE_UNDO_DATE_TIME,
+        undoDateTime,
+    }
+}
+
+export function trigger(triggerType, payload) {
+    return {
+        type: TRIGGER,
+        triggerType,
         payload,
     }
 }
+

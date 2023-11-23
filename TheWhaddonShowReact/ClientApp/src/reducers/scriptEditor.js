@@ -2,7 +2,6 @@ import {
     ADD_TEXT_AREA_CONTEXT,
     ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY,
     CLEAR_SCRIPT_EDITOR_STATE,
-    UPDATE_IS_UNDO_IN_PROGRESS,
     UPDATE_SEARCH_PARAMETERS,
     UPDATE_VIEW_COMMENTS,
     UPDATE_DIALOGUE_RIGHT_ID,
@@ -17,6 +16,8 @@ import {
     CLEAR_IMPORT_UPDATES,
     UPDATE_PREVIOUS_CURTAIN,
     SET_SHOW,
+    UPDATE_UNDO_DATE_TIME,
+    TRIGGER
 } from '../actions/scriptEditor';
 
 
@@ -43,6 +44,8 @@ export const initialState = {
     previousCurtain: {},
     textAreaContext: {},
     isUndoInProgress: false,
+    undoDateTime: null,
+    trigger: {},
 
 }
 
@@ -148,11 +151,18 @@ export default function scriptEditorReducer(state = initialState, action) {
                 textAreaContext: { ...state.textAreaContext, [action.scriptItemType]: action.context }
             }
 
-        case UPDATE_IS_UNDO_IN_PROGRESS:
+        case UPDATE_UNDO_DATE_TIME:
             return {
                 ...state,
-                isUndoInProgress: action.payload,
-            };
+                undoDateTime: action.undoDateTime,
+                isUndoInProgress: (action.undoDateTime !== null)
+            }
+
+        case TRIGGER: 
+            return {
+                ...state,
+                trigger: { ...action.payload, type: action.triggerType },
+            }
         default: return state;
     }
 }

@@ -5,7 +5,7 @@ import { useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { addUpdates } from '../../../actions/localServer';
-import { updateShowComments } from '../../../actions/scriptEditor';
+import { updateShowComments, trigger } from '../../../actions/scriptEditor';
 //Components
 import Comment from './Comment';
 
@@ -27,7 +27,10 @@ import { moveFocusToId } from '../scripts/utility';
 //Constants
 import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
-import { DOWN } from '../scripts/utility';
+import { DOWN, ABOVE, BELOW } from '../scripts/utility';
+//trigger types
+import { REDO, UNDO, CONFIRM_UNDO, DELETE_COMMENT, ADD_SCRIPT_ITEM, DELETE_SCRIPT_ITEM, DELETE_NEXT_SCRIPT_ITEM, DELETE_SCENE } from '../../../actions/scriptEditor';
+
 //styling
 import s from '../ScriptItem.module.scss';
 
@@ -113,7 +116,7 @@ function ScriptItem(props) {
 
     const handleShowMedia = (value = null) => {
 
-        if (isUndoInProgress) { dispatch(triggerConfirmUndo()); } //automatically confirms undo if started to add media.
+        if (isUndoInProgress) { dispatch(trigger(CONFIRM_UNDO)); } //automatically confirms undo if started to add media.
 
         log(debug, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
@@ -125,7 +128,7 @@ function ScriptItem(props) {
 
     const handleMedia = (type, media) => {
 
-        if (isUndoInProgress) { dispatch(triggerConfirmUndo()); } //automatically confirms undo if started to add media.
+        if (isUndoInProgress) { dispatch(trigger(CONFIRM_UNDO)); } //automatically confirms undo if started to add media.
 
         let urls = []
 
@@ -175,22 +178,23 @@ function ScriptItem(props) {
 
             //These actions require access to scriptItems outside of this one and are processed in ScriptEditorProcesser component to avoid continual re-rendering of this component.
             case 'deleteComment':
-                dispatch(triggerDeleteComment(scriptItem))
+                dispatch(trigger(DELETE_COMMENT, { scriptItem }))
                 break;
             case 'addScriptItemBelow':
-                dispatch(triggerAddScriptItem(BELOW, scriptItem))
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem }))
                 break;
             case 'addScriptItemAbove':
-                dispatch(triggerAddScriptItem(ABOVE, scriptItem))
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: ABOVE, scriptItem }))
                 break;
             case 'deleteScriptItem':
-                dispatch(triggerDeleteScriptItem(value, scriptItem)) //value = direction of deletion (UP or DOWN)
+               
+                dispatch(trigger(DELETE_SCRIPT_ITEM, { direction: value, scriptItem })) //value = direction of deletion (UP or DOWN)
                 break;
             case 'deleteNextScriptItem':
-                dispatch(triggerDeleteNextScriptItem(scriptItem))
+                dispatch(trigger(DELETE_NEXT_SCRIPT_ITEM, { scriptItem }))
                 break;
             case 'deleteScene':
-                dispatch(triggerDeleteScene(scriptItem))
+                dispatch(trigger(DELETE_SCENE, { scriptItem }))
                 break;
             default: return;
         }
@@ -212,7 +216,7 @@ function ScriptItem(props) {
 
         //if undoDateTime is set, then confirm undo if user is moving on different action.
         if (['undo', 'redo', 'confirmUndo'].includes(action) === false && isUndoInProgress) {
-            dispatch(triggerConfirmUndo());
+            dispatch(trigger(CONFIRM_UNDO));
         }
 
         log(debug, `EventsCheck: handleClick: ${action},${scriptItem.id}`)
@@ -220,9 +224,9 @@ function ScriptItem(props) {
             case 'delete': handleChange('deleteScriptItem', DOWN); break;
             case 'deleteScene': handleChange('deleteScene', null); break;
 
-            case 'undo': dispatch(triggerUndo()); break;
-            case 'redo': dispatch(triggerRedo()); break;
-            case 'confirmUndo': dispatch(triggerConfirmUndo()); break;
+            case 'undo': dispatch(trigger(UNDO)); break;
+            case 'redo': dispatch(trigger(REDO)); break;
+            case 'confirmUndo': dispatch(trigger(CONFIRM_UNDO)); break;
             case 'goToComment':
                 dispatch(updateShowComments(true))
                 moveFocusToId(scriptItem.commentid)
