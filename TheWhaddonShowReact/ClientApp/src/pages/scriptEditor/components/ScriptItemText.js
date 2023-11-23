@@ -11,10 +11,15 @@ import { log } from '../../../helper';
 
 //Utilities
 import { changeFocus } from '../../../actions/scriptEditor';
+import { moveFocusToId } from '../scripts/utility';
+
+//constants
+import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
+import { UP, DOWN, START, END, SCENE_END } from '../scripts/utility';
 
 //css
 import s from '../ScriptItem.module.scss';
-import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
+
 
 function ScriptItemText(props) {
 
@@ -22,20 +27,19 @@ function ScriptItemText(props) {
     const debug = true;
     const dispatch = useDispatch()
 
-    //constants
-    const audioTypes = [SONG, SOUND]
-    const videoTypes = [SONG, SOUND, SCENE, SYNOPSIS]
-    const END = 'end'
-    const START = 'start'
-    const UP = 'up'
-    const DOWN = 'down'
-
     const endMargin = 100;
 
-
-
     //Props
-    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia } = props;
+    const { scriptItem,
+        header,
+        onChange,
+        onClick,
+        placeholder = "...",
+        maxWidth = null,
+        toggleMedia,
+        previousFocusId = null,
+        nextFocusId = null
+    } = props;
 
     const { id, type, tags } = scriptItem
 
@@ -109,10 +113,6 @@ function ScriptItemText(props) {
         setTempTextValue(e.target.value || '')
     }
 
-    
-
-
-
     const handleControlsClick = (action, value) => {
 
         log(debug, `EventCheck: ScriptItemTextControlsClick: ${action},${value}`)
@@ -138,6 +138,27 @@ function ScriptItemText(props) {
         }
 
     }
+
+    const moveFocus = (direction, position) => {
+
+        let newPosition;
+        //moving up from scene is a special case where it needs to find the last item in the scene
+        if (scriptItem.type === SCENE && direction === UP) {
+            newPosition = SCENE_END;
+        } else {
+            newPosition = position || END;
+        }
+
+        const newId = (direction === DOWN) ? nextFocusId || scriptItem.nextId : previousFocusId || scriptItem.previousId
+
+        log(debug, 'Component:ScriptItemText handleMoveFocus input:', { direction, position, previousFocusId, nextFocusId })
+        log(debug, 'Component:ScriptItemText handleMoveFocus output:', { newId, newPosition })
+        if (newId) {
+            moveFocusToId(newId, newPosition)
+        }
+
+    }
+
 
     const handleKeyDown = (e, scriptItem) => {
 

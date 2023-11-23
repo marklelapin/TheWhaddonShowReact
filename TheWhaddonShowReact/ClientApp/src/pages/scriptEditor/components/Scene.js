@@ -180,17 +180,7 @@ function Scene(props) {
 
 
 
-    const handleMoveFocus = (direction, position, scriptItem, previousFocusOverrideId = null, nextFocusOverrideId = null) => {
-        const newId = (direction === DOWN) ? nextFocusOverrideId || scriptItem.nextId : previousFocusOverrideId || scriptItem.previousId
-        let newPosition = position || END
-        log(debug, 'Component:Scene handleMoveFocus input:', { direction, position, scriptItem, previousFocusOverrideId, nextFocusOverrideId })
-        log(debug, 'Component:Scene handleMoveFocus output:', { newId, newPosition })
-        if (newId) {
-            moveFocusToId(newId, newPosition)
-        }
-
-    }
-
+   
 
 
 
@@ -237,12 +227,13 @@ function Scene(props) {
                     <ScriptItem
                         id={currentScene.id}
                         created={currentScene.created}
-                        key={currentScene.id + currentScene.created}
+                        key={currentScene.id}
                         sceneId={currentScene.id}
                         sceneNumber={currentScene.sceneNumber}
                         curtainOpen={previousCurtainOpen}
                         zIndex={totalItems}
-                        moveFocus={(direction, position) => handleMoveFocus(direction, (direction === UP) ? SCENE_END : position, currentScene, currentScene.previousId, synopsis.id)}
+                        previousFocusId={currentScene.previousId}
+                        nextFocusId={synopsis.id}
                     />
 
                 }
@@ -250,11 +241,11 @@ function Scene(props) {
                     <ScriptItem
                         id={synopsis.id}
                         created={synopsis.created}
-                        key={synopsis.id + synopsis.created}
+                        key={synopsis.id}
                         sceneId={currentScene.id}
                         curtainOpen={previousCurtainOpen}
                         zIndex={totalItems - 1}
-                        moveFocus={(direction, position) => handleMoveFocus(direction, position, synopsis, null, currentScene.partIds[0])}
+                        nextFocusId={currentScene.partIds[0]}
                     />
                 }
                 {(currentScene.type === SCENE) &&
@@ -271,14 +262,14 @@ function Scene(props) {
                 }
                 {currentScene.type === SCENE && staging &&
                     <>
-                        <ScriptItem
-                            id={staging.id}
-                            created={staging.created}
-                            key={staging.id + staging.created}
-                            sceneId={currentScene.id}
-                            curtainOpen={previousCurtainOpen}
-                            zIndex={totalItems - 3}
-                            moveFocus={(direction, position) => handleMoveFocus(direction, position, staging, currentScene.partIds[currentScene.partIds.length - 1], null)}
+                    <ScriptItem
+                        id={staging.id}
+                        created={staging.created}
+                        key={staging.id}
+                        sceneId={currentScene.id}
+                        curtainOpen={previousCurtainOpen}
+                        zIndex={totalItems - 3}
+                        previousFocusId={currentScene.partIds[currentScene.partIds.length - 1]}
                         />
                     </>
 
@@ -293,12 +284,12 @@ function Scene(props) {
                         <ScriptItem
                             id={scriptItem.id}
                             created={scriptItem.created}
-                            key={scriptItem.id + scriptItem.created}
+                            key={scriptItem.id}
                             sceneId={currentScene.id}
                             curtainOpen={scriptItem.curtainOpen}
                             alignRight={scriptItem.alignRight}
                             zIndex={totalItems - index - 4}
-                            moveFocus={(direction, position) => handleMoveFocus(direction, position, scriptItem, null, (scriptItem.nextId === null) ? currentScene.nextId : null)}
+                            nextFocusId={(scriptItem.nextId === null) ? currentScene.nextId : null}
 
                         />
                     )
