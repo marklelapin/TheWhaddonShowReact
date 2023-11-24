@@ -17,7 +17,7 @@ export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
 export const ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_TO_SCRIPT_ITEM_HISTORY';
 export const SET_SHOW = 'SET_SHOW';
 export const ADD_TEXT_AREA_CONTEXT = 'ADD_TEXT_AREA_CONTEXT';
-export const UPDATE_UNDO_DATE_TIME = 'UPDATE_IS_UNDO_IN_PROGRESS';
+export const UPDATE_UNDO_DATE_TIME = 'UPDATE_UNDO_DATE_TIME';
 
 export const TRIGGER = 'TRIGGER';
 
@@ -30,6 +30,8 @@ export const ADD_SCRIPT_ITEM = 'ADD_SCRIPT_ITEM';
 export const DELETE_SCRIPT_ITEM = 'DELETE_SCRIPT_ITEM';
 export const DELETE_NEXT_SCRIPT_ITEM = 'DELETE_NEXT_SCRIPT_ITEM';
 export const DELETE_SCENE = 'DELETE_SCENE';
+export const SWAP_PART = 'SWAP_PART';
+export const UPDATE_SCENE_PART_IDS = 'UPDATE_SCENE_PART_IDS';
 
 export function updateSearchParameters(searchParameters) {
     return {
@@ -155,9 +157,10 @@ export function addTextAreaContext(scriptItemType, context) {
     }
 }
 
-export function updateUndoDateTime(undoDateTime) {
+export function updateUndoDateTime(undoDateTime,sceneId) {
     return {
         type: UPDATE_UNDO_DATE_TIME,
+        sceneId: sceneId,
         undoDateTime,
     }
 }

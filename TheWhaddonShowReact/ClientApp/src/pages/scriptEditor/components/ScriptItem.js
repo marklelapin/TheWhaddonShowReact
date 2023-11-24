@@ -1,7 +1,7 @@
 ﻿
 //React and Redux
 import React from 'react';
-import { useState, useRef } from 'react';
+import { memo, useMemo, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { addUpdates } from '../../../actions/localServer';
@@ -17,7 +17,7 @@ import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 //utilities
 import { log } from '../../../helper';
-import { prepareUpdate, prepareUpdates } from '../../../dataAccess/prepareUpdate';
+import { prepareUpdate, prepareUpdates } from '../../../dataAccess/localServerUtils';
 import {
     newScriptItemsForToggleCurtain,
     newScriptItemsForAddComment,
@@ -27,7 +27,7 @@ import { moveFocusToId } from '../scripts/utility';
 //Constants
 import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
-import { DOWN, ABOVE, BELOW } from '../scripts/utility';
+import { DOWN, ABOVE, BELOW, START, END } from '../scripts/utility';
 //trigger types
 import { REDO, UNDO, CONFIRM_UNDO, DELETE_COMMENT, ADD_SCRIPT_ITEM, DELETE_SCRIPT_ITEM, DELETE_NEXT_SCRIPT_ITEM, DELETE_SCENE } from '../../../actions/scriptEditor';
 
@@ -35,7 +35,7 @@ import { REDO, UNDO, CONFIRM_UNDO, DELETE_COMMENT, ADD_SCRIPT_ITEM, DELETE_SCRIP
 import s from '../ScriptItem.module.scss';
 
 
-function ScriptItem(props) {
+const ScriptItem = memo((props) => {
 
     //utility consts
     const debug = true;
@@ -56,7 +56,7 @@ function ScriptItem(props) {
     const createdString = moment(created).format('YYYY-MM-DDTHH:mm:ss.SSS')
 
     log(debug, 'Component:ScriptItem', { id, created })
-
+    
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments) || true
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId]) || []
@@ -94,8 +94,6 @@ function ScriptItem(props) {
         switch (type) {
             case DIALOGUE:
                 if (scenePartPersons) {
-                    log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
-                    log(debug, 'ScriptItem:  changePart scenePartPersons', scenePartPersons)
                     const partPersons = scriptItem.partIds.map(partId => scenePartPersons.partPersons.find(partPerson => partPerson.id === partId))
 
                     const partNames = partPersons.map(partPersons => partPersons?.name).join(',')
@@ -155,6 +153,9 @@ function ScriptItem(props) {
 
         let newUpdate = null;
         let newUpdates = [];
+        //set default next focus and position - they get overridden if the action requires it.
+        let newFocusId = id;
+        let newFocusPosition = END;
 
         switch (type) {
             case 'text': newUpdate = { ...scriptItem, text: value }; break;;
@@ -172,7 +173,7 @@ function ScriptItem(props) {
                 break;
             case 'toggleCurtain': newUpdate = newScriptItemsForToggleCurtain(scriptItem); break;
             case 'addComment':
-                newUpdates = newScriptItemsForAddComment(scriptItem)
+                newUpdates = newScriptItemsForAddComment(scriptItem,value)
                 dispatch(updateShowComments(true))
                 break;
 
@@ -181,14 +182,22 @@ function ScriptItem(props) {
                 dispatch(trigger(DELETE_COMMENT, { scriptItem }))
                 break;
             case 'addScriptItemBelow':
-                dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem }))
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem, tempTextValue: value}))
                 break;
             case 'addScriptItemAbove':
-                dispatch(trigger(ADD_SCRIPT_ITEM, { position: ABOVE, scriptItem }))
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: ABOVE, scriptItem, tempTextValue: value }))
                 break;
-            case 'deleteScriptItem':
-               
-                dispatch(trigger(DELETE_SCRIPT_ITEM, { direction: value, scriptItem })) //value = direction of deletion (UP or DOWN)
+            case 'deleteScriptItem':        
+                dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem })) //value = direction of deletion (UP or DOWN)
+                //override default focus and position
+                const direction = value || DOWN;
+                if (direction === DOWN) {
+                    newFocusId = scriptItem.nextId || scriptItem.previousId
+                    newFocusPosition = (scriptItem.nextId) ? START : END
+                } else {
+                    newFocusId = scriptItem.previousId
+                    newFocusPosition = END;
+                }
                 break;
             case 'deleteNextScriptItem':
                 dispatch(trigger(DELETE_NEXT_SCRIPT_ITEM, { scriptItem }))
@@ -200,15 +209,21 @@ function ScriptItem(props) {
         }
 
         if (newUpdate) {
+            log(debug,'Component:ScriptItem handleChange newUpdate',newUpdate)
             const preparedUpdate = prepareUpdate(newUpdate)
             dispatch(addUpdates(preparedUpdate, SCRIPT_ITEM));
         }
 
         if (newUpdates) {
+            log(debug,'Component:ScriptItem handleChange newUpdates', newUpdates)
             const preparedUpdates = prepareUpdates(newUpdates)
             dispatch(addUpdates(preparedUpdates, SCRIPT_ITEM))
         }
 
+        if (newFocusId) {
+            log(debug, 'Component:ScriptItem handleChange newFocusId', {newFocusId,newFocusPosition})
+            moveFocusToId(newFocusId, newFocusPosition)
+        }
 
     }
 
@@ -307,6 +322,6 @@ function ScriptItem(props) {
             <CurtainBackground curtainOpen={finalCurtainOpen} />
         </div>
     )
-}
+})
 
 export default ScriptItem;

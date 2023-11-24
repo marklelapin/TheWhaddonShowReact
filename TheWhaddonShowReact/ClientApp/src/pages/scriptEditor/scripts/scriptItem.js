@@ -1,5 +1,5 @@
 ﻿
-import { SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, CURTAIN, INITIAL_CURTAIN, DIALOGUE, COMMENT } from "../../../dataAccess/scriptItemTypes";
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE, COMMENT, HEADER_TYPES } from "../../../dataAccess/scriptItemTypes";
 import {OPEN_CURTAIN, CLOSE_CURTAIN } from "../../../dataAccess/scriptItemTypes";
 import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
 import { getLatest } from '../../../dataAccess/localServerUtils';
@@ -30,21 +30,18 @@ export function sortScriptItems(head, scriptItems) {
     if (scriptItems.length === 1) return scriptItems;
 
 
-    log(debug, 'Sort Head: ', head)
-    log(debug, 'Sort ScriptItems', scriptItems)
+    log(debug, 'sortScriptItems input', { head, scriptItems })
 
     if (scriptItems.length === 0) return [];
 
     let targetArray = [...scriptItems];
-
-    log(debug, 'EventsCheck sortScriptItems', { head: head, scriptItems: scriptItems })
 
     //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Act linked list but also the head of the Scene linked list
     const originalHeadNextId = head.nextId //this gets put back at end of process.
     const headNextId = targetArray.filter((item) => item.previousId === head.id)[0].id;
     targetArray = targetArray.map(item => item.id === head.id ? { ...item, nextId: headNextId } : item)
 
-    log(debug, 'EventsCheck sortScriptItems after head change', { targetArray: targetArray })
+    log(debug, 'sortScriptItems after head change', { targetArray: targetArray })
 
     //create objectMap of all items in the targetArray
     const idToObjectMap = {};
@@ -140,11 +137,13 @@ export function newScriptItemsForCreateShow(title) {
 
 
 
-export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = DIALOGUE) {
+export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = DIALOGUE, tempTextValue) {
 
     const currentScriptItems = [..._currentScriptItems]
-    const existingScriptItem = { ..._existingScriptItem }
-
+    let existingScriptItem = { ..._existingScriptItem }
+    if (tempTextValue) {
+        existingScriptItem.text = tempTextValue 
+    }
 
     if (!existingScriptItem) throw new Error('ExistingScriptItem missing from createNewScriptItem. A new scriptItem must be created relative to an existing scriptItem.')
 
@@ -199,6 +198,11 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 }
 
 export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) {
+
+    if (HEADER_TYPES.includes(scriptItemToDelete.type)) {
+        alert('You cannot delete a header item')
+        return;
+    }
 
     let deleteScriptItem = { ...scriptItemToDelete }
     const newScriptItems = [];
@@ -358,9 +362,11 @@ export function newScriptItemsForMoveScene(sceneId, newPreviousId, scenes) {
 
 }
 
-export const newScriptItemsForAddComment=(_scriptItem) => {
+export const newScriptItemsForAddComment=(_scriptItem, tempTextValue=null) => {
 
     let newScriptItem = { ..._scriptItem }
+    if (tempTextValue) {newScriptItem.text = tempTextValue }
+
     let newComment = new ScriptItemUpdate(COMMENT)
 
     newComment.parentId = newScriptItem.parentId
@@ -372,6 +378,32 @@ export const newScriptItemsForAddComment=(_scriptItem) => {
 
     return newUpdates
 } 
+
+export const newScriptItemsForDeleteComment = (_scriptItem,scriptItems) => {
+
+    const deleteCommentUpdate = { ..._scriptItem, isActive: false }
+    const scriptItemUpdate = { ...scriptItems.find(item => item.id === _scriptItem.previousId), commentId: null }
+
+    const newUpdates = [deleteCommentUpdate, scriptItemUpdate]
+
+    return newUpdates;
+}
+
+
+export const newScriptItemsForSwapPart = (scriptItems, oldPartId, newPartId) => {
+
+    const scene = scriptItems.find(item=>item.type = SCENE)
+
+    if (scene.partIds.includes(newPartId)) {
+        alert('The part is already associated with this scene')
+        return;
+    }
+
+    const newUpdates = [...scriptItems].map(item => ({ ...item, partIds: [...item.partIds].map(partId => (partId === oldPartId) ? newPartId : partId) }))
+
+    return newUpdates;
+
+}
 
 
 export function updatePreviousCurtainValue(scene, scriptItems, dispatch) {

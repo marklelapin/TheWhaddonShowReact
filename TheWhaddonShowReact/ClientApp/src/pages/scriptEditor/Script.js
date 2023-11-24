@@ -54,7 +54,7 @@ function Script() {
 
     const isSmallerScreen = () => {
 
-        return (isScreen('xs') || isScreen('sm') || isScreen('md'))
+        return (isScreen('xs') || isScreen('sm') || isScreen('md') || isScreen('lg'))
 
     }
 

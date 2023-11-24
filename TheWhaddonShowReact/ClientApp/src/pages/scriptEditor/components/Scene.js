@@ -3,7 +3,6 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { addUpdates } from '../../../actions/localServer';
 import { updateIsUndoInProgress } from '../../../actions/scriptEditor';
 
 
@@ -13,14 +12,12 @@ import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
-import { prepareUpdates, prepareUpdate, getLatest } from '../../../dataAccess/localServerUtils';
+import { getLatest } from '../../../dataAccess/localServerUtils';
 import { sortLatestScriptItems } from '../scripts/scriptItem';
 
-import { newScriptItemsForDelete, newScriptItemsForCreate } from '../scripts/scriptItem';
 
-import { getNextUndoDate, getNextRedoDate } from '../scripts/undo';
 import { log } from '../../../helper'
-import { moveFocusToId } from '../scripts/utility';
+
 
 
 
@@ -29,10 +26,9 @@ import s from '../Script.module.scss'
 
 
 //Constants
-import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
-import { DIALOGUE, COMMENT } from '../../../dataAccess/scriptItemTypes';
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
-import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
+
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
+
 
 
 export const PART_IDS = 'partIds';
@@ -62,7 +58,7 @@ function Scene(props) {
 
     const undoDateTime = useSelector(state => state.scriptEditor.undoDateTime)
 
-    log(debug, 'SceneRedux ', { sceneScriptItemHistory, currentSceneScriptItemHistory })
+    log(debug, 'Component:Scene sceneScriptItemHistory: ', { sceneScriptItemHistory })
 
     //Internal State
     const [scriptItems, setScriptItems] = useState([]); //
@@ -70,13 +66,11 @@ function Scene(props) {
 
     const currentScene = { ...getLatest(currentSceneScriptItemHistory)[0], undoDateTime: undoDateTime, sceneNumber: sceneNumber }
 
-    log(debug, 'Scene_currentScene', { currentScene, previousCurtainOpen })
+    log(debug, 'Component:Scene currentScene', { currentScene, previousCurtainOpen })
 
 
     //useEffect Hooks
     useEffect(() => {
-
-        dispatch(updateIsUndoInProgress(undoDateTime !== null))
 
         let newScriptItems = sortLatestScriptItems(currentScene, [...sceneScriptItemHistory], undoDateTime)
 
@@ -85,107 +79,7 @@ function Scene(props) {
     }, [undoDateTime, sceneScriptItemHistory, id]) //es-lint disable-line react-hooks/exhaustive-deps
 
 
-
-    //EVENT HANDLERS
-    //--------------------------------------------------------------------------------------------------------
-
-   
-
-    const handleChange = (type, value, scriptItem) => {
-
-        log(debug, `EventsCheck: handleChange: ${type} , ${value}, ${scriptItem.id}, ${scriptItem.created}`)
-
-        const scriptItemToUpdate = [...scriptItems].find(item => item.id === scriptItem.id)
-
-        let newUpdates = []
-        //sets default next focus and position - they get overridden in switch statements if necessary
-        let newFocusId = scriptItemToUpdate;
-        let newFocusPosition = END;
-
-        const addScriptItem = (direction, scriptItemToUpdate) => {
-
-            const tempTextValue = value;
-
-            let scriptItemToUpdateWithText = { ...scriptItemToUpdate }
-
-            if (tempTextValue) {
-                scriptItemToUpdateWithText.text = tempTextValue;
-                newUpdates = prepareUpdate(scriptItemToUpdateWithText);
-            }
-
-            let createUpdates = prepareUpdates(newScriptItemsForCreate(direction, scriptItemToUpdateWithText, [...scriptItems], DIALOGUE), 1)
-
-            newUpdates = [...newUpdates, ...createUpdates]
-            newFocusId = null //left for new ScriptItem to focus on itself when created.
-
-        }
-
-        const deleteScriptItem = (scriptItem) => {
-            const direction = value || DOWN;
-            const scriptItemToDelete = scriptItem;
-
-            if (HEADER_TYPES.includes(scriptItemToDelete.type)) {
-                alert('You cannot delete a header item.')
-                return;
-            }
-            log(debug, 'EventsCheck: deleteScriptItem', scriptItemToDelete)
-            newUpdates = prepareUpdates(newScriptItemsForDelete(scriptItemToDelete, [...scriptItems]))
-
-            if (direction === DOWN) {
-                newFocusId = scriptItemToDelete.nextId || scriptItemToDelete.previousId
-                newFocusPosition = (scriptItemToDelete.nextId) ? START : END
-            } else {
-                newFocusId = scriptItemToDelete.previousId;
-                newFocusPosition = END;
-            }
-        }
-
-        switch (type) {
-
-            case PARTS:
-                const oldPartId = value.oldPartId
-                const newPartId = value.newPartId
-
-                log(debug, 'changeParts handleChange PARTS:', { oldPartId: oldPartId, newPartId: newPartId })
-                newUpdates = prepareUpdates( //replaces all oldPartIds with newPartIds
-                    [...scriptItems].map(item => ({ ...item, partIds: [...item.partIds].map(partId => (partId === oldPartId) ? newPartId : partId) }))
-                )
-                break;
-
-
-
-            default: return;
-        }
-        log(debug, `Component:Scene handleChange: ${type}. dispatch:`, { count: newUpdates.length, newUpdates })
-
-        dispatch(addUpdates(newUpdates, 'ScriptItem'));
-
-        if (newFocusId) {
-            moveFocusToId(newFocusId, newFocusPosition);
-        }
-
-        return
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-   
-
-
-
-
-
+  
     const synopsis = { ...scriptItems.find(item => item.type === SYNOPSIS), curtainOpen: previousCurtainOpen } || {}
     const staging = { ...scriptItems.find(item => item.type === INITIAL_STAGING), curtainOpen: previousCurtainOpen } || {}
 
@@ -209,13 +103,11 @@ function Scene(props) {
 
     const totalItems = scriptItems.length + 2 //+1 for the partEditor and scene-footer
 
-    log(debugRenderProps, 'Scene bodyScriptItems', body())
-    log(debugRenderProps, 'Scene scriptItems', scriptItems)
-    log(debugRenderProps, 'Scene currentScene', currentScene)
-    log(debugRenderProps, 'Scene synopsis', synopsis)
-    log(debugRenderProps, 'Scene staging', staging)
-
-    log(debugRenderProps, 'ScenePreviousCurtainOpen', previousCurtainOpen)
+    log(debugRenderProps, 'Component:Scene bodyScriptItems', body())
+    log(debugRenderProps, 'Component:Scene scriptItems', scriptItems)
+    log(debugRenderProps, 'Component:Scene currentScene', currentScene)
+    log(debugRenderProps, 'Component:Scene synopsis', synopsis)
+    log(debugRenderProps, 'Component:Scene staging', staging)
 
     //---------------------------------
 
@@ -250,13 +142,11 @@ function Scene(props) {
                 }
                 {(currentScene.type === SCENE) &&
                     <PartEditor
-                        scene={currentScene}
-                        onChange={(type, value) => handleChange(type, value, currentScene)}
-                        onClick={(action) => handleClick(action, currentScene)}
+                        sceneId={currentScene.id}
                         curtainOpen={previousCurtainOpen}
                         zIndex={totalItems - 2}
-                        previousFocus={{ id: synopsis.id, parentId: currentScene.id, position: END }} //override the default focus ids
-                        nextFocus={{ id: staging.id, parentId: currentScene.id, position: START }}
+                        previousFocusId={synopsis.id} //override the default focus ids
+                        nextFocusId={staging.id}
 
                     />
                 }

@@ -1,9 +1,10 @@
 ﻿//React and Redux
 import React from 'react';
-import { useState} from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { addUpdates } from '../../../actions/localServer';
+import { trigger } from '../../../actions/scriptEditor';
 //Components
 
 import PersonSelector from './PersonSelector';
@@ -14,14 +15,17 @@ import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
 import { PartUpdate } from '../../../dataAccess/localServerModels';
 import { log } from '../../../helper'
 import { moveFocusToId } from '../scripts/utility';
-import {UP,DOWN,END,ABOVE,BELOW} from '../scripts/utility';
-import { PART_IDS,PARTS }  from './Scene';
+import { UP, DOWN, START, END, ABOVE, BELOW } from '../scripts/utility';
+import { CONFIRM_UNDO } from '../../../actions/scriptEditor';
 
 
 //styling
 import s from '../ScriptItem.module.scss'
 
-//ChangeTypes
+//script editor processing actions
+import { UPDATE_SCENE_PART_IDS, SWAP_PART} from '../../../actions/scriptEditor';
+
+//ChangeTypes to be referenced in part selector
 export const NAME = 'name';
 
 export const ADD_TAG = 'tags';
@@ -31,7 +35,8 @@ export const ADD_PART_BELOW = 'addPartBelow'
 export const DELETE_PART = 'deletePart';
 export const DELETE_NEXT_PART = 'deleteNextPart';
 export const ALLOCATE_PERSON = 'allocatePerson';
-export const PART_ID = 'partId';
+
+
 
 function PartEditor(props) {
 
@@ -40,52 +45,45 @@ function PartEditor(props) {
     const dispatch = useDispatch();
 
     //props
-    const { scene = null,
-        onChange,
-        previousFocus,
-        nextFocus,
-        undoDateTime,
-        onClick,
+    const {
+        sceneId = null,
+        previousFocusId,
+        nextFocusId,
         curtainOpen,
         zIndex,
     } = props;
 
-    log(debug, 'PartEditorProps', props)
+    log(debug, 'Component:PartEditor props', props)
 
-    if (scene === null) {
-        throw new Error('PartEditor: scene prop is null')
+    if (sceneId === null) {
+        throw new Error('Component:PartEditor: sceneId prop is null')
     }
 
-  
-    //Redux
-    const sceneParts = useSelector(state => state.scriptEditor.scenePartPersons[scene.id])
-    const storedPersons = useSelector(state => state.localServer.persons.history)
 
+    //Redux
+    const sceneParts = useSelector(state => state.scriptEditor.scenePartPersons[sceneId])
+    const storedPersons = useSelector(state => state.localServer.persons.history)
+    const undoDateTime = useSelector(state => state.scriptEditor.undoDateTime)
 
 
     //copy them to internal state that then gets edited before saving on blur
     const [modalPersons, setModalPersons] = useState(null); //if populated opens up selectperson modal
 
 
-    log(debug,'PartPersons: sceneParts',sceneParts)
+    log(debug, 'Component:PartEditor sceneParts', sceneParts)
 
-    log(debug,'PartEditor: sceneParts',sceneParts)
-  
     const previousPart = (part) => {
-       
+
         const partIndex = sceneParts.partIds.findIndex(id => id === part.id)
-   return sceneParts.partPersons[partIndex - 1] || null
+        return sceneParts.partPersons[partIndex - 1] || null
     }
 
     const nextPart = (part) => {
-      
-        const partIndex = sceneParts.partIds.findIndex(id =>id === part.id)
+
+        const partIndex = sceneParts.partIds.findIndex(id => id === part.id)
         return sceneParts.partPersons[partIndex + 1] || null
     }
 
-    
-    //CRUD
-   
 
 
 
@@ -98,14 +96,14 @@ function PartEditor(props) {
         const nextPart = sceneParts.partPersons[currentPartIndex + 1]
         const previousPart = sceneParts.partPersons[currentPartIndex - 1]
 
-        if (direction === UP) { moveFocusToId(previousPart?.id || previousFocus?.id || part.id, position || END); return }
+        if (direction === UP) { moveFocusToId(previousPart?.id || previousFocusId || part.id, position || END); return }
 
-        if (direction === DOWN) { moveFocusToId(nextPart?.id || nextFocus?.id || part.id, position || END); return }
+        if (direction === DOWN) { moveFocusToId(nextPart?.id || nextFocusId || part.id, position || END); return }
 
     }
 
 
-
+    //CRUD
     const handleChange = (type, value, part) => {
 
         log(debug, 'PartPersons: handleChange', { type: type, value: value, part: part })
@@ -131,7 +129,7 @@ function PartEditor(props) {
             }
 
             const partIndex = copySceneParts.partIds.findIndex(id => id === partId)
-            const partBeforeIndex = (direction === BELOW) ? partIndex  : partIndex -1
+            const partBeforeIndex = (direction === BELOW) ? partIndex : partIndex - 1
 
 
             const startArray = copySceneParts.partIds.slice(0, partBeforeIndex + 1) || []
@@ -154,11 +152,22 @@ function PartEditor(props) {
 
             newPartIds = copySceneParts.partIds.filter(id => id !== partToDelete.id)
 
-            let newFocus = (direction === UP)
-                ? previousPart(partToDelete) || previousFocus
-                : nextPart(partToDelete) || nextFocus
-            newFocusId = newFocus.id
-            newFocusPosition = (direction === UP) ? 'end' : 'start'
+
+            if (direction === UP && previousPart(partToDelete)) {
+                newFocusId = previousPart(partToDelete).id
+                newFocusPosition = END
+            } else if (direction === UP && !previousPart(partToDelete)) {
+                newFocusId = previousFocusId;
+                newFocusPosition = END
+            } else if (direction === DOWN && nextPart(partToDelete)) {
+                newFocusId = nextPart(partToDelete).id
+                newFocusPosition = START
+            } else if (direction === DOWN && !nextPart(partToDelete)) {
+                newFocusId = nextFocusId;
+                newFocusPosition = START
+            }
+
+
         }
 
         switch (type) {
@@ -185,31 +194,23 @@ function PartEditor(props) {
             case DELETE_NEXT_PART:
                 deletePart(nextPart, UP)
                 break;
-            case PART_ID:
-                const selectedPartId = value
-
-                if (scene.partIds.includes(selectedPartId)) {
-                    alert('The part is already associated with this scene')
-                    return;
-                }
-
-                newPartIds = newPartIds.map(id => (id === partId) ? value : id)
-                onChange(PARTS, {oldPartId: partId, newPartId: value})
-
+            case SWAP_PART:
+                dispatch(trigger(SWAP_PART, { sceneId , oldPartId: partId, newPartId: value }))
+                break;
             default: return;
         }
 
 
-        log(debug,'PartPersons: dispatch',partUpdates)
+        log(debug, 'PartPersons: dispatch', partUpdates)
 
         dispatch(addUpdates(partUpdates, 'Part'))
 
         if (newPartIds.length > 0) {
-            onChange(PART_IDS,newPartIds)
+            dispatch(trigger(UPDATE_SCENE_PART_IDS, { sceneId, partIds: newPartIds }))
         }
 
         if (newFocusId) {
-            moveFocusToId(newFocusId,newFocusPosition)
+            moveFocusToId(newFocusId, newFocusPosition)
         }
 
         setModalPersons(null)
@@ -224,7 +225,7 @@ function PartEditor(props) {
 
 
     const handleClick = (action, value, part) => {
-        if (undoDateTime) { onClick('confirmUndo') }
+        if (undoDateTime) { dispatch(trigger(CONFIRM_UNDO)) }
 
         switch (action) {
             case 'avatar': handleClickAvatar(part); break;
@@ -268,16 +269,16 @@ function PartEditor(props) {
     log(debug, 'ModalPersons', modalPersons)
 
 
-    const totalItems = activeSceneParts().length 
+    const totalItems = activeSceneParts().length
 
     return (
 
         <>
 
-            <div className={s[`part-editor`]} style={{zIndex: zIndex} }>
+            <div className={s[`part-editor`]} style={{ zIndex: zIndex }}>
 
                 <p>Parts:</p>
-                {activeSceneParts().map((part,idx) => {
+                {activeSceneParts().map((part, idx) => {
 
                     return (
 
@@ -285,20 +286,20 @@ function PartEditor(props) {
                             key={part.id}
                             part={part}
                             nextPart={nextPart}
-                            isFirst={sceneParts.partIds.length===1}
-                            sceneId={scene.id}
+                            isFirst={sceneParts.partIds.length === 1}
+                            sceneId={sceneId}
                             onChange={(type, value) => handleChange(type, value, part)}
                             onClick={(action, value) => handleClick(action, value, part)}
                             undoDateTime={undoDateTime}
-                            zIndex={totalItems-idx+1} //+1 to get them above the curtain.
-                            moveFocus={(direction, position) => handleMoveFocus(direction, position, part) }
+                            zIndex={totalItems - idx + 1} //+1 to get them above the curtain.
+                            moveFocus={(direction, position) => handleMoveFocus(direction, position, part)}
                         />
 
 
                     )
                 })}
 
-                <CurtainBackground curtainOpen={curtainOpen}/>
+                <CurtainBackground curtainOpen={curtainOpen} />
             </div >
 
             {(modalPersons) &&

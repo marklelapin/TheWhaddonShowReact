@@ -7,7 +7,7 @@ import { initialState as scriptEditorInitialState} from '../reducers/scriptEdito
 export const saveState = (state) => {
     try {
         //properties identified separately are exlcuded from ...stateToSaveToLocalStorage
-        let { localServer,layout,scriptEditor } = state ;
+        let { localServer,layout } = state ;
 
         //ensure isSyncing is set to false before saving to local storage (otherwise it will be set to true on load and never change)
         localServer = {
@@ -17,7 +17,7 @@ export const saveState = (state) => {
             , parts: { ...localServer.parts, sync: { ...localServer.parts.sync, isSyncing: false } }
             }
 
-        const stateToPersist = {localServer,layout,scriptEditor} 
+        const stateToPersist = {localServer,layout} 
 
 
 

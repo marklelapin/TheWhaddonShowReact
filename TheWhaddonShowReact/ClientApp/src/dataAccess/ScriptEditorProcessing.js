@@ -8,7 +8,9 @@ import {
     updateScenePartPersons,
     addUpdateToScriptItemHistory,
     addUpdatesToSceneScriptItemHistory,
-    addUpdatesToSceneHistory
+    addUpdatesToSceneHistory,
+    trigger,
+    updateUndoDateTime
 } from '../actions/scriptEditor';
 
 //components
@@ -20,20 +22,36 @@ import { getLatest, prepareUpdates } from '../dataAccess/localServerUtils';
 import { addPersonsInfo } from '../pages/scriptEditor/scripts/part';
 import { PartUpdate } from '../dataAccess/localServerModels';
 import { addUpdates } from '../actions/localServer';
-import { updatePreviousCurtainValue } from '../pages/scriptEditor/scripts/scriptItem'
-import { SHOW, ACT, SCENE, CURTAIN_TYPES } from '../dataAccess/scriptItemTypes'
+import { getNextUndoDate, getNextRedoDate } from '../pages/scriptEditor/scripts/undo';
+import {
+    updatePreviousCurtainValue,
+    newScriptItemsForCreate,
+    newScriptItemsForDelete,
+    newScriptItemsForSceneDelete,
+    newScriptItemsForDeleteComment,
+    newScriptItemsForSwapPart
+} from '../pages/scriptEditor/scripts/scriptItem'
 
+
+//constants
+import { SHOW, ACT, SCENE, CURTAIN_TYPES, DIALOGUE } from '../dataAccess/scriptItemTypes'
 import { SCRIPT_ITEM, PART } from '../dataAccess/localServerModels'
-
-//styling
-import s from '../pages/scriptEditor/ScriptItem.module.scss';
+import {
+    UNDO, REDO, CONFIRM_UNDO, DELETE_COMMENT,
+    ADD_SCRIPT_ITEM, DELETE_SCRIPT_ITEM,
+    DELETE_NEXT_SCRIPT_ITEM, DELETE_SCENE,
+    SWAP_PART, UPDATE_SCENE_PART_IDS
+} from '../actions/scriptEditor'
 
 
 export function ScriptEditorProcessing() {
 
+    //This component is used to process updates from the localServer and update the scriptEditor state.
+    //It also handles all updates to scriptItems involving more than 1 scriptItem when scriptEditor.trigger is changed.
+    //This significantly reduces re-renders of scriptEditor components by re-rendering this component instead which always returns null.
+
     const _ = require('lodash');
     const dispatch = useDispatch();
-
 
     const debug = true;
 
@@ -44,21 +62,23 @@ export function ScriptEditorProcessing() {
     //Redux - scriptEditor (handles data for display)
     const partPersons = useSelector(state => state.scriptEditor.partPersons)
     const sceneHistory = useSelector(state => state.scriptEditor.sceneHistory)
+    const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory)
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons)
-    const scriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory)
-
+    const scriptEditorTrigger = useSelector(state => state.scriptEditor.trigger)
+    const undoDateTime = useSelector(state => state.scriptEditor.undoDateTime)
+    const undoSceneId = useSelector(state => state.scriptEditor.undoSceneId)
 
     //refreshTrigger contains the updates successfully processed when the ADD_UPDATES action is dispatched.
-    const refreshTrigger = useSelector((state) => state.localServer.refresh)
+    const localServerTrigger = useSelector((state) => state.localServer.refresh)
 
 
 
-    //Refresh trigger used to update scriptEdiotorScenes with additional partPerson info.
+    //Refresh trigger used to update scriptEditorScenes with additional partPerson info.
     useEffect(() => {
-        log(debug, 'Component:ScriptEditorProcessing useEffect refreshTrigger', refreshTrigger)
+        log(debug, 'Component:ScriptEditorProcessing useEffect refreshTrigger', localServerTrigger)
 
-        if (refreshTrigger.updates && refreshTrigger.type === SCRIPT_ITEM) {
-            const scriptItemUpdates = refreshTrigger.updates
+        if (localServerTrigger.updates && localServerTrigger.type === SCRIPT_ITEM) {
+            const scriptItemUpdates = localServerTrigger.updates
             const sceneUpdates = scriptItemUpdates.filter(update => update.type === SHOW ||
                 update.type === ACT ||
                 update.type === SCENE)
@@ -117,7 +137,7 @@ export function ScriptEditorProcessing() {
 
         }
 
-    }, [refreshTrigger])
+    }, [localServerTrigger])
 
 
     //Update PartPersons 
@@ -187,40 +207,108 @@ export function ScriptEditorProcessing() {
     }, [partPersons, sceneHistory])
 
 
+    //ScriptEditorTrigger Processing
+    //---------------------------------------------------------------------------------
+    useEffect(() => {
+
+        log(debug, 'Component:ScriptEditorProcessing: ScriptEditorTrigger', scriptEditorTrigger)
+
+        if (!scriptEditorTrigger || Object.keys(scriptEditorTrigger).length === 0) return
+
+        const { type,
+            scriptItem,
+            position,
+            tempTextValue,
+            oldPartId,
+            newPartId,
+            sceneId: draftSceneId,
+            partIds,
+        } = scriptEditorTrigger
+
+        let sceneId
+
+        if (draftSceneId) {
+            sceneId = draftSceneId;
+        } else if ([UNDO, REDO, CONFIRM_UNDO].includes(type)) {
+            sceneId = undoSceneId
+        } else {
+            sceneId = (scriptItem?.type === SCENE) ? scriptItem.id : scriptItem.parentId
+        }
+
+
+        //send off undo jobs
+        switch (type) {
+
+            case UNDO: undo(sceneId); return
+            case REDO: redo(sceneId); return
+            case CONFIRM_UNDO: confirmUndo(sceneId); return;
+            default: break;
+        }
+
+        //process scriptItem jobs
+
+
+        const sceneScriptItems = getLatest(sceneScriptItemHistory[sceneId] || [])
+
+        let updates = [];
+
+        switch (type) {
+            case DELETE_COMMENT: updates = newScriptItemsForDeleteComment(scriptItem, sceneScriptItems); break; //todo
+            case ADD_SCRIPT_ITEM: updates = newScriptItemsForCreate(position, scriptItem, sceneScriptItems, DIALOGUE, tempTextValue); break;
+            case DELETE_SCRIPT_ITEM: updates = newScriptItemsForDelete(scriptItem, sceneScriptItems); break;
+            case DELETE_NEXT_SCRIPT_ITEM:
+                const nextScriptItem = sceneScriptItems.find(item => item.id === scriptItem.nextId)
+                updates = newScriptItemsForDelete(nextScriptItem, sceneScriptItems); break;
+            case DELETE_SCENE: updates = newScriptItemsForSceneDelete(scriptItem, sceneScriptItems); break;
+            case SWAP_PART: updates = newScriptItemsForSwapPart(sceneScriptItems, oldPartId, newPartId); break;
+            case UPDATE_SCENE_PART_IDS:
+                const scene = sceneScriptItems.find(item => item.id === sceneId)
+                const newScene = { ...scene, partIds: partIds };
+                updates = [newScene];
+                break;
+            default: break;
+        }
+
+        if (updates.length > 0) {
+            const preparedUpdates = prepareUpdates(updates)
+            dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
+        }
+
+
+    }, [scriptEditorTrigger])
+
+
+
+
     ///Undo processing
-    const handleUndo = () => {
-
-        const nextUndoDate = getNextUndoDate([...sceneScriptItemHistory], undoDateTime)
-
-        setUndoDateTime(nextUndoDate)
-
+    const undo = (sceneId) => {
+        const nextUndoDate = getNextUndoDate(sceneScriptItemHistory[sceneId], undoDateTime)
+        dispatch(updateUndoDateTime(nextUndoDate,sceneId))
     }
 
-    const handleRedo = () => {
-
-        const nextUndoDate = getNextRedoDate([...sceneScriptItemHistory], undoDateTime)
-
-        setUndoDateTime(nextUndoDate)
-
+    const redo = (sceneId) => {
+        const nextUndoDate = getNextRedoDate(sceneScriptItemHistory[sceneId], undoDateTime)
+        dispatch(updateUndoDateTime(nextUndoDate,sceneId))
     }
 
-    const handleConfirmUndo = () => {
+    const confirmUndo = (sceneId) => {
 
         //process changed scriptItems
         if (undoDateTime === null) return;
 
-        const idsToUpdate = new Set([...sceneScriptItemHistory].filter(item => new Date(item.created) >= undoDateTime).map(item => item.id))
+        const idsToUpdate = new Set(sceneScriptItemHistory[sceneId].filter(item => new Date(item.created) >= undoDateTime).map(item => item.id))
 
+        const currentUndoScriptItems = getLatest(sceneScriptItemHistory[sceneId], undoDateTime)
         //convert to array
         const arrayIds = [...idsToUpdate];
 
         //filter the scriptItems matching the ids
-        const changeScriptItems = scriptItems.filter((item) => arrayIds.includes(item.id));
+        const changeScriptItems = currentUndoScriptItems.filter((item) => arrayIds.includes(item.id));
         const changeScriptItemIds = changeScriptItems.map(item => item.id)
 
         const deleteScriptItemIds = arrayIds.filter(id => !changeScriptItemIds.includes(id))
 
-        let deleteScriptItems = getLatest([...sceneScriptItemHistory].filter(item => deleteScriptItemIds.includes(item.id)))
+        let deleteScriptItems = getLatest(sceneScriptItemHistory[sceneId].filter(item => deleteScriptItemIds.includes(item.id)))
 
         deleteScriptItems = deleteScriptItems.map(item => ({ ...item, isActive: false }))
 
@@ -230,7 +318,7 @@ export function ScriptEditorProcessing() {
 
         dispatch(addUpdates(updates, 'ScriptItem'));
 
-        setUndoDateTime(null)
+        dispatch(updateUndoDateTime(null,null))
 
     }
 

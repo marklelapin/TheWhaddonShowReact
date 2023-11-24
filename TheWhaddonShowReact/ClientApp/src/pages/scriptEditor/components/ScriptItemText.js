@@ -132,7 +132,7 @@ function ScriptItemText(props) {
             case 'toggleMedia':
                 toggleMedia()
                 break;
-            case 'addComment': onChange('addComment', null); break;
+            case 'addComment': onChange('addComment', tempTextValue); break;
             case 'goToComment': onClick('goToComment', null); break;
             default: return;
         }

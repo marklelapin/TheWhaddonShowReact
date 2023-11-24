@@ -337,7 +337,7 @@ export function prepareUpdate(updates, adjustment) {
     return prepareUpdates(updates, adjustment)
 }
 
-export function prepareUpdates(updates, adjustment) {
+export function prepareUpdates(updates, adjustment = 1) {
 
     let output = updates
 

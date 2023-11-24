@@ -3,6 +3,8 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { trigger, CONFIRM_UNDO } from '../../../actions/scriptEditor'; 
+
 //Components
 import Avatar from '../../../components/Avatar/Avatar';
 import PartSelectorDropdown from './PartSelectorDropdown';
@@ -28,67 +30,28 @@ function PartSelector(props) {
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId])
 
     //Internal State
-    const [partsArray, setPartsArray] = useState([])
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
 
+
     const sceneParts = scenePartPersons?.partPersons
+    const partsArray = sceneParts?.map(part => allocatedPartIds.includes(part.id) ? { ...part, allocated: true } : { ...part, allocated: false }) || []
 
-    //UseEffectHooks
-
-    useEffect(() => {
-
-        //setup partsArray
-        const newPartsArray = sceneParts?.map(part => allocatedPartIds.includes(part.id) ? { ...part, allocated: true } : { ...part, allocated: false }) || []
-
-        setPartsArray(newPartsArray)
-
-        //add click event listener to document to close dropdown
-        //TODOD
-    }, [sceneId, sceneParts, allocatedPartIds])
-
-    log(debug, 'PartSelector partsArray:', partsArray)
-
-
-
-
+   
     //Event Handlers
 
-    const handleSelectorClick = (action, value) => {
-
-        switch (action) {
-            case 'partIds':
-                onChange(value)
-                setOpenPartSelector(false)
-                break;
-            case 'togglePartSelectorDropdown':
-                setOpenPartSelector(!openPartSelector)
-                break;
-            case 'confirm':
-                const newPartIds = partsArray.filter(part => part.selected).map(part => part.id)
-                onChange(newPartIds)
-                setOpenPartSelector(false)
-                break;
-            case 'partsArray':
-                setPartsArray(value)
-                break;
-
-            default: return;
-        }
+    const handleSelect = (partIds) => {
+            onChange(partIds)
+            setOpenPartSelector(false)        
     }
-
-
-
 
     const toggleDropdown = (e) => {
         e.stopPropagation();
-        dispatch(triggerConfirmUndo()) //confirms undo if user has moved on to another field
+        dispatch(trigger(CONFIRM_UNDO)) //confirms undo if user has moved on to another field
         setOpenPartSelector(!openPartSelector)
 
     }
 
-
-    log(debug, 'PartSelector openPartSelector:', openPartSelector)
     return (
         <div className={s['part-selector']} >
             <div className={`${s['part-selector-avatars']} clickable`} onClick={(e) => toggleDropdown(e)}>
@@ -113,14 +76,12 @@ function PartSelector(props) {
 
 
                 <PartSelectorDropdown
-                    partsArray={partsArray}
-                    onClick={(action, value) => handleSelectorClick(action, value)} />
+                parts={partsArray}
+                toggle={(e)=>toggleDropdown(e)}
+                    onSelect={(partIds) => handleSelect(partIds)} />
 
             }
-
-
         </div >
-
     )
 
 }

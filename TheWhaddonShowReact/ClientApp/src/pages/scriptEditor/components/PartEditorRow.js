@@ -3,7 +3,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-
+import { trigger } from '../../../actions/scriptEditor';
 //Components
 
 import TagsInput from '../../../components/Forms/TagsInput';
@@ -14,8 +14,8 @@ import PartSelectorDropdown from './PartSelectorDropdown';
 
 //Utilities
 import { log } from '../../../helper'
-import { changeFocus } from '../../../actions/scriptEditor';
-import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART, PART_ID } from './PartEditor';
+import { changeFocus, SWAP_PART } from '../../../actions/scriptEditor';
+import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART } from './PartEditor';
 import { DOWN, UP, START, END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
 
@@ -40,15 +40,15 @@ function PartEditorRow(props) {
 
     //Redux
     const focus = useSelector(state => state.scriptEditor.focus[part.id])
-    
+
 
     //internal state
     const [tempName, setTempName] = useState(null);
     const [openPartSelector, setOpenPartSelector] = useState(null);
-    log(debug, 'PartEditorRow: openPartSelector', {value:openPartSelector})
+    log(debug, 'PartEditorRow: openPartSelector', { value: openPartSelector })
 
     useEffect(() => {
-        log(debug,'PartEditorRow: useEffect')
+        log(debug, 'PartEditorRow: useEffect')
         if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
             moveFocusToId(sceneId, START)
         } else { //makes the textarea the focus when created
@@ -175,7 +175,7 @@ function PartEditorRow(props) {
     }
 
 
-    const handleControlsClick = (action, value,e) => {
+    const handleControlsClick = (action, value, e) => {
 
         switch (action) {
             case 'add':
@@ -183,7 +183,8 @@ function PartEditorRow(props) {
                 setTempName(null)
                 break;
             //case 'confirm': handleBlur(); break;
-            case 'delete': onChange(DELETE_PART, DOWN)
+            case 'delete':
+                onChange(DELETE_PART, DOWN)
                 setTempName(null)
                     ; break;
             case 'search':
@@ -191,10 +192,10 @@ function PartEditorRow(props) {
                 setOpenPartSelector(!openPartSelector); break;
             case 'togglePartSelectorDropdown': setOpenPartSelector(!openPartSelector); break;
 
-            case 'partIds':
-                onChange(PART_ID, value[0]);
+            case 'swapPart':
+                const newPartId = value
+                onChange(SWAP_PART, newPartId);
                 break;
-
             default: return;
         }
     }
@@ -217,14 +218,14 @@ function PartEditorRow(props) {
     }
 
 
-  
+
 
 
     return (
 
         <>
 
-            <div key={part.id} id={part.id} className={s["part"]} style={{zIndex:zIndex} }>
+            <div key={part.id} id={part.id} className={s["part"]} style={{ zIndex: zIndex }}>
                 <PartNameAndAvatar avatar partName personName
 
                     avatarInitials={part.avatarInitials}
@@ -235,7 +236,7 @@ function PartEditorRow(props) {
                     onBlur={() => handleBlur()}
                     onFocus={() => handleFocus()}
                 />
-                
+
                 {(focus) &&
                     <div className={s['part-editor-controls']} >
                         <ScriptItemControls
@@ -245,10 +246,11 @@ function PartEditorRow(props) {
 
                         {(openPartSelector) &&
                             <PartSelectorDropdown
-                                    allowMultiSelect={false}
-                                    allowClear={false}
-                                    centered
-                                    onClick={(action, partIds) => handleControlsClick(action, partIds)} />
+                                allowMultiSelect={false}
+                                allowClear={false}
+                                centered
+                                toggle={(e) => setOpenPartSelector(!openPartSelector)}
+                                onSelect={(partIds) => handleControlsClick('swapPart', partIds[0])} />
                         }
                     </div>
                 }

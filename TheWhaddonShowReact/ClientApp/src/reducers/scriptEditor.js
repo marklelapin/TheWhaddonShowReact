@@ -45,6 +45,7 @@ export const initialState = {
     textAreaContext: {},
     isUndoInProgress: false,
     undoDateTime: null,
+    undoSceneId: null,
     trigger: {},
 
 }
@@ -154,6 +155,7 @@ export default function scriptEditorReducer(state = initialState, action) {
         case UPDATE_UNDO_DATE_TIME:
             return {
                 ...state,
+                undoSceneId: action.sceneId,
                 undoDateTime: action.undoDateTime,
                 isUndoInProgress: (action.undoDateTime !== null)
             }
