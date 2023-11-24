@@ -1,6 +1,4 @@
-﻿import { SCRIPT_ITEM } from "./localServerModels";
-
-export const SHOW = 'Show';
+﻿export const SHOW = 'Show';
 export const ACT = 'Act';
 export const SCENE = 'Scene';
 export const SYNOPSIS = 'Synopsis';
@@ -23,3 +21,4 @@ export const SCRIPT_ITEM_TYPES = [SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_S
 
 export const OPEN_CURTAIN = 'OpenCurtain'
 export const CLOSE_CURTAIN = 'CloseCurtain'
+

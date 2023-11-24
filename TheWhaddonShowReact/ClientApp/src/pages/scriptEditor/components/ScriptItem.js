@@ -18,18 +18,20 @@ import CurtainBackground from './CurtainBackground';
 //utilities
 import { log } from '../../../helper';
 import { prepareUpdate, prepareUpdates } from '../../../dataAccess/localServerUtils';
-import {
-    newScriptItemsForToggleCurtain,
-    newScriptItemsForAddComment,
-    clearCurtainTags
-} from '../scripts/scriptItem';
+
 import { moveFocusToId } from '../scripts/utility';
 //Constants
 import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
 import { DOWN, ABOVE, BELOW, START, END } from '../scripts/utility';
 //trigger types
-import { REDO, UNDO, CONFIRM_UNDO, DELETE_COMMENT, ADD_SCRIPT_ITEM, DELETE_SCRIPT_ITEM, DELETE_NEXT_SCRIPT_ITEM, DELETE_SCENE } from '../../../actions/scriptEditor';
+import {
+    REDO, UNDO, CONFIRM_UNDO,
+    DELETE_COMMENT, ADD_SCRIPT_ITEM,
+    DELETE_SCRIPT_ITEM, DELETE_NEXT_SCRIPT_ITEM,
+    DELETE_SCENE, UPDATE_ATTACHMENTS,
+    UPDATE_PART_IDS
+} from '../../../actions/scriptEditor';
 
 //styling
 import s from '../ScriptItem.module.scss';
@@ -39,37 +41,33 @@ const ScriptItem = memo((props) => {
 
     //utility consts
     const debug = true;
-    const moment = require('moment');
     const dispatch = useDispatch();
+
+
     // get specific props
     const { id = null,
-        created = null,
         sceneId = null,
-        sceneNumber = null,
         alignRight = false,
         curtainOpen = null,
-        zIndex = 0,
         previousFocusId = null,
         nextFocusId = null
     } = props;
 
-    const createdString = moment(created).format('YYYY-MM-DDTHH:mm:ss.SSS')
+    log(debug, 'Component:ScriptItem props:', props)
 
-    log(debug, 'Component:ScriptItem', { id, created })
-    
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments) || true
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId]) || []
+    
     const focus = useSelector(state => (state.scriptEditor.focus[id])) || false
     const isUndoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress) || null
+    const scriptItem = useSelector(state => state.scriptEditor.scriptItems[id]) || {}
 
 
-    const scriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id]) || []
-    const scriptItem = scriptItemHistory.find(item => item.created === createdString) || {}
-    const { type, commentId } = scriptItem;
+    log(debug, 'Component:ScriptItem redux:', { showComments, focus, isUndoInProgress, scriptItem })
 
-    log(debug, 'Component:ScriptItem scriptItemHistory:', scriptItemHistory)
-    log(debug, 'Component:ScriptItem scriptItem:', scriptItem)
+    const { type, commentId, zIndex } = scriptItem;
+
+    
 
     //Refs
     const textInputRef = useRef(null)
@@ -90,31 +88,11 @@ const ScriptItem = memo((props) => {
         }
     }
 
-    const header = () => {
-        switch (type) {
-            case DIALOGUE:
-                if (scenePartPersons) {
-                    const partPersons = scriptItem.partIds.map(partId => scenePartPersons.partPersons.find(partPerson => partPerson.id === partId))
-
-                    const partNames = partPersons.map(partPersons => partPersons?.name).join(',')
-
-                    return partNames || '-'
-                }; break;
-            case SCENE:
-                return `Scene ${sceneNumber}.` || null
-            case STAGING:
-                return 'Staging' || null
-            case INITIAL_STAGING:
-                return 'Initial Staging' || null
-
-            default: return null;
-        }
-
-    }
+    
 
     const handleShowMedia = (value = null) => {
 
-        if (isUndoInProgress) { dispatch(trigger(CONFIRM_UNDO)); } //automatically confirms undo if started to add media.
+        dispatch(trigger(CONFIRM_UNDO)); //automatically confirms undo if started to add media.
 
         log(debug, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
@@ -126,7 +104,7 @@ const ScriptItem = memo((props) => {
 
     const handleMedia = (type, media) => {
 
-        if (isUndoInProgress) { dispatch(trigger(CONFIRM_UNDO)); } //automatically confirms undo if started to add media.
+        dispatch(trigger(CONFIRM_UNDO));  //automatically confirms undo if started to add media.
 
         let urls = []
 
@@ -144,113 +122,9 @@ const ScriptItem = memo((props) => {
             default: return;
         }
 
-        handleChange('attachments', updatedAttachments)
+        dispatch(trigger(UPDATE_ATTACHMENTS, { scriptItem, value: updatedAttachments }))
     }
-
-
-
-    const handleChange = (type, value) => {
-
-        let newUpdate = null;
-        let newUpdates = [];
-        //set default next focus and position - they get overridden if the action requires it.
-        let newFocusId = id;
-        let newFocusPosition = END;
-
-        switch (type) {
-            case 'text': newUpdate = { ...scriptItem, text: value }; break;;
-            case 'partIds': newUpdate = { ...scriptItem, partIds: value }; break;
-            case 'tags': newUpdate = { ...scriptItem, tags: value }; break;
-            case 'attachments': newUpdate = { ...scriptItem, attachments: value }; break;
-            case 'type': newUpdate = { ...scriptItem, type: value };
-
-                if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
-                    newUpdate = newScriptItemsForToggleCurtain(newUpdate, true) //set it to open curtain.
-                } else if (CURTAIN_TYPES.includes(scriptItem.type)) { //i.e. its coming from a curtain type
-                    newUpdate.text = '';
-                    newUpdate = clearCurtainTags(newUpdate)
-                }
-                break;
-            case 'toggleCurtain': newUpdate = newScriptItemsForToggleCurtain(scriptItem); break;
-            case 'addComment':
-                newUpdates = newScriptItemsForAddComment(scriptItem,value)
-                dispatch(updateShowComments(true))
-                break;
-
-            //These actions require access to scriptItems outside of this one and are processed in ScriptEditorProcesser component to avoid continual re-rendering of this component.
-            case 'deleteComment':
-                dispatch(trigger(DELETE_COMMENT, { scriptItem }))
-                break;
-            case 'addScriptItemBelow':
-                dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem, tempTextValue: value}))
-                break;
-            case 'addScriptItemAbove':
-                dispatch(trigger(ADD_SCRIPT_ITEM, { position: ABOVE, scriptItem, tempTextValue: value }))
-                break;
-            case 'deleteScriptItem':        
-                dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem })) //value = direction of deletion (UP or DOWN)
-                //override default focus and position
-                const direction = value || DOWN;
-                if (direction === DOWN) {
-                    newFocusId = scriptItem.nextId || scriptItem.previousId
-                    newFocusPosition = (scriptItem.nextId) ? START : END
-                } else {
-                    newFocusId = scriptItem.previousId
-                    newFocusPosition = END;
-                }
-                break;
-            case 'deleteNextScriptItem':
-                dispatch(trigger(DELETE_NEXT_SCRIPT_ITEM, { scriptItem }))
-                break;
-            case 'deleteScene':
-                dispatch(trigger(DELETE_SCENE, { scriptItem }))
-                break;
-            default: return;
-        }
-
-        if (newUpdate) {
-            log(debug,'Component:ScriptItem handleChange newUpdate',newUpdate)
-            const preparedUpdate = prepareUpdate(newUpdate)
-            dispatch(addUpdates(preparedUpdate, SCRIPT_ITEM));
-        }
-
-        if (newUpdates) {
-            log(debug,'Component:ScriptItem handleChange newUpdates', newUpdates)
-            const preparedUpdates = prepareUpdates(newUpdates)
-            dispatch(addUpdates(preparedUpdates, SCRIPT_ITEM))
-        }
-
-        if (newFocusId) {
-            log(debug, 'Component:ScriptItem handleChange newFocusId', {newFocusId,newFocusPosition})
-            moveFocusToId(newFocusId, newFocusPosition)
-        }
-
-    }
-
-    const handleClick = (e, action) => {
-
-        //if undoDateTime is set, then confirm undo if user is moving on different action.
-        if (['undo', 'redo', 'confirmUndo'].includes(action) === false && isUndoInProgress) {
-            dispatch(trigger(CONFIRM_UNDO));
-        }
-
-        log(debug, `EventsCheck: handleClick: ${action},${scriptItem.id}`)
-        switch (action) {
-            case 'delete': handleChange('deleteScriptItem', DOWN); break;
-            case 'deleteScene': handleChange('deleteScene', null); break;
-
-            case 'undo': dispatch(trigger(UNDO)); break;
-            case 'redo': dispatch(trigger(REDO)); break;
-            case 'confirmUndo': dispatch(trigger(CONFIRM_UNDO)); break;
-            case 'goToComment':
-                dispatch(updateShowComments(true))
-                moveFocusToId(scriptItem.commentid)
-                    ; break;
-
-            default: return;
-        }
-    }
-
+   
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
     return (
@@ -266,7 +140,7 @@ const ScriptItem = memo((props) => {
                         scriptItemId={id}
                         sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
-                        onChange={(selectedPartIds) => handleChange('partIds', selectedPartIds)}
+                        onSelect={(selectedPartIds) => dispatch(trigger(UPDATE_PART_IDS, {scriptItem,value: selectedPartIds}))}
                     />
                 </div>
             }
@@ -276,10 +150,7 @@ const ScriptItem = memo((props) => {
                     key={id}
                     maxWidth={textInputRef.current?.offsetWidth}
                     scriptItem={scriptItem}
-                    header={header()}
-                    onClick={(action, value) => handleClick(action, value)}
                     toggleMedia={(value) => handleShowMedia(value)}
-                    onChange={(type, value) => handleChange(type, value)}
                     previousFocusId={previousFocusId}
                     nextFocusId={nextFocusId}
                 />
@@ -298,7 +169,7 @@ const ScriptItem = memo((props) => {
             }
 
             {(commentId) && (showComments) &&
-                <Comment id={commentId} onChange={(action, value) => handleChange(action, value)} />
+                <Comment id={commentId} />
             }
 
             {/*Elements specific for each scriptItem type*/}
@@ -306,13 +177,13 @@ const ScriptItem = memo((props) => {
             {(type === SCENE) &&
                 <div className={s['scene-controls']}>
                     {scriptItem.undoDateTime &&
-                        <Button size='xs' color="primary" onClick={(e) => handleClick(e, 'confirmUndo')} >confirm undo</Button>
+                        <Button size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO, { sceneId: scriptItem.id }))} >confirm undo</Button>
                     }
-                    <Icon icon="undo" onClick={(e) => handleClick(e, 'undo')} />
+                    <Icon icon="undo" onClick={() => dispatch(trigger(UNDO, {sceneId: scriptItem.id})) } />
                     {scriptItem.undoDateTime &&
-                        <Icon icon="redo" onClick={(e) => handleClick(e, 'redo')} />
+                        <Icon icon="redo" onClick={() => dispatch(trigger(REDO, {sceneId: scriptItem.id}))} />
                     }
-                    <Icon icon="trash" onClick={(e) => handleClick(e, 'deleteScene', null)} />
+                    <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, {scriptItem}))} />
 
 
 

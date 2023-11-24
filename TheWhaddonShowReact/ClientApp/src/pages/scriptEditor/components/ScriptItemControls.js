@@ -1,41 +1,45 @@
 ﻿//React and redux
 import React from 'react';
-import { useState} from 'react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
+import { updateShowComments, trigger, ADD_COMMENT, TOGGLE_CURTAIN, UPDATE_TYPE, ADD_SCRIPT_ITEM, DELETE_SCRIPT_ITEM } from '../../../actions/scriptEditor';
 
 //Components
-import {  Dropdown, DropdownItem, DropdownMenu } from 'reactstrap';
+import { Dropdown, DropdownItem, DropdownMenu } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons'
+import CheckBox from '../../../components/Forms/CheckBox';
 
 //Constants
-import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from '../../../dataAccess/scriptItemTypes';
+import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN, SCRIPT_ITEM_TYPES} from '../../../dataAccess/scriptItemTypes';
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 import { CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 //utils
 import { log } from '../../../helper';
-import CheckBox from '../../../components/Forms/CheckBox';
 
+import { moveFocusToId } from '../scripts/utility';
 
 import s from '../ScriptItem.module.scss';
+
+export const CONFIRM = 'CONFIRM';
 function ScriptItemControls(props) {
 
     //utils
     const debug = false;
-
+    const dispatch = useDispatch();
+    
     //Constants
     const scriptItemTypes = [CURTAIN, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN]
     const attachTypes = [SONG, SOUND, STAGING, INITIAL_STAGING, SYNOPSIS]
 
     //Props
-    const { onClick, scriptItem = null, part = null, header = null, children } = props;
+    const { toggleMedia, onClick, scriptItem = null, part = null, header = null, children } = props;
 
     const hasComment = scriptItem?.commentId || part?.commentId || false;
 
     log(debug, 'ScriptItemControlsProps', props)
 
     //Redux
-    //const undoDateTime = useSelector(state => state.scriptEditor.undoDateTime)
-    const undoDateTime = null
 
     //Internal State
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -45,27 +49,15 @@ function ScriptItemControls(props) {
 
         setDropdownOpen(prevState => !prevState);
     }
-    const handleDropdownClick = (e, type) => {
+    const handleTypeDropdownClick = (e, type) => {
         e.preventDefault()
-        onClick('changeType', type)
+        dispatch(trigger(UPDATE_TYPE, { scriptItem, type }))
     }
 
-    const handleClick = (action) => {
-        switch (action) {
-            case 'attach':
-                onClick('toggleMedia')
-                break;
-            case 'link':
-                break;
-            case 'toggleCurtain':
-                onClick('toggleCurtain', !scriptItem.curtainOpen)
-                break;
-
-            default:
-        }
-
+    const goToComment = () => {
+        dispatch(updateShowComments(true))
+        moveFocusToId(scriptItem.commentid);
     }
-
 
     return (
         <div className={s['script-item-controls']}>
@@ -74,13 +66,12 @@ function ScriptItemControls(props) {
                 <div className={s['header-left-controls']}>
                     {scriptItem && attachTypes.includes(scriptItem.type) &&
                         <>
-                            <Icon icon="attach" onClick={() => handleClick('attach')} />
-                        {/*  <Icon icon="link" onClick={() => handleClick('link')} />*/}
+                            <Icon icon="attach" onClick={() => toggleMedia()} />
                         </>
                     }
                     {scriptItem && CURTAIN_TYPES.includes(scriptItem.type) &&
 
-                        <CheckBox checked={scriptItem.curtainOpen} onChange={() => handleClick('toggleCurtain')} ios={true} />
+                        <CheckBox checked={scriptItem.curtainOpen} onChange={() => dispatch(trigger(TOGGLE_CURTAIN({ scriptItem })))} ios={true} />
                     }
                 </div>
                 <div className={s['header-right-controls']}>
@@ -92,21 +83,21 @@ function ScriptItemControls(props) {
 
                             <DropdownMenu>
                                 {scriptItemTypes.map((type) => {
-                                    return <DropdownItem key={type} onClick={(e) => handleDropdownClick(e, type)}>{type}</DropdownItem>
+                                    return <DropdownItem key={type} onClick={(e) => handleTypeDropdownClick(e, type)}>{type}</DropdownItem>
                                 })
                                 }
                             </DropdownMenu>
                         </Dropdown>
                     }
 
-                    
 
-                    
+
+
                     {(!hasComment) &&
-                        <Icon icon='comment-o' onClick={() => onClick('addComment')} />
+                        <Icon icon='comment-o' onClick={() => dispatch(trigger(ADD_COMMENT))} />
                     }
                     {(hasComment) &&
-                        <Icon icon='comment' onClick={() => onClick('goToComment')} />    
+                        <Icon icon='comment' onClick={() => goToComment()} />
                     }
 
                     {/*{(!undoDateTime) &&*/}
@@ -120,21 +111,21 @@ function ScriptItemControls(props) {
 
 
             <div className={s['bottom-right-controls']}>
-                {scriptItem && <Icon icon="play" onClick={() => onClick('confirm', null)} />}
+                {scriptItem && <Icon icon="play" onClick={() => onClick(CONFIRM)} />}
 
-                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick('add', null)}  />}
+                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick(ADD_SCRIPT_ITEM)} />}
 
 
-                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => onClick('delete', null)} />}
+                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem }))} />}
 
             </div>
 
             <div className={s['outside-right-controls']}>
                 {part &&
                     <>
-                    <Icon icon="play" onClick={() => onClick('confirm', null)} />
-                    <Icon icon="add" onClick={() => onClick('add', null)}/>
-                        <Icon icon="search" onClick={(e) => onClick('search',null,e)} />
+                        <Icon icon="play" onClick={() => onClick('confirm', null)} />
+                        <Icon icon="add" onClick={() => onClick('add', null)} />
+                        <Icon icon="search" onClick={(e) => onClick('search', null, e)} />
                         <Icon icon="trash" onClick={() => onClick('delete', null)} />
                     </>
                 }

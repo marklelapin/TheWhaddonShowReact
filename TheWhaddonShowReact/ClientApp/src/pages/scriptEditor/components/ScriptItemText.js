@@ -1,21 +1,31 @@
 ﻿import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
+
+import {
+    trigger,
+    UPDATE_TEXT,
+    ADD_SCRIPT_ITEM,
+    DELETE_SCRIPT_ITEM,
+    DELETE_NEXT_SCRIPT_ITEM,
+    UNDO,
+    REDO,
+    CONFIRM_UNDO
+} from '../../../actions/scriptEditor';
 
 //Components
 import TextareaAutosize from 'react-autosize-textarea';
-import ScriptItemControls from './ScriptItemControls';
+import ScriptItemControls, { CONFIRM } from './ScriptItemControls';
 import { log } from '../../../helper';
 
 
 //Utilities
 import { changeFocus } from '../../../actions/scriptEditor';
-import { moveFocusToId } from '../scripts/utility';
+import { moveFocusFromScriptItem } from '../scripts/utility';
 
 //constants
-import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
-import { UP, DOWN, START, END, SCENE_END } from '../scripts/utility';
+import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
+import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 //css
 import s from '../ScriptItem.module.scss';
@@ -31,9 +41,6 @@ function ScriptItemText(props) {
 
     //Props
     const { scriptItem,
-        header,
-        onChange,
-        onClick,
         placeholder = "...",
         maxWidth = null,
         toggleMedia,
@@ -41,18 +48,18 @@ function ScriptItemText(props) {
         nextFocusId = null
     } = props;
 
-    const { id, type, tags } = scriptItem
+    const { id, type, header} = scriptItem
 
     log(debug, 'Component:ScriptItemText props', props)
 
 
     //REdux
     const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
-    const isUndoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress)
-
+    const undoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress)
+    const undoNotInProgress = !undoInProgress
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
-
+    const [redoTempTextValue, setRedoTempTextValue] = useState(null)
 
     let finalPlaceholder;
 
@@ -68,7 +75,7 @@ function ScriptItemText(props) {
 
         //makes the textarea the focus when created unless during an undo.
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
-        if (textInputRef && !isUndoInProgress) {
+        if (textInputRef && undoNotInProgress) {
             textInputRef.focus();
         }
     }, [])
@@ -106,6 +113,7 @@ function ScriptItemText(props) {
     const finalWidthPx = `${Math.floor(finalWidth)}px`
 
 
+
     //Event Handlers
 
     const handleTextChange = (e) => {
@@ -117,23 +125,11 @@ function ScriptItemText(props) {
 
         log(debug, `EventCheck: ScriptItemTextControlsClick: ${action},${value}`)
         switch (action) {
-            case 'changeType': onChange('type', value); break;
-            case 'toggleCurtain': onChange('toggleCurtain', value); break;
-            case 'confirm': handleBlur(); break; //TODO- only show confirm if tempTextValue is not null.remove focus.
-            case 'add':
-                log(debug, 'EventsCheck: ScriptItemTextControlsClick: add')
-                let text = tempTextValue;
+            case CONFIRM: moveFocus(DOWN,END); break; //TODO- only show confirm if tempTextValue is not null.remove focus.
+            case ADD_SCRIPT_ITEM: 
                 setTempTextValue(null)
-                onChange('addScriptItemBelow', text);
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem: scriptItem, tempTextValue }))
                 break;
-            case 'delete': onClick('delete'); break;
-            case 'undo': onClick('undo'); break;
-            case 'redo': onClick('redo'); break;
-            case 'toggleMedia':
-                toggleMedia()
-                break;
-            case 'addComment': onChange('addComment', tempTextValue); break;
-            case 'goToComment': onClick('goToComment', null); break;
             default: return;
         }
 
@@ -141,28 +137,14 @@ function ScriptItemText(props) {
 
     const moveFocus = (direction, position) => {
 
-        let newPosition;
-        //moving up from scene is a special case where it needs to find the last item in the scene
-        if (scriptItem.type === SCENE && direction === UP) {
-            newPosition = SCENE_END;
-        } else {
-            newPosition = position || END;
-        }
-
-        const newId = (direction === DOWN) ? nextFocusId || scriptItem.nextId : previousFocusId || scriptItem.previousId
-
-        log(debug, 'Component:ScriptItemText handleMoveFocus input:', { direction, position, previousFocusId, nextFocusId })
-        log(debug, 'Component:ScriptItemText handleMoveFocus output:', { newId, newPosition })
-        if (newId) {
-            moveFocusToId(newId, newPosition)
-        }
+        moveFocusFromScriptItem(scriptItem,direction, position, nextFocusId, previousFocusId)
 
     }
 
 
     const handleKeyDown = (e, scriptItem) => {
 
-        log(debug, `EventsCheck: ScriptItemTextKeyDown: key: ${e.key}`)
+        log(debug, `Component:ScriptItemText handleKeyDown: key:`, {key: e.key, shiftKey: e.shiftKey, ctrlKey: e.ctrlKey })
         const closestPosition = () => {
             const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
             const closestPosition = (percentageAcoss > 0.5) ? END : START
@@ -194,14 +176,12 @@ function ScriptItemText(props) {
                 moveFocus(DOWN, END)
                 return;
             }
-            let text = tempTextValue;
-
-
+           
             if (e.target.selectionEnd === 0) {
 
-                onChange('addScriptItemAbove', text)
+                dispatch(trigger(ADD_SCRIPT_ITEM, {position: ABOVE, scriptItem: scriptItem, tempTextValue}))
             } else {
-                onChange('addScriptItemBelow', text)
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem: scriptItem, tempTextValue }))
             }
             setTempTextValue(null)
             return
@@ -232,7 +212,9 @@ function ScriptItemText(props) {
 
             if (!finalText || finalText === null || finalText === '') {
                 e.preventDefault()
-                onChange('deleteScriptItem', UP)
+
+                dispatch(trigger(DELETE_SCRIPT_ITEM, {scriptItem, direction : UP}))
+                
                 return
             }
 
@@ -248,14 +230,16 @@ function ScriptItemText(props) {
             log(debug, `EventsCheck: ScriptItemTextKeyDown: Delete ${tempTextValue}`)
             if (e.target.selectionStart === e.target.value.length) {
                 e.preventDefault()
-                log(debug, `eventsCheck: Delete STage 1:`)
+         
                 if (finalText === null || finalText.length === 0) {
-                    log(debug, 'eventsCheck: Delete STage 2')
-                    onChange('deleteScriptItem', DOWN)
+   
+
+                    dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem, direction : DOWN }))
+
                     return
                 }
 
-                log(debug, 'eventsCheck: Delete STage 3')
+       
                 const nextScriptItemElement = document.getElementById(scriptItem.nextId)
                 if (nextScriptItemElement) {
                     const textInputElement = nextScriptItemElement.querySelector('.text-input')
@@ -264,7 +248,7 @@ function ScriptItemText(props) {
 
                         if (nextScriptItemText === null || nextScriptItemText.length === 0) {
                             e.preventDefault()
-                            onChange('deleteNextScriptItem', UP)
+                            dispatch(trigger(DELETE_NEXT_SCRIPT_ITEM, { scriptItem ,direction: UP}))
                             return
                         } else {
                             e.preventDefault();
@@ -284,31 +268,40 @@ function ScriptItemText(props) {
         }
         log(debug, `EventsCheck: ScriptItemTextKeyDown: key: ${e.key}, tempTextValue = ${tempTextValue}`)
         if (e.ctrlKey && e.key === 'z' && tempTextValue === scriptItem.text) {
-            setTempTextValue(null)
-            onClick('undo')
+            if (tempTextValue !== null) {
+                setRedoTempTextValue(tempTextValue)
+                setTempTextValue(null)
+            } else {
+                dispatch(trigger(UNDO, { sceneId: scriptItem.parentId }))
+            }
         }
 
-        if (e.ctrlKey && e.key === 'y' && isUndoInProgress) {
-            onClick('redo')
+        if (e.ctrlKey && e.key === 'y' && undoInProgress) {
+            if (undoNotInProgress && redoTempTextValue !== null) {
+                setTempTextValue(redoTempTextValue)
+                setRedoTempTextValue(null)
+            } else {
+                dispatch(trigger(REDO, { sceneId: scriptItem.parentId }))
+            }
+           
         }
 
 
     }
 
     const handleFocus = () => {
-        if (isUndoInProgress) { onClick('confirmUndo') }
+        if (undoInProgress) { dispatch(trigger(CONFIRM_UNDO)) }
         dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
         toggleMedia(false)
     }
 
 
     const handleBlur = () => {
-        log(debug, `EventsCheck: ScriptItemTextBlur: ${tempTextValue}`)
+        log(debug, `Component:ScriptItemText Blur: ${tempTextValue}`)
 
         if (tempTextValue || tempTextValue === '') {
-            onChange('text', tempTextValue)
+            dispatch(trigger(UPDATE_TEXT, { scriptItem, text: tempTextValue }))
         }
-        log(debug, 'showMedia handleBlur')
         toggleMedia(false)
     }
 
@@ -340,7 +333,8 @@ function ScriptItemText(props) {
                 <ScriptItemControls
                     scriptItem={scriptItem}
                     header={header}
-                    onClick={(action, value) => handleControlsClick(action, value)}
+                    onClick={handleControlsClick}
+                    toggleMedia={toggleMedia}
                 />
             }
         </div>

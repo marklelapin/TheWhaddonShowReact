@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { updateIsUndoInProgress } from '../../../actions/scriptEditor';
 
+import { ADD_COMMENT, DELETE_COMMENT } from '../../../actions/scriptEditor';
 
 //Components
 import ScriptItem from '../../../pages/scriptEditor/components/ScriptItem.js';
@@ -33,8 +34,6 @@ import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess
 
 export const PART_IDS = 'partIds';
 export const PARTS = 'parts';
-export const ADD_COMMENT = 'addComment';
-export const DELETE_COMMENT = 'deleteComment';
 
 function Scene(props) {
 
@@ -47,119 +46,83 @@ function Scene(props) {
     //props
     const { id, sceneNumber, onClick, zIndex } = props;
 
-
+    log(debug, 'Component:Scene props:', props)
 
     //Redux state
-    const sceneScriptItemHistory = useSelector(state => state.scriptEditor.sceneScriptItemHistory[id])
-    const currentSceneScriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id])
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[id])
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtain[id])
 
-    const undoDateTime = useSelector(state => state.scriptEditor.undoDateTime)
+    const sceneOrder = useSelector(state => state.scriptEditor.sceneOrder[id])
+    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[id])
+    // const undoDateTime = useSelector(state => state.scriptEditor.undoDateTime)
 
-    log(debug, 'Component:Scene sceneScriptItemHistory: ', { sceneScriptItemHistory })
+    log(debug, 'Component:Scene redux: ', { viewAsPartPerson, previousCurtainOpen, sceneOrder, scenePartPersons })
 
     //Internal State
-    const [scriptItems, setScriptItems] = useState([]); //
+    /* const [scriptItems, setScriptItems] = useState([]); //*/
     const [loaded, setLoaded] = useState(false); //]
 
-    const currentScene = { ...getLatest(currentSceneScriptItemHistory)[0], undoDateTime: undoDateTime, sceneNumber: sceneNumber }
 
-    log(debug, 'Component:Scene currentScene', { currentScene, previousCurtainOpen })
+    const scene = { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
 
+    const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
+    const staging = { ...sceneOrder.find(item => item.type === INITIAL_STAGING) } || {}
 
-    //useEffect Hooks
-    useEffect(() => {
+    const bodyOrder = [...sceneOrder].filter(item => ([SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING].includes(item.type) === false)) || []//returns the body scriptItems
 
-        let newScriptItems = sortLatestScriptItems(currentScene, [...sceneScriptItemHistory], undoDateTime)
+    const finalScriptItem = bodyOrder[bodyOrder.length - 1] || {}
 
-        setScriptItems(newScriptItems)
-
-    }, [undoDateTime, sceneScriptItemHistory, id]) //es-lint disable-line react-hooks/exhaustive-deps
-
-
-  
-    const synopsis = { ...scriptItems.find(item => item.type === SYNOPSIS), curtainOpen: previousCurtainOpen } || {}
-    const staging = { ...scriptItems.find(item => item.type === INITIAL_STAGING), curtainOpen: previousCurtainOpen } || {}
-
-    const body = () => {
-
-        const bodyScriptItems = [...scriptItems].filter(item => item.type !== SCENE && item.type !== SYNOPSIS && item.type !== INITIAL_STAGING && item.type !== ACT && item.type !== SHOW) || []//returns the body scriptItems
-
-        //work out alignment
-        const partIdsOrder = [...new Set(bodyScriptItems.map(item => item.partIds[0]))]
-
-        const defaultRighthandPartId = partIdsOrder[1] //defaults the second part to come up as the default right hand part.
-
-        const righthandPartId = scenePartPersons?.partPersons?.find(partPerson => partPerson.id === viewAsPartPerson?.id || partPerson.personId === viewAsPartPerson?.id)?.id || defaultRighthandPartId
-
-        const alignedScriptItems = bodyScriptItems.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) }))
-
-        return alignedScriptItems
-    }
-
-    const finalScriptItem = scriptItems[scriptItems.length - 1] || {}
-
-    const totalItems = scriptItems.length + 2 //+1 for the partEditor and scene-footer
-
-    log(debugRenderProps, 'Component:Scene bodyScriptItems', body())
-    log(debugRenderProps, 'Component:Scene scriptItems', scriptItems)
-    log(debugRenderProps, 'Component:Scene currentScene', currentScene)
-    log(debugRenderProps, 'Component:Scene synopsis', synopsis)
-    log(debugRenderProps, 'Component:Scene staging', staging)
+    log(debug, 'Component:Scene scene', scene)
+    log(debug, 'Component:Scene synopsis', synopsis)
+    log(debug, 'Component:Scene staging', staging)
+    log(debug, 'Component:Scene bodyOrder', bodyOrder)
 
     //---------------------------------
 
     return (
-        <div id={`scene-${currentScene.id}`} className={s[`scene-group`]} style={{ zIndex: zIndex }}>
+        <div id={`scene-${scene.id}`} className={s[`scene-group`]} style={{ zIndex: zIndex }}>
             <div className={s[`scene-header`]}>
 
-                {(currentScene) &&
+                {(scene) &&
                     <ScriptItem
-                        id={currentScene.id}
-                        created={currentScene.created}
-                        key={currentScene.id}
-                        sceneId={currentScene.id}
-                        sceneNumber={currentScene.sceneNumber}
-                        curtainOpen={previousCurtainOpen}
-                        zIndex={totalItems}
-                        previousFocusId={currentScene.previousId}
-                        nextFocusId={synopsis.id}
+                        id={scene.id}
+                        key={scene.id}
+                        sceneId={scene.id}
+                        sceneNumber={sceneNumber}
+                        curtainOpen={scene.curtainOpen}
+                        previousFocusId={scene.previousFocusId}
+                        nextFocusId={scene.nextFocusId}
                     />
 
                 }
-                {currentScene.type === SCENE && synopsis &&
+                {scene.type === SCENE && synopsis &&
                     <ScriptItem
                         id={synopsis.id}
-                        created={synopsis.created}
                         key={synopsis.id}
-                        sceneId={currentScene.id}
-                        curtainOpen={previousCurtainOpen}
-                        zIndex={totalItems - 1}
-                        nextFocusId={currentScene.partIds[0]}
+                        sceneId={scene.id}
+                        curtainOpen={synopsis.curtainOpen}
+                        previousFocusId={synopsis.previousFocusId}
+                        nextFocusId={synopsis.nextFocusId}
                     />
                 }
-                {(currentScene.type === SCENE) &&
+                {(scene.type === SCENE) &&
                     <PartEditor
-                        sceneId={currentScene.id}
+                        sceneId={scene.id}
                         curtainOpen={previousCurtainOpen}
-                        zIndex={totalItems - 2}
                         previousFocusId={synopsis.id} //override the default focus ids
                         nextFocusId={staging.id}
 
                     />
                 }
-                {currentScene.type === SCENE && staging &&
+                {scene.type === SCENE && staging &&
                     <>
-                    <ScriptItem
-                        id={staging.id}
-                        created={staging.created}
-                        key={staging.id}
-                        sceneId={currentScene.id}
-                        curtainOpen={previousCurtainOpen}
-                        zIndex={totalItems - 3}
-                        previousFocusId={currentScene.partIds[currentScene.partIds.length - 1]}
+                        <ScriptItem
+                            id={staging.id}
+                            key={staging.id}
+                            sceneId={scene.id}
+                            curtainOpen={staging.curtainOpen}
+                            previousFocusId={staging.previousFocusId}
+                            nextFocusId={staging.nextFocusId}
                         />
                     </>
 
@@ -169,27 +132,25 @@ function Scene(props) {
 
 
             <div className={s['scene-body']}>
-                {body().map((scriptItem, index) => {
+                {bodyOrder.map((scriptItem) => {
                     return (
                         <ScriptItem
                             id={scriptItem.id}
-                            created={scriptItem.created}
                             key={scriptItem.id}
-                            sceneId={currentScene.id}
+                            sceneId={scene.id}
                             curtainOpen={scriptItem.curtainOpen}
                             alignRight={scriptItem.alignRight}
-                            zIndex={totalItems - index - 4}
-                            nextFocusId={(scriptItem.nextId === null) ? currentScene.nextId : null}
-
+                            previousFocusId={scriptItem.previousFocusId}
+                            nextFocusId={scriptItem.nextFocusId}
                         />
                     )
                 })
                 }
             </div>
 
-            <div id={`scene-footer-${currentScene.id}`}
+            <div id={`scene-footer-${scene.id}`}
                 className={`${s['scene-footer']} ${finalScriptItem.curtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
-                style={{ zIndex: 0 }}>
+            >
 
                 <div className={`${s['add-new-scene']} clickable`} onClick={() => onClick('addNewScene')}>
                     (add new scene)

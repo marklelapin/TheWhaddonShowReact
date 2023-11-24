@@ -24,7 +24,7 @@ function PartSelector(props) {
 
     log(debug, 'PartSelectorProps', props)
     //Props
-    const { sceneId, allocatedPartIds = [], onChange, size = "md"} = props;
+    const { sceneId, allocatedPartIds = [], onSelect, size = "md"} = props;
 
     //REdux
     const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId])
@@ -41,7 +41,7 @@ function PartSelector(props) {
     //Event Handlers
 
     const handleSelect = (partIds) => {
-            onChange(partIds)
+            onSelect(partIds)
             setOpenPartSelector(false)        
     }
 

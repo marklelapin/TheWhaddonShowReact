@@ -8,11 +8,10 @@ import TagsInput from '../../../components/Forms/TagsInput';
 import TextareaAutosize from 'react-autosize-textarea';
 
 //utils
-import { changeFocus } from '../../../actions/scriptEditor';
+import { changeFocus, trigger, DELETE_COMMENT, UPDATE_TEXT, ADD_TAG, REMOVE_TAG } from '../../../actions/scriptEditor';
 import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
-import { prepareUpdate, getLatest } from '../../../dataAccess/localServerUtils';
-import { addUpdates } from '../../../actions/localServer';
+
 import { log } from '../../../helper';
 //css
 import s from '../ScriptItem.module.scss';
@@ -25,11 +24,11 @@ function Comment(props) {
     const tagOptions = ['Guy ToDo', 'Mark C ToDo', 'Heather ToDo', 'Mark B ToDo'];
 
     //props
-    const { id, onChange } = props;
+    const { id } = props;
 
     //redux
-    const commentHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id]) || [];
-    const comment = getLatest(commentHistory)[0]
+    const comment = useSelector(state => state.scriptEditor.scriptItems[id]) || [];
+    const scriptItem = { ...comment };
 
     log(debug, 'Component:Comment:', { id, comment })
 
@@ -39,64 +38,20 @@ function Comment(props) {
     const text = () => {
         return tempText || comment.text;
     }
-
-
-
-
-    const handleKeyDown = (e) => {
-
-        //if (e.key === 'Enter') {
-        //    handleBlur()
-        //    moveFocusToId(comment.previousId, END)
-        //}
-    }
-
-    const handleChange = (type, value) => {
-
-        let newComment = { ...comment }
-        let newFocusId = null;
-
-        switch (type) {
-            case 'addTag': newComment.tags.push(value); break;
-            case 'removeTag': newComment.tags = newComment.tags.filter(tag => tag !== value); break;
-            case 'text': newComment.text = value; break;
-            case 'confirm':
-                newComment.text = value;
-                newFocusId = comment.previousId;
-                break;
-            case 'delete':
-                newComment.isActive = false;
-                newComment.previousId = null;
-                newFocusId = comment.previousId;
-                onChange('deleteComment', null)
-                break;
-            default: return;
-        }
-
-        const preparedUpdate = prepareUpdate(newComment)
-        dispatch(addUpdates(preparedUpdate, 'ScriptItem'))
-
-        if (newFocusId) {
-            moveFocusToId(newFocusId, END)
-        }
-    }
-
+             
     const handleTextChange = (e) => {
         setTempText(e.target.value)
     }
-
 
     const handleFocus = () => {
         dispatch(changeFocus(comment)) //update global state of which item is focussed
     }
 
-
     const handleBlur = () => {
+        log(debug, 'Component:Comment handleBlur ', { tempText })
 
         if (tempText || tempText === '') {
-
-            log(debug, 'Component:Comment handleBlur', { tempText })
-            handleChange('text', tempText)
+            dispatch(trigger(UPDATE_TEXT, { scriptItem, text: tempText }))
         }
         setTempText(null)
     }
@@ -110,7 +65,7 @@ function Comment(props) {
         <div id={comment.id} key={comment.id} className={s['script-item-comment']}>
             <div className={s['comment-header']}>
                 <div className={s['created-by']}>Mark Carter</div>
-                <Icon icon="trash" onClick={() => handleChange('delete', null)} />
+                    <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_COMMENT, {scriptItem}))} />
             </div>
 
 
@@ -124,7 +79,6 @@ function Comment(props) {
                 onChange={(e) => handleTextChange(e)}
                 onBlur={() => handleBlur()}
                 onFocus={() => handleFocus()}
-                onKeyDown={(e) => handleKeyDown(e)}
             />
 
                 <div className={s['comment-header']}>
@@ -132,12 +86,12 @@ function Comment(props) {
                     <TagsInput key={comment.id}
                         tags={comment.tags}
                         tagOptions={tagOptions}
-                        onClickRemove={(tag) => handleChange('removeTag', tag)}
-                        onClickAdd={(tag) => handleChange('addTag', tag)}
+                        onClickRemove={(tag) => dispatch(trigger(REMOVE_TAG, { scriptItem, tag }))}
+                        onClickAdd={(tag) => dispatch(trigger(ADD_TAG, { scriptItem, tag }))}
                         strapColor='primary'
 
                     />
-                <Icon icon="play" onClick={() => handleChange('confirm', text())} />
+                <Icon icon="play" onClick={() => moveFocusToId(comment.previousId,END)} />
             </div>
 
         </div>

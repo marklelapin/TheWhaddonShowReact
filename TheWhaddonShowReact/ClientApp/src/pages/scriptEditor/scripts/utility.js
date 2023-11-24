@@ -1,4 +1,6 @@
 ﻿import { log } from '../../../helper.js';
+import {SCENE} from '../../../dataAccess/scriptItemTypes.js'; 
+
 
 export const START = 'start';
 export const END = 'end';
@@ -36,6 +38,30 @@ export function findScriptItem(element, scriptItems) {
     }
 
 }
+
+
+export const moveFocusFromScriptItem = (scriptItem,direction, position, nextFocusId = null,previousFocusId = null) => {
+    const debug = false;
+
+    let newPosition;
+    //moving up from scene is a special case where it needs to find the last item in the scene
+    if (scriptItem.type === SCENE && direction === UP) {
+        newPosition = SCENE_END;
+    } else {
+        newPosition = position || END;
+    }
+
+    const newId = (direction === DOWN) ? nextFocusId || scriptItem.nextId : previousFocusId || scriptItem.previousId
+
+    log(debug, 'Component:ScriptItemText handleMoveFocus input:', { direction, position, previousFocusId, nextFocusId })
+    log(debug, 'Component:ScriptItemText handleMoveFocus output:', { newId, newPosition })
+    if (newId) {
+        moveFocusToId(newId, newPosition)
+    }
+
+}
+
+
 
 export function moveFocusToId(id, position = START, scroll = false) {
     const debug = true;
@@ -75,7 +101,6 @@ export function moveFocusToId(id, position = START, scroll = false) {
                 newTextInput.selectionEnd = newTextInput.value.length
             }
         }
-
 
     }
     catch(error) {

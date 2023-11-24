@@ -9,12 +9,10 @@ import {
     addUpdateToScriptItemHistory,
     addUpdatesToSceneScriptItemHistory,
     addUpdatesToSceneHistory,
-    trigger,
-    updateUndoDateTime
+    updateUndoDateTime,
+    updateShowComments,
+    updatePreviousCurtain,
 } from '../actions/scriptEditor';
-
-//components
-import TextareaAutosize from 'react-autosize-textarea';
 
 //utils
 import { log } from '../helper';
@@ -29,20 +27,26 @@ import {
     newScriptItemsForDelete,
     newScriptItemsForSceneDelete,
     newScriptItemsForDeleteComment,
-    newScriptItemsForSwapPart
+    newScriptItemsForSwapPart,
+    newScriptItemsForToggleCurtain,
+    clearCurtainTags,
+    newScriptItemsForAddComment,
+    sortLatestScriptItems,
 } from '../pages/scriptEditor/scripts/scriptItem'
-
+import { moveFocusToId } from '../pages/scriptEditor/scripts/utility';
 
 //constants
-import { SHOW, ACT, SCENE, CURTAIN_TYPES, DIALOGUE } from '../dataAccess/scriptItemTypes'
+import { SHOW, ACT, SCENE, CURTAIN_TYPES, DIALOGUE, CURTAIN } from '../dataAccess/scriptItemTypes'
 import { SCRIPT_ITEM, PART } from '../dataAccess/localServerModels'
 import {
+    UPDATE_TEXT, UPDATE_PART_IDS, UPDATE_TAGS, ADD_TAG, REMOVE_TAG,
+    UPDATE_ATTACHMENTS, UPDATE_TYPE,
+    OPEN_CURTAIN, CLOSE_CURTAIN, TOGGLE_CURTAIN, ADD_COMMENT,
     UNDO, REDO, CONFIRM_UNDO, DELETE_COMMENT,
     ADD_SCRIPT_ITEM, DELETE_SCRIPT_ITEM,
     DELETE_NEXT_SCRIPT_ITEM, DELETE_SCENE,
     SWAP_PART, UPDATE_SCENE_PART_IDS
 } from '../actions/scriptEditor'
-
 
 export function ScriptEditorProcessing() {
 
@@ -67,6 +71,231 @@ export function ScriptEditorProcessing() {
     const scriptEditorTrigger = useSelector(state => state.scriptEditor.trigger)
     const undoDateTime = useSelector(state => state.scriptEditor.undoDateTime)
     const undoSceneId = useSelector(state => state.scriptEditor.undoSceneId)
+
+
+
+    const sceneOrders = useSelector(state => state.scriptEditor.sceneOrders)
+
+
+
+    //ScriptEditorTrigger Processing
+    //---------------------------------------------------------------------------------
+    //the scriptEditorTrigger is used to trigger updates to the scriptEditor state.
+    //without this intermediary step there are signficant re-renders of a large number of items.
+    //This component spefically targets state that need updating when a scriptItem is changed.
+
+
+    useEffect(() => {
+
+        log(debug, 'Component:ScriptEditorProcessing: ScriptEditorTrigger', scriptEditorTrigger)
+
+        if (!scriptEditorTrigger || Object.keys(scriptEditorTrigger).length === 0) return
+
+        const { type,
+            value,
+            tag,
+            scriptItem,
+            position,
+            direction,
+            tempTextValue,
+            oldPartId,
+            newPartId,
+            sceneId: draftSceneId,
+            partIds,
+        } = scriptEditorTrigger
+
+        let sceneId
+
+        if (draftSceneId) {
+            sceneId = draftSceneId;
+        } else if ([UNDO, REDO, CONFIRM_UNDO].includes(type)) {
+            sceneId = undoSceneId
+        } else {
+            sceneId = (scriptItem?.type === SCENE) ? scriptItem.id : scriptItem.parentId
+        }
+
+
+        //send off undo jobs
+        switch (type) {
+
+            case UNDO: undo(sceneId); return
+            case REDO: redo(sceneId); return
+            case CONFIRM_UNDO: confirmUndo(sceneId); return;
+            default: break; //TODO confirm Undo if not already done here and if unfinished on different sceneId. REmvoe confirm undos from components.
+        }
+
+
+
+        //process scriptItem jobs
+
+        const scene = currentScriptItems[sceneId]
+
+        const sceneOrder = sceneOrder[sceneId]
+
+        const sceneScriptItems = getLatest(sceneScriptItemHistory[sceneId] || [])
+
+
+        let internalUpdates = []; //updates only affecting a single scriptItem
+        let sceneUpdates = []; //updates affecting multiple scriptItems and the order of scriptItems in a scene
+        let curtainUpdates = []; // updates affecting the curtain of a scene
+        let showUpdates = []; //updates affecting the order of scenes in a show
+        let newSceneOrder = [];
+        let moveFocus = { id: scriptItem.id, position: END } //default move focus to next item in list unles change in switch statement.
+
+        switch (type) {
+
+            case UPDATE_TEXT: internalUpdates.push({ ...scriptItem, text: value });
+                moveFocus = { id: scriptItem.nextId, position: END }
+                break;;
+            case UPDATE_PART_IDS: internalUpdates.push({ ...scriptItem, partIds: value }); break;
+            case UPDATE_TAGS: internalUpdates.push({ ...scriptItem, tags: value }); break;
+            case ADD_TAG: internalUpdates.push({ ...scriptItem, tags: [...scriptItem.tags.filter(item => item !== tag).push(tag)] }); break;
+            case REMOVE_TAG: internalUpdates.push({ ...scriptItem, tags: scriptItem.tags.filter(item => item !== tag) }); break;
+            case UPDATE_ATTACHMENTS: internalUpdates.push({ ...scriptItem, attachments: value }); break;
+            case UPDATE_TYPE: let newTypeUpdate = { ...scriptItem, type: value };
+                if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
+                    newTypeUpdate = newScriptItemsForToggleCurtain(newTypeUpdate, true) //set it to open curtain.
+                    curtainUpdates.push(newTypeUpdate)
+                } else if (CURTAIN_TYPES.includes(scriptItem.type)) { //i.e. its coming from a curtain type
+                    newTypeUpdate.text = '';
+                    newTypeUpdate = clearCurtainTags(newTypeUpdate)
+                    curtainUpdates.push(newTypeUpdate)
+                } else {
+                    internalUpdates.push(newTypeUpdate);
+                }
+                break;
+            case OPEN_CURTAIN: curtainUpdates = [...curtainUpdates, ...newScriptItemsForToggleCurtain(scriptItem, true)]; break;
+            case CLOSE_CURTAIN: curtainUpdates = [...curtainUpdates, ...newScriptItemsForToggleCurtain(scriptItem, false)]; break;
+            case TOGGLE_CURTAIN: curtainUpdates = [...curtainUpdates, ...newScriptItemsForToggleCurtain(scriptItem)]; break;
+            case ADD_COMMENT:
+                sceneUpdates = [...sceneUpdates, ...newScriptItemsForAddComment(scriptItem, value)]
+                
+                moveFocus =null //newly creatd add script item will by default become focus.
+                dispatch(updateShowComments(true));
+                break;
+            case DELETE_COMMENT:
+                sceneUpdates = newScriptItemsForDeleteComment(scriptItem, sceneScriptItems); break; //todo
+                moveFocus = { id: scriptItem.previousId, position: END };
+            case ADD_SCRIPT_ITEM:
+                sceneUpdates = newScriptItemsForCreate(position, scriptItem, sceneScriptItems, DIALOGUE, tempTextValue); break;
+                moveFocus = null //newly created add script item will by default become focus.
+            case DELETE_SCRIPT_ITEM:
+                sceneUpdates = newScriptItemsForDelete(scriptItem, sceneScriptItems); break;
+                if (direction == UP) {
+                    moveFocus = { id: scriptItem.previousId, position: END };
+                } else {
+                    moveFocus = { id: scriptItem.nextId, position: END };
+                }
+            case DELETE_NEXT_SCRIPT_ITEM:
+                const nextScriptItem = sceneScriptItems.find(item => item.id === scriptItem.nextId)
+                sceneUpdates = newScriptItemsForDelete(nextScriptItem, sceneScriptItems);
+                moveFocus = { id: scriptItem.Id, position: END };
+                break;
+            case DELETE_SCENE:
+                showUpdates = newScriptItemsForSceneDelete(scriptItem, sceneScriptItems);
+                moveFocus = { id: scriptItem.nextId, position: END };
+                break;
+            case SWAP_PART: sceneUpdates = newScriptItemsForSwapPart(sceneScriptItems, oldPartId, newPartId);
+                moveFocus = { id: newPartId,position: END}; 
+                break;
+            case UPDATE_SCENE_PART_IDS:
+                const scene = sceneScriptItems.find(item => item.id === sceneId)
+                const newScene = { ...scene, partIds: partIds };
+                sceneUpdates = [newScene];
+                moveFocus = null
+                break;
+            default: break;
+        }
+
+        let preparedUpdates = [];
+
+        const nonCurtainUpdates = [...internalUpdates, ...sceneUpdates, ...showUpdates]
+        if (nonCurtainUpdates > 0) {
+            preparedUpdates = prepareUpdates(nonCurtainUpdates)
+
+            dispatch(updateCurrentScriptItems(preparedUpdates))
+            dispatch(addUpdatesToLocalServer(preparedUpdates, SCRIPT_ITEM))
+        }
+
+        const multiUpdates = [...sceneUpdates, ...showUpdates]
+        if (multiUpdates.length > 0) {
+            const scene = currentScriptItems[sceneId]
+            newSceneOrder = refreshSceneOrder(scene, preparedUpdates) //adds preparedUpdates into sceneOrder and reorders.
+        }
+
+        if (curtainUpdates.length > 0) {
+
+            refreshSceneAndNextSceneOrder(scene) //works out changes to curtainOpen values across
+
+        }
+
+        if (moveFocus) {
+            moveFocusToId(moveFocus.id,moveFocus.position)
+        }
+
+
+    }, [scriptEditorTrigger])
+
+
+    const refreshSceneOrder = (scene, updates=[]) => {
+
+        const previousCurtain = previousCurtain[scene.id]
+
+        const newSceneOrder = sortLatestScriptItems(scene, [...sceneOrders[scene.id], ...updates], previousCurtain, null)
+
+        //add z-index calculation using current sceneORder fro current z-indexes. 
+
+        const newPreviousCurtain = newSceneOrder[newSceneOrder.length - 1].curtainOpen;
+        dispatch(updatePreviousCurtain(scene.nextId,newPreviousCurtain))
+        return { newSceneOrder, previousCurtain : newPreviousCurtain };
+    }
+
+    const refreshSceneAndNextSceneOrder = (sceneId,updates=[]) => {
+
+        const { newSceneOrder, previousCurtain } = refreshSceneOrder(sceneId, updates)
+
+        const { nextSceneOrder, previousCurtain } = refreshSceneOrder(currentScriptItems[sceneId].nextId)
+
+        //COULDn't ge tot he end of thiss!!!
+
+        //work out curtain and dispatch changes to sceneOrders both at same time.
+
+        //add z-index calculation
+
+    }
+
+ also need to add in parts calculation below.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //refreshTrigger contains the updates successfully processed when the ADD_UPDATES action is dispatched.
     const localServerTrigger = useSelector((state) => state.localServer.refresh)
@@ -207,75 +436,7 @@ export function ScriptEditorProcessing() {
     }, [partPersons, sceneHistory])
 
 
-    //ScriptEditorTrigger Processing
-    //---------------------------------------------------------------------------------
-    useEffect(() => {
 
-        log(debug, 'Component:ScriptEditorProcessing: ScriptEditorTrigger', scriptEditorTrigger)
-
-        if (!scriptEditorTrigger || Object.keys(scriptEditorTrigger).length === 0) return
-
-        const { type,
-            scriptItem,
-            position,
-            tempTextValue,
-            oldPartId,
-            newPartId,
-            sceneId: draftSceneId,
-            partIds,
-        } = scriptEditorTrigger
-
-        let sceneId
-
-        if (draftSceneId) {
-            sceneId = draftSceneId;
-        } else if ([UNDO, REDO, CONFIRM_UNDO].includes(type)) {
-            sceneId = undoSceneId
-        } else {
-            sceneId = (scriptItem?.type === SCENE) ? scriptItem.id : scriptItem.parentId
-        }
-
-
-        //send off undo jobs
-        switch (type) {
-
-            case UNDO: undo(sceneId); return
-            case REDO: redo(sceneId); return
-            case CONFIRM_UNDO: confirmUndo(sceneId); return;
-            default: break;
-        }
-
-        //process scriptItem jobs
-
-
-        const sceneScriptItems = getLatest(sceneScriptItemHistory[sceneId] || [])
-
-        let updates = [];
-
-        switch (type) {
-            case DELETE_COMMENT: updates = newScriptItemsForDeleteComment(scriptItem, sceneScriptItems); break; //todo
-            case ADD_SCRIPT_ITEM: updates = newScriptItemsForCreate(position, scriptItem, sceneScriptItems, DIALOGUE, tempTextValue); break;
-            case DELETE_SCRIPT_ITEM: updates = newScriptItemsForDelete(scriptItem, sceneScriptItems); break;
-            case DELETE_NEXT_SCRIPT_ITEM:
-                const nextScriptItem = sceneScriptItems.find(item => item.id === scriptItem.nextId)
-                updates = newScriptItemsForDelete(nextScriptItem, sceneScriptItems); break;
-            case DELETE_SCENE: updates = newScriptItemsForSceneDelete(scriptItem, sceneScriptItems); break;
-            case SWAP_PART: updates = newScriptItemsForSwapPart(sceneScriptItems, oldPartId, newPartId); break;
-            case UPDATE_SCENE_PART_IDS:
-                const scene = sceneScriptItems.find(item => item.id === sceneId)
-                const newScene = { ...scene, partIds: partIds };
-                updates = [newScene];
-                break;
-            default: break;
-        }
-
-        if (updates.length > 0) {
-            const preparedUpdates = prepareUpdates(updates)
-            dispatch(addUpdates(preparedUpdates, 'ScriptItem'))
-        }
-
-
-    }, [scriptEditorTrigger])
 
 
 
@@ -283,12 +444,12 @@ export function ScriptEditorProcessing() {
     ///Undo processing
     const undo = (sceneId) => {
         const nextUndoDate = getNextUndoDate(sceneScriptItemHistory[sceneId], undoDateTime)
-        dispatch(updateUndoDateTime(nextUndoDate,sceneId))
+        dispatch(updateUndoDateTime(nextUndoDate, sceneId))
     }
 
     const redo = (sceneId) => {
         const nextUndoDate = getNextRedoDate(sceneScriptItemHistory[sceneId], undoDateTime)
-        dispatch(updateUndoDateTime(nextUndoDate,sceneId))
+        dispatch(updateUndoDateTime(nextUndoDate, sceneId))
     }
 
     const confirmUndo = (sceneId) => {
@@ -318,7 +479,7 @@ export function ScriptEditorProcessing() {
 
         dispatch(addUpdates(updates, 'ScriptItem'));
 
-        dispatch(updateUndoDateTime(null,null))
+        dispatch(updateUndoDateTime(null, null))
 
     }
 
@@ -334,4 +495,65 @@ export default ScriptEditorProcessing;
 
 
 
+const get zIndex = () -
 
+
+
+const getHeader = () => {
+    switch (type) {
+        case DIALOGUE:
+            if (scenePartPersons) {
+                const partPersons = scriptItem.partIds.map(partId => scenePartPersons.partPersons.find(partPerson => partPerson.id === partId))
+
+                const partNames = partPersons.map(partPersons => partPersons?.name).join(',')
+
+                return partNames || '-'
+            }; break;
+        case SCENE:
+            return `Scene ${sceneNumber}.` || null
+        case STAGING:
+            return 'Staging' || null
+        case INITIAL_STAGING:
+            return 'Initial Staging' || null
+
+        default: return null;
+    }
+
+}
+
+This is the code from = scene for generate cscene order.
+    //useEffect Hooks
+    useEffect(() => {
+        error
+        let newScriptItems = sortLatestScriptItems(currentScene, [...sceneScriptItemHistory], undoDateTime)
+
+        setScriptItems(newScriptItems)
+
+    }, [undoDateTime, sceneScriptItemHistory, id]) //es-lint disable-line react-hooks/exhaustive-deps
+
+
+ //work out alignment
+        const partIdsOrder = [...new Set(bodyScriptItems.map(item => item.partIds[0]))]
+
+const defaultRighthandPartId = partIdsOrder[1] //defaults the second part to come up as the default right hand part.
+
+const righthandPartId = scenePartPersons?.partPersons?.find(partPerson => partPerson.id === viewAsPartPerson?.id || partPerson.personId === viewAsPartPerson?.id)?.id || defaultRighthandPartId
+
+const alignedScriptItems = bodyScriptItems.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) }))
+
+return alignedScriptItems
+
+
+
+    / soverid next and prviosu id
+
+currentScene.partIds[0]
+
+either side fo parteditor
+
+currentScene.partIds[partIds.length - 1]
+
+
+bottom script ITem:
+
+nextFocusId = {(scriptItem.nextId === null) ? currentScene.nextId : null}
