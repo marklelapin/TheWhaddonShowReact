@@ -13,8 +13,6 @@ import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
-import { getLatest } from '../../../dataAccess/localServerUtils';
-import { sortLatestScriptItems } from '../scripts/scriptItem';
 
 
 import { log } from '../../../helper'

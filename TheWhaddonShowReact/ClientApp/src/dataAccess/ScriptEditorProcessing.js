@@ -32,6 +32,7 @@ import {
     clearCurtainTags,
     newScriptItemsForAddComment,
     sortLatestScriptItems,
+    refreshSceneOrder,
 } from '../pages/scriptEditor/scripts/scriptItem'
 import { moveFocusToId } from '../pages/scriptEditor/scripts/utility';
 
@@ -130,7 +131,7 @@ export function ScriptEditorProcessing() {
 
         const scene = currentScriptItems[sceneId]
 
-        const sceneOrder = sceneOrder[sceneId]
+        const sceneOrder = sceneOrders[sceneId]
 
         const sceneScriptItems = getLatest(sceneScriptItemHistory[sceneId] || [])
 
@@ -169,8 +170,8 @@ export function ScriptEditorProcessing() {
             case TOGGLE_CURTAIN: curtainUpdates = [...curtainUpdates, ...newScriptItemsForToggleCurtain(scriptItem)]; break;
             case ADD_COMMENT:
                 sceneUpdates = [...sceneUpdates, ...newScriptItemsForAddComment(scriptItem, value)]
-                
-                moveFocus =null //newly creatd add script item will by default become focus.
+
+                moveFocus = null //newly creatd add script item will by default become focus.
                 dispatch(updateShowComments(true));
                 break;
             case DELETE_COMMENT:
@@ -196,7 +197,7 @@ export function ScriptEditorProcessing() {
                 moveFocus = { id: scriptItem.nextId, position: END };
                 break;
             case SWAP_PART: sceneUpdates = newScriptItemsForSwapPart(sceneScriptItems, oldPartId, newPartId);
-                moveFocus = { id: newPartId,position: END}; 
+                moveFocus = { id: newPartId, position: END };
                 break;
             case UPDATE_SCENE_PART_IDS:
                 const scene = sceneScriptItems.find(item => item.id === sceneId)
@@ -207,62 +208,54 @@ export function ScriptEditorProcessing() {
             default: break;
         }
 
-        let preparedUpdates = [];
+        let scriptItemUpdates = [];
+        let sceneOrderUpdates = [];
 
-        const nonCurtainUpdates = [...internalUpdates, ...sceneUpdates, ...showUpdates]
-        if (nonCurtainUpdates > 0) {
-            preparedUpdates = prepareUpdates(nonCurtainUpdates)
-
-            dispatch(updateCurrentScriptItems(preparedUpdates))
-            dispatch(addUpdatesToLocalServer(preparedUpdates, SCRIPT_ITEM))
+        const allUpdates = [...internalUpdates, ...sceneUpdates, ...showUpdates, ...curtainUpdates]
+        if (allUpdates > 0) {
+            scriptItemUpdates = prepareUpdates(allUpdates)
         }
 
         const multiUpdates = [...sceneUpdates, ...showUpdates]
         if (multiUpdates.length > 0) {
             const scene = currentScriptItems[sceneId]
-            newSceneOrder = refreshSceneOrder(scene, preparedUpdates) //adds preparedUpdates into sceneOrder and reorders.
+            sceneOrderUpdates.push(refreshSceneOrder(sceneOrder, scriptItemUpdates)) //adds updates into sceneOrder and reorders.
         }
 
         if (curtainUpdates.length > 0) {
-
-            refreshSceneAndNextSceneOrder(scene) //works out changes to curtainOpen values across
-
+            const nextSceneOrder = sceneOrders[scene.nextId]
+            sceneOrderUpdates = refreshCurtain(sceneOrder, nextSceneOrder) //works out changes to curtainOpen values across
         }
 
+
+        //dispatches to redux store
+        if (scriptItemUpdates.length > 0) {
+            dispatch(updateCurrentScriptItems(scriptItemUpdates))
+            dispatch(addUpdatesToLocalServer(scriptItemUpdates, SCRIPT_ITEM))
+        }
+        if (sceneOrderUpdates.length > 0) {
+            dispatch(updateSceneOrders(sceneOrderUpdates)) //ensures curtain is applied at same time to both scenes 
+
+            !!!TODO refreshCurtain, and updateSceneOrders.
+            !!!TODO create refreshSceneOrder alignment.
+
+        } 
+
+
+        //Moves Focus
         if (moveFocus) {
-            moveFocusToId(moveFocus.id,moveFocus.position)
+            moveFocusToId(moveFocus.id, moveFocus.position)
         }
 
 
     }, [scriptEditorTrigger])
 
 
-    const refreshSceneOrder = (scene, updates=[]) => {
 
-        const previousCurtain = previousCurtain[scene.id]
+    dispatch(updatePreviousCurtain(scene.nextId, newPreviousCurtain))
+  
 
-        const newSceneOrder = sortLatestScriptItems(scene, [...sceneOrders[scene.id], ...updates], previousCurtain, null)
-
-        //add z-index calculation using current sceneORder fro current z-indexes. 
-
-        const newPreviousCurtain = newSceneOrder[newSceneOrder.length - 1].curtainOpen;
-        dispatch(updatePreviousCurtain(scene.nextId,newPreviousCurtain))
-        return { newSceneOrder, previousCurtain : newPreviousCurtain };
-    }
-
-    const refreshSceneAndNextSceneOrder = (sceneId,updates=[]) => {
-
-        const { newSceneOrder, previousCurtain } = refreshSceneOrder(sceneId, updates)
-
-        const { nextSceneOrder, previousCurtain } = refreshSceneOrder(currentScriptItems[sceneId].nextId)
-
-        //COULDn't ge tot he end of thiss!!!
-
-        //work out curtain and dispatch changes to sceneOrders both at same time.
-
-        //add z-index calculation
-
-    }
+    
 
  also need to add in parts calculation below.
 
