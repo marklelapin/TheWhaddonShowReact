@@ -22,21 +22,19 @@ function PartSelector(props) {
     const debug = false;
     const dispatch = useDispatch();
 
-    log(debug, 'PartSelectorProps', props)
+    log(debug, 'Component:PartSelector props', props)
     //Props
     const { sceneId, allocatedPartIds = [], onSelect, size = "md"} = props;
 
-    //REdux
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId])
+    //Redux
+    const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
+    const scenePartIds = scene?.partIds || []
 
     //Internal State
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
 
-
-    const sceneParts = scenePartPersons?.partPersons
-    const partsArray = sceneParts?.map(part => allocatedPartIds.includes(part.id) ? { ...part, allocated: true } : { ...part, allocated: false }) || []
-
+    const partsArray = scenePartIds.map(ids => allocatedPartIds.includes(ids.partId) ?  {id: ids.partId, allocated: true } : { id: ids.partId, allocated: false }) || []
    
     //Event Handlers
 
@@ -59,7 +57,7 @@ function PartSelector(props) {
                 {partsArray.filter(part => part.allocated === true).map(part => {
                     return (
                         <div className={s['avatar']} key={part.id}>
-                            <Avatar onClick={(e) => toggleDropdown(e)} size={size} key={part.id} person={part} avatar />
+                            <Avatar onClick={(e) => toggleDropdown(e)} size={size} key={part.id} partId={part.id} avatar />
                         </div>
                     )
                 })}
@@ -74,9 +72,8 @@ function PartSelector(props) {
             </div>
             {(openPartSelector) &&
 
-
                 <PartSelectorDropdown
-                parts={partsArray}
+                partIds={scenePartIds}
                 toggle={(e)=>toggleDropdown(e)}
                     onSelect={(partIds) => handleSelect(partIds)} />
 

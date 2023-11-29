@@ -19,9 +19,11 @@ export function Avatar(props) {
 
     const debug = true;
 
-    const { person: draftPerson, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
+    const { person: draftPerson, partId = null, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
 
-    const person = draftPerson || {}
+    const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId]) || null
+
+    const person = draftPerson || partPersonFromId || {}
 
     const { firstName = null, email = null, pictureRef = null } = person;
 

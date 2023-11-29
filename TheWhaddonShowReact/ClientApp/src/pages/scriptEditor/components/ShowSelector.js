@@ -25,10 +25,9 @@ function ShowSelector(props) {
     const { onClick } = props
 
     //redux
-    const sceneHistory = useSelector((state) => state.scriptEditor.sceneHistory) || []
+    const scriptItems = useSelector((state) => state.localServer.scriptItems) || []
 
-
-    const shows = getLatest(sceneHistory.filter((scene) => scene.type === SHOW))
+    const shows = getLatest(scriptItems.filter((item) => item.type === SHOW))
 
 
     //local state

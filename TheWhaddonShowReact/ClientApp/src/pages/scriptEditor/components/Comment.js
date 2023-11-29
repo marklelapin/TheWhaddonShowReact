@@ -8,7 +8,7 @@ import TagsInput from '../../../components/Forms/TagsInput';
 import TextareaAutosize from 'react-autosize-textarea';
 
 //utils
-import { changeFocus, trigger, DELETE_COMMENT, UPDATE_TEXT, ADD_TAG, REMOVE_TAG } from '../../../actions/scriptEditor';
+import { updateScriptItemInFocus, trigger, DELETE_COMMENT, UPDATE_TEXT, ADD_TAG, REMOVE_TAG } from '../../../actions/scriptEditor';
 import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
 
@@ -44,7 +44,7 @@ function Comment(props) {
     }
 
     const handleFocus = () => {
-        dispatch(changeFocus(comment)) //update global state of which item is focussed
+        dispatch(updateScriptItemInFocus({ scriptItemId: scriptItem.id, sceneId: scriptItem.parentId }) )//update global state of which item is focussed
     }
 
     const handleBlur = () => {

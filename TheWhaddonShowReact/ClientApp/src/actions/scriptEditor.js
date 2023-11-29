@@ -6,18 +6,25 @@ export const UPDATE_DIALOGUE_RIGHT_ID = 'UPDATE_DIALOGUE_RIGHT_ID'
 export const TOGGLE_SCENE_SELECTOR = 'TOGGLE_SCENE_SELECTOR';
 export const UPDATE_SHOW_COMMENTS = 'SET_SHOW_COMMENTS';
 export const UPDATE_VIEW_AS_PART_PERSON = 'UPDATE_VIEW_AS_PERSON';
-export const UPDATE_PART_PERSONS = 'UPDATE_PART_PERSONS';
-export const ADD_UPDATES_SCENE_HISTORY = 'ADD_UPDATES_SCENE_HISTORY';
-export const ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY';
-export const UPDATE_SCENE_PART_PERSONS = 'UPDATE_SCENE_PART_PERSONS';
-export const CHANGE_FOCUS = 'CHANGE_FOCUS';
+
+export const UPDATE_CURRENT_PART_PERSONS = 'UPDATE_PART_PERSONS';
+export const UPDATE_CURRENT_SCRIPT_ITEMS = 'UPDATE_CURRENT_SCRIPT_ITEMS';
+export const UPDATE_SCENE_ORDERS = 'UPDATE_SCENE_ORDERS';
+export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
+export const UPDATE_PERSON_SELECTOR_CONFIG = 'UPDATE_PERSON_SELECTOR_CONFIG';
+
+
+export const UPDATE_SCRIPT_ITEM_IN_FOCUS = 'CHANGE_SCRIPT_ITEM_IN_FOCUS';
+export const UPDATE_SCENE_IN_FOCUS = 'CHANGE_SCENE_IN_FOCUS';
+
 export const CLEAR_IMPORT_UPDATES = 'CLEAR_IMPORT_UPDATES';
 export const CLEAR_SCRIPT_EDITOR_STATE = 'CLEAR_SCRIPT_EDITOR_STATE';
-export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
-export const ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY = 'ADD_UPDATES_TO_SCRIPT_ITEM_HISTORY';
+
 export const SET_SHOW = 'SET_SHOW';
 export const ADD_TEXT_AREA_CONTEXT = 'ADD_TEXT_AREA_CONTEXT';
-export const UPDATE_UNDO_DATE_TIME = 'UPDATE_UNDO_DATE_TIME';
+export const ADD_ITEMS_TO_REDO_LIST = 'ADD_ITEMS_TO_REDO_LIST';
+export const REMOVE_ITEMS_FROM_REDO_LIST = 'REMOVE_ITEMS_FROM_REDO_LIST';
+export const RESET_UNDO = 'RESET_UNDO';
 
 export const TRIGGER = 'TRIGGER';
 
@@ -40,9 +47,18 @@ export const DELETE_COMMENT = 'DELETE_COMMENT';
 export const ADD_SCRIPT_ITEM = 'ADD_SCRIPT_ITEM';
 export const DELETE_SCRIPT_ITEM = 'DELETE_SCRIPT_ITEM';
 export const DELETE_NEXT_SCRIPT_ITEM = 'DELETE_NEXT_SCRIPT_ITEM';
+export const ADD_SCENE = 'ADD_SCENE';
 export const DELETE_SCENE = 'DELETE_SCENE';
+export const MOVE_SCENE = 'MOVE_SCENE';
+export const ADD_PART = 'ADD_PART';
+export const UPDATE_PART_NAME = 'UPDATE_PART_NAME';
+export const ADD_PART_TAG = 'ADD_PART_TAG';
+export const REMOVE_PART_TAG = 'REMOVE_PART_TAG';
+export const ALLOCATE_PERSON_TO_PART = 'ALLOCATE_PERSON_TO_PART';
+export const DELETE_PART = 'DELETE_PART';
+export const DELETE_NEXT_PART = 'DELETE_NEXT_PART';
 export const SWAP_PART = 'SWAP_PART';
-export const UPDATE_SCENE_PART_IDS = 'UPDATE_SCENE_PART_IDS';
+export const CLEAR_SCRIPT = 'CLEAR_SCRIPT';
 
 export function updateSearchParameters(searchParameters) {
     return {
@@ -89,40 +105,25 @@ export function updateViewAsPartPerson(partPerson) {
 }
 
 
-export function updatePartPersons(partPersons) {
+export function updateCurrentPartPersons(partPersons) {
     return {
-        type: UPDATE_PART_PERSONS,
+        type: UPDATE_CURRENT_PART_PERSONS,
         partPersons,
     }
 }
 
-export function addUpdatesToSceneHistory(updates) {
+export function updateScriptItemInFocus(scriptItemId, sceneId) {
     return {
-        type: ADD_UPDATES_SCENE_HISTORY,
-        updates,
+        type: UPDATE_SCRIPT_ITEM_IN_FOCUS,
+        scriptItemId,
+        sceneId
     }
 }
 
-export function addUpdatesToSceneScriptItemHistory(sceneId, updates) {
+export function updateSceneInFocus(scene) {
     return {
-        type: ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY,
-        id: sceneId,
-        updates,
-    }
-}
-
-export function updateScenePartPersons(sceneId, partPersons) {
-    return {
-        type: UPDATE_SCENE_PART_PERSONS,
-        id: sceneId,
-        partPersons,
-    }
-}
-
-export function changeFocus(focus) {
-    return {
-        type: CHANGE_FOCUS,
-        focus,
+        type: UPDATE_SCENE_IN_FOCUS,
+        scene,
     }
 }
 
@@ -138,18 +139,11 @@ export function clearScriptEditorState() {
     }
 }
 
-export function updatePreviousCurtain(nextSceneId, curtainOpen) {
+export function updatePreviousCurtain(nextSceneId, previousCurtainOpen) {
     return {
         type: UPDATE_PREVIOUS_CURTAIN,
         nextSceneId: nextSceneId,
-        previousCurtainOpen: curtainOpen,
-    }
-}
-
-export function addUpdateToScriptItemHistory(update) {
-    return {
-        type: ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY,
-        update,
+        previousCurtainOpen: previousCurtainOpen,
     }
 }
 
@@ -168,11 +162,24 @@ export function addTextAreaContext(scriptItemType, context) {
     }
 }
 
-export function updateUndoDateTime(undoDateTime,sceneId) {
+export function resetUndo() {
     return {
-        type: UPDATE_UNDO_DATE_TIME,
-        sceneId: sceneId,
-        undoDateTime,
+        type: RESET_UNDO
+    }
+}
+
+export function addItemsToRedoList(sceneId, items) {
+    return {
+        type: ADD_ITEMS_TO_REDO_LIST,
+        sceneId,
+        items,
+    }
+}
+
+export function removeItemsFromRedoList(createdDate) {
+    return {
+        type: REMOVE_ITEMS_FROM_REDO_LIST,
+        createdDate,
     }
 }
 
@@ -184,3 +191,23 @@ export function trigger(triggerType, payload) {
     }
 }
 
+export function updatePersonSelectorConfig(config) {
+    return {
+        type: UPDATE_PERSON_SELECTOR_CONFIG,
+        config,
+    }
+}
+
+export function updateCurrentScriptItems(scriptItems) {
+    return {
+        type: UPDATE_CURRENT_SCRIPT_ITEMS,
+        scriptItems,
+    }
+}
+
+export function updateSceneOrders(sceneOrders) {
+    return {
+        type: UPDATE_SCENE_ORDERS,
+        sceneOrders,
+    }
+}

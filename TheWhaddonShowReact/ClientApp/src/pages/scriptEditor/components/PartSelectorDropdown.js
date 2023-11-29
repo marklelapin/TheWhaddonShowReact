@@ -17,12 +17,17 @@ function PartSelectorDropdown(props) {
 
     log(debug, 'Component:PartSelectorDropdown Props', props)
     //Props
-    const { parts = null, onSelect, toggle, allowMultiSelect = true, allowClear = true, centered } = props;
+    const { partIds = null, onSelect, toggle, allowMultiSelect = true, allowClear = true, centered } = props;
 
     //redux
-    const partPersons = useSelector(state => state.scriptEditor.partPersons)
+    const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
-   
+    const partPersons = Object.keys(currentPartPersons).map(sceneId => ({
+        sceneId,
+        ...currentPartPersons[sceneId]
+    }));
+
+    const activePartIds = partPersons.filter(partPerson=>partPerson.isActive === true).map(partPerson => partPerson.id)
 
     //internal
     const [partsArray, setPartsArray] = useState([])
@@ -49,14 +54,12 @@ function PartSelectorDropdown(props) {
 
     useEffect(() => {
 
-        const unsortedParts = parts || [...partPersons]
+        const finalPartIds = partIds || activePartIds
 
-        const finalParts = unsortedParts.sort((a, b) => a.name.localeCompare(b.name))
+        setPartsArray(finalPartIds.map(partId => ({ partId, selected: false })))
 
-        setPartsArray(finalParts)
+    }, [partIds, activePartIds])
 
-    }     , [parts,partPersons])
-   
 
 
     const handleClickPart = (event, partId) => {
@@ -123,7 +126,7 @@ function PartSelectorDropdown(props) {
                     return (
                         <PartNameAndAvatar
                             key={part.id}
-                            part={part}
+                            partId={part.id}
                             onClick={(e) => handleClickPart(e, part.id)}
                             selected={part.selected}
                             avatar

@@ -296,8 +296,8 @@ export async function useSync() {
 
 }
 
-export function getLatest(history, undoDateTime = null, includeInActive = false, includeSamples = false) {
-    const undoDate = (undoDateTime) ? new Date(undoDateTime) : null
+
+export function getLatest(history, includeInActive = false, includeSamples = false) {
 
     if (history === undefined) {
         throw new Error("getLatest passed undefined history property")
@@ -305,14 +305,10 @@ export function getLatest(history, undoDateTime = null, includeInActive = false,
 
     if (!Array.isArray(history) || history.length === 0) { return [] }
 
-    const unDoneHistory = history
-        .map(item => ({ ...item, created: new Date(item.created) }))
-        .filter((update) => (undoDate === null || update.created < undoDate))
-
-    const sampleHistory = unDoneHistory.filter((update) => update.isSample === false || includeSamples === true)
+    const sampleHistory = history.filter((update) => !update.isSample || includeSamples === true)
 
     const latestUpdates = sampleHistory.reduce((acc, update) => {
-        if (!acc[update.id] || update.created > acc[update.id].created) {
+        if (!acc[update.id] || new Date(update.created) > new Date(acc[update.id].created)) {
             acc[update.id] = update;
         }
 

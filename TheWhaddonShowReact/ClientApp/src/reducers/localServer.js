@@ -163,6 +163,8 @@ export default function localServerReducer(state = defaultState, action) {
             //filter out any updates from payload that are already in the store. This can happen if postBacks have failed due to poor connection.
 
             const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => (existingUpdate.id === update.id && existingUpdate.created === update.created)))
+            const updatesFromServer = updatesToAdd.filter(item=>item.updatedOnServer !== null)
+
 
             //update correct data set to update
 
@@ -172,17 +174,17 @@ export default function localServerReducer(state = defaultState, action) {
                     case PERSON: return {
                         ...state,
                         persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
-                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                        refresh: { updates: updatesFromServer, type: action.payloadType }
                     };
                     case SCRIPT_ITEM: return {
                         ...state,
                         scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
-                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                        refresh: { updates: updatesFromServer, type: action.payloadType }
                     };
                     case PART: return {
                         ...state,
                         parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
-                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                        refresh: { updates: updatesFromServer, type: action.payloadType }
                     };
                     default: return state
                 };

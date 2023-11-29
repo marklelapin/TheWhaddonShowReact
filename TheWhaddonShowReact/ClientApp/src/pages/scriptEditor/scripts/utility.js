@@ -40,6 +40,12 @@ export function findScriptItem(element, scriptItems) {
 }
 
 
+export const closestPosition = (e) => {
+    const percentageAcross = (e.target.selectionEnd / e.target.value.length)
+    const closestPosition = (percentageAcross > 0.5) ? END : START
+    return closestPosition
+}
+
 export const moveFocusFromScriptItem = (scriptItem,direction, position, nextFocusId = null,previousFocusId = null) => {
     const debug = false;
 

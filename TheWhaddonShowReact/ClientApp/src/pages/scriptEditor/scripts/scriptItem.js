@@ -1,242 +1,9 @@
 ﻿
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN, DIALOGUE, COMMENT, HEADER_TYPES } from "../../../dataAccess/scriptItemTypes";
-import { OPEN_CURTAIN, CLOSE_CURTAIN } from "../../../dataAccess/scriptItemTypes";
-import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
-import { getLatest } from '../../../dataAccess/localServerUtils';
-import { log } from '../../../helper';
-
+import { OPEN_CURTAIN, SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, DIALOGUE, HEADER_TYPES, INITIAL_CURTAIN, COMMENT } from "../../../dataAccess/scriptItemTypes";
 import { ABOVE, BELOW } from './utility';
-import { updatePreviousCurtain } from '../../../actions/scriptEditor';
-import { resetList } from "../../../actions/localServer";
 
-//Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
-//--------------------------------------------------------------------------------------------------
+import { ScriptItemUpdate } from "../../../dataAccess/localServerModels";
 
-export function refreshSceneOrder(currentSceneOrder = [], newScriptItems) {
-
-    const reducedNewScriptItems = newScriptItems.map(item => ({
-        id: item.id,
-        created: item.created,
-        isActive: item.isActive,
-        type: item.type,
-        nextId: item.nextId,
-        previousId: item.previousId,
-        nextFocusId: item.nextFocusId,
-        previousFocusId: item.previousFocusId,
-        partIds: item.partIds,
-    }))
-
-    const mergedSceneOrder = getLatest([...currentSceneOrder, ...reducedNewScriptItems])
-
-    const { head, mergedSceneOrderWithUpdatedHead } = getHead(currentSceneOrder, mergedSceneOrder)
-
-    const sortedSceneOrder = sortSceneOrder(head, mergedSceneOrderWithUpdatedHead)
-
-    const zIndexedScneOrder = updateZIndex(sortedSceneOrder)
-
-}
-
-
-const getHead = (currentSceneOrder, mergedSceneOrder) => {
-    let draftHead;
-
-    if (currentSceneOrder.length > 0) {
-        draftHead = currentSceneOrder[0]
-    }
-    else {
-        draftHead = mergedSceneOrder.find(item => [SCENE, ACT].includes(item.type))
-    }
-
-    //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Act linked list but also the head of the Scene linked list
-    const headNextId = mergedSceneOrder.filter((item) => item.previousId === draftHead.id)[0].id;
-    const head = { ...draftHead, nextId: headNextId }
-    const mergedSceneOrderWithUpdatedHead = mergedSceneOrder.map(item => item.id === head.id ? head : item)
-
-    return { head, mergedSceneOrderWithUpdatedHead };
-}
-
-
-const sortSceneOrder = (head, unsortedSceneOrder) => {
-
-    //create objectMap of all items in the targetArray
-    const idToObjectMap = {};
-
-    for (const item of unsortedSceneOrder) {
-        idToObjectMap[item.id] = item;
-    }
-
-    //Sort the targetArray by nextId
-    const sortedLinkedList = [];
-    let currentId = head.id
-
-    while (currentId !== null) {
-        let currentItem = idToObjectMap[currentId];
-
-        if (currentItem) {
-            currentId = currentItem.nextId;
-            sortedLinkedList.push(currentItem);
-
-        } else {
-            currentId = null;
-        }
-    }
-    return sortedLinkedList;
-}
-
-
-const updateZIndex = (sortedSceneOrder) => {
-
-    const startingZIndex = 1000000;
-    const zIndexInterval = 1000;
-
-    let zIndexedSceneOrder = [...sortedSceneOrder]
-
-    const resetZIndex = () => {
-        let zIndex = startingZIndex;
-
-        sortedSceneOrder.forEach(item => {
-            item.zIndex = zIndex;
-            zIndex = zIndex - zIndexInterval;
-        })
-    }
-
-    const head = sortedSceneOrder[0]
-    if (head.zIndex !== startingZIndex) {
-        resetZIndex()
-    }
-
-    try {
-
-        for (let i = 0; i < sortedSceneOrder.length; i++) {
-
-            const item = sortedSceneOrder[i]
-
-            if (item.zIndex && item.zIndex > 0) {
-                //do nothing as z-Index already set and if changed will cause a re-render.
-            } else {
-
-                const previousZIndex = zIndexedSceneOrder[i - 1].zIndex
-                const nextZIndex = zIndexedSceneOrder[i + 1].zIndex || null
-
-                if (nextZIndex === null) {
-                    zIndexedSceneOrder[i].zIndex = previousZIndex - zIndexInterval
-                } else {
-                    if (previousZIndex - nextZIndex < 2) { throw new Error('not enough space between scriptItems to insert another') }
-                    const newZIndex = Math.floor((previousZIndex + nextZIndex) / 2)
-                    zIndexedSceneOrder[i].zIndex = newZIndex
-                }
-
-            }
-        }
-    } catch {
-        resetZIndex()
-    }
-
-    return zIndexedSceneOrder;
-}
-
-
-
-export function sortLatestScriptItems(head, scriptItems, undoDateTime = null) {
-
-    const latestScriptItems = getLatest(scriptItems, undoDateTime);
-
-    const sortedScriptItems = sortScriptItems(head, latestScriptItems);
-
-    //const activeComments = latestScriptItems.filter(item => item.isActive && item.type === COMMENT)
-    //const commentedScriptItems = sortedScriptItems.map(item => ({ ...item, comment: activeComments.find(comment => comment.id === item.commentId) }))
-
-    //return commentedScriptItems;
-
-    return sortedScriptItems;
-}
-
-export function sortScriptItems(head, scriptItems) {
-
-    const debug = true
-
-    if (scriptItems.length === 1) return scriptItems;
-
-
-    log(debug, 'sortScriptItems input', { head, scriptItems })
-
-    if (scriptItems.length === 0) return [];
-
-    let targetArray = [...scriptItems];
-
-    //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Act linked list but also the head of the Scene linked list
-    const originalHeadNextId = head.nextId //this gets put back at end of process.
-    const headNextId = targetArray.filter((item) => item.previousId === head.id)[0].id;
-    targetArray = targetArray.map(item => item.id === head.id ? { ...item, nextId: headNextId } : item)
-
-    log(debug, 'sortScriptItems after head change', { targetArray: targetArray })
-
-    //create objectMap of all items in the targetArray
-    const idToObjectMap = {};
-
-    for (const item of targetArray) {
-        idToObjectMap[item.id] = item;
-    }
-
-    //Sort the targetArray by nextId
-    const sortedLinkedList = [];
-    let currentId = head.id
-    const initialCurtain = scriptItems.find(item => item.type === INITIAL_CURTAIN)
-    let curtainOpen = (initialCurtain) ? initialCurtain.tags.includes(OPEN_CURTAIN) : false
-    let previousCurtainOpen;
-
-    while (currentId !== null) {
-        let currentItem = idToObjectMap[currentId];
-
-        if (currentItem) {
-            if (opensCurtain(currentItem)) { curtainOpen = true }
-            if (closesCurtain(currentItem)) { curtainOpen = false }
-
-            currentItem.previousCurtainOpen = previousCurtainOpen;
-            currentItem.curtainOpen = curtainOpen;
-            previousCurtainOpen = curtainOpen;
-
-            currentId = currentItem.nextId;
-            currentItem = (currentItem.id === head.id) ? { ...currentItem, nextId: originalHeadNextId } : currentItem //returns head.nextId back to original
-
-            sortedLinkedList.push(currentItem);
-
-        } else {
-            currentId = null;
-        }
-
-    }
-
-
-
-    return sortedLinkedList;
-}
-
-
-
-
-export function addSceneNumbers(scenes) {
-
-    let i = 1;
-    const numberedScenes = scenes.map(scene => {
-        if (scene.type === SCENE) {
-            const numberedScene = { ...scene, sceneNumber: i }
-            i++;
-            return numberedScene
-
-        } else {
-            return scene
-        }
-
-
-    })
-
-    return numberedScenes
-}
-
-
-//Functions to create scriptItem updates for various crud style operations
-//----------------------------------------------------------------------------------
 
 export function newScriptItemsForCreateShow(title) {
 
@@ -371,6 +138,8 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) 
 
 }
 
+
+
 export function newScriptItemsForSceneDelete(sceneToDelete, currentScenes) {
 
     let deleteScene = { ...sceneToDelete }
@@ -457,34 +226,32 @@ export function newScriptItemsForCreateHeader(previousScene, nextScene = null) {
 
 export function newScriptItemsForMoveScene(sceneId, newPreviousId, scenes) {
 
-    const scene = scenes.find(scene => scene.id === sceneId)
+    let movingScene = scenes.find(scene => scene.id === sceneId)
+    if (sceneId === newPreviousId || movingScene.previousId === newPreviousId) return []
 
-    if (sceneId === newPreviousId || scene.previousId === newPreviousId) return []
+    let oldPreviousScene = scenes.find(scene => scene.id === movingScene.previousId)
+    let oldNextScene = scenes.find(scene => scene.id === movingScene.nextId)
+    let newPreviousScene = scenes.find(scene => scene.id === newPreviousId)
+    let newNextScene = scenes.find(scene => scene.id === newPreviousScene.nextId)
 
-    const newNextId = [...scenes].find(scene => scene.id === newPreviousId)?.nextId || null
-    const oldPreviousId = [...scenes].find(scene => scene.id === sceneId)?.previousId || null
-    const oldNextId = [...scenes].find(scene => scene.id === sceneId)?.nextId || null
 
-    const affectedIds = [...new Set([sceneId, newPreviousId, newNextId, oldPreviousId, oldNextId])].filter(item => item !== null)
+    oldPreviousScene.nextId = oldNextScene?.id || null
+    if (oldNextScene) { oldNextScene.previousId = oldPreviousScene.id }
 
-    let updateObjects = [...scenes]
-        .filter(scene => affectedIds.includes(scene.id))
-        .reduce((idToObjectMap, scene) => {
-            idToObjectMap[scene.id] = scene;
-            return idToObjectMap;
-        }, {})
+    movingScene.previousId = newPreviousScene.id
+    movingScene.nextId = newNextScene?.id || null
 
-    updateObjects[sceneId].previousId = newPreviousId //handles case where swaping with element directly next to it.
-    updateObjects[sceneId].nextId = newNextId //handles case where swaping with element directly next to it.
-    updateObjects[sceneId].parentId = updateObjects[newPreviousId].parentId
+    newPreviousScene.nextId = movingScene.id
+    if (newNextScene) { newNextScene.previousId = movingScene.id }
 
-    updateObjects[newPreviousId].nextId = sceneId
-    if (newNextId) { updateObjects[newNextId].previousId = sceneId }
 
-    updateObjects[oldPreviousId].nextId = oldNextId
-    if (oldNextId) { updateObjects[oldNextId].previousId = oldPreviousId }
+    const updates = []
 
-    const updates = Object.values(updateObjects)
+    updates.push(oldPreviousScene)
+    if (oldNextScene) { updates.push(oldNextScene) }
+    updates.push(movingScene)
+    updates.push(newPreviousScene)
+    if (newNextScene) { updates.push(newNextScene) }
 
     return updates
 
@@ -534,101 +301,4 @@ export const newScriptItemsForSwapPart = (scriptItems, oldPartId, newPartId) => 
 }
 
 
-export function updatePreviousCurtainValue(scene, scriptItems, dispatch) {
 
-    const sortedScriptItems = sortLatestScriptItems(scene, scriptItems)
-
-    if (scene.nextId) {
-        const finalCurtainOpen = sortedScriptItems[sortedScriptItems.length - 1].curtainOpen
-        dispatch(updatePreviousCurtain(scene.nextId, finalCurtainOpen))
-    }
-
-}
-
-///Curtain Functions
-//----------------------------------------------------------------------------------
-
-export const newScriptItemsForToggleCurtain = (scriptItem, overrideNewValue = null) => {
-
-
-    if (scriptItem.curtainOpen === undefined) {
-        console.error('toggle Curtain called on scriptItem with no curtainOpen value. Assumed closed.')
-    }
-    const currentlyOpen = scriptItem.curtainOpen || false
-
-    const currentlyOpensCurtain = (overrideNewValue) ? !overrideNewValue : opensCurtain(scriptItem)
-
-    let newScriptItem = { ...scriptItem }
-
-
-
-    if (currentlyOpen === false && currentlyOpensCurtain) {
-
-        newScriptItem = changeToCloseCurtain(newScriptItem)
-        newScriptItem.text = 'Curtain remains closed.'
-    }
-
-    if (currentlyOpen && currentlyOpensCurtain === false) {
-
-        newScriptItem = changeToOpenCurtain(newScriptItem)
-        newScriptItem.text = 'Curtain remains open.'
-    }
-
-    if (currentlyOpen === false && currentlyOpensCurtain === false) {
-        newScriptItem = changeToOpenCurtain(newScriptItem)
-        newScriptItem.text = 'Curtain opens.'
-    }
-
-    if (currentlyOpen && currentlyOpensCurtain) {
-        newScriptItem = changeToCloseCurtain(newScriptItem)
-        newScriptItem.text = 'Curtain closes.'
-    }
-
-    return newScriptItem;
-}
-
-
-const changeToOpenCurtain = (scriptItem) => {
-
-    let newScriptItem = { ...scriptItem }
-
-    newScriptItem.tags = newScriptItem.tags.filter(tag => tag !== CLOSE_CURTAIN)
-    newScriptItem.tags.push(OPEN_CURTAIN)
-
-    return newScriptItem;
-}
-
-const changeToCloseCurtain = (scriptItem) => {
-
-    let newScriptItem = { ...scriptItem }
-
-    newScriptItem.tags = newScriptItem.tags.filter(tag => tag !== OPEN_CURTAIN)
-    newScriptItem.tags.push(CLOSE_CURTAIN)
-
-    return newScriptItem;
-}
-
-const opensCurtain = (scriptItem) => {
-
-    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
-        return scriptItem.tags.includes(OPEN_CURTAIN)
-    }
-
-    return false
-}
-
-const closesCurtain = (scriptItem) => {
-
-    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
-        return scriptItem.tags.includes(CLOSE_CURTAIN)
-    }
-
-    return false
-}
-
-export const clearCurtainTags = (scriptItem) => {
-
-    let newScriptItem = { ...scriptItem }
-
-    newScriptItem.tags = newScriptItem.tags.filter(tag => tag !== OPEN_CURTAIN && tag !== CLOSE_CURTAIN)
-}

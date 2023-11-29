@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateSearchParameters, toggleSceneSelector } from '../../../actions/scriptEditor';
+import { updateSearchParameters, toggleSceneSelector, trigger, MOVE_SCENE } from '../../../actions/scriptEditor';
 
 //Components
 import ScriptSearch from './ScriptSearch'
@@ -12,11 +12,7 @@ import SceneSelectorRow from './SceneSelectorRow'
 import { ACT } from '../../../dataAccess/scriptItemTypes'
 import { log } from '../../../helper';
 import { moveFocusToId } from '../scripts/utility'
-import { prepareUpdates } from '../../../dataAccess/localServerUtils';
-import { addUpdates } from '../../../actions/localServer';
-import { sortLatestScriptItems, addSceneNumbers, newScriptItemsForMoveScene } from '../scripts/scriptItem';
-//Constants
-import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
+
 
 
 function SceneSelector(props) {
@@ -26,14 +22,8 @@ function SceneSelector(props) {
 
     const dispatch = useDispatch();
 
-    const sceneHistory = useSelector(state => state.scriptEditor.sceneHistory)
+    const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
-
-
-    let scenes = (show) ? sortLatestScriptItems(show, sceneHistory) : []
-
-    scenes = addSceneNumbers(scenes)
-
 
     const handleSearchParameterChange = (type, value) => {
         let newSearchParameters = { ...searchParameters }
@@ -64,7 +54,7 @@ function SceneSelector(props) {
 
         //TODO filtering exercise
 
-        const filteredScenes = scenes.filter(scene => scene.isActive)
+        const filteredScenes = showOrder?.filter(scene => scene.isActive) || []
 
         return filteredScenes
 
@@ -93,20 +83,11 @@ function SceneSelector(props) {
 
         const sceneId = e.dataTransfer.getData("text/plain").substring(8)
 
-        moveScene(sceneId, newPreviousId)
-
+        dispatch(trigger(MOVE_SCENE, { sceneId, value: newPreviousId }))
     }
 
 
-    const moveScene = (sceneId, newPreviousId) => {
 
-        const updates = newScriptItemsForMoveScene(sceneId, newPreviousId, scenes)
-
-        const preparedUpdates = prepareUpdates(updates)
-
-        dispatch(addUpdates(preparedUpdates, SCRIPT_ITEM));
-
-    }
 
 
 
@@ -116,16 +97,13 @@ function SceneSelector(props) {
                 moveFocusToId(id)
                 dispatch(toggleSceneSelector())
                 break;
-            case 'add':
-                console.log('Add Scene Button Pressed') //TODO add in add scene functionality
-                break;
             default:
                 break;
         }
     }
 
 
-    log(debug, 'SceneSelector Rendering: scenes', scenes)
+
     log(debug, 'SceneSelector Rendering: filteredScenes', filteredScenes())
 
     return (

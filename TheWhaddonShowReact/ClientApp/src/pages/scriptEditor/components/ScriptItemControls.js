@@ -3,17 +3,26 @@ import React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { updateShowComments, trigger, ADD_COMMENT, TOGGLE_CURTAIN, UPDATE_TYPE, ADD_SCRIPT_ITEM, DELETE_SCRIPT_ITEM } from '../../../actions/scriptEditor';
+import {
+    updateShowComments,
+    trigger,
+    ADD_COMMENT,
+    UPDATE_TYPE,
+    ADD_SCRIPT_ITEM,
+    DELETE_SCRIPT_ITEM,
+    ADD_PART,
+    DELETE_PART
+} from '../../../actions/scriptEditor';
 
 //Components
 import { Dropdown, DropdownItem, DropdownMenu } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons'
-import CheckBox from '../../../components/Forms/CheckBox';
+
 
 //Constants
-import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN, SCRIPT_ITEM_TYPES} from '../../../dataAccess/scriptItemTypes';
+import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN} from '../../../dataAccess/scriptItemTypes';
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
-import { CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
+
 //utils
 import { log } from '../../../helper';
 
@@ -22,6 +31,7 @@ import { moveFocusToId } from '../scripts/utility';
 import s from '../ScriptItem.module.scss';
 
 export const CONFIRM = 'CONFIRM';
+export const TOGGLE_PART_SELECTOR = 'TOGGLE_PART_SELECTOR';
 function ScriptItemControls(props) {
 
     //utils
@@ -69,10 +79,6 @@ function ScriptItemControls(props) {
                             <Icon icon="attach" onClick={() => toggleMedia()} />
                         </>
                     }
-                    {scriptItem && CURTAIN_TYPES.includes(scriptItem.type) &&
-
-                        <CheckBox checked={scriptItem.curtainOpen} onChange={() => dispatch(trigger(TOGGLE_CURTAIN({ scriptItem })))} ios={true} />
-                    }
                 </div>
                 <div className={s['header-right-controls']}>
 
@@ -94,15 +100,11 @@ function ScriptItemControls(props) {
 
 
                     {(!hasComment) &&
-                        <Icon icon='comment-o' onClick={() => dispatch(trigger(ADD_COMMENT))} />
+                        <Icon icon='comment-o' onClick={() => dispatch(trigger(ADD_COMMENT, {scriptItem}))} />
                     }
                     {(hasComment) &&
                         <Icon icon='comment' onClick={() => goToComment()} />
                     }
-
-                    {/*{(!undoDateTime) &&*/}
-                    {/*    <Icon icon="remove" />*/}
-                    {/*}*/}
 
                 </div>
 
@@ -113,20 +115,21 @@ function ScriptItemControls(props) {
             <div className={s['bottom-right-controls']}>
                 {scriptItem && <Icon icon="play" onClick={() => onClick(CONFIRM)} />}
 
-                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick(ADD_SCRIPT_ITEM)} />}
+                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => dispatch(trigger(ADD_SCRIPT_ITEM, {scriptItem}))} />}
 
 
                 {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem }))} />}
 
             </div>
 
+
             <div className={s['outside-right-controls']}>
                 {part &&
                     <>
-                        <Icon icon="play" onClick={() => onClick('confirm', null)} />
-                        <Icon icon="add" onClick={() => onClick('add', null)} />
-                        <Icon icon="search" onClick={(e) => onClick('search', null, e)} />
-                        <Icon icon="trash" onClick={() => onClick('delete', null)} />
+                        <Icon icon="play" onClick={() => onClick(CONFIRM)} />
+                    <Icon icon="add" onClick={() => dispatch(trigger(ADD_PART, {scriptItemId: scriptItem.id, partId: part.id}))} />
+                        <Icon icon="search" onClick={(e) => onClick(TOGGLE_PART_SELECTOR,e)} />
+                    <Icon icon="trash" onClick={() => onClick(DELETE_PART, {scriptItemId: scriptItem.id , partId: part.id})} />
                     </>
                 }
             </div>

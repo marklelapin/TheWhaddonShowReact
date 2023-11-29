@@ -59,15 +59,6 @@ function Script() {
     }
 
 
-    const handleScriptViewerClick = (action) => {
-        switch (action) {
-            case 'clearScript': dispatch(setShow(null)); break;
-            default: return;
-        }
-
-
-    }
-
 
     log(debug, 'Script: show', show)
     //-----------------------------------------------------------------------
@@ -88,7 +79,7 @@ function Script() {
                     }
 
                     {(!showSceneSelector || isLargerScreen) &&   
-                            <ScriptViewer show={show} onClick={(action) => handleScriptViewerClick(action)} />
+                            <ScriptViewer show={show} />
                     }
 
                 </div>
@@ -102,9 +93,6 @@ function Script() {
 
 
         </div>
-
-
-
     )
 
 

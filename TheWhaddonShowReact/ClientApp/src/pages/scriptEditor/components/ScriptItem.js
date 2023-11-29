@@ -1,11 +1,8 @@
 ﻿
 //React and Redux
 import React from 'react';
-import { memo, useMemo, useState, useRef } from 'react';
+import { memo, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { addUpdates } from '../../../actions/localServer';
-import { updateShowComments, trigger } from '../../../actions/scriptEditor';
 //Components
 import Comment from './Comment';
 
@@ -13,24 +10,18 @@ import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 import { Icon } from '../../../components/Icons/Icons';
 import { Button } from 'reactstrap';
+import CheckBox from '../../../components/Forms/CheckBox';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 //utilities
 import { log } from '../../../helper';
-import { prepareUpdate, prepareUpdates } from '../../../dataAccess/localServerUtils';
-
-import { moveFocusToId } from '../scripts/utility';
 //Constants
-import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
-import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
-import { DOWN, ABOVE, BELOW, START, END } from '../scripts/utility';
+import { SCENE, DIALOGUE, CURTAIN_TYPES} from '../../../dataAccess/scriptItemTypes';
 //trigger types
-import {
+import { trigger,
     REDO, UNDO, CONFIRM_UNDO,
-    DELETE_COMMENT, ADD_SCRIPT_ITEM,
-    DELETE_SCRIPT_ITEM, DELETE_NEXT_SCRIPT_ITEM,
     DELETE_SCENE, UPDATE_ATTACHMENTS,
-    UPDATE_PART_IDS
+    UPDATE_PART_IDS, TOGGLE_CURTAIN
 } from '../../../actions/scriptEditor';
 
 //styling
@@ -56,10 +47,10 @@ const ScriptItem = memo((props) => {
     log(debug, 'Component:ScriptItem props:', props)
 
     //Redux state
-    const showComments = useSelector(state => state.scriptEditor.showComments) || true
-    
+    const showComments = useSelector(state => state.scriptEditor.showComments) || true  
+
     const focus = useSelector(state => (state.scriptEditor.focus[id])) || false
-    const isUndoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress) || null
+    const isUndoInProgress = useSelector(state => (state.scriptEditor.isUndoInProgress[id]))
     const scriptItem = useSelector(state => state.scriptEditor.scriptItems[id]) || {}
 
 
@@ -75,9 +66,6 @@ const ScriptItem = memo((props) => {
 
     //internal state
     const [showMedia, setShowMedia] = useState(false)
-
-
-
 
 
     //calculations functions
@@ -137,7 +125,6 @@ const ScriptItem = memo((props) => {
                 <div className={s['script-item-parts']}>
                     <PartSelector
                         key={id}
-                        scriptItemId={id}
                         sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
                         onSelect={(selectedPartIds) => dispatch(trigger(UPDATE_PART_IDS, {scriptItem,value: selectedPartIds}))}
@@ -153,6 +140,7 @@ const ScriptItem = memo((props) => {
                     toggleMedia={(value) => handleShowMedia(value)}
                     previousFocusId={previousFocusId}
                     nextFocusId={nextFocusId}
+                    isUndoInProgress={isUndoInProgress}
                 />
 
             </div>
@@ -176,11 +164,11 @@ const ScriptItem = memo((props) => {
 
             {(type === SCENE) &&
                 <div className={s['scene-controls']}>
-                    {scriptItem.undoDateTime &&
-                        <Button size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO, { sceneId: scriptItem.id }))} >confirm undo</Button>
+                    {isUndoInProgress &&
+                        <Button size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>
                     }
                     <Icon icon="undo" onClick={() => dispatch(trigger(UNDO, {sceneId: scriptItem.id})) } />
-                    {scriptItem.undoDateTime &&
+                    {isUndoInProgress &&
                         <Icon icon="redo" onClick={() => dispatch(trigger(REDO, {sceneId: scriptItem.id}))} />
                     }
                     <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, {scriptItem}))} />
@@ -188,6 +176,10 @@ const ScriptItem = memo((props) => {
 
 
                 </div>
+            }
+            {(CURTAIN_TYPES.includes(type)) &&
+
+                <CheckBox checked={scriptItem.curtainOpen} onChange={() => dispatch(trigger(TOGGLE_CURTAIN({ scriptItem })))} ios={true} />
             }
 
             <CurtainBackground curtainOpen={finalCurtainOpen} />

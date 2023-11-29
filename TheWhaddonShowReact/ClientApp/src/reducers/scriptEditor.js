@@ -1,6 +1,5 @@
 import {
     ADD_TEXT_AREA_CONTEXT,
-    ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY,
     CLEAR_SCRIPT_EDITOR_STATE,
     UPDATE_SEARCH_PARAMETERS,
     UPDATE_VIEW_COMMENTS,
@@ -8,16 +7,19 @@ import {
     TOGGLE_SCENE_SELECTOR,
     UPDATE_SHOW_COMMENTS,
     UPDATE_VIEW_AS_PART_PERSON,
-    UPDATE_PART_PERSONS,
-    ADD_UPDATES_SCENE_HISTORY,
-    ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY,
-    UPDATE_SCENE_PART_PERSONS,
-    CHANGE_FOCUS,
+    UPDATE_CURRENT_PART_PERSONS,
+    UPDATE_CURRENT_SCRIPT_ITEMS,
+    UPDATE_SCENE_ORDERS,
+    UPDATE_SCENE_IN_FOCUS,
+    UPDATE_SCRIPT_ITEM_IN_FOCUS,
     CLEAR_IMPORT_UPDATES,
     UPDATE_PREVIOUS_CURTAIN,
     SET_SHOW,
-    UPDATE_UNDO_DATE_TIME,
-    TRIGGER
+    TRIGGER,
+    ADD_ITEMS_TO_REDO_LIST,
+    REMOVE_ITEMS_FROM_REDO_LIST,
+    RESET_UNDO,
+
 } from '../actions/scriptEditor';
 
 
@@ -33,19 +35,25 @@ export const initialState = {
     showComments: true,
     dialogueRightId: null,
     showSceneSelector: true,
-    show: null,
+    show: {
+        id: '3c2277bd-b117-4d7d-ba4e-2b686b38883a',
+        parentId: '3c2277bd-b117-4d7d-ba4e-2b686b38883a',
+        nextId: '54163921-3598-4cbe-96af-84da38cf2642',
+        previousId: null,
+        type: 'SHOW',
+        isActive: true
+    }
+,
     viewAsPartPerson: null,
-    partPersons: [],
-    scenePartPersons: {},
-    sceneHistory: [],
-    sceneScriptItemHistory: {},
-    scriptItemHistory: {},
-    focus: {},
-    previousCurtain: {},
+    currentPartPersons: {},
+    currentScriptItems: {},
+    sceneOrders: {},
+    scriptItemInFocus: null,
+    sceneInFocus: null,
+    previousCurtainOpen: {},
     textAreaContext: {},
-    isUndoInProgress: false,
-    undoDateTime: null,
-    undoSceneId: null,
+    isUndoInProgress: {},
+    redoList: [],
     trigger: {},
 
 }
@@ -83,38 +91,30 @@ export default function scriptEditorReducer(state = initialState, action) {
                 viewAsPartPerson: action.partPerson,
             };
 
-        case UPDATE_PART_PERSONS:
-            return {
-                ...state,
-                partPersons: action.partPersons,
-            };
-        case ADD_UPDATES_SCENE_HISTORY:
+        case UPDATE_CURRENT_PART_PERSONS:
 
-            const workingSceneHistory = state.sceneHistory || []
+            const updatedPartPersons = action.partPersons.reduce((acc, partPerson) => {
+                acc[partPerson.id] = { ...partPerson };
+                return acc;
+            }, { ...state.currentPartPersons });
 
             return {
                 ...state,
-                sceneHistory: [...workingSceneHistory, ...action.updates]  //[action.id]: [...state.sceneHistory[action.id], ...action.updates]
-            };
-        case ADD_UPDATES_SCENE_SCRIPT_ITEM_HISTORY:
-
-            const workingSceneScriptItemHistory = { ...state.sceneScriptItemHistory } || {}
-
-
-            return {
-                ...state,
-                sceneScriptItemHistory: { ...state.sceneScriptItemHistory, [action.id]: [...workingSceneScriptItemHistory[action.id] || [], ...action.updates] }
+                currentPartPersons: updatedPartPersons
             }
-        case UPDATE_SCENE_PART_PERSONS:
-            return {
-                ...state,
-                scenePartPersons: { ...state.scenePartPersons, [action.id]: action.partPersons }
-            };
-        case CHANGE_FOCUS:
+
+        case UPDATE_SCRIPT_ITEM_IN_FOCUS:
 
             return {
                 ...state,
-                focus: { [action.focus.id]: action.focus }
+                scriptItemInFocus: {
+                    [action.scriptItemId]: { sceneId: action.sceneId }
+                }
+            }
+        case UPDATE_SCENE_IN_FOCUS:
+            return {
+                ...state,
+                sceneInFocus: action.scene
             }
         case CLEAR_IMPORT_UPDATES:
             return {
@@ -131,15 +131,7 @@ export default function scriptEditorReducer(state = initialState, action) {
         case UPDATE_PREVIOUS_CURTAIN:
             return {
                 ...state,
-                previousCurtain: { ...state.previousCurtain, [action.nextSceneId]: action.previousCurtainOpen }
-            }
-
-        case ADD_UPDATE_TO_SCRIPT_ITEM_HISTORY:
-            return {
-                ...state,
-                scriptItemHistory: {
-                    ...state.scriptItemHistory, [action.update.id]: [...state.scriptItemHistory[action.update.id] || [], action.update]
-                }
+                previousCurtainOpen: { ...state.previousCurtain, [action.nextSceneId]: action.previousCurtainOpen }
             }
         case SET_SHOW:
             return {
@@ -152,18 +144,51 @@ export default function scriptEditorReducer(state = initialState, action) {
                 textAreaContext: { ...state.textAreaContext, [action.scriptItemType]: action.context }
             }
 
-        case UPDATE_UNDO_DATE_TIME:
+        case RESET_UNDO:
             return {
                 ...state,
-                undoSceneId: action.sceneId,
-                undoDateTime: action.undoDateTime,
-                isUndoInProgress: (action.undoDateTime !== null)
+                isUndoInProgress: {},
+                redoList: [],
+            }
+        case ADD_ITEMS_TO_REDO_LIST:
+            return {
+                ...state,
+                isUndoInProgress: { ...state.isUndoInProgress, [action.sceneId]: true },
+                redoList: [...state.redoList, ...action.items],
+            }
+        case REMOVE_ITEMS_FROM_REDO_LIST:
+            return {
+                ...state,
+                redoList: [...state.redoList.filter(item => new Date(item.created) !== new Date (action.createdDate))],
             }
 
-        case TRIGGER: 
+        case TRIGGER:
             return {
                 ...state,
                 trigger: { ...action.payload, type: action.triggerType },
+            }
+        case UPDATE_CURRENT_SCRIPT_ITEMS:
+
+            const updatedScriptItems = action.scriptItems.reduce((acc, scriptItem) => {
+                acc[scriptItem.id] = { ...scriptItem }
+                return acc;
+            }, { ...state.currentScriptItems });
+
+            return {
+                ...state,
+                currentScriptItems: updatedScriptItems
+            }
+        case UPDATE_SCENE_ORDERS:
+
+            const updatedSceneOrders = action.sceneOrders.reduce((acc, sceneOrder) => {
+                acc[sceneOrder[0].id] = [...sceneOrder];
+                
+                return acc;
+            }, { ...state.sceneOrders });
+
+            return {
+                ...state,
+                sceneOrders: updatedSceneOrders
             }
         default: return state;
     }

@@ -18,9 +18,9 @@ export function LocalServerSyncing() {
     const syncWithServer = (pauseSync) => {
         log(debug, 'LocalServerSyncing: syncWithServer pauseSync', pauseSync)
         if (!pauseSync) {
-            dispatch(sync(PERSON))
             dispatch(sync(SCRIPT_ITEM))
             dispatch(sync(PART))
+            dispatch(sync(PERSON))
         }
 
     }
