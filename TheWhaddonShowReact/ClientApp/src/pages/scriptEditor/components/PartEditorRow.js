@@ -44,20 +44,24 @@ function PartEditorRow(props) {
         , previousFocusId
         , nextFocusId
     } = props;
-    log(debug, 'Component:PartEditorRow: props', props)
 
-    //let { part } = props;
+
+    log(debug, 'Component:PartEditorRow: props', props)
 
 
     //Redux
-    const partPerson = useSelector(state => state.scriptEditor.partPersons[partId])
-    const nextPartPerson = useSelector(state => state.scriptEditor.partPersons[partPerson.nextId])
+    const partPerson = useSelector(state => state.scriptEditor.currentPartPersons[partId])
+    const test = useSelector(state => state.scriptEditor.currentPartPersons)
+
+    log(debug,)
+    const nextPartPerson = useSelector(state => state.scriptEditor.currentPartPersons[partPerson?.nextId])
     const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const scenePartIds = scene.partIds
 
-    const zIndex = 1; //TODO - this needs to be calculated based on the number of parts in the scene
+    const zIndex = 10; //TODO - this needs to be calculated based on the number of parts in the scene
+
 
     //internal state
     const [tempName, setTempName] = useState(null);
@@ -68,7 +72,7 @@ function PartEditorRow(props) {
         if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
             moveFocusToId(sceneId, START)
         } else { //makes the textarea the focus when created
-            const textInputRef = document.getElementById(`${partPerson.id}`)?.querySelector('input')
+            const textInputRef = document.getElementById(`${partPerson?.id}`)?.querySelector('input')
             if (textInputRef) {
                 textInputRef.focus();
             }
@@ -116,7 +120,8 @@ function PartEditorRow(props) {
             if (e.target.selectionEnd === 0) {
                 dispatch(trigger(ADD_PART, { position: ABOVE, sceneId, partId, tempTextValue: tempName }))
             } else {
-                dispatch(trigger(ADD_PART), { position: BELOW, sceneId, partId, tempTextValue: tempName })
+              
+                dispatch(trigger(ADD_PART, { position: BELOW, sceneId, partId, tempTextValue: tempName }))
             }
             setTempName(null)
             return
@@ -158,7 +163,7 @@ function PartEditorRow(props) {
 
                 if (nextPartPerson && (nextPartPerson.name || '') === '') {
                     partPerson.name = ''
-                    dispatch(trigger, DELETE_NEXT_PART, { direction: UP, sceneId, partId })
+                    dispatch(trigger(DELETE_NEXT_PART, { direction: UP, sceneId, partId }))
                     return
                 }
 
@@ -198,12 +203,11 @@ function PartEditorRow(props) {
 
     }
 
-
-
     const handleControlsClick = (action, e) => {
 
         switch (action) {
             case ADD_PART:
+               
                 dispatch(trigger(ADD_PART, { position: BELOW, sceneId, partId, tempTextValue: tempName }));
                 setTempName(null)
                 break;
@@ -235,17 +239,13 @@ function PartEditorRow(props) {
         setTempName(null)
     }
 
-
-
-
-
     return (
 
-        <>
+        partPerson && (
 
             <div key={partPerson.id} id={partPerson.id} className={s["part"]} style={{ zIndex: zIndex }}>
-                <PartNameAndAvatar avatar partName
 
+                <PartNameAndAvatar avatar partName
                     avatarInitials={partPerson.avatarInitials}
                     partPerson={partWithTempName()}
                     onAvatarClick={() => dispatch(updatePersonSelectorConfig({ sceneId, partId }))}
@@ -285,9 +285,7 @@ function PartEditorRow(props) {
             </div>
 
 
-        </>
-
-
+        )
 
     )
 

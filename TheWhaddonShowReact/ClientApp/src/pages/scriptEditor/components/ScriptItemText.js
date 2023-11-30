@@ -97,7 +97,7 @@ const getContext = (type) => {
 
 }
 
-const finalText = tempTextValue || scriptItem.text
+const finalText = (tempTextValue === null) ? scriptItem.text : tempTextValue
 
 const textToMeasure = finalText || finalPlaceholder
 
@@ -121,6 +121,7 @@ const finalWidthPx = `${Math.floor(finalWidth)}px`
 
 const handleTextChange = (e) => {
     log(debug, `EventsCheck: handleTextChange: ${e.target.value || ''} `)
+
     setTempTextValue(e.target.value || '')
 }
 

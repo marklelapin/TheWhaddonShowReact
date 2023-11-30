@@ -44,8 +44,6 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
     }
 
 
-
-
 }
 
 const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
@@ -232,7 +230,7 @@ export const alignRight = (sceneOrder, viewAsPartPerson, scenePartPersonIds, scr
     const mergedSceneOrder = mergeSceneOrder(sceneOrder, scriptItemUpdates)
 
     //work out alignment
-    const partIdsOrder = [...new Set(mergedSceneOrder.map(item => item.partIds[0]))]
+    const partIdsOrder = [...new Set(mergedSceneOrder.map(item => item.partIds[0]).filter(id => id !== undefined))]
 
     const defaultRighthandPartId = partIdsOrder[1] //defaults the second part to come up as the default right hand part.
 

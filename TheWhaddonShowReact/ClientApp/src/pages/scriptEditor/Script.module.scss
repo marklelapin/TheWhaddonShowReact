@@ -60,17 +60,17 @@
 
 
 .scene-group {
-    position:relative;
+    position: relative;
 }
 
 .scene-header {
-    position:relative;
-    z-index:2;
+    position: relative;
+    z-index: 2;
 }
 
-.scene-body{
-    position:relative;
-    z-index:1
+.scene-body {
+    position: relative;
+    z-index: 1
 }
 
 .scene-footer {
@@ -91,7 +91,13 @@
     color: black;
 
     .add-new-scene {
-        position:relative;
+        position: relative;
         z-index: 5;
     }
+}
+
+
+.person-selector {
+    position: relative;
+    z-index: 1000;
 }

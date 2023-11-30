@@ -25,6 +25,9 @@ export function Avatar(props) {
 
     const person = draftPerson || partPersonFromId || {}
 
+    log(debug, 'Component:Avatar props', props)
+    log(debug, 'Component:Avatar person', {person,draftPerson,partPersonFromId})
+
     const { firstName = null, email = null, pictureRef = null } = person;
 
     const firstUserLetter = (person && firstName) ? firstName[0].toUpperCase() : '?'

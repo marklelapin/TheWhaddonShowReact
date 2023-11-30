@@ -22,12 +22,7 @@ function PartSelectorDropdown(props) {
     //redux
     const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
-    const partPersons = Object.keys(currentPartPersons).map(sceneId => ({
-        sceneId,
-        ...currentPartPersons[sceneId]
-    }));
 
-    const activePartIds = partPersons.filter(partPerson=>partPerson.isActive === true).map(partPerson => partPerson.id)
 
     //internal
     const [partsArray, setPartsArray] = useState([])
@@ -36,6 +31,7 @@ function PartSelectorDropdown(props) {
     useEffect(() => {
 
         log(debug, 'Component:PartSelectorDropdown useEffect')
+        //add eventlistener to close dropdown if user clicks outside of it
         const toggleIfOutsideDropdown = (e) => {
             const isInsideDropdown = e.target.closest('.part-selector-dropdown')
 
@@ -46,19 +42,34 @@ function PartSelectorDropdown(props) {
 
         document.addEventListener('click', (e) => toggleIfOutsideDropdown(e))
 
+        //populate partsArray
+        setupPartsArray()
+
+
+        //remove eventListener onn unmount
         return () => {
             document.removeEventListener('click', (e) => toggleIfOutsideDropdown(e))
         }
 
+
     }, [])
 
-    useEffect(() => {
+
+    const setupPartsArray = () => {
+
+        const partPersons = Object.keys(currentPartPersons).map(sceneId => ({
+            sceneId,
+            ...currentPartPersons[sceneId]
+        }));
+
+        const activePartIds = partPersons.filter(partPerson => partPerson.isActive === true).map(partPerson => partPerson.id)
 
         const finalPartIds = partIds || activePartIds
 
-        setPartsArray(finalPartIds.map(partId => ({ partId, selected: false })))
+        setPartsArray(finalPartIds.map(partId => ({ id: partId, selected: false })))
 
-    }, [partIds, activePartIds])
+
+    }
 
 
 
@@ -106,8 +117,12 @@ function PartSelectorDropdown(props) {
         return partsArray.some(part => part.selected === true)
     }
 
+    
 
     return (
+
+        partsArray.length  && (
+            
         < div className={`${s['part-selector-dropdown']} ${(centered) ? s['centered'] : ''}`} >
 
             {(partsArray.length === 0) &&
@@ -144,7 +159,7 @@ function PartSelectorDropdown(props) {
             </div>
 
         </div>
-
+        )
     )
 
 }

@@ -15,9 +15,9 @@ function ScriptItemHeader(props) {
 
             {(type === INITIAL_STAGING) && <span>Initial Staging</span>}
 
-            {(type === DIALOGUE) && (partIds === null || partIds.length === 0) && <span>-</span>})
+            {(type === DIALOGUE) && (partIds === null || partIds.length === 0) && <span>-</span>}
 
-            {type == DIALOGUE && (partIds !== null) &&
+            {type === DIALOGUE && (partIds !== null) &&
 
                 partIds.map((partId, idx) => {
 

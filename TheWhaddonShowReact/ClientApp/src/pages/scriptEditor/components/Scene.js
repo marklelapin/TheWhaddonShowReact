@@ -1,9 +1,9 @@
 ﻿//React and Redux
 import React from 'react';
 import { useState } from 'react';
-import { useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
-import {trigger, ADD_SCENE } from '../../../actions/scriptEditor'
+import { trigger, ADD_SCENE } from '../../../actions/scriptEditor'
 
 //Components
 import ScriptItem from '../../../pages/scriptEditor/components/ScriptItem.js';
@@ -32,9 +32,9 @@ function Scene(props) {
     log(debug, 'Component:Scene props:', props)
 
     //Redux state
-    const sceneOrder = useSelector(state => state.scriptEditor.sceneOrders[id])
+    const sceneOrder = useSelector(state => state.scriptEditor.sceneOrders[id]) || []
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen[id])
-
+    log(debug, 'Component:Scene sceneOrder', sceneOrder)
     //Internal State
     /* const [scriptItems, setScriptItems] = useState([]); //*/
     const [loaded, setLoaded] = useState(false); //]
@@ -58,6 +58,7 @@ function Scene(props) {
                         key={scene.id}
                         sceneId={scene.id}
                         sceneNumber={sceneNumber}
+                        zIndex={scene.zIndex}
                         curtainOpen={previousCurtainOpen}
                         previousFocusId={scene.previousFocusId}
                         nextFocusId={scene.nextFocusId}
@@ -69,6 +70,7 @@ function Scene(props) {
                         id={synopsis.id}
                         key={synopsis.id}
                         sceneId={scene.id}
+                        zIndex={synopsis.zIndex}
                         curtainOpen={previousCurtainOpen}
                         previousFocusId={synopsis.previousFocusId}
                         nextFocusId={synopsis.nextFocusId}
@@ -77,6 +79,7 @@ function Scene(props) {
                 {(scene.type === SCENE) &&
                     <PartEditor
                         sceneId={scene.id}
+                        zIndex={synopsis.zIndex - 1}
                         curtainOpen={previousCurtainOpen}
                         previousFocusId={synopsis.id} //override the default focus ids
                         nextFocusId={staging.id}
@@ -89,6 +92,7 @@ function Scene(props) {
                             id={staging.id}
                             key={staging.id}
                             sceneId={scene.id}
+                            zIndex={staging.zIndex}
                             curtainOpen={previousCurtainOpen}
                             previousFocusId={staging.previousFocusId}
                             nextFocusId={staging.nextFocusId}
@@ -107,6 +111,7 @@ function Scene(props) {
                             id={scriptItem.id}
                             key={scriptItem.id}
                             sceneId={scene.id}
+                            zIndex={scriptItem.zIndex}
                             curtainOpen={scriptItem.curtainOpen}
                             alignRight={scriptItem.alignRight}
                             previousFocusId={scriptItem.previousFocusId}

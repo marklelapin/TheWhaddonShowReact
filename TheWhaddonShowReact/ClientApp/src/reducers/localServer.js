@@ -36,7 +36,7 @@ const defaultState = {
         pauseSync: false
 
     },
-    refresh: {},
+    updateTrigger: {},
     //**LSMTypeInCode**
     persons: new LocalServerModel(PERSON), //object holding all information with regard to persons
     scriptItems: new LocalServerModel(SCRIPT_ITEM), //object holding all information with regard to scriptItems
@@ -174,17 +174,17 @@ export default function localServerReducer(state = defaultState, action) {
                     case PERSON: return {
                         ...state,
                         persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
-                        refresh: { updates: updatesFromServer, type: action.payloadType }
+                        updateTrigger: { updates: updatesFromServer, type: action.payloadType }
                     };
                     case SCRIPT_ITEM: return {
                         ...state,
                         scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
-                        refresh: { updates: updatesFromServer, type: action.payloadType }
+                        updateTrigger: { updates: updatesFromServer, type: action.payloadType }
                     };
                     case PART: return {
                         ...state,
                         parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
-                        refresh: { updates: updatesFromServer, type: action.payloadType }
+                        updateTrigger: { updates: updatesFromServer, type: action.payloadType }
                     };
                     default: return state
                 };

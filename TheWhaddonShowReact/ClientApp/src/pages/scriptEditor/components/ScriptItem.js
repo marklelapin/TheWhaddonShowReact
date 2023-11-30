@@ -16,9 +16,10 @@ import CurtainBackground from './CurtainBackground';
 //utilities
 import { log } from '../../../helper';
 //Constants
-import { SCENE, DIALOGUE, CURTAIN_TYPES} from '../../../dataAccess/scriptItemTypes';
+import { SCENE, DIALOGUE, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 //trigger types
-import { trigger,
+import {
+    trigger,
     REDO, UNDO, CONFIRM_UNDO,
     DELETE_SCENE, UPDATE_ATTACHMENTS,
     UPDATE_PART_IDS, TOGGLE_CURTAIN
@@ -41,24 +42,25 @@ const ScriptItem = memo((props) => {
         alignRight = false,
         curtainOpen = null,
         previousFocusId = null,
-        nextFocusId = null
+        nextFocusId = null,
+        zIndex
     } = props;
 
     log(debug, 'Component:ScriptItem props:', props)
 
     //Redux state
-    const showComments = useSelector(state => state.scriptEditor.showComments) || true  
+    const showComments = useSelector(state => state.scriptEditor.showComments) || true
 
-    const focus = useSelector(state => (state.scriptEditor.focus[id])) || false
+    const focus = useSelector(state => (state.scriptEditor.scriptItemInFocus[id])) || false
     const isUndoInProgress = useSelector(state => (state.scriptEditor.isUndoInProgress[id]))
-    const scriptItem = useSelector(state => state.scriptEditor.scriptItems[id]) || {}
+    const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
 
 
     log(debug, 'Component:ScriptItem redux:', { showComments, focus, isUndoInProgress, scriptItem })
 
-    const { type, commentId, zIndex } = scriptItem;
+    const { type, commentId } = scriptItem;
 
-    
+
 
     //Refs
     const textInputRef = useRef(null)
@@ -76,7 +78,7 @@ const ScriptItem = memo((props) => {
         }
     }
 
-    
+
 
     const handleShowMedia = (value = null) => {
 
@@ -112,22 +114,24 @@ const ScriptItem = memo((props) => {
 
         dispatch(trigger(UPDATE_ATTACHMENTS, { scriptItem, value: updatedAttachments }))
     }
-   
+
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
     return (
+
         <div id={id}
+
             className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight) ? s['align-right'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
             style={{ zIndex: zIndex }}
         >
 
-            {showParts() &&
+            {scriptItem && showParts() &&
                 <div className={s['script-item-parts']}>
                     <PartSelector
                         key={id}
                         sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
-                        onSelect={(selectedPartIds) => dispatch(trigger(UPDATE_PART_IDS, {scriptItem,value: selectedPartIds}))}
+                        onSelect={(selectedPartIds) => dispatch(trigger(UPDATE_PART_IDS, { scriptItem, value: selectedPartIds }))}
                     />
                 </div>
             }
@@ -144,7 +148,7 @@ const ScriptItem = memo((props) => {
                 />
 
             </div>
-            {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
+            {scriptItem && ((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
                 <div className={s['dropzone']}>
                     <MediaDropzone
                         existingMediaURLs={scriptItem.attachments}
@@ -167,22 +171,24 @@ const ScriptItem = memo((props) => {
                     {isUndoInProgress &&
                         <Button size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>
                     }
-                    <Icon icon="undo" onClick={() => dispatch(trigger(UNDO, {sceneId: scriptItem.id})) } />
+                    <Icon icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} />
                     {isUndoInProgress &&
-                        <Icon icon="redo" onClick={() => dispatch(trigger(REDO, {sceneId: scriptItem.id}))} />
+                        <Icon icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} />
                     }
-                    <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, {scriptItem}))} />
+                    <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} />
 
 
 
                 </div>
             }
-            {(CURTAIN_TYPES.includes(type)) &&
+            {scriptItem && CURTAIN_TYPES.includes(type) &&
 
                 <CheckBox checked={scriptItem.curtainOpen} onChange={() => dispatch(trigger(TOGGLE_CURTAIN({ scriptItem })))} ios={true} />
             }
+            {scriptItem &&
+                <CurtainBackground curtainOpen={finalCurtainOpen} />
+            }
 
-            <CurtainBackground curtainOpen={finalCurtainOpen} />
         </div>
     )
 })

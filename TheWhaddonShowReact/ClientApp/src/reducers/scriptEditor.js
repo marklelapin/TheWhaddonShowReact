@@ -19,12 +19,14 @@ import {
     ADD_ITEMS_TO_REDO_LIST,
     REMOVE_ITEMS_FROM_REDO_LIST,
     RESET_UNDO,
+    UPDATE_PERSON_SELECTOR_CONFIG
 
 } from '../actions/scriptEditor';
 
+import {log } from '../helper';
 
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
-
+const debug = true;
 
 export const initialState = {
     searchParameters: {
@@ -48,13 +50,14 @@ export const initialState = {
     currentPartPersons: {},
     currentScriptItems: {},
     sceneOrders: {},
-    scriptItemInFocus: null,
-    sceneInFocus: null,
+    scriptItemInFocus: {},
+    sceneInFocus: {},
     previousCurtainOpen: {},
     textAreaContext: {},
     isUndoInProgress: {},
     redoList: [],
     trigger: {},
+    personSelectorConfig: null,
 
 }
 
@@ -97,6 +100,8 @@ export default function scriptEditorReducer(state = initialState, action) {
                 acc[partPerson.id] = { ...partPerson };
                 return acc;
             }, { ...state.currentPartPersons });
+
+            log(debug, 'Reducer:UPDATE_CURRENT_PART_PERSONS updatedPartPersons', updatedPartPersons)
 
             return {
                 ...state,
@@ -163,9 +168,14 @@ export default function scriptEditorReducer(state = initialState, action) {
             }
 
         case TRIGGER:
+
+            const newTrigger = { ...action.payload, type: action.triggerType }
+
+            log(debug, 'Reducer:scriptEditor TRIGGER', { newTrigger })
+
             return {
                 ...state,
-                trigger: { ...action.payload, type: action.triggerType },
+                trigger: newTrigger,
             }
         case UPDATE_CURRENT_SCRIPT_ITEMS:
 
@@ -190,6 +200,13 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 sceneOrders: updatedSceneOrders
             }
+        case UPDATE_PERSON_SELECTOR_CONFIG:
+            log(debug, 'Reducer:UPDATE_PERSON_SELECTOR_CONFIG action.config', action.config)
+            return {
+                ...state,
+                personSelectorConfig: action.config
+            }
+
         default: return state;
     }
 }

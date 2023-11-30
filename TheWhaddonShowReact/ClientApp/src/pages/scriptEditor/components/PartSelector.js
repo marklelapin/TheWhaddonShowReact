@@ -19,7 +19,7 @@ import { log } from '../../../helper'
 function PartSelector(props) {
 
 
-    const debug = false;
+    const debug = true;
     const dispatch = useDispatch();
 
     log(debug, 'Component:PartSelector props', props)
@@ -34,8 +34,8 @@ function PartSelector(props) {
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
 
-    const partsArray = scenePartIds.map(ids => allocatedPartIds.includes(ids.partId) ?  {id: ids.partId, allocated: true } : { id: ids.partId, allocated: false }) || []
-   
+    const partsArray = scenePartIds.map(id => allocatedPartIds.includes(id) ?  {id, allocated: true } : { id, allocated: false }) || []
+    log(debug, 'Component:PartSelector partsArray', { scene: scene.text, scenePartIds, partsArray })
     //Event Handlers
 
     const handleSelect = (partIds) => {

@@ -21,14 +21,13 @@ function PartEditor(props) {
     //utility consts
     const debug = true;
 
-    const zIndex = 1000000 - (2 * 1000)  //assumes starting zIndex of 1000000 for scene scriptItem followed by -1000 for synopsis and -1000 for part editor
-
     //props
     const {
         sceneId = null,
         curtainOpen,
         previousFocusId,
         nextFocusId,
+        zIndex
     } = props;
 
     log(debug, 'Component:PartEditor props', props)

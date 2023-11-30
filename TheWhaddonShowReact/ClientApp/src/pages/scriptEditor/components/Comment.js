@@ -27,7 +27,7 @@ function Comment(props) {
     const { id } = props;
 
     //redux
-    const comment = useSelector(state => state.scriptEditor.scriptItems[id]) || [];
+    const comment = useSelector(state => state.scriptEditor.currentScriptItems[id]) || [];
     const scriptItem = { ...comment };
 
     log(debug, 'Component:Comment:', { id, comment })

@@ -19,9 +19,9 @@ function PartNameAndAvatar(props) {
     log(debug, 'PartNameAndAvatar Props', props)
 
     //Redux
-    const partPersonFromId = useSelector(state => state.scriptEditor.partPersons[partId])
+    const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId])
 
-    const finalPartPerson = partPerson || partPersonFromId || null;
+    const finalPartPerson = partPerson || partPersonFromId || {};
   
 
     //EVENT HANDLERS

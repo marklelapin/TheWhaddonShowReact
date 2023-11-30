@@ -89,7 +89,7 @@ export function ScriptEditorProcessing() {
     //triggering actions from script Editor to be carried out by this component and sent on to localServer
     const scriptEditorTrigger = useSelector(state => state.scriptEditor.trigger) //done          
     //triggering updates to scriptEditor from external server changes to local Server.
-    const localServerTrigger = useSelector((state) => state.localServer.refresh)
+    const localServerTrigger = useSelector((state) => state.localServer.updateTrigger)
 
 
     //being populated by this component.
@@ -111,7 +111,7 @@ export function ScriptEditorProcessing() {
             }
         }
 
-        if (currentFocus && currentFocus.sceneId != sceneInFocus.id) {
+        if (currentFocus && currentFocus.sceneId !== sceneInFocus.id) {
 
             const newSceneInFocus = currentScriptItems[scriptItemInFocus.parentId]
 
@@ -163,9 +163,10 @@ export function ScriptEditorProcessing() {
         if (!scriptEditorTrigger || Object.keys(scriptEditorTrigger).length === 0) return
 
         const { type, value, tag, scriptItem, position, direction, tempTextValue,
-            oldPartId, newPartId, sceneId: draftSceneId, partId, personId,
+            oldPartId, newPartId, sceneId : draftSceneId, partId, personId,
         } = scriptEditorTrigger
 
+        log(debug, 'ScriptEditorTrigger', draftSceneId)
         let sceneId
 
         if (draftSceneId) {
@@ -213,11 +214,12 @@ export function ScriptEditorProcessing() {
         let partUpdates = []
         let scriptItemUpdates = []
 
-        let moveFocus = { id: scriptItem.nextId, position: END } //default move focus to next item in list unles change in switch statement.
+        let moveFocus = { id: scriptItem?.nextId, position: END } //default move focus to next item in list unles change in switch statement.
 
-        let refreshAlignment = false; //if true will refresh the rightAlign calculation of sceneOrder
-        let refreshShowOrder = false; //if true will refresh the showOrder calculation of sceneOrder
-        let refreshCurtain = false; //if true will refresh the curtain calculation of sceneOrder
+        let doRefreshAlignment = false; //if true will refresh the rightAlign calculation of sceneOrder
+        let doRefreshSceneOrder = false; //if true will refresh the sceneOrder calculation of sceneOrder
+        let doRefreshShowOrder = false; //if true will refresh the showOrder calculation of sceneOrder
+        let doRefreshCurtain = false; //if true will refresh the curtain calculation of sceneOrder
 
         switch (type) {
 
@@ -225,7 +227,7 @@ export function ScriptEditorProcessing() {
                 moveFocus = { id: scriptItem.nextId, position: END }
                 break;
             case UPDATE_PART_IDS: scriptItemUpdates.push({ ...scriptItem, partIds: value });
-                refreshAlignment = true;
+                doRefreshAlignment = true;
                 break;
             case UPDATE_TAGS: scriptItemUpdates.push({ ...scriptItem, tags: value });
                 break;
@@ -239,27 +241,27 @@ export function ScriptEditorProcessing() {
                 if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
                     newTypeUpdate = newScriptItemsForToggleCurtain(newTypeUpdate, true) //set it to open curtain.
                     scriptItemUpdates.push(newTypeUpdate)
-                    refreshCurtain = true;
+                    doRefreshCurtain = true;
                 } else if (CURTAIN_TYPES.includes(scriptItem.type)) { //i.e. its coming from a curtain type
                     newTypeUpdate.text = '';
                     newTypeUpdate = clearCurtainTags(newTypeUpdate)
                     scriptItemUpdates.push(newTypeUpdate)
-                    refreshCurtain = true;
+                    doRefreshCurtain = true;
                 } else {
                     scriptItemUpdates.push(newTypeUpdate);
                 }
                 break;
             case OPEN_CURTAIN:
                 scriptItemUpdates = newScriptItemsForToggleCurtain(scriptItem, true);
-                refreshCurtain = true;
+                doRefreshCurtain = true;
                 break;
             case CLOSE_CURTAIN:
                 scriptItemUpdates = newScriptItemsForToggleCurtain(scriptItem, false);
-                refreshCurtain = true;
+                doRefreshCurtain = true;
                 break;
             case TOGGLE_CURTAIN:
                 scriptItemUpdates = newScriptItemsForToggleCurtain(scriptItem);
-                refreshCurtain = true;
+                doRefreshCurtain = true;
                 break;
             case ADD_COMMENT:
                 scriptItemUpdates = newScriptItemsForAddComment(scriptItem, value)
@@ -272,12 +274,12 @@ export function ScriptEditorProcessing() {
                 break;
             case ADD_SCRIPT_ITEM:
                 scriptItemUpdates = newScriptItemsForCreate(position, scriptItem, surroundingScriptItems(), DIALOGUE, tempTextValue);
-                refreshSceneOrder = true;
+                doRefreshSceneOrder = true;
                 moveFocus = null;
                 break;
             case DELETE_SCRIPT_ITEM:
                 scriptItemUpdates = newScriptItemsForDelete(scriptItem, surroundingScriptItems());
-                refreshSceneOrder = true;
+                doRefreshSceneOrder = true;
                 if (direction === UP) {
                     moveFocus = { id: scriptItem.previousId, position: END };
                 } else {
@@ -287,19 +289,19 @@ export function ScriptEditorProcessing() {
             case DELETE_NEXT_SCRIPT_ITEM:
                 const nextScriptItem = currentScriptItems[scriptItem.nextId]
                 scriptItemUpdates = newScriptItemsForDelete(nextScriptItem, surroundingScriptItems(nextScriptItem));
-                refreshSceneOrder = true
+                doRefreshSceneOrder = true
                 moveFocus = { id: scriptItem.Id, position: END };
                 break;
             case ADD_SCENE:
                 const nextScriptItem2 = currentScriptItems[scriptItem.nextId]
                 scriptItemUpdates = newScriptItemsForCreateHeader(scriptItem, nextScriptItem2);
-                refreshSceneOrder = true;
-                refreshShowOrder = true;
+                doRefreshSceneOrder = true;
+                doRefreshShowOrder = true;
                 moveFocus = { id: scriptItemUpdates[0].id };
                 break;
             case DELETE_SCENE:
                 scriptItemUpdates = newScriptItemsForSceneDelete(scriptItem, surroundingScriptItems());
-                refreshShowOrder = true;
+                doRefreshShowOrder = true;
                 const newSceneFocus = scriptItem.nextId || scriptItem.previousId;
                 moveFocus = { id: newSceneFocus, position: END };
                 break;
@@ -307,7 +309,7 @@ export function ScriptEditorProcessing() {
                 const showSceneOrder = sceneOrders[show.id]
                 const newPreviousId = value;
                 scriptItemUpdates = newScriptItemsForMoveScene(sceneId, newPreviousId, showSceneOrder)
-                refreshShowOrder = true;
+                doRefreshShowOrder = true;
                 moveFocus = { id: sceneId, position: END };
                 break;
             case CLEAR_SCRIPT:
@@ -346,7 +348,7 @@ export function ScriptEditorProcessing() {
             case SWAP_PART:
                 scriptItemUpdates = newScriptItemsForSwapPart(sceneScriptItems(), oldPartId, newPartId);
                 moveFocus = { id: newPartId, position: END };
-                refreshAlignment = true
+                doRefreshAlignment = true
                 break;
             default: break;
         }
@@ -375,23 +377,23 @@ export function ScriptEditorProcessing() {
         let sceneOrderUpdates = [];
         let previousCurtainUpdates = [];
 
-        if (refreshSceneOrder) {
+        if (doRefreshSceneOrder) {
             newSceneOrder = refreshSceneOrder(sceneOrder, scriptItemUpdates) //adds updates into sceneOrder and reorders.
             sceneOrderUpdates.push(newSceneOrder)
         }
 
-        if (refreshShowOrder) {
+        if (doRefreshShowOrder) {
             const newShowOrder = refreshSceneOrder(sceneOrders[show.id], scriptItemUpdates)
             sceneOrderUpdates.push(newShowOrder)
         }
 
-        if (refreshAlignment) {
+        if (doRefreshAlignment) {
             const newScenePartPersonIds = newSceneOrder[0].partIds.map(partId => ({ sceneId: scene.id, partId: partId, personId: currentPartPersons[partId].personId }))
             newSceneOrder = alignRight(sceneOrder, viewAsPartPerson, newScenePartPersonIds, scriptItemUpdates)
             sceneOrderUpdates.push(newSceneOrder)
         }
 
-        if (refreshCurtain) {
+        if (doRefreshCurtain) {
             newSceneOrder = refreshCurtain(newSceneOrder, null, scriptItemUpdates) //works out changes to curtainOpen values across
             sceneOrderUpdates.push(newSceneOrder)
             const previousCurtainOpen = newSceneOrder[newSceneOrder.length - 1].curtainOpen;
@@ -426,10 +428,11 @@ export function ScriptEditorProcessing() {
 
     //Refresh trigger used to update scriptEditorScenes with additional partPerson info.
     useEffect(() => {
-        log(debug, 'Component:ScriptEditorProcessing useEffect localServerTrigger', localServerTrigger)
+        log(debug, 'Component:ScriptEditorProcessing localServerTrigger', { type: localServerTrigger.type, updates: localServerTrigger.updates?.length })
 
 
         if (localServerTrigger.updates && localServerTrigger.type === SCRIPT_ITEM) {
+
             const scriptItemUpdates = localServerTrigger.updates
 
             //the updates that are newer than the current scriptItems so will affect script Editor
@@ -491,13 +494,13 @@ export function ScriptEditorProcessing() {
         }
 
         if (localServerTrigger.updates && localServerTrigger.type === PART) {
-
+          
             const partUpdates = localServerTrigger.updates
             const currentPartUpdates = partUpdates.filter(update => new Date(update.created) > new Date(currentPartPersons[update.id]?.created || 0))
-
+            const latestCurrentPartUpdates = getLatest(currentPartUpdates)
             const persons = getLatest(storedPersons)
 
-            const newPartPersons = currentPartUpdates.map(partUpdate => {
+            const newPartPersons = latestCurrentPartUpdates.map(partUpdate => {
                 const person = persons.find(person => person.id === partUpdate.personId) || null
                 const partPerson = addPersonInfo(partUpdate, person)
                 return partPerson;

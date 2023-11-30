@@ -25,7 +25,7 @@ function ScriptViewer(props) {
     //Redux 
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
-    const personSelectorConfig = useSelector(state => state.scriptEditor.personsSelectorConfig) || null
+    const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig) || null
     const isPersonSelectorOpen = (personSelectorConfig !==null)
 
 
@@ -34,7 +34,7 @@ function ScriptViewer(props) {
 
     return (
         <>
-            <div id="script-viewer" className="flex-full-height">
+            <div id="script-viewer" className="flex-full-height" style={{ zIndex: 1 }}>
                 <ScriptViewerHeader />
 
                 <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>

@@ -1,3 +1,5 @@
+import { log } from '../helper'
+
 /* eslint-disable import/prefer-default-export */
 
 export const UPDATE_SEARCH_PARAMETERS = 'UPDATE_SEARCH_PARAMETERS';
@@ -59,6 +61,9 @@ export const DELETE_PART = 'DELETE_PART';
 export const DELETE_NEXT_PART = 'DELETE_NEXT_PART';
 export const SWAP_PART = 'SWAP_PART';
 export const CLEAR_SCRIPT = 'CLEAR_SCRIPT';
+
+
+const debug = true;
 
 export function updateSearchParameters(searchParameters) {
     return {

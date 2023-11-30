@@ -16,7 +16,10 @@ import Widget from '../../../components/Widget';
 //utilities
 import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts';
 import { getLatest } from '../../../dataAccess/localServerUtils';
-import { moveFocusToId, END} from '../scripts/utility';
+import { moveFocusToId, END } from '../scripts/utility';
+
+import s from '../Script.module.scss'
+
 function PersonSelector(props) {
 
     const dispatch = useDispatch();
@@ -34,7 +37,7 @@ function PersonSelector(props) {
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId]) || {}
     const scenePartIds = scene.partIds || []
 
-    const partPersons = useSelector(state => state.scriptEditor.partPersons)
+    const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
 
 
@@ -86,7 +89,7 @@ function PersonSelector(props) {
 
     return (
         (config) &&
-        <Modal isOpen={true} toggle={closeModal}>
+        <Modal isOpen={true} toggle={closeModal} className={s['person-selector']}>
             <ModalHeader toggle={closeModal}>Select Person</ModalHeader>
             <ModalBody className="bg-white">
 
