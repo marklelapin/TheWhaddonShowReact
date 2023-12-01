@@ -32,19 +32,18 @@ export function newScriptItemsForCreateShow(title) {
 
 
 
-export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = DIALOGUE, tempTextValue) {
+export function newScriptItemsForCreate(placement, _existingScriptItem, currentScriptItems, type = DIALOGUE, tempTextValue) {
 
-    const currentScriptItems = [..._currentScriptItems]
-    let existingScriptItem = { ..._existingScriptItem }
-    if (tempTextValue) {
-        existingScriptItem.text = tempTextValue
-    }
+    
+    const existingScriptItem = { ..._existingScriptItem, text: (tempTextValue) ? tempTextValue : existingScriptItem.text }
+    const surroundingScriptItems = getSurroundingScriptItems(existingScriptItem, currentScriptItems)
+
 
     if (!existingScriptItem) throw new Error('ExistingScriptItem missing from createNewScriptItem. A new scriptItem must be created relative to an existing scriptItem.')
 
-    let previousScriptItem = currentScriptItems.find(item => item.id === existingScriptItem.previousId)
+    let previousScriptItem = surroundingScriptItems.find(item => item.id === existingScriptItem.previousId)
 
-    let nextScriptItem = currentScriptItems.find(item => item.id === existingScriptItem.nextId)
+    let nextScriptItem = surroundingScriptItems.find(item => item.id === existingScriptItem.nextId)
 
     let newScriptItem = new ScriptItemUpdate(type)
     newScriptItem.parentId = existingScriptItem.parentId
@@ -94,6 +93,8 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 
 export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) {
 
+    const surroundingScriptItems = getSurroundingScriptItems(scriptItemToDelete, currentScriptItems)
+
     if (HEADER_TYPES.includes(scriptItemToDelete.type)) {
         alert('You cannot delete a header item')
         return;
@@ -102,8 +103,8 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) 
     let deleteScriptItem = { ...scriptItemToDelete }
     const newScriptItems = [];
 
-    let previousScriptItem = currentScriptItems.find(item => item.id === deleteScriptItem.previousId)
-    let nextScriptItem = currentScriptItems.find(item => item.id === deleteScriptItem.nextId)
+    let previousScriptItem = surroundingScriptItems.find(item => item.id === deleteScriptItem.previousId)
+    let nextScriptItem = surroundingScriptItems.find(item => item.id === deleteScriptItem.nextId)
 
     if (previousScriptItem) {
 
@@ -277,7 +278,11 @@ export const newScriptItemsForAddComment = (_scriptItem, tempTextValue = null) =
 export const newScriptItemsForDeleteComment = (_scriptItem, scriptItems) => {
 
     const deleteCommentUpdate = { ..._scriptItem, isActive: false }
-    const scriptItemUpdate = { ...scriptItems.find(item => item.id === _scriptItem.previousId), commentId: null }
+    const surroundingScriptItems = getSurroundingScriptItems(deleteCommentUpdate, scriptItems)
+
+    const scriptItemUpdate = { ...surroundingScriptItems.find(item => item.id === _scriptItem.previousId), commentId: null }
+
+
 
     const newUpdates = [deleteCommentUpdate, scriptItemUpdate]
 
@@ -301,4 +306,34 @@ export const newScriptItemsForSwapPart = (scriptItems, oldPartId, newPartId) => 
 }
 
 
+export const getSurroundingScriptItems = (scriptItem,currentScriptItems) => {
 
+    const previousScriptItem = currentScriptItems[scriptItem.previousId]
+    const nextScriptItem = currentScriptItems[scriptItem.nextId]
+
+    const surroundingScriptItems = []
+
+    surroundingScriptItems.push(previousScriptItem)
+    surroundingScriptItems.push(scriptItem)
+    if (nextScriptItem) { surroundingScriptItems.push(nextScriptItem) }
+
+    return surroundingScriptItems;
+}
+
+
+export const getScriptItemUpdatesLaterThanCurrent = (scriptItemUpdates, currentScriptItems) => {
+
+    //the updates that are newer than the current scriptItems so will affect script Editor
+    const updatesLaterThanExisting = scriptItemUpdates.filter(update => new Date(update.created) > new Date(currentScriptItems[update.id]?.created || 0))
+
+    //find the latest currentScriptItemUpdates for each id
+    const currentScriptItemUpdates = Object.values(updatesLaterThanExisting.reduce((acc, item) => {
+        if (!acc[item.id] || new Date(acc[item.id].created) < new Date(item.created || 0)) {
+            acc[item.id] = item;
+        }
+        return acc;
+    }, {}))
+
+    return currentScriptItemUpdates
+
+}

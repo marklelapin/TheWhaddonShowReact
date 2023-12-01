@@ -242,3 +242,53 @@ export const alignRight = (sceneOrder, viewAsPartPerson, scenePartPersonIds, scr
 
 
 }
+
+
+export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItems, sceneOrders) => {
+
+    const sceneIds = [currentScriptItemUpdates.map(item => item.parentId)]
+    const uniqueSceneIds = [...new Set(sceneIds)]
+
+    //output variables
+    let sceneOrderUpdates = []
+    let previousCurtainUpdates = []
+
+    uniqueSceneIds.forEach(sceneId => {
+
+        const nextSceneIdFromScriptItemUpdates = currentScriptItemUpdates.find(item => item.id === sceneId)?.nextId || null
+        const nextSceneId = nextSceneIdFromScriptItemUpdates || currentScriptItems[sceneId]?.nextId || null
+
+        const newSceneScriptItems = currentScriptItemUpdates.filter(item => item.parentId === sceneId || item.id === sceneId)
+        const newSceneOrder = refreshSceneOrder(sceneOrders[sceneId], newSceneScriptItems)
+
+        if (newSceneOrder.length > 0) { //this can occur if the scene is inActive
+            sceneOrderUpdates.push(newSceneOrder)
+
+            if (nextSceneId) {
+                const previousCurtainOpen = newSceneOrder[newSceneOrder.length - 1]?.curtainOpen;
+                previousCurtainUpdates.push({ sceneId: nextSceneId, previousCurtainOpen })
+            }
+        }
+    })
+
+    return { sceneOrderUpdates, previousCurtainUpdates }
+}
+
+
+
+
+export const alignRightIfAffectedByViewAsPartPerson = (scene, viewAsPartPerson, sceneOrders, currentPartPersons) => {
+
+    const scenePartPersonIds = scene.partIds.map(partId => currentPartPersons[partId]).map(partPerson => ({ sceneId: scene.id, partId: partPerson.id, personId: partPerson.personId }))
+
+    const matchesPart = scenePartPersonIds.some(partPerson => partPerson.partId === viewAsPartPerson.id)
+
+    if (!matchesPart) {
+        const matchesPerson = scenePartPersonIds.some(partPerson => partPerson.personId === viewAsPartPerson.id)
+        if (!matchesPerson) return [];
+    }
+
+    const newSceneOrder = alignRight(sceneOrders[scene.id], viewAsPartPerson, scenePartPersonIds)
+
+    return newSceneOrder
+}

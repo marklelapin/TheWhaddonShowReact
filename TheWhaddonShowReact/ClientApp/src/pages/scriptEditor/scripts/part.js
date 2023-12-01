@@ -1,7 +1,7 @@
 ﻿import { PartUpdate } from '../../../dataAccess/localServerModels'
 import { UP, DOWN, START, END, BELOW } from './utility.js'
 import {SYNOPSIS,INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes'
-
+import {getLatest} from '../../../dataAccess/localServerUtils'
 
 export const addPersonsInfo = (parts, persons) => {
 
@@ -163,4 +163,38 @@ const nextPart = (part, scene) => {
     } else {
         return null
     }
+}
+
+export const NewPartPersonsFromPartUpdates = (partUpdates,currentPartPersons,storedPersons) => {
+
+    const currentPartUpdates = partUpdates.filter(update => new Date(update.created) > new Date(currentPartPersons[update.id]?.created || 0))
+    const latestCurrentPartUpdates = getLatest(currentPartUpdates)
+    const persons = getLatest(storedPersons)
+
+    const newPartPersons = latestCurrentPartUpdates.map(partUpdate => {
+        const person = persons.find(person => person.id === partUpdate.personId) || null
+        const partPerson = addPersonInfo(partUpdate, person)
+        return partPerson;
+    });
+
+    return newPartPersons
+}
+
+
+export const newPartPersonsFromPersonUpdates = (personUpdates, currentPartPersons) => {
+    const latestPersonUpdates = getLatest(personUpdates, true)
+
+    const newPartPersons = []
+    for (const key in currentPartPersons) {
+        if (currentPartPersons.hasOwnProperty(key)) {
+            const part = currentPartPersons[key]
+            const newPerson = latestPersonUpdates.find(item => item.id === part.personId)
+            if (newPerson) {
+                newPartPersons.push(addPersonInfo(part, newPerson))
+            }
+
+        }
+    }
+
+    return newPartPersons;
 }
