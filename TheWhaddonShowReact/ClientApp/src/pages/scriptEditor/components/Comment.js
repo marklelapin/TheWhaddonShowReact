@@ -51,7 +51,7 @@ function Comment(props) {
         log(debug, 'Component:Comment handleBlur ', { tempText })
 
         if (tempText || tempText === '') {
-            dispatch(trigger(UPDATE_TEXT, { scriptItem, text: tempText }))
+            dispatch(trigger(UPDATE_TEXT, { scriptItem, value: tempText }))
         }
         setTempText(null)
     }

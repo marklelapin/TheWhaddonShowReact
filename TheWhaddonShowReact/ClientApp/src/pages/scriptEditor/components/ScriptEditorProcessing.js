@@ -119,6 +119,10 @@ export function ScriptEditorProcessing() {
         if (!scriptEditorTrigger || Object.keys(scriptEditorTrigger).length === 0) return
 
         const { triggerType } = scriptEditorTrigger;
+        if (triggerTYpe === CLEAR_SCRIPT) {
+            dispatch(clearScriptEditorState);
+            return;
+        }
 
         //Undo processing
         //---------------------------------------------------------------------------------
@@ -165,7 +169,7 @@ export function ScriptEditorProcessing() {
             sceneOrderUpdates = [],
             previousCurtainUpdates = [],
             moveFocus = { id: scriptItem?.nextId, position: END } //default move focus to next item in list unles change in getTriggerUpdates.
-        } = getTriggerUpdates({ trigger: scriptEditorTrigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, show })
+        } = getTriggerUpdates({ trigger: scriptEditorTrigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, show, viewAsPartPerson })
 
 
         //Dispatch updates   

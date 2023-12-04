@@ -46,7 +46,7 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
 
 }
 
-const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
+export const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
 
     const mergedSceneOrder = getLatest([...currentSceneOrder, ...newScriptItems])
 
@@ -54,7 +54,7 @@ const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
 }
 
 
-const getHead = (currentSceneOrder, mergedSceneOrder) => {
+export const getHead = (currentSceneOrder, mergedSceneOrder) => {
 
     let draftHead = null;
 
@@ -97,7 +97,7 @@ const getHead = (currentSceneOrder, mergedSceneOrder) => {
 }
 
 
-const sortSceneOrder = (head, unsortedSceneOrder) => {
+export const sortSceneOrder = (head, unsortedSceneOrder) => {
 
     //create objectMap of all items in the targetArray
     const idToObjectMap = {};
@@ -126,7 +126,7 @@ const sortSceneOrder = (head, unsortedSceneOrder) => {
 }
 
 
-const updateZIndex = (sortedSceneOrder) => {
+export const updateZIndex = (sortedSceneOrder) => {
 
     const startingZIndex = 1000000;
     const zIndexInterval = 1000;
@@ -178,7 +178,7 @@ const updateZIndex = (sortedSceneOrder) => {
 }
 
 
-const refreshHeaderFocus = (sceneOrder, scenePartIds = null) => {
+export const refreshHeaderFocus = (sceneOrder, scenePartIds = null) => {
 
 
     const scene = sceneOrder.find(item => item.type === SCENE)

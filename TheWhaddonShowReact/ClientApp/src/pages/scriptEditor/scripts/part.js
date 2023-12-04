@@ -1,7 +1,10 @@
 ﻿import { PartUpdate } from '../../../dataAccess/localServerModels'
 import { UP, DOWN, START, END, BELOW } from './utility.js'
-import {SYNOPSIS,INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes'
-import {getLatest} from '../../../dataAccess/localServerUtils'
+import { SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes'
+import { getLatest } from '../../../dataAccess/localServerUtils'
+
+import { getOrderedSceneScriptItems } from './scriptItem'
+import { log } from '../../../helper'
 
 export const addPersonsInfo = (parts, persons) => {
 
@@ -13,53 +16,25 @@ export const addPersonsInfo = (parts, persons) => {
 
 export const addPersonInfo = (part, person) => {
 
-
     let updatedPart = { ...part }
     updatedPart.firstName = part.name
     updatedPart.avatarInitials = (part.name) ? part.name.split(' ').map(word => word[0]).join('') : '?';
     updatedPart.pictureRef = person?.pictureRef || null
     updatedPart.personName = person?.firstName || null
 
-
     return updatedPart
-
 }
 
 
-export const setupParts = (parts, persons) => {
-
-    let updateParts = [...parts]
-
-    updateParts = updateParts.map(part => addPersonInfo(part, persons))
-
-    updateParts = updateParts.sort((a, b) => a.name.localeCompare(b.name))
-
-    return updateParts;
-}
-
-
-// functions for useState hook for allocatedParts
-export const addNewPart = (existingParts) => {
-
-    const parts = [...existingParts]
-
-    const newPart = new PartUpdate()
-    newPart.new = true
-    parts.push(newPart)
-
-    return parts
-
-}
-
-export const newUpdatesForAddPart = (direction, part, tempTextValue, scene) => {
+export const newUpdatesForAddPart = (position, part, tempTextValue, scene) => {
 
     //output
     let newPartUpdates = []
     let newScriptItemUpdates = []
 
     //update part if temptTextValue
-    if (tempTextValue) {
-        newPartUpdates.push({ ...part, name: tempTextValue })
+    if (tempTextValue !== null && tempTextValue !== undefined) {
+        newPartUpdates.push({ ...copy(part), name: tempTextValue })
     }
 
     const newPart = new PartUpdate()
@@ -67,7 +42,7 @@ export const newUpdatesForAddPart = (direction, part, tempTextValue, scene) => {
 
     //add part
     const partIndex = scene.partIds.findIndex(id => id === part.id)
-    const partBeforeIndex = (direction === BELOW) ? partIndex : partIndex - 1
+    const partBeforeIndex = (position === BELOW) ? partIndex : partIndex - 1
 
     const startArray = { ...scene }.partIds.slice(0, partBeforeIndex + 1) || []
     const endArray = { ...scene }.partIds.slice(partBeforeIndex + 1) || []
@@ -77,100 +52,129 @@ export const newUpdatesForAddPart = (direction, part, tempTextValue, scene) => {
 
     newScriptItemUpdates.push({ ...scene, partIds: newPartIds })
 
-    const newMoveFocus = null;
-
-    return { newPartUpdates, newScriptItemUpdates, newMoveFocus }
+    return { newPartUpdates, newScriptItemUpdates }
 }
 
 
-export const newUpdatesForDeleteNextPart = (direction, part, sceneScriptItems, sceneOrders) => {
-
-    const scene = sceneScriptItems[0]
-    const nextPartToDelete = nextPart(part, scene)
-
-    return newUpdatesForDeletePart(direction,nextPartToDelete,sceneScriptItems,sceneOrders)
-}
-
-
-export const newUpdatesForDeletePart = (direction, partToDelete, sceneScriptItems, sceneOrders) => {
-
-    const scene = sceneScriptItems[0]
-    const isPartAllocated = sceneScriptItems.some(item => item.partIds.includes(partToDelete.id))
-
-    if (scene.partIds.length === 1) { alert('cant delete last part'); return }
-    if (isPartAllocated) { alert('cant delete part as allocated within the scene'); return }
-
-    //output
-    const newPartUpdates = [];
+export const newUpdatesForDeleteNextPart = (partPriorToDelete, sceneToDeleteFrom, sceneOrders, currentScriptItems, show,currentPartPersons) => {
     
-    const newScriptItemUpdates = [{...scene, partIds: scene.partIds.filter(partId => partId !== partToDelete.id)}]
+    const nextPartIdToDelete = nextPartId(partPriorToDelete, sceneToDeleteFrom)
+    if (nextPartIdToDelete) {
+const nextPartToDelete = currentPartPersons[nextPartIdToDelete]
+    return newUpdatesForDeletePart(nextPartToDelete, sceneToDeleteFrom, sceneOrders, currentScriptItems, show)
+    }
+    else return { newPartUpdates: [], newScriptItemUpdates: [] }
 
-    const usedElseWhere = sceneOrders.some(sceneOrder => sceneOrder[0].partIds.includes(partToDelete.id)) 
+}
 
-    if (!usedElseWhere) {
-        newPartUpdates.push({...partToDelete,isActive : false}) //only delete if not usedElsewhere
+export const newUpdatesForDeletePart = (partToDelete, sceneToDeleteFrom, sceneOrders, currentScriptItems, show) => {
+
+    const sceneScriptItems = getOrderedSceneScriptItems(sceneOrders[sceneToDeleteFrom.id], currentScriptItems)
+
+    //log(true, 'error check', { partToDelete, sceneScriptItems })
+    const isPartAllocated = sceneScriptItems.some(item => item.partIds.includes(partToDelete.id) && item.type !== SCENE)
+    //log(true, 'error check isPartAllocated', { isPartAllocated })
+
+    if (sceneToDeleteFrom.partIds.length === 1) {
+        alert('cant delete last part');
+        return { newPartUpdates: [], newScriptItemUpdates: [] }
+    }
+    if (isPartAllocated) {
+        alert('cant delete part as allocated within the scene');
+        return { newPartUpdates: [], newScriptItemUpdates: [] }
     }
 
-    const previousFocusId = sceneScriptItems.find(item => item.type === SYNOPSIS).id
-    const nextFocusId = sceneScriptItems.find(item =>item.type === INITIAL_STAGING).id
+    //log(true, 'error check', { sceneScriptItems})
+    //output
+    const newScriptItemUpdates = sceneScriptItems.map(item => {
+        if (item.partIds.some(id => id === partToDelete.id)) {
+            return { ...copy(item), partIds: copy(item).partIds.filter(partId => partId !== partToDelete.id) }
+        } else {
+            return null
+        }
+    }).filter(item => item !== null)
 
-    const newMoveFocus = getDeleteMoveFocus(partToDelete,scene,direction,previousFocusId,nextFocusId)
+    //log(true, 'error check ScriptItemUpdates', { newScriptItemUpdates })
 
-    return { newPartUpdates, newScriptItemUpdates, newMoveFocus }
+    //  .filter(item => item !== null)
+
+    const newPartUpdates = [];
+    const showOrder = sceneOrders[show.id]
+
+    //log(true, 'error check', { showOrder })
+
+    const usedElsewhere = showOrder.some(scene => scene.partIds.includes(partToDelete.id) && scene.id !== sceneToDeleteFrom.id);
+    //const usedElseWhere = Object.values(sceneOrders).some(sceneOrder => sceneOrder[0].partIds.includes(partToDelete.id))
+
+    if (!usedElsewhere) {
+        newPartUpdates.push({ ...copy(partToDelete), isActive: false }) //only delete if not usedElsewhere
+    }
+
+    return { newPartUpdates, newScriptItemUpdates }
 }
 
 
+export const getDeleteNextMoveFocus = (partPriorToDelete, scene, direction, previousFocusId, nextFocusId,currentPartPersons) => {
 
-const getDeleteMoveFocus = (partToDelete, scene, direction, previousFocusId, nextFocusId) => {
+    const nextPartIdToDelete = nextPartId(partPriorToDelete, scene)
+    if (nextPartIdToDelete) {
+        const nextPartToDelete = currentPartPersons[nextPartIdToDelete]
+        return getDeleteMoveFocus(nextPartToDelete, scene, direction,previousFocusId,nextFocusId)
+    }
+    else return ({ id: partPriorToDelete.id, position: END })
+}
+
+export const getDeleteMoveFocus = (partToDelete, scene, direction, previousFocusId, nextFocusId) => {
 
     let newFocusId = null;
     let newFocusPosition = END;
 
-    if (direction === UP && previousPart(partToDelete,scene)) {
-        newFocusId = previousPart(partToDelete).id
+    if (direction === UP && previousPartId(partToDelete, scene)) {
+        newFocusId = previousPartId(partToDelete)
         newFocusPosition = END
-    } else if (direction === UP && !previousPart(partToDelete)) {
+    } else if (direction === UP && !previousPartId(partToDelete)) {
         newFocusId = previousFocusId;
         newFocusPosition = END
-    } else if (direction === DOWN && nextPart(partToDelete)) {
-        newFocusId = nextPart(partToDelete).id
+    } else if (direction === DOWN && nextPartId(partToDelete)) {
+        newFocusId = nextPartId(partToDelete)
         newFocusPosition = START
-    } else if (direction === DOWN && !nextPart(partToDelete)) {
+    } else if (direction === DOWN && !nextPartId(partToDelete)) {
         newFocusId = nextFocusId;
         newFocusPosition = START
     }
 
-    return {id : newFocusId ,position: newFocusPosition}
-} 
+    return { id: newFocusId, position: newFocusPosition }
+}
 
 
-const previousPart = (part, scene) => {
+const previousPartId = (part, scene) => {
 
     const partIndex = scene.partIds.findIndex(id => id === part.id)
 
     if (partIndex > 0) {
-        return scene.parts[partIndex - 1]
+        return scene.partIds[partIndex - 1]
     } else {
         return null
     }
 }
 
-const nextPart = (part, scene) => {
+const nextPartId = (part, scene) => {
     const partIndex = scene.partIds.findIndex(id => id === part.id)
-
-    if (partIndex < scene.parts.length - 1) {
-        return scene.parts[partIndex + 1]
+    if (partIndex < scene.partIds.length - 1) {
+        return scene.partIds[partIndex + 1]
     } else {
         return null
     }
 }
 
-export const NewPartPersonsFromPartUpdates = (partUpdates,currentPartPersons,storedPersons) => {
+export const newPartPersonsFromPartUpdates = (partUpdates, currentPartPersons, storedPersons) => {
 
+    //log(true, 'error check: ', { partUpdates, currentPartUpdate : currentPartPersons[partUpdates[0].id] })
     const currentPartUpdates = partUpdates.filter(update => new Date(update.created) > new Date(currentPartPersons[update.id]?.created || 0))
-    const latestCurrentPartUpdates = getLatest(currentPartUpdates)
+    //log(true, 'error check:', { currentPartUpdates })
+    const latestCurrentPartUpdates = getLatest(currentPartUpdates, true)
     const persons = getLatest(storedPersons)
-
+    //log(true, 'error check:', { latestCurrentPartUpdates })
     const newPartPersons = latestCurrentPartUpdates.map(partUpdate => {
         const person = persons.find(person => person.id === partUpdate.personId) || null
         const partPerson = addPersonInfo(partUpdate, person)
@@ -198,3 +202,7 @@ export const newPartPersonsFromPersonUpdates = (personUpdates, currentPartPerson
 
     return newPartPersons;
 }
+const copy = (object) => {
+    return JSON.parse(JSON.stringify(object))
+}
+

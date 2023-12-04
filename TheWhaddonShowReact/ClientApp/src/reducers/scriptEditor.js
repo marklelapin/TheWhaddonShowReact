@@ -169,7 +169,7 @@ export default function scriptEditorReducer(state = initialState, action) {
 
         case TRIGGER:
 
-            const newTrigger = { ...action.payload, type: action.triggerType }
+            const newTrigger = { ...action.payload, triggerType: action.triggerType }
 
             log(debug, 'Reducer:scriptEditor TRIGGER', { newTrigger })
 
