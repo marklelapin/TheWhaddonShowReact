@@ -7,13 +7,13 @@ const muchLaterCreatedDate = new Date('2023-12-01T00:02:00.000')
 const earlierCreatedDate = new Date('2023-11-30T00:00:00.000')
 
 //MOCK SCENES
-export const show = Object.freeze({ id: 'show', created: createdDate, type: ACT, text: 'Show 1', nextId: 'act1', previousId: 'act2', partIds: [], isActive: true,updatedOnServer: null })
+export const show = Object.freeze({ id: 'show', created: createdDate, type: ACT, text: 'Show 1', nextId: 'a1', previousId: null, partIds: [], isActive: true,updatedOnServer: null })
 export const act1 = Object.freeze({ id: 'a1', created: createdDate, type: ACT, text: 'Act 1', nextId: 's1', previousId: 'show', partIds: [], isActive: true, updatedOnServer: null })
 export const scene1 = Object.freeze({ id: 's1', created: createdDate, type: SCENE, text: 'Scene 1', nextId: 's2', previousId: 'a1', partIds: ['p1', 'p2', 'p3'], isActive: true, updatedOnServer: null })
 export const scene2 = Object.freeze({ id: 's2', created: createdDate, type: SCENE, text: 'Scene 2', nextId: 's3', previousId: 's1', partIds: ['p4', 'p5', 'p6'], isActive: true, updatedOnServer: null })
 export const scene3 = Object.freeze({ id: 's3', created: createdDate, type: SCENE, text: 'Scene 3', nextId: 's4', previousId: 's2', partIds: ['p4', 'p5', 'p13'], isActive: true, updatedOnServer: null })
 export const scene4 = Object.freeze({ id: 's4', created: createdDate, type: SCENE, text: 'Scene 4', nextId: 's5', previousId: 's3', partIds: ['p4'], isActive: true, updatedOnServer: null })
-export const scene5 = Object.freeze({ id: 's5', created: createdDate, type: SCENE, text: 'Scene 5', nextId: 's6', previousId: 's4', partIds: ['p4'], isActive: true, updatedOnServer: null })
+export const scene5 = Object.freeze({ id: 's5', created: createdDate, type: SCENE, text: 'Scene 5', nextId: 'a2', previousId: 's4', partIds: ['p4'], isActive: true, updatedOnServer: null })
 export const act2 = Object.freeze({ id: 'a2', created: createdDate, text: 'Act 2', nextId: 's6', previousId: 's5', partIds: [], isActive: true, updatedOnServer: null })
 export const scene6 = Object.freeze({ id: 's6', created: createdDate, type: SCENE, text: 'Scene 6', nextId: 's7', previousId: 'a2', partIds: ['p1', 'p4'], isActive: true, updatedOnServer: null })
 export const scene7 = Object.freeze({ id: 's7', created: createdDate, type: SCENE, text: 'Scene 7', nextId: null, previousId: 's6', partIds: ['p7', 'p8', 'p9'], isActive: true, updatedOnServer: null })
@@ -154,6 +154,12 @@ export const mockSceneOrders = {
     's7': [scene7, synopsis7, initialStage7, initialCurtain7, dialogue71, dialogue72, dialogue73]
 }
 
+export const mockZIndexSceneOrders = {
+    'noExistingZIndexes': [scene1, synopsis1, initialStage1, initialCurtain1, dialogue11, dialogue12, dialogue13, dialogue14],
+    'someExistingZIndexes': [{ ...scene2, zIndex: 1000000 }, { ...synopsis2, zIndex: 900000 }, initialStage2, { ...initialCurtain2, zIndex: 800000 }, { ...dialogue21, zIndex: 300000 }, dialogue22, { ...dialogue23, zIndex: 25000 }, dialogue24, dialogue25],
+    'closeExistingZindexes': [{ ...scene3, zIndex: 1000000 }, synopsis3, { initialStage3, zIndex: 999999 }, initialCurtain3, dialogue31, dialogue32, dialogue33, dialogue34],
+    'messedUpZIndexes': [scene1, { synopsis1, zindex: 2500 }, initialStage1, { initialCurtain1, zIndex: 30000 }, dialogue11, dialogue12, { ...dialogue13, zIndex: 99999 }, dialogue14]
+}
 it('mockData', () => {
     expect(true).toEqual(true);
 });

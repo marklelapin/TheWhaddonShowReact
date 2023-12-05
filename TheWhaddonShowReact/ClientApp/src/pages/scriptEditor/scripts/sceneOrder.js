@@ -1,5 +1,5 @@
 ﻿
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING,COMMENT } from "../../../dataAccess/scriptItemTypes";
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { refreshCurtain } from "./curtain";
 import { initial, merge } from "lodash";
@@ -16,7 +16,7 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
 
     const { head, mergedSceneOrderWithUpdatedHead } = getHead(currentSceneOrder, mergedSceneOrder)
 
-    if (Object.keys(head).length === 0) return [] 
+    if (Object.keys(head).length === 0) return []
 
     const sortedSceneOrder = sortSceneOrder(head, mergedSceneOrderWithUpdatedHead)
 
@@ -103,9 +103,10 @@ export const sortSceneOrder = (head, unsortedSceneOrder) => {
     const idToObjectMap = {};
 
     for (const item of unsortedSceneOrder) {
-        idToObjectMap[item.id] = item;
+        idToObjectMap[item.id] = (item.id === head.id) ? head : item;
     }
 
+    //log(debug,'error check', { idToObjectMap })
     //Sort the targetArray by nextId
     const sortedLinkedList = [];
     let currentId = head.id
@@ -130,47 +131,57 @@ export const updateZIndex = (sortedSceneOrder) => {
 
     const startingZIndex = 1000000;
     const zIndexInterval = 1000;
-
-    let zIndexedSceneOrder = [...sortedSceneOrder]
+    log(debug, 'error check', { sortedSceneOrder })
+    let zIndexedSceneOrder = [...copy(sortedSceneOrder)]
 
     const resetZIndex = () => {
+
         let zIndex = startingZIndex;
 
-        sortedSceneOrder.forEach(item => {
+        zIndexedSceneOrder.forEach(item => {
             item.zIndex = zIndex;
             zIndex = zIndex - zIndexInterval;
         })
     }
 
-    const head = sortedSceneOrder[0]
+    const head = zIndexedSceneOrder[0]
+    log(debug, 'error check', { head })
     if (head.zIndex !== startingZIndex) {
+        log(debug, 'error check - reset due to head zIndex not being startingZIndex')
         resetZIndex()
     }
 
     try {
 
-        for (let i = 0; i < sortedSceneOrder.length; i++) {
+        for (let i = 0; i < zIndexedSceneOrder.length; i++) {
 
-            const item = sortedSceneOrder[i]
+            const item = zIndexedSceneOrder[i]
 
             if (item.zIndex && item.zIndex > 0) {
-                //do nothing as z-Index already set and if changed will cause a re-render.
+                log(debug, 'error check - already has zIndex: ', item.zIndex)
+                //do nothing as z-Index already set and if changed will cause a re-render.next
             } else {
 
                 const previousZIndex = zIndexedSceneOrder[i - 1].zIndex
-                const nextZIndex = zIndexedSceneOrder[i + 1].zIndex || null
+                const nextZIndex = zIndexedSceneOrder[i + 1]?.zIndex || null
 
                 if (nextZIndex === null) {
+
                     zIndexedSceneOrder[i].zIndex = previousZIndex - zIndexInterval
+                    log(debug, 'error check - nextZIndex === null: ', previousZIndex - zIndexInterval)
                 } else {
+
                     if (previousZIndex - nextZIndex < 2) { throw new Error('not enough space between scriptItems to insert another') }
+
                     const newZIndex = Math.floor((previousZIndex + nextZIndex) / 2)
                     zIndexedSceneOrder[i].zIndex = newZIndex
+                    log(debug, 'error check - newZIndex', newZIndex)
                 }
 
             }
         }
-    } catch {
+    } catch(error) {
+log(debug, 'error check - reset due to error',error)
         resetZIndex()
     }
 
@@ -291,4 +302,9 @@ export const alignRightIfAffectedByViewAsPartPerson = (scene, viewAsPartPerson, 
     const newSceneOrder = alignRight(sceneOrders[scene.id], viewAsPartPerson, scenePartPersonIds)
 
     return newSceneOrder
+}
+
+
+const copy = (object) => {
+    return JSON.parse(JSON.stringify(object))
 }

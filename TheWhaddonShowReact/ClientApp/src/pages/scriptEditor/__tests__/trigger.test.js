@@ -29,7 +29,7 @@ import { log } from '../../../helper'
 const anyValue = expect.anything()
 
 it(UPDATE_TEXT, (scriptItem = dialogue11, tempText = 'new text') => {
-    const debug = true;
+    const debug = false;
 
     const trigger = dispatchTrigger(UPDATE_TEXT, { scriptItem, value: tempText }) //this should be direct match with call in code.
 
@@ -58,7 +58,7 @@ it(UPDATE_TEXT, (scriptItem = dialogue11, tempText = 'new text') => {
 
 
 xit(UPDATE_PART_IDS, (scriptItem = dialogue11, selectedPartIds = ['p1', 'p7']) => {
-    const debug = true;
+    const debug = false;
 
     const trigger = dispatchTrigger(UPDATE_PART_IDS, { scriptItem, value: selectedPartIds }) //this should be direct match with call in code.
 
