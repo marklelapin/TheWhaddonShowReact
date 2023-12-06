@@ -207,12 +207,11 @@ function PartEditorRow(props) {
 
         switch (action) {
             case ADD_PART:
-               
                 dispatch(trigger(ADD_PART, { position: BELOW, sceneId, partId, tempTextValue: tempName }));
                 setTempName(null)
                 break;
             case DELETE_PART:
-                dispatch(trigger(DELETE_PART, { position: DOWN, sceneId, partId }));
+                dispatch(trigger(DELETE_PART, { direction: DOWN, sceneId, partId }));
                 setTempName(null)
                 break;
             case CONFIRM: moveFocus(DOWN, END); break;
@@ -234,7 +233,7 @@ function PartEditorRow(props) {
         log(debug, 'Component:PartEditorRow handleBlur', { tempName: tempName, partName: partPerson.name })
         if (tempName || (tempName === '' && partPerson.name !== '')) {
 
-            dispatch(UPDATE_PART_NAME, { partId, name: tempName })
+            dispatch(trigger(UPDATE_PART_NAME, { partId, value: tempName }))
         }
         setTempName(null)
     }

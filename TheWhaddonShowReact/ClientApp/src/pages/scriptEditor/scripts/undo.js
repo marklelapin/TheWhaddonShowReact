@@ -73,7 +73,7 @@ export const redo = (currentSceneOrder, redoList, currentPartPersons,viewAsPartP
     const redoCreated = redoList[redoList.length - 1].created
     const currentScriptItemUpdates = redoList.filter(item => new Date(item.created) === new Date(redoCreated))
     const scenePartPersonIds = scene.partIds.map(partId => ({ sceneId: scene.id, partId, personId: currentPartPersons[partId].personId }))
-    const sceneOrder = refreshSceneOrder(currentSceneOrder, currentScriptItemUpdates, viewAsPartPerson, scenePartPersonIds)
+    const sceneOrder = refreshSceneOrder(currentSceneOrder, currentScriptItemUpdates, viewAsPartPerson, currentPartPersons)
 
     const sceneOrderUpdates = [sceneOrder]
 

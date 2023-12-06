@@ -62,7 +62,7 @@ function PersonSelector(props) {
     const handleClick = (person) => {
 
         if (partId) {
-            dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, person }))
+            dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, personID: person.id }))
 
         } else if (viewAs) {
             dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { person }))

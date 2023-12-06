@@ -1,18 +1,16 @@
 ﻿
-import { OPEN_CURTAIN, CLOSE_CURTAIN, SCENE, SYNOPSIS, INITIAL_STAGING, CURTAIN_TYPES } from "../../../dataAccess/scriptItemTypes";
+import { OPEN_CURTAIN, CLOSE_CURTAIN, INITIAL_CURTAIN, CURTAIN, CURTAIN_TYPES } from "../../../dataAccess/scriptItemTypes";
+import {mergeSceneOrder} from './sceneOrder'
+import { log } from '../../../helper'
+
+export function refreshCurtain(sceneOrder, newScriptItems = []) {
+
+    let currentCurtainOpen = false;
+
+    const mergedSceneOrder = mergeSceneOrder(sceneOrder, newScriptItems)
 
 
-export function refreshCurtain(sceneOrder, previousCurtainOpen = null,newScriptItems = []) {
-
-    let sceneHead = sceneOrder[0]
-
-    const initialCurtain = previousCurtainOpen || sceneHead.curtainOpen || false;
-
-    let currentCurtainOpen = initialCurtain;
-
-    const mergedSceneOrder = [...sceneOrder, ...newScriptItems]
-
-    const newSceneOrder = mergedSceneOrder.map(item => {
+    const newSceneOrder = copy(mergedSceneOrder).map(item => {
 
         if (opensCurtain(item)) {
             currentCurtainOpen = true;
@@ -28,58 +26,50 @@ export function refreshCurtain(sceneOrder, previousCurtainOpen = null,newScriptI
     return newSceneOrder;
 }
 
-export function refreshHeaderCurtain(sceneOrder, previousCurtain) {
-
-    const newSceneOrder = sceneOrder.map(item => {
-
-        if ([SCENE, SYNOPSIS, INITIAL_STAGING].includes(item.type)) {
-            return { ...item, curtainOpen: previousCurtain }
-        } else {
-            return item;
-        }
-    })
-
-    return newSceneOrder
-}
 
 
-export const newScriptItemsForToggleCurtain = (scriptItem, overrideNewValue = null) => {
 
+export const newScriptItemsForToggleCurtain = (scriptItem, sceneOrder, previousCurtainOpen, overrideNewValue = null,) => {
 
-    if (scriptItem.curtainOpen === undefined) {
-        console.error('toggle Curtain called on scriptItem with no curtainOpen value. Assumed closed.')
+    let isCurrentlyOpen;
+    if (scriptItem.type === INITIAL_CURTAIN) {
+        isCurrentlyOpen = previousCurtainOpen[scriptItem.parentId]?.curtainOpen || false
     }
-    const currentlyOpen = scriptItem.curtainOpen || false
+    if (scriptItem.type === CURTAIN) {
+        isCurrentlyOpen = sceneOrder.find(item => item.id === scriptItem.id)?.curtainOpen || false
+    }
+        if (isCurrentlyOpen === overrideNewValue) return [] //the override value is the same as the current value so no change is required.
+
+
 
     const currentlyOpensCurtain = (overrideNewValue) ? !overrideNewValue : opensCurtain(scriptItem)
 
-    let newScriptItem = { ...scriptItem }
 
 
-
-    if (currentlyOpen === false && currentlyOpensCurtain) {
+    let newScriptItem = copy(scriptItem)
+    if (isCurrentlyOpen === false && currentlyOpensCurtain) {
 
         newScriptItem = changeToCloseCurtain(newScriptItem)
         newScriptItem.text = 'Curtain remains closed.'
     }
 
-    if (currentlyOpen && currentlyOpensCurtain === false) {
+    if (isCurrentlyOpen && currentlyOpensCurtain === false) {
 
         newScriptItem = changeToOpenCurtain(newScriptItem)
         newScriptItem.text = 'Curtain remains open.'
     }
 
-    if (currentlyOpen === false && currentlyOpensCurtain === false) {
+    if (isCurrentlyOpen === false && currentlyOpensCurtain === false) {
         newScriptItem = changeToOpenCurtain(newScriptItem)
         newScriptItem.text = 'Curtain opens.'
     }
 
-    if (currentlyOpen && currentlyOpensCurtain) {
+    if (isCurrentlyOpen && currentlyOpensCurtain) {
         newScriptItem = changeToCloseCurtain(newScriptItem)
         newScriptItem.text = 'Curtain closes.'
     }
-
-    return newScriptItem;
+ 
+    return [newScriptItem];
 }
 
 
@@ -123,7 +113,14 @@ const closesCurtain = (scriptItem) => {
 
 export const clearCurtainTags = (scriptItem) => {
 
-    let newScriptItem = { ...scriptItem }
+    let newScriptItem = copy(scriptItem)
 
     newScriptItem.tags = newScriptItem.tags.filter(tag => tag !== OPEN_CURTAIN && tag !== CLOSE_CURTAIN)
+
+    return newScriptItem;
+}
+
+
+const copy = (object) => {
+    return JSON.parse(JSON.stringify(object))
 }

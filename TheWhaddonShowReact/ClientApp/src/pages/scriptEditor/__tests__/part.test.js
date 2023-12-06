@@ -83,6 +83,7 @@ it.each([
     [3, part1, scene1, mockSceneOrders, mockCurrentScriptItems, show], //part deleted is allocated in scene so shouldn't be deleted.
     [4, part13, scene3, mockSceneOrders, mockCurrentScriptItems, show], //part not allocated anywhere so should be deleted.
     [5, part5, scene3, mockSceneOrders, mockCurrentScriptItems, show], //part not allocated in scene but allocated elsewhere.
+
 ])
     ('newUpdatesForDeletePart', (scenario, partToDelete, sceneToDeleteFrom, sceneOrders, currentScriptItems, show) => {
 
@@ -136,32 +137,6 @@ it.each([
         expect(actualScriptItemUpdates.length).toEqual(0)
     }
 })
-
-xit.each([
-    
-]) ('getDeleteMoveFocus', (partToDelete, scene, direction, previousFocusId, nextFocusId) => {
-
-        //    let newFocusId = null;
-        //    let newFocusPosition = END;
-
-        //    if (direction === UP && previousPart(partToDelete, scene)) {
-        //        newFocusId = previousPart(partToDelete).id
-        //        newFocusPosition = END
-        //    } else if (direction === UP && !previousPart(partToDelete)) {
-        //        newFocusId = previousFocusId;
-        //        newFocusPosition = END
-        //    } else if (direction === DOWN && nextPart(partToDelete)) {
-        //        newFocusId = nextPart(partToDelete).id
-        //        newFocusPosition = START
-        //    } else if (direction === DOWN && !nextPart(partToDelete)) {
-        //        newFocusId = nextFocusId;
-        //        newFocusPosition = START
-        //    }
-
-        //    return { id: newFocusId, position: newFocusPosition }
-        //}
-
-    })
 
 xit.each([
     [1, [partFromServer], mockCurrentPartPersons, mockStoredPersons],

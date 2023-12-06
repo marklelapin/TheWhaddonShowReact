@@ -11,10 +11,20 @@ import {
 } from '../scripts/sceneOrder'
 
 import {
+
+    part4,
+    part5,
+    part6,
+    part10,
+
+    personA,
+    personB,
+
+
     show,
     act1,
-    scene1, synopsis1, initialStage1, initialCurtain1, dialogue11, dialogue12, dialogue13, dialogue14,
-    scene2,
+    scene1, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13, dialogue14,
+    scene2, removePart6FromScene2, removePart6FromScene2EarlierDate, synopsis2, initialStaging2, initialCurtain2, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25,
     scene3,
     scene4,
     scene5,
@@ -24,112 +34,103 @@ import {
 
     mockSceneOrders,
     mockZIndexSceneOrders,
+    mockCurrentPartPersons
+
 
 } from './mockData'
 
 import { log } from '../../../helper';
 
-xit.each([
+it.each([
+    //[1,[scene2, synopsis2, dialogue24, dialogue25, dialogue21, dialogue22, initialCurtain2, initialStaging2, dialogue23], [], part6, mockCurrentPartPersons],
+    [2,mockSceneOrders[scene2.id], removePart6FromScene2, part6, mockCurrentPartPersons]
+])('refreshSceneOrder', (scenario, currentSceneOrder = [], newScriptItems = [], viewAsPartPerson, currentPartPersons) => {
 
+    const debug = false;
 
+    log(debug, 'refreshSceneOrder - input', {currentSceneOrder, newScriptItems, viewAsPartPerson })
 
-])('refreshSceneOrder', (currentSceneOrder = [], newScriptItems = [], viewAsPartPerson, scenePartPersonIds) => {
+    const newSceneOrder = refreshSceneOrder(currentSceneOrder, newScriptItems, viewAsPartPerson, currentPartPersons)
 
-    //const mergedSceneOrder = mergeSceneOrder(currentSceneOrder, newScriptItems)
+    log(debug, 'newSceneOrder - actual', newSceneOrder)
+    //check curtain
+    let expectedCurtainOpen = [false,false,false,true,true,true,true,true,true];
+    expect(newSceneOrder.map(item => item.curtainOpen)).toEqual(expectedCurtainOpen)
 
-    //const { head, mergedSceneOrderWithUpdatedHead } = getHead(currentSceneOrder, mergedSceneOrder)
+    //check alignRight
+    let expectedAlignRight = (scenario === 1)
+        ? [true, false, false, false, false, false, true, false, true]
+        : [true, false, false, false, false, true, false, true, true];
+    expect(newSceneOrder.map(item=> item.alignRight)).toEqual(expectedAlignRight)
 
-    //if (Object.keys(head).length === 0) return []
-
-    //const sortedSceneOrder = sortSceneOrder(head, mergedSceneOrderWithUpdatedHead)
-
-    //const zIndexedSceneOrder = updateZIndex(sortedSceneOrder)
-
-    //let finalSceneOrder;
-
-    ////different processes for different head types
-    //if (head.type === SCENE) {
-    //	const curtainSceneOrder = (head.type === SCENE) ? refreshCurtain(zIndexedSceneOrder) : zIndexedSceneOrder
-
-    //	const alignedSceneOrder = (head.type === SCENE) ? alignRight(curtainSceneOrder, viewAsPartPerson, scenePartPersonIds) : curtainSceneOrder
-
-    //	finalSceneOrder = refreshHeaderFocus(alignedSceneOrder)
-    //}
-
-    //if (head.type === SHOW) {
-    //	finalSceneOrder = addSceneNumbers(zIndexedSceneOrder)
-    //}
-
-    //if (finalSceneOrder) {
-    //	return finalSceneOrder;
-    //} else {
-    //	return []
-    //}
-
-
-})
-
-xit.each([
-
-
-])('mergeSceneOrder', (currentSceneOrder = [], newScriptItems = []) => {
-
-    //const actualMergedSceneOrder = mergeSceneOrder(currentSceneOrder, newScriptItems)
-
-    //expect(mergedSceneOrder).toEqual([...currentSceneOrder, ...newScriptItems])
-
-})
-
-xit.each([
-
-
-])('getHead', (currentSceneOrder = [], mergedSceneOrder = []) => {
-
-    const { head, mergedSceneOrderWithUpdatedHead } = getHead(currentSceneOrder, mergedSceneOrder)
-
-    //export const getHead = (currentSceneOrder, mergedSceneOrder) => {
-
-    //    let draftHead = null;
-
-    //    if (currentSceneOrder.length > 0) {
-    //        draftHead = currentSceneOrder[0]
-    //    }
-    //    else {
-    //        const show = mergedSceneOrder.find(item => item.type === SHOW)
-    //        const scene = mergedSceneOrder.find(item => item.type === SCENE)
-
-    //        if (show) { draftHead = show } else { draftHead = scene }
-
-    //    }
-
-    //    if (draftHead === null || draftHead === undefined) {
-    //        log(debug, ('Script:SceneOrder getHead - no head found'))
-    //        const emptyHead = {};
-    //        return {
-    //            head: emptyHead, mergedSceneOrderWithUpdatedHead: []
-    //        }
-    //    }
-    ////this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Show linked list but also the head of the Scene linked list
-    //const headNextId = mergedSceneOrder.filter((item) => item.previousId === draftHead.id && item.type !== COMMENT)[0].id;
-    //const head = { ...draftHead, nextId: headNextId }
-    //const mergedSceneOrderWithUpdatedHead = mergedSceneOrder.map(item => {
-
-    //    if (item.id === head.id) {
-    //        return { ...head }
-    //    } else {
-    //        return item
-    //    }
-
-    //})
-
-    //return { head, mergedSceneOrderWithUpdatedHead };
-    expect(head).toEqual(mergedSceneOrder[0])
-    expect(mergedSceneOrderWithUpdatedHead).toEqual(mergedSceneOrder)
+    //check zindex
+    newSceneOrder.forEach((item, index) => {
+        if (index > 0) {
+            expect(item.zIndex).toBeLessThan(newSceneOrder[index - 1].zIndex)
+        }
+    })
 
 })
 
 it.each([
-    [1, scene1, [synopsis1, initialCurtain1, dialogue12, dialogue11, dialogue14, dialogue13, initialStage1, scene1]],
+    [1, mockSceneOrders[scene2.id], removePart6FromScene2],
+    [2, mockSceneOrders[scene2.id], removePart6FromScene2EarlierDate],
+    [3, mockSceneOrders[scene2.id], []]
+])('mergeSceneOrder', (scenario, currentSceneOrder = [], newScriptItems = []) => {
+    const debug = false;
+
+    log(debug, 'mergeSceneOrder - input', { currentSceneOrder, newScriptItems })
+    const newSceneOrder = mergeSceneOrder(currentSceneOrder, newScriptItems)
+    log(debug, 'newSceneOrder - actual', newSceneOrder)
+
+    switch (scenario) {
+        case 1:
+            expect(copy(newSceneOrder[0])).toEqual({ ...copy(currentSceneOrder[0]), partIds: ['p4', 'p5','p6'] })
+            expect(newSceneOrder[1]).toEqual(currentSceneOrder[1])
+            expect(newSceneOrder[2]).toEqual(currentSceneOrder[2])
+            expect(newSceneOrder[3]).toEqual(currentSceneOrder[3])
+            expect(newSceneOrder[4]).toEqual(currentSceneOrder[4])
+            expect(newSceneOrder[5]).toEqual(currentSceneOrder[5])
+            expect(copy(newSceneOrder[6])).toEqual({ ...copy(currentSceneOrder[6]), partIds: [], created: "2023-12-01T00:01:00.000Z" })
+            expect(newSceneOrder[7]).toEqual(currentSceneOrder[7])
+            expect(copy(newSceneOrder[8])).toEqual({ ...copy(currentSceneOrder[8]), partIds: ['p4', 'p5'], created: "2023-12-01T00:01:00.000Z" })
+            break;
+
+        case 2: expect(newSceneOrder).toEqual(currentSceneOrder); break;
+        case 3: expect(newSceneOrder).toEqual(currentSceneOrder); break;
+        default: break;
+    }
+})
+
+it.each([
+    // [1, mockSceneOrders[scene2.id]],
+    [2, mockSceneOrders[show.id]]
+
+])('getHead', (scenario, mergedSceneOrder = []) => {
+    const debug = false;
+
+    // log(debug, 'getHead', { currentSceneOrder, mergedSceneOrder })
+    const { head, mergedSceneOrderWithUpdatedHead } = getHead(mergedSceneOrder)
+    log(debug, 'getHead actual', { head, mergedSceneOrderWithUpdatedHead })
+    if (scenario === 1) {
+        expect(head.id).toEqual(scene2.id)
+        expect(head.nextId).toEqual(synopsis2.id)
+    }
+    if (scenario === 2) {
+        expect(head.id).toEqual(show.id)
+        expect(head.nextId).toEqual(act1.id)
+
+        const scene2 = mergedSceneOrderWithUpdatedHead.find(item => item.id === 's2')
+
+        expect(scene2.nextId).toEqual(scene3.id)
+    }
+
+
+
+})
+
+it.each([
+    [1, scene1, [synopsis1, initialCurtain1, dialogue12, dialogue11, dialogue14, dialogue13, initialStaging1, scene1]],
     [2, show, [scene1, scene3, act1, act2, scene7, scene2, show, scene6, scene5, scene4]]
 ])('sortSceneOrder', (scenario, draftHead, unsortedSceneOrder) => {
 
@@ -170,14 +171,14 @@ it.each([
 
 
 it.each([
-    //[1,mockZIndexSceneOrders['noExistingZIndexes']],
+    [1, mockZIndexSceneOrders['noExistingZIndexes']],
     [2, mockZIndexSceneOrders['someExistingZIndexes']],
-    //[3, mockZIndexSceneOrders['closeExistingZindexes']],
-    //[4, mockZIndexSceneOrders['messedUpZIndexes']],
+    [3, mockZIndexSceneOrders['closeExistingZindexes']],
+    [4, mockZIndexSceneOrders['messedUpZIndexes']],
 
 ])('updateZIndex ', (scenario, sortedSceneOrder) => {
 
-    const debug = true;
+    const debug = false;
 
     const zIndexedSceneOrder = updateZIndex(sortedSceneOrder)
     log(debug, 'updateZIndex', { zIndexedSceneOrder })
@@ -201,61 +202,55 @@ it.each([
         expect(zIndexedSceneOrder[6].zIndex).toEqual(25000)
     }
 
-    //for (let index = 0; index < zIndexedSceneOrder.length; index++) {
-    //	expect(zIndexedSceneOrder[index].zIndex).toEqual(sortedSceneOrder[index].zIndex || zIndexedSceneOrder[index].zindex)
-    //}
 
 })
 
 
 
 
-xit.each([
-
+it.each([
+    [mockSceneOrders[scene1.id], ['p4', 'p5', 'p6', 'p10']]
 ])('refreshHeaderFocus', (sceneOrder, scenePartIds) => {
 
-    //export const refreshHeaderFocus = (sceneOrder, scenePartIds = null) => {
-    //const scene = sceneOrder.find(item => item.type === SCENE)
-    //const synopsis = sceneOrder.find(item => item.type === SYNOPSIS)
-    //const initialStaging = sceneOrder.find(item => item.type === INITIAL_STAGING)
-    //const partIds = scenePartIds || scene.partIds
+    const newSceneOrder = refreshHeaderFocus(sceneOrder, scenePartIds)
 
-    //scene.previousFocusId = scene.previousId
-    //scene.nextFocusId = synopsis.id
-    //synopsis.previousFocusId = scene.id
-    //synopsis.nextFocusId = partIds[0]
-    //initialStaging.previousFocusId = partIds[partIds.length - 1]
-    //initialStaging.nextFocusId = initialStaging.nextId
-
-    //const newSceneOrder = sceneOrder.map(item => {
-    //	if (item.type === SCENE) { return scene }
-    //	if (item.type === SYNOPSIS) { return synopsis }
-    //	if (item.type === INITIAL_STAGING) { return initialStaging }
-    //	return item
-    //})
-
-    //return newSceneOrder;
-
+    expect(newSceneOrder[0]).toEqual({ ...copy(sceneOrder[0]), previousFocusId: act1.id, nextFocusId: synopsis1.id })
+    expect(newSceneOrder[1]).toEqual({ ...copy(sceneOrder[1]), previousFocusId: scene1.id, nextFocusId: part4.id })
+    expect(newSceneOrder[2]).toEqual({ ...copy(sceneOrder[2]), previousFocusId: part10.id, nextFocusId: initialCurtain1.id })
+    expect(newSceneOrder[3]).toEqual(copy(sceneOrder[3]))
+    expect(newSceneOrder[4]).toEqual(copy(sceneOrder[4]))
+    expect(newSceneOrder[5]).toEqual(copy(sceneOrder[5]))
+    expect(newSceneOrder[6]).toEqual(copy(sceneOrder[6]))
+    expect(newSceneOrder[7]).toEqual(copy(sceneOrder[7]))
 })
 
 
-xit.each([
+it.each([
+    [mockSceneOrders[scene2.id], part4, undefined, [true, false, false, false, true, false, false, true, true]],
+    [mockSceneOrders[scene2.id], personA, undefined, [true, false, false, false, true, false, false, true, true]],
 
-])('alignRight', (sceneOrder, viewAsPartPerson, scenePartPersonIds, scriptItemUpdates = []) => {
+    [mockSceneOrders[scene2.id], part5, undefined, [true, false, false, false, false, true, false, true, true]],
+    [mockSceneOrders[scene2.id], personB, undefined, [true, false, false, false, false, true, false, true, true]],
 
-    //const mergedSceneOrder = mergeSceneOrder(sceneOrder, scriptItemUpdates)
+    [mockSceneOrders[scene2.id], part6, undefined, [true, false, false, false, false, false, true, false, true]],
 
-    ////work out alignment
-    //const partIdsOrder = [...new Set(mergedSceneOrder.map(item => item.partIds[0]).filter(id => id !== undefined))]
+    [mockSceneOrders[scene2.id], null, undefined, [true, false, false, false, false, true, false, true, true]], //no matches with viewAsPartPerson so should default to second part of dialogue = part 5.
+    [mockSceneOrders[scene2.id], part10, undefined, [true, false, false, false, false, true, false, true, true]], //no matches with viewAsPartPerson so should default to first part = part 5.
+    [mockSceneOrders[scene2.id], part6, removePart6FromScene2, [true, false, false, false, false, true, false, true, true]] //no matches with viewAsPartPerson so should default to first part = part 5.
 
-    //const defaultRighthandPartId = partIdsOrder[1] //defaults the second part to come up as the default right hand part.
+])('alignRight', (sceneOrder, partOrPerson, scriptItemUpdates = [], expectedAlignRight) => {
 
-    //const righthandPartId = scenePartPersonIds?.find(ids => ids.partId === viewAsPartPerson?.id || ids.personId === viewAsPartPerson?.id)?.id || defaultRighthandPartId
+    const debug = false;
 
-    //const alignedSceneOrder = mergedSceneOrder.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) }))
 
-    //return alignedSceneOrder
+    log(debug, 'alignRight before test', { partOrPerson, mockCurrentPartPersons })
+    const actualResult = alignRight(sceneOrder, partOrPerson, mockCurrentPartPersons, scriptItemUpdates)
 
+    log(debug, 'alignRight actualResult: ', actualResult)
+
+    const actualAlignRight = actualResult.map(item => item.alignRight)
+
+    expect(actualAlignRight).toEqual(expectedAlignRight)
 
 })
 

@@ -61,7 +61,7 @@ function ScriptItemControls(props) {
     }
     const handleTypeDropdownClick = (e, type) => {
         e.preventDefault()
-        dispatch(trigger(UPDATE_TYPE, { scriptItem, type }))
+        dispatch(trigger(UPDATE_TYPE, { scriptItem, value : type }))
     }
 
     const goToComment = () => {
@@ -115,7 +115,7 @@ function ScriptItemControls(props) {
             <div className={s['bottom-right-controls']}>
                 {scriptItem && <Icon icon="play" onClick={() => onClick(CONFIRM)} />}
 
-                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => dispatch(trigger(ADD_SCRIPT_ITEM, {scriptItem}))} />}
+                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick(ADD_SCRIPT_ITEM,null) } />}
 
 
                 {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem }))} />}
@@ -127,7 +127,7 @@ function ScriptItemControls(props) {
                 {part &&
                     <>
                         <Icon icon="play" onClick={() => onClick(CONFIRM)} />
-                    <Icon icon="add" onClick={() => dispatch(trigger(ADD_PART, {scriptItemId: scriptItem.id, partId: part.id}))} />
+                    <Icon icon="add" onClick={() => onClick(ADD_PART)} />
                         <Icon icon="search" onClick={(e) => onClick(TOGGLE_PART_SELECTOR,e)} />
                     <Icon icon="trash" onClick={() => onClick(DELETE_PART, {scriptItemId: scriptItem.id , partId: part.id})} />
                     </>

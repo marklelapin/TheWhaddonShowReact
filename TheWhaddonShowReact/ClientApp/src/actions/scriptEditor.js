@@ -36,8 +36,6 @@ export const UPDATE_PART_IDS = 'PART_IDS';
 export const UPDATE_TAGS = 'TAGS';
 export const UPDATE_ATTACHMENTS = 'ATTACHMENTS';
 export const UPDATE_TYPE = 'TYPE';
-export const OPEN_CURTAIN = 'OPEN_CURTAIN';
-export const CLOSE_CURTAIN = 'CLOSE_CURTAIN';
 export const TOGGLE_CURTAIN = 'TOGGLE_CURTAIN';
 export const ADD_COMMENT = 'ADD_COMMENT';
 export const ADD_TAG = 'ADD_TAG';
@@ -144,11 +142,11 @@ export function clearScriptEditorState() {
     }
 }
 
-export function updatePreviousCurtain(nextSceneId, previousCurtainOpen) {
+export function updatePreviousCurtain(sceneId, previousCurtainOpen) {
     return {
         type: UPDATE_PREVIOUS_CURTAIN,
-        nextSceneId: nextSceneId,
-        previousCurtainOpen: previousCurtainOpen,
+        sceneId,
+        previousCurtainOpen
     }
 }
 

@@ -10,11 +10,11 @@ const debug = true;
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
 //--------------------------------------------------------------------------------------------------
 
-export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], viewAsPartPerson, scenePartPersonIds) {
+export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], viewAsPartPerson, currentPartPersons) {
 
     const mergedSceneOrder = mergeSceneOrder(currentSceneOrder, newScriptItems)
 
-    const { head, mergedSceneOrderWithUpdatedHead } = getHead(currentSceneOrder, mergedSceneOrder)
+    const { head, mergedSceneOrderWithUpdatedHead } = getHead(mergedSceneOrder)
 
     if (Object.keys(head).length === 0) return []
 
@@ -28,7 +28,7 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
     if (head.type === SCENE) {
         const curtainSceneOrder = (head.type === SCENE) ? refreshCurtain(zIndexedSceneOrder) : zIndexedSceneOrder
 
-        const alignedSceneOrder = (head.type === SCENE) ? alignRight(curtainSceneOrder, viewAsPartPerson, scenePartPersonIds) : curtainSceneOrder
+        const alignedSceneOrder = (head.type === SCENE) ? alignRight(curtainSceneOrder, viewAsPartPerson, currentPartPersons) : curtainSceneOrder
 
         finalSceneOrder = refreshHeaderFocus(alignedSceneOrder)
     }
@@ -54,20 +54,16 @@ export const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
 }
 
 
-export const getHead = (currentSceneOrder, mergedSceneOrder) => {
+export const getHead = (mergedSceneOrder) => {
 
     let draftHead = null;
 
-    if (currentSceneOrder.length > 0) {
-        draftHead = currentSceneOrder[0]
-    }
-    else {
-        const show = mergedSceneOrder.find(item => item.type === SHOW)
-        const scene = mergedSceneOrder.find(item => item.type === SCENE)
+    const show = mergedSceneOrder.find(item => item.type === SHOW)
 
-        if (show) { draftHead = show } else { draftHead = scene }
+    const scene = mergedSceneOrder.find(item => item.type === SCENE)
 
-    }
+    if (show) { draftHead = show } else { draftHead = scene }
+
 
     if (draftHead === null || draftHead === undefined) {
         log(debug, ('Script:SceneOrder getHead - no head found'))
@@ -78,11 +74,9 @@ export const getHead = (currentSceneOrder, mergedSceneOrder) => {
     }
 
 
-
-
     //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Show linked list but also the head of the Scene linked list
     const headNextId = mergedSceneOrder.filter((item) => item.previousId === draftHead.id && item.type !== COMMENT)[0].id;
-    const head = { ...draftHead, nextId: headNextId }
+    const head = { ...copy(draftHead), nextId: headNextId }
     const mergedSceneOrderWithUpdatedHead = mergedSceneOrder.map(item => {
 
         if (item.id === head.id) {
@@ -131,7 +125,7 @@ export const updateZIndex = (sortedSceneOrder) => {
 
     const startingZIndex = 1000000;
     const zIndexInterval = 1000;
-    log(debug, 'error check', { sortedSceneOrder })
+
     let zIndexedSceneOrder = [...copy(sortedSceneOrder)]
 
     const resetZIndex = () => {
@@ -145,9 +139,7 @@ export const updateZIndex = (sortedSceneOrder) => {
     }
 
     const head = zIndexedSceneOrder[0]
-    log(debug, 'error check', { head })
     if (head.zIndex !== startingZIndex) {
-        log(debug, 'error check - reset due to head zIndex not being startingZIndex')
         resetZIndex()
     }
 
@@ -158,7 +150,7 @@ export const updateZIndex = (sortedSceneOrder) => {
             const item = zIndexedSceneOrder[i]
 
             if (item.zIndex && item.zIndex > 0) {
-                log(debug, 'error check - already has zIndex: ', item.zIndex)
+
                 //do nothing as z-Index already set and if changed will cause a re-render.next
             } else {
 
@@ -168,20 +160,18 @@ export const updateZIndex = (sortedSceneOrder) => {
                 if (nextZIndex === null) {
 
                     zIndexedSceneOrder[i].zIndex = previousZIndex - zIndexInterval
-                    log(debug, 'error check - nextZIndex === null: ', previousZIndex - zIndexInterval)
                 } else {
 
                     if (previousZIndex - nextZIndex < 2) { throw new Error('not enough space between scriptItems to insert another') }
 
                     const newZIndex = Math.floor((previousZIndex + nextZIndex) / 2)
                     zIndexedSceneOrder[i].zIndex = newZIndex
-                    log(debug, 'error check - newZIndex', newZIndex)
+
                 }
 
             }
         }
-    } catch(error) {
-log(debug, 'error check - reset due to error',error)
+    } catch (error) {
         resetZIndex()
     }
 
@@ -191,10 +181,9 @@ log(debug, 'error check - reset due to error',error)
 
 export const refreshHeaderFocus = (sceneOrder, scenePartIds = null) => {
 
-
-    const scene = sceneOrder.find(item => item.type === SCENE)
-    const synopsis = sceneOrder.find(item => item.type === SYNOPSIS)
-    const initialStaging = sceneOrder.find(item => item.type === INITIAL_STAGING)
+    const scene = copy(sceneOrder.find(item => item.type === SCENE))
+    const synopsis = copy(sceneOrder.find(item => item.type === SYNOPSIS))
+    const initialStaging = copy(sceneOrder.find(item => item.type === INITIAL_STAGING))
     const partIds = scenePartIds || scene.partIds
 
     scene.previousFocusId = scene.previousId
@@ -208,7 +197,7 @@ export const refreshHeaderFocus = (sceneOrder, scenePartIds = null) => {
         if (item.type === SCENE) { return scene }
         if (item.type === SYNOPSIS) { return synopsis }
         if (item.type === INITIAL_STAGING) { return initialStaging }
-        return item
+        return copy(item)
     })
 
     return newSceneOrder;
@@ -236,21 +225,22 @@ const addSceneNumbers = (sceneOrder) => {
     return numberedSceneOrder
 }
 
-export const alignRight = (sceneOrder, viewAsPartPerson, scenePartPersonIds, scriptItemUpdates = []) => {
+export const alignRight = (sceneOrder, viewAsPartPerson, currentPartPersons, scriptItemUpdates = []) => {
 
     const mergedSceneOrder = mergeSceneOrder(sceneOrder, scriptItemUpdates)
 
-    //work out alignment
-    const partIdsOrder = [...new Set(mergedSceneOrder.map(item => item.partIds[0]).filter(id => id !== undefined))]
+    const partIdsOrderInBody = [...new Set(mergedSceneOrder.filter(item => item.type !== SCENE).map(item => item.partIds[0]).filter(id => id !== undefined))] || []
 
-    const defaultRighthandPartId = partIdsOrder[1] //defaults the second part to come up as the default right hand part.
+    //you have to do this next step in two stages as multiple parts can be played by the same person and you can pick the wrong one if you don't do this
+    const viewAsPartPersons = Object.values(currentPartPersons).filter(partPerson => partPerson.personId === viewAsPartPerson?.id || partPerson.id === viewAsPartPerson?.id) || []
 
-    const righthandPartId = scenePartPersonIds?.find(ids => ids.partId === viewAsPartPerson?.id || ids.personId === viewAsPartPerson?.id)?.id || defaultRighthandPartId
+    const viewAsPartId = (viewAsPartPersons.find(item => partIdsOrderInBody.includes(item.id)))?.id || null
 
+    const righthandPartId = viewAsPartId || partIdsOrderInBody[1]
+    //log(true, 'error check: alignRight', { partIdsOrderInBody, viewAsPartPerson, viewAsPartId,righthandPartId })
     const alignedSceneOrder = mergedSceneOrder.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) }))
 
     return alignedSceneOrder
-
 
 }
 
@@ -267,20 +257,21 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
     uniqueSceneIds.forEach(sceneId => {
 
         const nextSceneIdFromScriptItemUpdates = currentScriptItemUpdates.find(item => item.id === sceneId)?.nextId || null
-        const nextSceneId = nextSceneIdFromScriptItemUpdates || currentScriptItems[sceneId]?.nextId || null
+        const nextSceneId = nextSceneIdFromScriptItemUpdates || currentScriptItems[sceneId]?.nextId || 0 //0 is the default value for the peviousCurtainOpen state at the end of the show. (relevant for moving scenes)
 
         const newSceneScriptItems = currentScriptItemUpdates.filter(item => item.parentId === sceneId || item.id === sceneId)
-        const newSceneOrder = refreshSceneOrder(sceneOrders[sceneId], newSceneScriptItems)
+        const newSceneOrder = refreshSceneOrder(sceneOrders[sceneId], newSceneScriptItems, viewAsPartPerson, currentPartPersons)
 
         if (newSceneOrder.length > 0) { //this can occur if the scene is inActive
             sceneOrderUpdates.push(newSceneOrder)
 
-            if (nextSceneId) {
-                const previousCurtainOpen = newSceneOrder[newSceneOrder.length - 1]?.curtainOpen;
-                previousCurtainUpdates.push({ sceneId: nextSceneId, previousCurtainOpen })
-            }
+            const previousCurtainOpen = newSceneOrder[newSceneOrder.length - 1]?.curtainOpen;
+            previousCurtainUpdates.push({ sceneId: nextSceneId, previousCurtainOpen })
+           
         }
     })
+
+    
 
     return { sceneOrderUpdates, previousCurtainUpdates }
 }
@@ -288,18 +279,16 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
 
 
 
-export const alignRightIfAffectedByViewAsPartPerson = (scene, viewAsPartPerson, sceneOrders, currentPartPersons) => {
+export const isAffectedByViewAsPartPerson = (scene, viewAsPartPerson, sceneOrders, currentPartPersons) => {
 
     const scenePartPersonIds = scene.partIds.map(partId => currentPartPersons[partId]).map(partPerson => ({ sceneId: scene.id, partId: partPerson.id, personId: partPerson.personId }))
 
-    const matchesPart = scenePartPersonIds.some(partPerson => partPerson.partId === viewAsPartPerson.id)
+    const matchesPart = scenePartPersonIds.some(scenePartPerson => scenePartPerson.partId === viewAsPartPerson.id)
 
     if (!matchesPart) {
-        const matchesPerson = scenePartPersonIds.some(partPerson => partPerson.personId === viewAsPartPerson.id)
-        if (!matchesPerson) return [];
+        const matchesPerson = scenePartPersonIds.some(scenePartPerson => scenePartPerson.personId === viewAsPartPerson.id)
+        if (!matchesPerson) return false;
     }
-
-    const newSceneOrder = alignRight(sceneOrders[scene.id], viewAsPartPerson, scenePartPersonIds)
 
     return newSceneOrder
 }

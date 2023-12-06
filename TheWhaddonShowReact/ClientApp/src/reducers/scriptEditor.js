@@ -136,7 +136,7 @@ export default function scriptEditorReducer(state = initialState, action) {
         case UPDATE_PREVIOUS_CURTAIN:
             return {
                 ...state,
-                previousCurtainOpen: { ...state.previousCurtain, [action.nextSceneId]: action.previousCurtainOpen }
+                previousCurtainOpen: { ...state.previousCurtainOpen, [action.sceneId]: action.previousCurtainOpen }
             }
         case SET_SHOW:
             return {

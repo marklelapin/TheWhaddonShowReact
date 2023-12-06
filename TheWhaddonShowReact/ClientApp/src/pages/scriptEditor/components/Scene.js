@@ -126,7 +126,7 @@ function Scene(props) {
                 className={`${s['scene-footer']} ${finalScriptItem.curtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
             >
 
-                <div className={`${s['add-new-scene']} clickable`} onClick={() => dispatch(trigger(ADD_SCENE, { scene }))}>
+                <div className={`${s['add-new-scene']} clickable`} onClick={() => dispatch(trigger(ADD_SCENE, { scriptItem : scene }))}>
                     (add new scene)
                 </div>
                 <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />

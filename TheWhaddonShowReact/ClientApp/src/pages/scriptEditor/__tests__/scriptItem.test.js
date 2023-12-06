@@ -11,14 +11,14 @@
     act1,
     act2,
     synopsis1,
-    initialStage1,
+    initialStaging1,
     initialCurtain1,
     dialogue11,
     dialogue12,
     dialogue13,
     dialogue14,
     synopsis2,
-    initialStage2,
+    initialStaging2,
     initialCurtain2,
     dialogue21,
     dialogue22,
@@ -28,7 +28,7 @@
     comment23,
     comment25,
     synopsis7,
-    initialStage7,
+    initialStaging7,
     initialCurtain7,
     dialogue71,
     dialogue72,
@@ -40,7 +40,7 @@ import {
     newScriptItemsForCreate,
     newScriptItemsForDelete,
     newScriptItemsForSceneDelete,
-    newScriptItemsForCreateHeader,
+    newUpdatesForCreateHeader,
     newScriptItemsForMoveScene,
     newScriptItemsForAddComment,
     newScriptItemsForDeleteComment,
@@ -220,33 +220,39 @@ it.each([
     [scene3, mockCurrentScriptItems],
     [scene7, mockCurrentScriptItems]
 ])
-    ('newScriptItemsForCreateHeader', (previousScene, currentScriptItems) => {
+    ('newUpdatesForCreateHeader', (previousScene, currentScriptItems) => {
 
         const nextScene = (previousScene = scene3) ? scene4 : null
 
         const debug = false;
 
-        const actualResult = newScriptItemsForCreateHeader(previousScene, currentScriptItems)
+        const actualResult = newUpdatesForCreateHeader(previousScene, currentScriptItems)
+
+        const actualScriptItemUpdates = actualResult.scriptItemUpdates
+
+        const actualPartUpdates = actualResult.partUpdates
+
+        const newPartId = actualPartUpdates[0].id
 
         log(debug, 'newScriptItemsForCreateHeader', { actualResult })
 
-        const actualPreviousScene = actualResult[0]
-        const actualScene = actualResult[1]
-        const actualSynopis = actualResult[2]
-        const actualInitialStaging = actualResult[3]
-        const actualInitialCurtain = actualResult[4]
-        const actualDialogue = actualResult[5]
-        const actualNextScene = actualResult[6]
+        const actualPreviousScene = actualScriptItemUpdates[0]
+        const actualScene = actualScriptItemUpdates[1]
+        const actualSynopis = actualScriptItemUpdates[2]
+        const actualInitialStaging = actualScriptItemUpdates[3]
+        const actualInitialCurtain = actualScriptItemUpdates[4]
+        const actualDialogue = actualScriptItemUpdates[5]
+        const actualNextScene = actualScriptItemUpdates[6]
 
         //test length
         if (previousScene === scene3) {
-            expect(actualResult.length).toEqual(7)
+            expect(actualScriptItemUpdates.length).toEqual(7)
         } else {
-            expect(actualResult.length).toEqual(6)
+            expect(actualScriptItemUpdates.length).toEqual(6)
         }
-
+        //test individual ScriptItemUpdates
         expect(actualPreviousScene).toEqual({ ...copy(previousScene), nextId: actualScene.id })
-        expect(actualScene).toEqual({ ...copy(actualScene), previousId: previousScene.id, nextId: previousScene.nextId, type: SCENE })
+        expect(actualScene).toEqual({ ...copy(actualScene), previousId: previousScene.id, nextId: previousScene.nextId, type: SCENE, partIds: [newPartId] })
         expect(actualSynopis).toEqual({ ...copy(actualSynopis), previousId: actualScene.id, nextId: actualInitialStaging.id, type: SYNOPSIS })
         expect(actualInitialStaging).toEqual({ ...copy(actualInitialStaging), previousId: actualSynopis.id, nextId: actualInitialCurtain.id, type: INITIAL_STAGING })
         expect(actualInitialCurtain).toEqual({ ...copy(actualInitialCurtain), previousId: actualInitialStaging.id, nextId: actualDialogue.id, type: INITIAL_CURTAIN })
@@ -254,6 +260,9 @@ it.each([
         if (nextScene) {
             expect(actualNextScene).toEqual({ ...copy(nextScene), previousId: actualScene.id })
         }
+
+        //test partUpdate
+        expect(actualPartUpdates.length).toEqual(1)
     })
 
 

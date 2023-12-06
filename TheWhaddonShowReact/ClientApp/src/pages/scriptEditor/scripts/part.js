@@ -130,15 +130,15 @@ export const getDeleteMoveFocus = (partToDelete, scene, direction, previousFocus
     let newFocusPosition = END;
 
     if (direction === UP && previousPartId(partToDelete, scene)) {
-        newFocusId = previousPartId(partToDelete)
+        newFocusId = previousPartId(partToDelete,scene)
         newFocusPosition = END
-    } else if (direction === UP && !previousPartId(partToDelete)) {
+    } else if (direction === UP && !previousPartId(partToDelete, scene)) {
         newFocusId = previousFocusId;
         newFocusPosition = END
-    } else if (direction === DOWN && nextPartId(partToDelete)) {
-        newFocusId = nextPartId(partToDelete)
+    } else if (direction === DOWN && nextPartId(partToDelete,scene)) {
+        newFocusId = nextPartId(partToDelete,scene)
         newFocusPosition = START
-    } else if (direction === DOWN && !nextPartId(partToDelete)) {
+    } else if (direction === DOWN && !nextPartId(partToDelete,scene)) {
         newFocusId = nextFocusId;
         newFocusPosition = START
     }

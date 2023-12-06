@@ -13,7 +13,8 @@ import {
     updateSceneOrders,
     updatePreviousCurtain,
     updateCurrentScriptItems,
-    , UNDO, REDO, CONFIRM_UNDO
+    clearScriptEditorState,
+    UNDO, REDO, CONFIRM_UNDO, CLEAR_SCRIPT
 
 } from '../../../actions/scriptEditor';
 
@@ -22,7 +23,7 @@ import { log } from '../../../helper';
 import { getTriggerUpdates } from '../scripts/trigger';
 import { getUndoUpdates } from '../scripts/undo';
 import { getScriptItemUpdatesLaterThanCurrent } from '../scripts/scriptItem';
-import { getSceneOrderUpdates, alignRightIfAffectedByViewAsPartPerson } from '../scripts/sceneOrder';
+import { getSceneOrderUpdates, isAffectedByViewAsPartPerson } from '../scripts/sceneOrder';
 import { newPartPersonsFromPartUpdates, newPartPersonsFromPersonUpdates } from '../scripts/part';
 
 import { addUpdates } from '../../../actions/localServer';
@@ -53,10 +54,11 @@ export function ScriptEditorProcessing() {
 
 
     //scriptEditor (handles data for display)
-    const show = useSelector(state => state.scriptEditor.show) //done
-    const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson) //done
-    const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus) //done
+    const show = useSelector(state => state.scriptEditor.show)
+    const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
+    const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus)
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
+    const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen)
 
     //triggering actions from script Editor to be carried out by this component and sent on to localServer
     const scriptEditorTrigger = useSelector(state => state.scriptEditor.trigger) //done          
@@ -98,10 +100,14 @@ export function ScriptEditorProcessing() {
         const scenes = sceneOrders[show.id]
         if (scenes) {
             scenes.forEach(scene => {
-                const newSceneOrder = alignRightIfAffectedByViewAsPartPerson(scene, viewAsPartPerson, sceneOrders, currentPartPersons)
-                if (newSceneOrder.length > 0) {
-                    dispatch(updateSceneOrders([newSceneOrder]))
+                const isAffected = isAffectedByViewAsPartPerson(scene, viewAsPartPerson, currentPartPersons)
+                if (isAffected) {
+                    const newSceneOrder = alignRight(sceneOrders[scene.id], viewAsPartPerson, currentPartPersons)
+                    if (newSceneOrder.length > 0) {
+                        dispatch(updateSceneOrders([newSceneOrder]))
+                    }
                 }
+
             })
         }
     }, [viewAsPartPerson]) //eslint-disable-line react-hooks/exhaustive-deps
@@ -119,7 +125,7 @@ export function ScriptEditorProcessing() {
         if (!scriptEditorTrigger || Object.keys(scriptEditorTrigger).length === 0) return
 
         const { triggerType } = scriptEditorTrigger;
-        if (triggerTYpe === CLEAR_SCRIPT) {
+        if (triggerType === CLEAR_SCRIPT) {
             dispatch(clearScriptEditorState);
             return;
         }
@@ -137,14 +143,13 @@ export function ScriptEditorProcessing() {
                 sceneOrderUpdates = [],
                 doResetUndo = false
             } = getUndoUpdates({ triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons, storedParts, viewAsPartPerson })
-
             if (currentScriptItemUpdates) {
                 dispatch(updateCurrentScriptItems(currentScriptItemUpdates));
             }
             if (sceneOrderUpdates) {
                 dispatch(updateSceneOrders(sceneOrderUpdates));
             }
-            if (redListUpdates) {
+            if (redoListUpdates) {
                 dispatch(addItemsToRedoList(sceneId, redoListUpdates));
             }
             if (redoCreated) {
@@ -160,7 +165,6 @@ export function ScriptEditorProcessing() {
             return;
         }
 
-
         //Remaining Processing = scriptItem and part updates
         //---------------------------------------------------------------------------------
         const { partUpdates = [],
@@ -168,28 +172,25 @@ export function ScriptEditorProcessing() {
             scriptItemUpdates = [],
             sceneOrderUpdates = [],
             previousCurtainUpdates = [],
-            moveFocus = { id: scriptItem?.nextId, position: END } //default move focus to next item in list unles change in getTriggerUpdates.
-        } = getTriggerUpdates({ trigger: scriptEditorTrigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, show, viewAsPartPerson })
-
+            moveFocus = null
+        } = getTriggerUpdates({ trigger: scriptEditorTrigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, previousCurtainOpen, show, viewAsPartPerson })
 
         //Dispatch updates   
         if (scriptItemUpdates.length > 0) {
             dispatch(addUpdates(scriptItemUpdates, SCRIPT_ITEM)) //localServer
         }
-
         if (partUpdates.Length > 0) {
             dispatch(addUpdates(partUpdates, PART)) //localServer
             dispatch(updateCurrentPartPersons(partPersonUpdates))
         }
-
         if (sceneOrderUpdates.length > 0) {
             dispatch(updateSceneOrders(sceneOrderUpdates))
         }
-
         if (previousCurtainUpdates.length > 0) {
-            dispatch(updatePreviousCurtain(fgsfgdveag fg gagsgssa previousCurtainUpdates))
+            previousCurtainUpdates.forEach(previousCurtainUpdate => {
+                dispatch(updatePreviousCurtain(previousCurtainUpdate))
+            })
         }
-
 
         //Moves Focus
         if (moveFocus) {
@@ -204,25 +205,23 @@ export function ScriptEditorProcessing() {
     useEffect(() => {
         log(debug, 'Component:ScriptEditorProcessing localServerTrigger', { type: localServerTrigger.type, updates: localServerTrigger.updates?.length })
 
-
         if (localServerTrigger.updates && localServerTrigger.type === SCRIPT_ITEM) {
 
             const scriptItemUpdates = localServerTrigger.updates
-
             const currentScriptItemUpdates = getScriptItemUpdatesLaterThanCurrent(scriptItemUpdates, currentScriptItems)
-
             const { sceneOrderUpdates, previousCurtainUpdates } = getSceneOrderUpdates(currentScriptItemUpdates, currentScriptItems, sceneOrders)
 
-            if (latestCurrentScriptItemUpdates.length > 0) {
-                dispatch(updateCurrentScriptItems(latestCurrentScriptItemUpdates))
+            if (currentScriptItemUpdates.length > 0) {
+                dispatch(updateCurrentScriptItems(currentScriptItemUpdates))
             }
             if (sceneOrderUpdates.length > 0) {
                 dispatch(updateSceneOrders(sceneOrderUpdates))
             }
             if (previousCurtainUpdates.length > 0) {
-                dispatch(updatePreviousCurtain(previousCurtainUpdates))
+                previousCurtainUpdates.forEach(previousCurtainUpdate => {
+                    dispatch(updatePreviousCurtain(previousCurtainUpdate))
+                })
             }
-
         }
 
         if (localServerTrigger.updates && localServerTrigger.type === PART) {
