@@ -2,10 +2,10 @@
 import { PERSON } from "../../../dataAccess/localServerModels";
 import { OPEN_CURTAIN, CLOSE_CURTAIN, SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, DIALOGUE, HEADER_TYPES, INITIAL_CURTAIN, CURTAIN, COMMENT } from "../../../dataAccess/scriptItemTypes";
 
-const createdDate = new Date('2023-12-01T00:00:00.000')
-const laterCreatedDate = new Date('2023-12-01T00:01:00.000')
-const muchLaterCreatedDate = new Date('2023-12-01T00:02:00.000')
-const earlierCreatedDate = new Date('2023-11-30T00:00:00.000')
+export  const createdDate = new Date('2023-12-01T00:00:00.000')
+export const laterCreatedDate = new Date('2023-12-01T00:01:00.000')
+export const muchLaterCreatedDate = new Date('2023-12-01T00:02:00.000')
+export const earlierCreatedDate = new Date('2023-11-30T00:00:00.000')
 //Mock Persons
 export const personA = Object.freeze({ id: 'peA', created: createdDate, firstName: 'Person', lastName: 'A', pictureRef: 'pictures/peA', isActive: true, updatedOnServer: null })
 export const personB = Object.freeze({ id: 'peB', created: createdDate, firstName: 'Person', lastName: 'B', pictureRef: null, isActive: true, updatedOnServer: null })
@@ -70,6 +70,18 @@ export const removePart6FromScene2 = [
 export const removePart6FromScene2EarlierDate = [
     Object.freeze({ id: 'si23', created: earlierCreatedDate, type: DIALOGUE, text: 'Dialogue 2:3', nextId: 'si24', previousId: 'si22', partIds: [], parentId: 's2', isActive: true, updatedOnServer: null }),
     Object.freeze({ id: 'si25', created: earlierCreatedDate, type: DIALOGUE, text: 'Dialogue 2:5', nextId: null, previousId: 'si24', partIds: ['p4', 'p5'], parentId: 's2', isActive: true, updatedOnServer: null })
+]
+
+
+export const removePart6FromScene2MixedCreatedDates = [
+    Object.freeze({ id: 'si23', created: laterCreatedDate, type: DIALOGUE, text: 'Dialogue 2:3', nextId: 'si24', previousId: 'si22', partIds: [], parentId: 's2', isActive: true, updatedOnServer: null }),
+    Object.freeze({ id: 'si25', created: earlierCreatedDate, type: DIALOGUE, text: 'Dialogue 2:5', nextId: null, previousId: 'si24', partIds: ['p4', 'p5'], parentId: 's2', isActive: true, updatedOnServer: null })
+]
+
+export const removePart6FromScene2MultipleCreatedDates = [
+    Object.freeze({ id: 'si23', created: muchLaterCreatedDate, type: DIALOGUE, text: 'Dialogue 2:3', nextId: 'si24', previousId: 'si22', partIds: [], parentId: 's2', isActive: true, updatedOnServer: null }),
+    Object.freeze({ id: 'si23', created: laterCreatedDate, type: DIALOGUE, text: 'Dialogue 2:3', nextId: 'si24', previousId: 'si22', partIds: [], parentId: 's2', isActive: true, updatedOnServer: null }),
+    Object.freeze({ id: 'si25', created: laterCreatedDate, type: DIALOGUE, text: 'Dialogue 2:5', nextId: null, previousId: 'si24', partIds: ['p4', 'p5'], parentId: 's2', isActive: true, updatedOnServer: null })
 ]
 
 export const synopsis3 = Object.freeze({ id: 'si3s', created: createdDate, type: SYNOPSIS, text: 'Synopsis 3', nextId: 'si3is', previousId: 's3', partIds: [], parentId: 's3', isActive: true, updatedOnServer: null })

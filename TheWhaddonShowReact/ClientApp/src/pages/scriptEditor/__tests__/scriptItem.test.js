@@ -1,4 +1,11 @@
 ﻿import {
+    laterCreatedDate,
+    muchLaterCreatedDate,
+
+
+    part2,
+    part3,
+
     mockCurrentScriptItems,
     scene1,
     scene2,
@@ -33,6 +40,15 @@
     dialogue71,
     dialogue72,
     dialogue73,
+
+    mockSceneOrders,
+    mockCurrentPartPersons,
+
+    removePart6FromScene2,
+    removePart6FromScene2EarlierDate,
+    removePart6FromScene2MixedCreatedDates,
+    removePart6FromScene2MultipleCreatedDates,
+
 } from './mockData';
 
 import {
@@ -44,9 +60,8 @@ import {
     newScriptItemsForMoveScene,
     newScriptItemsForAddComment,
     newScriptItemsForDeleteComment,
-    newScriptItemsForSwapPart,
+    newUpdatesForSwapPart,
     getScriptItemUpdatesLaterThanCurrent,
-    getSurroundingScriptItems,
 
 } from '../scripts/scriptItem';
 
@@ -381,47 +396,82 @@ it.each([
     [2, 'p2', 'p10', scene1, mockCurrentScriptItems],
     [3, 'p3', 'p10', scene1, mockCurrentScriptItems],
     [4, 'p4', 'p10', scene1, mockCurrentScriptItems],
-])('newScriptItemsForSwapPart', (scenario, partId, newPartId, scene, currentScriptItems) => {
-    const debug = false;
 
+])('newUpdatesForSwapPart', (scenario, partId, newPartId, scene, currentScriptItems) => {
+    const debug = false;
     const currentSceneScriptItems = Object.values(currentScriptItems).filter(item => item.parentId === scene.id || item.id === scene.id)
 
     //log(debug,'input :', { scenario, partId, newPartId, currentSceneScriptItems })
 
-    const actualResult = newScriptItemsForSwapPart(partId, newPartId, currentSceneScriptItems)
+    const actualResult = newUpdatesForSwapPart(partId, newPartId, currentSceneScriptItems,mockSceneOrders[show.id],mockCurrentPartPersons)
 
-    log(debug, 'newScriptItemsForSwapPart', actualResult)
+    log(debug, 'newUpdatesForSwapPart', actualResult)
+
+    const actualScriptItemUpdates = actualResult.newScriptItemUpdates
+    const actualPartUpdates = actualResult.newPartUpdates
+
 
     if (scenario === 1) {
-        expect(actualResult.length).toEqual(3)
-        expect(actualResult[0]).toEqual({ ...copy(scene1), partIds: ['p10', 'p2', 'p3'] })
-        expect(actualResult[1]).toEqual({ ...copy(dialogue11), partIds: ['p10'] })
-        expect(actualResult[2]).toEqual({ ...copy(dialogue14), partIds: ['p10', 'p2', 'p3'] })
+        expect(actualScriptItemUpdates.length).toEqual(3)
+        expect(actualScriptItemUpdates[0]).toEqual({ ...copy(scene1), partIds: ['p10', 'p2', 'p3'] })
+        expect(actualScriptItemUpdates[1]).toEqual({ ...copy(dialogue11), partIds: ['p10'] })
+        expect(actualScriptItemUpdates[2]).toEqual({ ...copy(dialogue14), partIds: ['p10', 'p2', 'p3'] })
+
+        expect(actualPartUpdates).toEqual([]) //part1 appears in scene 6 so shouldn't be deleted.
     }
     if (scenario === 2) {
-        expect(actualResult.length).toEqual(3)
-        expect(actualResult[0]).toEqual({ ...copy(scene1), partIds: ['p1', 'p10', 'p3'] })
-        expect(actualResult[1]).toEqual({ ...copy(dialogue12), partIds: ['p10'] })
-        expect(actualResult[2]).toEqual({ ...copy(dialogue14), partIds: ['p1', 'p10', 'p3'] })
+        expect(actualScriptItemUpdates.length).toEqual(3)
+        expect(actualScriptItemUpdates[0]).toEqual({ ...copy(scene1), partIds: ['p1', 'p10', 'p3'] })
+        expect(actualScriptItemUpdates[1]).toEqual({ ...copy(dialogue12), partIds: ['p10'] })
+        expect(actualScriptItemUpdates[2]).toEqual({ ...copy(dialogue14), partIds: ['p1', 'p10', 'p3'] })
+
+        expect(actualPartUpdates).toEqual([{ ...copy(part2), isActive: false }])
     }
     if (scenario === 3) {
-        expect(actualResult.length).toEqual(3)
-        expect(actualResult[0]).toEqual({ ...copy(scene1), partIds: ['p1', 'p2', 'p10'] })
-        expect(actualResult[1]).toEqual({ ...copy(dialogue13), partIds: ['p10'] })
-        expect(actualResult[2]).toEqual({ ...copy(dialogue14), partIds: ['p1', 'p2', 'p10'] })
+        expect(actualScriptItemUpdates.length).toEqual(3)
+        expect(actualScriptItemUpdates[0]).toEqual({ ...copy(scene1), partIds: ['p1', 'p2', 'p10'] })
+        expect(actualScriptItemUpdates[1]).toEqual({ ...copy(dialogue13), partIds: ['p10'] })
+        expect(actualScriptItemUpdates[2]).toEqual({ ...copy(dialogue14), partIds: ['p1', 'p2', 'p10'] })
+
+        expect(actualPartUpdates).toEqual([{...copy(part3),isActive: false}])
     }
     if (scenario === 4) { //part not in scene
-        expect(actualResult.length).toEqual(0)
+        expect(actualScriptItemUpdates.length).toEqual(0)
+
+        expect(actualPartUpdates).toEqual([])
     }
 
 
 })
 
 
-xit.each([
+it.each([
+    [1, removePart6FromScene2, mockCurrentScriptItems],
+    [2, removePart6FromScene2EarlierDate, mockCurrentScriptItems],
+    [3, removePart6FromScene2MixedCreatedDates, mockCurrentScriptItems],
+    [4, removePart6FromScene2MultipleCreatedDates, mockCurrentScriptItems],
+    [5, removePart6FromScene2, mockCurrentScriptItems],
+])  ('scriptItemUpdatesLaterThanCurrent', (scenario,scriptItemUpdates, currentScriptItems) => {
 
-])
-    ('scriptItemUpdatesLaterThanCurrent', (scriptItemUpdates, currentScriptItems) => {
+    const actualResult = getScriptItemUpdatesLaterThanCurrent(scriptItemUpdates, currentScriptItems)
+
+    switch (scenario) {
+        case 1: expect(actualResult.length).toEqual(2); break;
+        case 2: expect(actualResult).toEqual([]); break;
+        case 3: expect(actualResult.length).toEqual(1);
+            expect(actualResult[0].id).toEqual('si23')
+            expect(actualResult[0].created).toEqual(laterCreatedDate)
+                ; break;
+        case 4: expect(actualResult.length).toEqual(2);
+            expect(actualResult[0].id).toEqual('si23')
+            expect(actualResult[0].created).toEqual(muchLaterCreatedDate)
+            expect(actualResult[1].id).toEqual('si25')
+            expect(actualResult[1].created).toEqual(laterCreatedDate)
+                ;
+            break;
+        case 5: expect(actualResult.length).toEqual(2); break;
+        default: break;
+    }
 
 
     }

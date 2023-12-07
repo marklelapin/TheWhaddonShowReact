@@ -14,7 +14,7 @@ import {
     newScriptItemsForDelete,
     newScriptItemsForSceneDelete,
     newScriptItemsForDeleteComment,
-    newScriptItemsForSwapPart,
+    newUpdatesForSwapPart,
     newScriptItemsForAddComment,
     newUpdatesForCreateHeader,
     newScriptItemsForMoveScene
@@ -199,7 +199,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             if (!scene.nextId) { //moving scene from end of show
                 previousCurtainUpdates.push({ sceneId: '0', previousCurtainOpen: previousCurtainOpen[scene.id] })
             } else {
-                previousCurtainUpdates.push({sceneId: scene.nextId, previousCurtainOpen : previousCurtainOpen[scene.id]})
+                previousCurtainUpdates.push({ sceneId: scene.nextId, previousCurtainOpen: previousCurtainOpen[scene.id] })
             }
 
             moveFocus = { id: sceneId, position: END };
@@ -255,7 +255,9 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             moveFocus = getDeleteNextMoveFocus(partPriorToDelete, scene, direction, previousFocusId2, nextFocusId2, currentPartPersons)
             break;
         case SWAP_PART:
-            scriptItemUpdates = newScriptItemsForSwapPart(oldPartId, newPartId, sceneScriptItems());
+            const { newPartUpdates, newScriptItemUpdates } = newUpdatesForSwapPart(oldPartId, newPartId, sceneScriptItems(), sceneOrders[show.id], currentPartPersons);
+            partUpdates = newPartUpdates;
+            scriptItemUpdates = newScriptItemUpdates;
             moveFocus = { id: newPartId, position: END };
             doRefreshAlignment = true
             break;

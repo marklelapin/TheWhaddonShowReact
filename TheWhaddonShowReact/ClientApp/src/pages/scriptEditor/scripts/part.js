@@ -96,8 +96,6 @@ export const newUpdatesForDeletePart = (partToDelete, sceneToDeleteFrom, sceneOr
 
     //log(true, 'error check ScriptItemUpdates', { newScriptItemUpdates })
 
-    //  .filter(item => item !== null)
-
     const newPartUpdates = [];
     const showOrder = sceneOrders[show.id]
 

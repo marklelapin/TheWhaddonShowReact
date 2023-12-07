@@ -237,7 +237,11 @@ export const newScriptItemsForDeleteComment = (scriptItem, currentScriptItems) =
 }
 
 
-export const newScriptItemsForSwapPart = (oldPartId, newPartId, currentSceneScriptItemsArray) => {
+export const newUpdatesForSwapPart = (oldPartId, newPartId, currentSceneScriptItemsArray,showOrder,currentPartPersons) => {
+
+    //output
+    const newPartUpdates = [];
+    let newScriptItemUpdates = [];
 
     const scene = currentSceneScriptItemsArray.find(item => item.type === SCENE)
 
@@ -246,7 +250,7 @@ export const newScriptItemsForSwapPart = (oldPartId, newPartId, currentSceneScri
         return;
     }
 
-    const newUpdates = currentSceneScriptItemsArray.map(item => {
+    newScriptItemUpdates = currentSceneScriptItemsArray.map(item => {
 
         const copyItem = copy(item)
 
@@ -257,7 +261,16 @@ export const newScriptItemsForSwapPart = (oldPartId, newPartId, currentSceneScri
 
     }).filter(item => item !== null)
 
-    return newUpdates;
+    
+    const usedElsewhere = showOrder.some(sceneItem => sceneItem.partIds.includes(oldPartId) && sceneItem.id !== scene.id);
+   
+    if (!usedElsewhere) {
+        let partToDelete = copy(currentPartPersons[oldPartId])
+        partToDelete.isActive = false
+        newPartUpdates.push(partToDelete) //only delete if not usedElsewhere
+    }
+
+    return { newPartUpdates, newScriptItemUpdates };
 
 }
 

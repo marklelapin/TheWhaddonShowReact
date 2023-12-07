@@ -13,7 +13,7 @@ import { log } from '../../../helper'
 
 it.each([
     [1, mockSceneOrders[scene1.id], null, null],
-    [1, mockSceneOrders[scene1.id], dialogue13, OPEN_CURTAIN]
+    [2, mockSceneOrders[scene1.id], dialogue13, OPEN_CURTAIN]
 ])('refreshCurtain', (scenario, sceneOrder, scriptItemToChange, curtainTag) => {
 
     const newScriptItems = (scriptItemToChange) ? [{ ...copy(scriptItemToChange), created: laterCreatedDate, type: "CURTAIN", tags: [curtainTag] }] : []

@@ -878,8 +878,8 @@ it(SWAP_PART, (sceneId = scene1.id, oldPartId = part3.id, newPartId = part10.id)
     } = actualResult
 
 
-    expect(partUpdates.length).toEqual(0) 
-    expect(partPersonUpdates.length).toEqual(0)
+    expect(partUpdates.length).toEqual(1) 
+    expect(partPersonUpdates.length).toEqual(1)
 
     expect(scriptItemUpdates.length).toEqual(3)
 

@@ -23,7 +23,7 @@ import {
 
 } from '../actions/scriptEditor';
 
-import {log } from '../helper';
+import { log } from '../helper';
 
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 const debug = true;
@@ -45,7 +45,7 @@ export const initialState = {
         type: 'SHOW',
         isActive: true
     }
-,
+    ,
     viewAsPartPerson: null,
     currentPartPersons: {},
     currentScriptItems: {},
@@ -164,7 +164,7 @@ export default function scriptEditorReducer(state = initialState, action) {
         case REMOVE_ITEMS_FROM_REDO_LIST:
             return {
                 ...state,
-                redoList: [...state.redoList.filter(item => new Date(item.created) !== new Date (action.createdDate))],
+                redoList: [...state.redoList.filter(item => new Date(item.created) !== new Date(action.createdDate))],
             }
 
         case TRIGGER:
@@ -179,10 +179,27 @@ export default function scriptEditorReducer(state = initialState, action) {
             }
         case UPDATE_CURRENT_SCRIPT_ITEMS:
 
+            //update created dates for sceneOrders (mutating the state on purpose) - this created date shouldn't cause a re-render
+            //it is used for quick look up of the latest created date when undoing.
+            //ensures that sceneOrder created matches the currentSCriptItems created date
+
+            const updatedSceneOrders = action.scriptItems.forEach(scriptItem => {
+                const sceneOrder = (scriptItem.type === SCENE) ? state.sceneOrders[scriptItem.id] : state.sceneOrders[scriptItem.parentId] || [];
+
+                const sceneOrderItem = sceneOrder.find(item => item.id === scriptItem.id);
+                if (sceneOrderItem) {
+                    sceneOrderItem.created = scriptItem.created;
+                }
+            })
+
+
+            //update for currenSCriptItems
             const updatedScriptItems = action.scriptItems.reduce((acc, scriptItem) => {
                 acc[scriptItem.id] = { ...scriptItem }
                 return acc;
             }, { ...state.currentScriptItems });
+
+
 
             return {
                 ...state,
@@ -192,7 +209,7 @@ export default function scriptEditorReducer(state = initialState, action) {
 
             const updatedSceneOrders = action.sceneOrders.reduce((acc, sceneOrder) => {
                 acc[sceneOrder[0].id] = [...sceneOrder];
-                
+
                 return acc;
             }, { ...state.sceneOrders });
 
