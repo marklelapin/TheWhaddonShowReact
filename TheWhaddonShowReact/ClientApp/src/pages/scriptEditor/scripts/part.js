@@ -167,12 +167,12 @@ const nextPartId = (part, scene) => {
 
 export const newPartPersonsFromPartUpdates = (partUpdates, currentPartPersons, storedPersons) => {
 
-    //log(true, 'error check: ', { partUpdates, currentPartUpdate : currentPartPersons[partUpdates[0].id] })
+   
     const currentPartUpdates = partUpdates.filter(update => new Date(update.created) > new Date(currentPartPersons[update.id]?.created || 0))
     //log(true, 'error check:', { currentPartUpdates })
     const latestCurrentPartUpdates = getLatest(currentPartUpdates, true)
     const persons = getLatest(storedPersons)
-    //log(true, 'error check:', { latestCurrentPartUpdates })
+   
     const newPartPersons = latestCurrentPartUpdates.map(partUpdate => {
         const person = persons.find(person => person.id === partUpdate.personId) || null
         const partPerson = addPersonInfo(partUpdate, person)

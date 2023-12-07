@@ -7,6 +7,10 @@ import {
     scene3,
     scene7,
 
+    personA,
+    personB,
+    personC,
+
     part1,
     part2,
     part3,
@@ -15,6 +19,7 @@ import {
     part6,
     part13,
     partFromServer,
+    partFromServerWithPerson,
     newPart1FromServer,
     earlierPart1FromServer,
     newInactivePart1FromServer,
@@ -138,7 +143,7 @@ it.each([
     }
 })
 
-xit.each([
+it.each([
     [1, [partFromServer], mockCurrentPartPersons, mockStoredPersons],
     [2, [partFromServer], [], []],
     [3, [partFromServer], mockCurrentPartPersons, []],
@@ -148,59 +153,69 @@ xit.each([
     [7, [earlierPart1FromServer], [], mockStoredPersons],
     [8, [earlierPart1FromServer], mockCurrentPartPersons, mockStoredPersons],
     [9, [newInactivePart1FromServer], mockCurrentPartPersons, mockStoredPersons],
-    [10, [partFromServer, newPart1FromServer], mockCurrentPartPersons, mockStoredPersons]
+    [10, [partFromServer, newPart1FromServer], mockCurrentPartPersons, mockStoredPersons],
+    [11, [partFromServerWithPerson], [], mockStoredPersons],
+    [12, [partFromServerWithPerson], [], []]
+])('newPartPersonsFromPartUpdates', (scenario, partUpdates, currentPartPersons, storedPersons) => {
+    const debug = false;
 
-])  ('newPartPersonsFromPartUpdates', (scenario, partUpdates, currentPartPersons, storedPersons) => {
-        const debug = true;
+    log(debug, 'newPartPersonsFromPartUpdates', { scenario, partUpdates })
 
-        log(debug, 'newPartPersonsFromPartUpdates', { scenario, partUpdates })
+    const actualResult = copy(newPartPersonsFromPartUpdates(partUpdates, currentPartPersons, storedPersons))
 
-        const actualResult = newPartPersonsFromPartUpdates(partUpdates, currentPartPersons, storedPersons)
-        
+    const pfs = copy(partFromServer)
+    const p1fs = copy(newPart1FromServer)
+    const ep1fs = copy(earlierPart1FromServer)
+    const ip1fs = copy(newInactivePart1FromServer)
+    const pfswp = copy(partFromServerWithPerson)
 
-        if (scenario <= 8) {
-            expect(actualResult.length).toEqual(1)
-            //const result = copy(actualResult[0])
-            //const pfs = copy(partFromServer)
-            //if (scenario ===1) expect(result).toEqual({...pfs, avatarInitials : 'P', firstName:'PartFromServer',personName: null,pictureRef : null })
-            //if (scenario === 2) expect(result).toEqual({ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null })
-            //if (scenario === 3) expect(result).toEqual({ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null })
-            //if (scenario === 4) expect(result).toEqual({ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null })
-            //if (scenario === 5) expect(result).toEqual({ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null })
-            //if (scenario === 6) expect(result).toEqual({ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null })
-            //if (scenario === 7) expect(result).toEqual({ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null })
-            //if (scenario === 8) expect(result).toEqual({ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null })
+    switch (scenario) {
 
-        } else if (scenario === 8) {
-            expect(actualResult.length).toEqual(0)
-        } else if (scenario === 9) {
-            expect(actualResult.length).toEqual(1)
-        } else if (scenario === 10) {
-            expect(actualResult.length).toEqual(2)
-        }
+        case 1: expect(actualResult).toEqual([{ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null }]); break;
+        case 2: expect(actualResult).toEqual([{ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null }]); break;
+        case 3: expect(actualResult).toEqual([{ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null }]); break;
+        case 4: expect(actualResult).toEqual([{ ...pfs, avatarInitials: 'P', firstName: 'PartFromServer', personName: null, pictureRef: null }]); break;
+        case 5: expect(actualResult).toEqual([{ ...p1fs, avatarInitials: 'N', firstName: 'NewPart1FromServer', personName: null, pictureRef: null }]); break;
+        case 6: expect(actualResult).toEqual([{ ...p1fs, avatarInitials: 'N', firstName: 'NewPart1FromServer', personName: null, pictureRef: null }]); break;
+        case 7: expect(actualResult).toEqual([{ ...ep1fs, avatarInitials: 'E', firstName: 'EarlierPart1FromServer', personName: null, pictureRef: null }]); break;
+        case 8: expect(actualResult).toEqual([]); break;
+        case 9: expect(actualResult).toEqual([{ ...ip1fs, avatarInitials: 'N', firstName: 'NewInactivePart1FromServer', personName: null, pictureRef: null, isActive: false }]); break;
+        case 10: expect(actualResult.length).toEqual(2); break;
+        case 11: expect(actualResult).toEqual([{ ...pfswp, avatarInitials: 'P', firstName: 'PartFromServerWithPerson', personName: 'Bob', pictureRef: 'pictures/peB' }]); break;
+        case 12: expect(actualResult).toEqual([{ ...pfswp, avatarInitials: 'P', firstName: 'PartFromServerWithPerson', personName: null, pictureRef: null }]); break;
+        default: expect(true).toEqual(false) //shouldn't have got here -run out of scenarios.
+    }
 
-    })
+})
 
-xit.each([
-    [partFromServer,]
+it.each([
+    [1, [personA, personB, personC], []],
+    [2, [personA, personB, personC], mockCurrentPartPersons],
+    [3, [personA],mockCurrentPartPersons]
 
-]) ('newPartPersonsFromPersonUpdates', (personUpdates, currentPartPersons) => {
+])('newPartPersonsFromPersonUpdates', (scenario,personUpdates, currentPartPersons) => {
 
-    })
-//export const NewPartPersonsFromPartUpdates = (partUpdates, currentPartPersons, storedPersons) => {
+    const actualResult = copy(newPartPersonsFromPersonUpdates(personUpdates, currentPartPersons))
 
-//    const currentPartUpdates = partUpdates.filter(update => new Date(update.created) > new Date(currentPartPersons[update.id]?.created || 0))
-//    const latestCurrentPartUpdates = getLatest(currentPartUpdates)
-//    const persons = getLatest(storedPersons)
+    //parts 1 adn 4 are linke to Person A, part 5 is linked to PersonB
 
-//    const newPartPersons = latestCurrentPartUpdates.map(partUpdate => {
-//        const person = persons.find(person => person.id === partUpdate.personId) || null
-//        const partPerson = addPersonInfo(partUpdate, person)
-//        return partPerson;
-//    });
+    
+    switch (scenario) {
+        case 1: expect([]); break;
+        case 2: expect(actualResult).toEqual([
+            { ...copy(part1), avatarInitials: 'P1', firstName: 'Part 1', personName: 'Albert', pictureRef: 'pictures/peA' },
+            { ...copy(part4), avatarInitials: 'P4', firstName: 'Part 4', personName: 'Albert', pictureRef: 'pictures/peA' },
+            { ...copy(part5), avatarInitials: 'P5', firstName: 'Part 5', personName: 'Bob', pictureRef: 'pictures/peB' },
 
-//    return newPartPersons
-//}
+        ]); break;
+        case 3: expect(actualResult).toEqual([
+            { ...copy(part1), avatarInitials: 'P1', firstName: 'Part 1', personName: 'Albert', pictureRef: 'pictures/peA' },
+            { ...copy(part4), avatarInitials: 'P4', firstName: 'Part 4', personName: 'Albert', pictureRef: 'pictures/peA' },
+        ]); break;
+        default: expect(true).toEqual(false); break; //shouldn't have got here -run out of scenarios.
+    }
+
+})
 
 
 //export const newPartPersonsFromPersonUpdates = (personUpdates, currentPartPersons) => {

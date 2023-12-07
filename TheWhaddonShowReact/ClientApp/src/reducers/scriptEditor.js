@@ -1,9 +1,6 @@
 import {
-    ADD_TEXT_AREA_CONTEXT,
     CLEAR_SCRIPT_EDITOR_STATE,
     UPDATE_SEARCH_PARAMETERS,
-    UPDATE_VIEW_COMMENTS,
-    UPDATE_DIALOGUE_RIGHT_ID,
     TOGGLE_SCENE_SELECTOR,
     UPDATE_SHOW_COMMENTS,
     UPDATE_VIEW_AS_PART_PERSON,
@@ -23,6 +20,8 @@ import {
 
 } from '../actions/scriptEditor';
 
+import { SCENE } from '../dataAccess/scriptItemTypes';
+
 import { log } from '../helper';
 
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
@@ -35,7 +34,6 @@ export const initialState = {
         myScenes: false,
     },
     showComments: true,
-    dialogueRightId: null,
     showSceneSelector: true,
     show: {
         id: '3c2277bd-b117-4d7d-ba4e-2b686b38883a',
@@ -68,16 +66,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 searchParameters: action.searchParameters,
             };
-        case UPDATE_VIEW_COMMENTS:
-            return {
-                ...state,
-                viewComments: action.viewComments,
-            };
-        case UPDATE_DIALOGUE_RIGHT_ID:
-            return {
-                ...state,
-                dialogueRightId: action.dialogueRightId,
-            };
+     
         case TOGGLE_SCENE_SELECTOR:
             return {
                 ...state,
@@ -143,11 +132,6 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 show: action.show,
             };
-        case ADD_TEXT_AREA_CONTEXT:
-            return {
-                ...state,
-                textAreaContext: { ...state.textAreaContext, [action.scriptItemType]: action.context }
-            }
 
         case RESET_UNDO:
             return {
@@ -183,10 +167,10 @@ export default function scriptEditorReducer(state = initialState, action) {
             //it is used for quick look up of the latest created date when undoing.
             //ensures that sceneOrder created matches the currentSCriptItems created date
 
-            const updatedSceneOrders = action.scriptItems.forEach(scriptItem => {
+            action.scriptItems.forEach(scriptItem => {
                 const sceneOrder = (scriptItem.type === SCENE) ? state.sceneOrders[scriptItem.id] : state.sceneOrders[scriptItem.parentId] || [];
 
-                const sceneOrderItem = sceneOrder.find(item => item.id === scriptItem.id);
+                const sceneOrderItem = sceneOrder?.find(item => item.id === scriptItem.id);
                 if (sceneOrderItem) {
                     sceneOrderItem.created = scriptItem.created;
                 }

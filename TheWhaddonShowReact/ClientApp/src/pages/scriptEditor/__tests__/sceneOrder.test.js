@@ -7,11 +7,16 @@ import {
     refreshSceneOrder,
     mergeSceneOrder,
     getHead,
+    isSceneAffectedByViewAsPartPerson,
+    getSceneOrderUpdates
 
 } from '../scripts/sceneOrder'
 
 import {
 
+    part1,
+    part2,
+    part3,
     part4,
     part5,
     part6,
@@ -19,13 +24,14 @@ import {
 
     personA,
     personB,
+    personC,
 
 
     show,
     act1,
     scene1, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13, dialogue14,
     scene2, removePart6FromScene2, removePart6FromScene2EarlierDate, synopsis2, initialStaging2, initialCurtain2, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25,
-    scene3,
+    scene3, dialogue33,
     scene4,
     scene5,
     act2,
@@ -34,7 +40,9 @@ import {
 
     mockSceneOrders,
     mockZIndexSceneOrders,
-    mockCurrentPartPersons
+    mockCurrentPartPersons,
+    mockCurrentScriptItems,
+    mockPreviousCurtainOpen,
 
 
 } from './mockData'
@@ -42,26 +50,26 @@ import {
 import { log } from '../../../helper';
 
 it.each([
-    //[1,[scene2, synopsis2, dialogue24, dialogue25, dialogue21, dialogue22, initialCurtain2, initialStaging2, dialogue23], [], part6, mockCurrentPartPersons],
-    [2,mockSceneOrders[scene2.id], removePart6FromScene2, part6, mockCurrentPartPersons]
+    [1, [scene2, synopsis2, dialogue24, dialogue25, dialogue21, dialogue22, initialCurtain2, initialStaging2, dialogue23], [], part6, mockCurrentPartPersons],
+    [2, mockSceneOrders[scene2.id], removePart6FromScene2, part6, mockCurrentPartPersons]
 ])('refreshSceneOrder', (scenario, currentSceneOrder = [], newScriptItems = [], viewAsPartPerson, currentPartPersons) => {
 
     const debug = false;
 
-    log(debug, 'refreshSceneOrder - input', {currentSceneOrder, newScriptItems, viewAsPartPerson })
+    log(debug, 'refreshSceneOrder - input', { currentSceneOrder, newScriptItems, viewAsPartPerson })
 
     const newSceneOrder = refreshSceneOrder(currentSceneOrder, newScriptItems, viewAsPartPerson, currentPartPersons)
 
     log(debug, 'newSceneOrder - actual', newSceneOrder)
     //check curtain
-    let expectedCurtainOpen = [false,false,false,true,true,true,true,true,true];
+    let expectedCurtainOpen = [false, false, false, true, true, true, true, true, true];
     expect(newSceneOrder.map(item => item.curtainOpen)).toEqual(expectedCurtainOpen)
 
     //check alignRight
     let expectedAlignRight = (scenario === 1)
         ? [true, false, false, false, false, false, true, false, true]
         : [true, false, false, false, false, true, false, true, true];
-    expect(newSceneOrder.map(item=> item.alignRight)).toEqual(expectedAlignRight)
+    expect(newSceneOrder.map(item => item.alignRight)).toEqual(expectedAlignRight)
 
     //check zindex
     newSceneOrder.forEach((item, index) => {
@@ -75,7 +83,8 @@ it.each([
 it.each([
     [1, mockSceneOrders[scene2.id], removePart6FromScene2],
     [2, mockSceneOrders[scene2.id], removePart6FromScene2EarlierDate],
-    [3, mockSceneOrders[scene2.id], []]
+    [3, mockSceneOrders[scene2.id], []],
+    [4, [], [scene1, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13, dialogue14]]
 ])('mergeSceneOrder', (scenario, currentSceneOrder = [], newScriptItems = []) => {
     const debug = false;
 
@@ -85,7 +94,7 @@ it.each([
 
     switch (scenario) {
         case 1:
-            expect(copy(newSceneOrder[0])).toEqual({ ...copy(currentSceneOrder[0]), partIds: ['p4', 'p5','p6'] })
+            expect(copy(newSceneOrder[0])).toEqual({ ...copy(currentSceneOrder[0]), partIds: ['p4', 'p5', 'p6'] })
             expect(newSceneOrder[1]).toEqual(currentSceneOrder[1])
             expect(newSceneOrder[2]).toEqual(currentSceneOrder[2])
             expect(newSceneOrder[3]).toEqual(currentSceneOrder[3])
@@ -98,7 +107,10 @@ it.each([
 
         case 2: expect(newSceneOrder).toEqual(currentSceneOrder); break;
         case 3: expect(newSceneOrder).toEqual(currentSceneOrder); break;
-        default: break;
+        case 4: expect(newSceneOrder).toEqual(mockSceneOrders[scene1.id]); break;
+        default:
+            expect(true).toEqual(false); //should never get here - run out of scenarios.
+            break;
     }
 })
 
@@ -254,60 +266,47 @@ it.each([
 
 })
 
-
-xit.each([
-
-])('getSceneORderUpdates', (currentScriptItemUpdates, currentScriptItems, sceneOrders) => {
-
-    //const sceneIds = [currentScriptItemUpdates.map(item => item.parentId)]
-    //const uniqueSceneIds = [...new Set(sceneIds)]
-
-    ////output variables
-    //let sceneOrderUpdates = []
-    //let previousCurtainUpdates = []
-
-    //uniqueSceneIds.forEach(sceneId => {
-
-    //	const nextSceneIdFromScriptItemUpdates = currentScriptItemUpdates.find(item => item.id === sceneId)?.nextId || null
-    //	const nextSceneId = nextSceneIdFromScriptItemUpdates || currentScriptItems[sceneId]?.nextId || null
-
-    //	const newSceneScriptItems = currentScriptItemUpdates.filter(item => item.parentId === sceneId || item.id === sceneId)
-    //	const newSceneOrder = refreshSceneOrder(sceneOrders[sceneId], newSceneScriptItems)
-
-    //	if (newSceneOrder.length > 0) { //this can occur if the scene is inActive
-    //		sceneOrderUpdates.push(newSceneOrder)
-
-    //		if (nextSceneId) {
-    //			const previousCurtainOpen = newSceneOrder[newSceneOrder.length - 1]?.curtainOpen;
-    //			previousCurtainUpdates.push({ sceneId: nextSceneId, previousCurtainOpen })
-    //		}
-    //	}
-    //})
-
-    //return { sceneOrderUpdates, previousCurtainUpdates }
-})
-
-
-
-xit.each([
-
-])('alignRightIfAffectedByViewAsPartPerson', (scene, viewAsPartPerson, sceneOrders, currentPartPersons) => {
-
-    //const scenePartPersonIds = scene.partIds.map(partId => currentPartPersons[partId]).map(partPerson => ({ sceneId: scene.id, partId: partPerson.id, personId: partPerson.personId }))
-
-    //const matchesPart = scenePartPersonIds.some(partPerson => partPerson.partId === viewAsPartPerson.id)
-
-    //if (!matchesPart) {
-    //	const matchesPerson = scenePartPersonIds.some(partPerson => partPerson.personId === viewAsPartPerson.id)
-    //	if (!matchesPerson) return [];
-    //}
-
-    //const newSceneOrder = alignRight(sceneOrders[scene.id], viewAsPartPerson, scenePartPersonIds)
-
-    //return newSceneOrder
-})
-
-
 const copy = (object) => {
     return JSON.parse(JSON.stringify(object));
 }
+
+it.each([
+    [[dialogue11, dialogue12, dialogue13, dialogue14], mockSceneOrders, 1, null],
+    [[dialogue11, dialogue22, dialogue33], mockSceneOrders, 3, null],
+    [[show, act1, { ...copy(scene1), text: 'spotThis' }, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13], [], 2, null], //no sceneOrders (must have all parents within scriptITems)
+    [[{ ...copy(scene1), text: 'spotThis' }, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13], { [show.id]: mockSceneOrders[show.id], [act1.id]: mockSceneOrders[act1.id] } //just scene scriptItems but show and act sceneORders in place.
+        , 2, null]
+
+
+])('getSceneOrderUpdates', (currentScriptItemUpdates, sceneOrders, expectedSceneOrders, viewAsPartPerson = null) => {
+    const debug = false;
+
+    log(debug, 'getSceneOrderUpdates input: ', { currentScriptItemUpdates, sceneOrders })
+    const actualResult = getSceneOrderUpdates(currentScriptItemUpdates, mockCurrentScriptItems, sceneOrders, viewAsPartPerson, mockCurrentPartPersons)
+
+    const sceneOrderUpdates = actualResult.sceneOrderUpdates
+    const previousCurtainUpdates = actualResult.previousCurtainUpdates
+
+    expect(sceneOrderUpdates.length).toEqual(expectedSceneOrders)
+    expect(previousCurtainUpdates.length).toEqual(expectedSceneOrders)
+})
+
+
+it.each([
+    [scene1, part1, mockCurrentPartPersons, true],
+    [scene1, part2, mockCurrentPartPersons, true],
+    [scene1, part3, mockCurrentPartPersons, true],
+    [scene1, part4, mockCurrentPartPersons, false],
+    [scene1, personA, mockCurrentPartPersons, true],
+    [scene1, personB, mockCurrentPartPersons, false],
+    [scene1, personC, mockCurrentPartPersons, false],
+    [scene1, null, mockCurrentPartPersons, false]
+])('isSceneAffectedByViewAsPartPerson', (scene, viewAsPartPerson, currentPartPersons, expectedResult) => {
+
+    const actualResult = isSceneAffectedByViewAsPartPerson(scene, viewAsPartPerson, currentPartPersons)
+
+    expect(actualResult).toEqual(expectedResult)
+
+})
+
+

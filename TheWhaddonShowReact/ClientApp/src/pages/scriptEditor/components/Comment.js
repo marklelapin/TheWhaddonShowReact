@@ -44,7 +44,7 @@ function Comment(props) {
     }
 
     const handleFocus = () => {
-        dispatch(updateScriptItemInFocus({ scriptItemId: scriptItem.id, sceneId: scriptItem.parentId }) )//update global state of which item is focussed
+        dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.parentId) )//update global state of which item is focussed
     }
 
     const handleBlur = () => {

@@ -73,9 +73,8 @@ export const getHead = (mergedSceneOrder) => {
         }
     }
 
-
     //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Show linked list but also the head of the Scene linked list
-    const headNextId = mergedSceneOrder.filter((item) => item.previousId === draftHead.id && item.type !== COMMENT)[0].id;
+    const headNextId = mergedSceneOrder.find((item) => item.previousId === draftHead.id && item.type !== COMMENT).id;
     const head = { ...copy(draftHead), nextId: headNextId }
     const mergedSceneOrderWithUpdatedHead = mergedSceneOrder.map(item => {
 
@@ -245,14 +244,16 @@ export const alignRight = (sceneOrder, viewAsPartPerson, currentPartPersons, scr
 }
 
 
-export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItems, sceneOrders) => {
+export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItems, sceneOrders,viewAsPartPerson,currentPartPersons) => {
 
-    const sceneIds = [currentScriptItemUpdates.map(item => item.parentId)]
+    const sceneIds = currentScriptItemUpdates.map(item => item.parentId)
+ 
     const uniqueSceneIds = [...new Set(sceneIds)]
 
     //output variables
     let sceneOrderUpdates = []
     let previousCurtainUpdates = []
+
 
     uniqueSceneIds.forEach(sceneId => {
 
@@ -260,9 +261,11 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
         const nextSceneId = nextSceneIdFromScriptItemUpdates || currentScriptItems[sceneId]?.nextId || 0 //0 is the default value for the peviousCurtainOpen state at the end of the show. (relevant for moving scenes)
 
         const newSceneScriptItems = currentScriptItemUpdates.filter(item => item.parentId === sceneId || item.id === sceneId)
+
+      
         const newSceneOrder = refreshSceneOrder(sceneOrders[sceneId], newSceneScriptItems, viewAsPartPerson, currentPartPersons)
 
-        if (newSceneOrder.length > 0) { //this can occur if the scene is inActive
+        if (newSceneOrder.length > 0) { //length = 0 can occur if the scene is inActive
             sceneOrderUpdates.push(newSceneOrder)
 
             const previousCurtainOpen = newSceneOrder[newSceneOrder.length - 1]?.curtainOpen;
@@ -279,18 +282,13 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
 
 
 
-export const isAffectedByViewAsPartPerson = (scene, viewAsPartPerson, sceneOrders, currentPartPersons) => {
+export const isSceneAffectedByViewAsPartPerson = (scene, viewAsPartPerson, currentPartPersons) => {
 
     const scenePartPersonIds = scene.partIds.map(partId => currentPartPersons[partId]).map(partPerson => ({ sceneId: scene.id, partId: partPerson.id, personId: partPerson.personId }))
 
-    const matchesPart = scenePartPersonIds.some(scenePartPerson => scenePartPerson.partId === viewAsPartPerson.id)
+    const match = scenePartPersonIds.some(scenePartPerson => scenePartPerson.partId === viewAsPartPerson?.id || scenePartPerson.personId === viewAsPartPerson?.id) 
 
-    if (!matchesPart) {
-        const matchesPerson = scenePartPersonIds.some(scenePartPerson => scenePartPerson.personId === viewAsPartPerson.id)
-        if (!matchesPerson) return false;
-    }
-
-    return newSceneOrder
+    return match
 }
 
 

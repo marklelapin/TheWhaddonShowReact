@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import {
     updateCurrentPartPersons,
-    updateShowComments,
     addItemsToRedoList,
     removeItemsFromRedoList,
     resetUndo,
@@ -14,7 +13,8 @@ import {
     updatePreviousCurtain,
     updateCurrentScriptItems,
     clearScriptEditorState,
-    UNDO, REDO, CONFIRM_UNDO, CLEAR_SCRIPT
+    updateViewAsPartPerson,
+    UNDO, REDO, CONFIRM_UNDO, CLEAR_SCRIPT, UPDATE_VIEW_AS_PART_PERSON
 
 } from '../../../actions/scriptEditor';
 
@@ -23,7 +23,7 @@ import { log } from '../../../helper';
 import { getTriggerUpdates } from '../scripts/trigger';
 import { getUndoUpdates } from '../scripts/undo';
 import { getScriptItemUpdatesLaterThanCurrent } from '../scripts/scriptItem';
-import { getSceneOrderUpdates, isAffectedByViewAsPartPerson } from '../scripts/sceneOrder';
+import { getSceneOrderUpdates, isSceneAffectedByViewAsPartPerson } from '../scripts/sceneOrder';
 import { newPartPersonsFromPartUpdates, newPartPersonsFromPersonUpdates } from '../scripts/part';
 
 import { addUpdates } from '../../../actions/localServer';
@@ -100,7 +100,7 @@ export function ScriptEditorProcessing() {
         const scenes = sceneOrders[show.id]
         if (scenes) {
             scenes.forEach(scene => {
-                const isAffected = isAffectedByViewAsPartPerson(scene, viewAsPartPerson, currentPartPersons)
+                const isAffected = isSceneAffectedByViewAsPartPerson(scene, viewAsPartPerson, currentPartPersons)
                 if (isAffected) {
                     const newSceneOrder = alignRight(sceneOrders[scene.id], viewAsPartPerson, currentPartPersons)
                     if (newSceneOrder.length > 0) {
@@ -126,8 +126,11 @@ export function ScriptEditorProcessing() {
 
         const { triggerType } = scriptEditorTrigger;
         if (triggerType === CLEAR_SCRIPT) {
-            dispatch(clearScriptEditorState);
+            dispatch(clearScriptEditorState());
             return;
+        }
+        if (triggerType === UPDATE_VIEW_AS_PART_PERSON) {
+            dispatch(updateViewAsPartPerson(scriptEditorTrigger.partPerson))
         }
 
         //Undo processing
@@ -188,7 +191,7 @@ export function ScriptEditorProcessing() {
         }
         if (previousCurtainUpdates.length > 0) {
             previousCurtainUpdates.forEach(previousCurtainUpdate => {
-                dispatch(updatePreviousCurtain(previousCurtainUpdate))
+                dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId,previousCurtainUpdate.previousCurtainOpen))
             })
         }
 
@@ -209,7 +212,7 @@ export function ScriptEditorProcessing() {
 
             const scriptItemUpdates = localServerTrigger.updates
             const currentScriptItemUpdates = getScriptItemUpdatesLaterThanCurrent(scriptItemUpdates, currentScriptItems)
-            const { sceneOrderUpdates, previousCurtainUpdates } = getSceneOrderUpdates(currentScriptItemUpdates, currentScriptItems, sceneOrders)
+            const { sceneOrderUpdates, previousCurtainUpdates } = getSceneOrderUpdates(currentScriptItemUpdates, currentScriptItems, sceneOrders, viewAsPartPerson, currentPartPersons)
 
             if (currentScriptItemUpdates.length > 0) {
                 dispatch(updateCurrentScriptItems(currentScriptItemUpdates))
@@ -219,7 +222,7 @@ export function ScriptEditorProcessing() {
             }
             if (previousCurtainUpdates.length > 0) {
                 previousCurtainUpdates.forEach(previousCurtainUpdate => {
-                    dispatch(updatePreviousCurtain(previousCurtainUpdate))
+                    dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId,previousCurtainUpdate.previousCurtainOpen))
                 })
             }
         }

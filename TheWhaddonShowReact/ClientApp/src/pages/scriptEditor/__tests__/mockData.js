@@ -7,20 +7,20 @@ export const laterCreatedDate = new Date('2023-12-01T00:01:00.000')
 export const muchLaterCreatedDate = new Date('2023-12-01T00:02:00.000')
 export const earlierCreatedDate = new Date('2023-11-30T00:00:00.000')
 //Mock Persons
-export const personA = Object.freeze({ id: 'peA', created: createdDate, firstName: 'Person', lastName: 'A', pictureRef: 'pictures/peA', isActive: true, updatedOnServer: null })
-export const personB = Object.freeze({ id: 'peB', created: createdDate, firstName: 'Person', lastName: 'B', pictureRef: null, isActive: true, updatedOnServer: null })
-
+export const personA = Object.freeze({ id: 'peA', created: createdDate, firstName: 'Albert', lastName: 'A', pictureRef: 'pictures/peA', isActive: true, updatedOnServer: null })
+export const personB = Object.freeze({ id: 'peB', created: createdDate, firstName: 'Bob', lastName: 'B', pictureRef: 'pictures/peB', isActive: true, updatedOnServer: null })
+export const personC = Object.freeze({ id: 'peC', created: createdDate, firstName: 'Carol', lastName: 'C', pictureRef: null, isActive: true, updatedOnServer: null })
 //MOCK SCENES
-export const show = Object.freeze({ id: 'show', created: createdDate, type: SHOW, text: 'Show 1', nextId: 'a1', previousId: null, partIds: [], isActive: true, updatedOnServer: null })
-export const act1 = Object.freeze({ id: 'a1', created: createdDate, type: ACT, text: 'Act 1', nextId: 's1', previousId: 'show', partIds: [], isActive: true, updatedOnServer: null })
-export const scene1 = Object.freeze({ id: 's1', created: createdDate, type: SCENE, text: 'Scene 1', nextId: 's2', previousId: 'a1', partIds: ['p1', 'p2', 'p3'], isActive: true, updatedOnServer: null })
-export const scene2 = Object.freeze({ id: 's2', created: createdDate, type: SCENE, text: 'Scene 2', nextId: 's3', previousId: 's1', partIds: ['p4', 'p5', 'p6'], isActive: true, updatedOnServer: null })
-export const scene3 = Object.freeze({ id: 's3', created: createdDate, type: SCENE, text: 'Scene 3', nextId: 's4', previousId: 's2', partIds: ['p4', 'p5', 'p13'], isActive: true, updatedOnServer: null })
-export const scene4 = Object.freeze({ id: 's4', created: createdDate, type: SCENE, text: 'Scene 4', nextId: 's5', previousId: 's3', partIds: ['p4'], isActive: true, updatedOnServer: null })
-export const scene5 = Object.freeze({ id: 's5', created: createdDate, type: SCENE, text: 'Scene 5', nextId: 'a2', previousId: 's4', partIds: ['p4'], isActive: true, updatedOnServer: null })
-export const act2 = Object.freeze({ id: 'a2', created: createdDate, text: 'Act 2', nextId: 's6', previousId: 's5', partIds: [], isActive: true, updatedOnServer: null })
-export const scene6 = Object.freeze({ id: 's6', created: createdDate, type: SCENE, text: 'Scene 6', nextId: 's7', previousId: 'a2', partIds: ['p1', 'p4'], isActive: true, updatedOnServer: null })
-export const scene7 = Object.freeze({ id: 's7', created: createdDate, type: SCENE, text: 'Scene 7', nextId: null, previousId: 's6', partIds: ['p7', 'p8', 'p9'], isActive: true, updatedOnServer: null })
+export const show = Object.freeze({ id: 'show', created: createdDate, type: SHOW, text: 'Show 1', nextId: 'a1', previousId: null, partIds: [], isActive: true, updatedOnServer: null ,parentId: 'show' })
+export const act1 = Object.freeze({ id: 'a1', created: createdDate, type: ACT, text: 'Act 1', nextId: 's1', previousId: 'show', partIds: [], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene1 = Object.freeze({ id: 's1', created: createdDate, type: SCENE, text: 'Scene 1', nextId: 's2', previousId: 'a1', partIds: ['p1', 'p2', 'p3'], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene2 = Object.freeze({ id: 's2', created: createdDate, type: SCENE, text: 'Scene 2', nextId: 's3', previousId: 's1', partIds: ['p4', 'p5', 'p6'], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene3 = Object.freeze({ id: 's3', created: createdDate, type: SCENE, text: 'Scene 3', nextId: 's4', previousId: 's2', partIds: ['p4', 'p5', 'p13'], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene4 = Object.freeze({ id: 's4', created: createdDate, type: SCENE, text: 'Scene 4', nextId: 's5', previousId: 's3', partIds: ['p4'], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene5 = Object.freeze({ id: 's5', created: createdDate, type: SCENE, text: 'Scene 5', nextId: 'a2', previousId: 's4', partIds: ['p4'], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const act2 = Object.freeze({ id: 'a2', created: createdDate, text: 'Act 2', nextId: 's6', previousId: 's5', partIds: [], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene6 = Object.freeze({ id: 's6', created: createdDate, type: SCENE, text: 'Scene 6', nextId: 's7', previousId: 'a2', partIds: ['p1', 'p4'], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene7 = Object.freeze({ id: 's7', created: createdDate, type: SCENE, text: 'Scene 7', nextId: null, previousId: 's6', partIds: ['p7', 'p8', 'p9'], isActive: true, updatedOnServer: null, parentId: 'show' })
 
 
 
@@ -41,7 +41,7 @@ export const part13 = Object.freeze({ id: 'p13', created: createdDate, name: 'De
 export const partFromServer = Object.freeze({ id: 'pfs', created: laterCreatedDate, name: 'PartFromServer', tags: [], personId: null, isActive: true, updatedOnServer: null })
 export const partFromServerWithPerson = Object.freeze({ id: 'pfs', created: laterCreatedDate, name: 'PartFromServerWithPerson', tags: [], personId: 'peB', isActive: true, updatedOnServer: null })
 export const newPart1FromServer = Object.freeze({ id: 'p1', created: laterCreatedDate, name: 'NewPart1FromServer', tags: [], personId: null, isActive: true, updatedOnServer: null })
-export const earlierPart1FromServer = Object.freeze({ id: 'p1update', created: earlierCreatedDate, name: 'EarlierPart1FromServer', tags: [], personId: null, isActive: true, updatedOnServer: null })
+export const earlierPart1FromServer = Object.freeze({ id: 'p1', created: earlierCreatedDate, name: 'EarlierPart1FromServer', tags: [], personId: null, isActive: true, updatedOnServer: null })
 export const newInactivePart1FromServer = Object.freeze({ id: 'p1', created: laterCreatedDate, name: 'NewInactivePart1FromServer', tags: [], personId: null, isActive: false, updatedOnServer: null })
 
 //MOCK SCRIPT ITEMS
@@ -109,7 +109,7 @@ export const dialogue73 = Object.freeze({ id: 'si73', created: createdDate, type
 
 
 
-export const mockStoredPersons = [personA, personB]
+export const mockStoredPersons = [personA, personB, personC]
 
 
 

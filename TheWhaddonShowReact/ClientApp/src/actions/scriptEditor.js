@@ -3,8 +3,6 @@ import { log } from '../helper'
 /* eslint-disable import/prefer-default-export */
 
 export const UPDATE_SEARCH_PARAMETERS = 'UPDATE_SEARCH_PARAMETERS';
-export const UPDATE_VIEW_COMMENTS = 'UPDATE_VIEW_COMMENTS';
-export const UPDATE_DIALOGUE_RIGHT_ID = 'UPDATE_DIALOGUE_RIGHT_ID'
 export const TOGGLE_SCENE_SELECTOR = 'TOGGLE_SCENE_SELECTOR';
 export const UPDATE_SHOW_COMMENTS = 'SET_SHOW_COMMENTS';
 export const UPDATE_VIEW_AS_PART_PERSON = 'UPDATE_VIEW_AS_PERSON';
@@ -23,7 +21,6 @@ export const CLEAR_IMPORT_UPDATES = 'CLEAR_IMPORT_UPDATES';
 export const CLEAR_SCRIPT_EDITOR_STATE = 'CLEAR_SCRIPT_EDITOR_STATE';
 
 export const SET_SHOW = 'SET_SHOW';
-export const ADD_TEXT_AREA_CONTEXT = 'ADD_TEXT_AREA_CONTEXT';
 export const ADD_ITEMS_TO_REDO_LIST = 'ADD_ITEMS_TO_REDO_LIST';
 export const REMOVE_ITEMS_FROM_REDO_LIST = 'REMOVE_ITEMS_FROM_REDO_LIST';
 export const RESET_UNDO = 'RESET_UNDO';
@@ -67,22 +64,6 @@ export function updateSearchParameters(searchParameters) {
     return {
         type: UPDATE_SEARCH_PARAMETERS,
         searchParameters,
-
-    };
-}
-
-export function updateViewComments(viewComments) {
-    return {
-        type: UPDATE_VIEW_COMMENTS,
-        viewComments,
-
-    };
-}
-
-export function updateDialogueRightId(dialogueRightId) {
-    return {
-        type: UPDATE_DIALOGUE_RIGHT_ID,
-        dialogueRightId,
 
     };
 }
@@ -157,13 +138,6 @@ export function setShow(show) {
     }
 }
 
-export function addTextAreaContext(scriptItemType, context) {
-    return {
-        type: ADD_TEXT_AREA_CONTEXT,
-        scriptItemType,
-        context,
-    }
-}
 
 export function resetUndo() {
     return {
@@ -194,13 +168,6 @@ export function trigger(triggerType, payload) {
     }
 }
 
-export function updatePersonSelectorConfig(config) {
-    return {
-        type: UPDATE_PERSON_SELECTOR_CONFIG,
-        config,
-    }
-}
-
 export function updateCurrentScriptItems(scriptItems) {
     return {
         type: UPDATE_CURRENT_SCRIPT_ITEMS,
@@ -212,5 +179,11 @@ export function updateSceneOrders(sceneOrders) {
     return {
         type: UPDATE_SCENE_ORDERS,
         sceneOrders,
+    }
+}
+export function updatePersonSelectorConfig(config) {
+    return {
+        type: UPDATE_PERSON_SELECTOR_CONFIG,
+        config,
     }
 }

@@ -65,7 +65,7 @@ function PersonSelector(props) {
             dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, personID: person.id }))
 
         } else if (viewAs) {
-            dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { person }))
+            dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: person }))
         } else {
             onSelect(person)
         }

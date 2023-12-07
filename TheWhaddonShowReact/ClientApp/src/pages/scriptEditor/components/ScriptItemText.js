@@ -295,7 +295,7 @@ const handleKeyDown = (e, scriptItem) => {
 
 const handleFocus = () => {
     if (undoInProgress) { dispatch(trigger(CONFIRM_UNDO)) }
-    dispatch(updateScriptItemInFocus({ scriptItemId: scriptItem.id, sceneId: scriptItem.parentId })) //update global state of which item is focussed
+    dispatch(updateScriptItemInFocus( scriptItem.id, scriptItem.parentId )) //update global state of which item is focussed
     toggleMedia(false)
 }
 
