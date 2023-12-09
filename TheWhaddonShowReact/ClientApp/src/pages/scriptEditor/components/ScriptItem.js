@@ -14,7 +14,7 @@ import CheckBox from '../../../components/Forms/CheckBox';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 //utilities
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 //Constants
 import { SCENE, DIALOGUE, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
 //trigger types
@@ -82,7 +82,7 @@ const ScriptItem = memo((props) => {
 
     const handleShowMedia = (value = null) => {
 
-        dispatch(trigger(CONFIRM_UNDO)); //automatically confirms undo if started to add media.
+      //  dispatch(trigger(CONFIRM_UNDO)); //automatically confirms undo if started to add media.
 
         log(debug, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
@@ -94,7 +94,7 @@ const ScriptItem = memo((props) => {
 
     const handleMedia = (type, media) => {
 
-        dispatch(trigger(CONFIRM_UNDO));  //automatically confirms undo if started to add media.
+       // dispatch(trigger(CONFIRM_UNDO));  //automatically confirms undo if started to add media.
 
         let urls = []
 

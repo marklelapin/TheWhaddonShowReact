@@ -18,7 +18,7 @@ import Avatar from '../../../components/Avatar/Avatar'
 
 //utitilites
 import { isSmallerScreen } from '../../../components/Sidebar/Sidebar'
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 
 
 function ScriptViewer(props) {

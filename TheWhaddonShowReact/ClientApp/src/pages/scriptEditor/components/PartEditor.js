@@ -9,7 +9,7 @@ import PartEditorRow from './PartEditorRow';
 import CurtainBackground from './CurtainBackground';
 //Utilities
 
-import { log } from '../../../helper'
+import { log } from '../../../logging'
 
 
 
@@ -56,6 +56,7 @@ function PartEditor(props) {
                         partId={partId}
                         isFirst={scenePartIds.length === 1}
                         sceneId={sceneId}
+                        scenePartIds = {scenePartIds}
                         previousFocusId={previousFocusId}
                         nextFocusId={nextFocusId}
                     />

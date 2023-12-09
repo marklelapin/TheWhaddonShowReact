@@ -19,11 +19,11 @@ import ScriptItemControls, { TOGGLE_PART_SELECTOR, CONFIRM } from './ScriptItemC
 import PartSelectorDropdown from './PartSelectorDropdown';
 
 //Utilities
-import { log } from '../../../helper'
+import { log, PART_EDITOR_ROW as logType } from '../../../logging'
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { DOWN, UP, START, END, ABOVE, BELOW } from '../scripts/utility';
 import { moveFocusToId, closestPosition } from '../scripts/utility';
-
+import {partEditorRowId } from '../scripts/part'
 
 
 //styling
@@ -32,8 +32,8 @@ import s from '../ScriptItem.module.scss'
 function PartEditorRow(props) {
 
     //utility consts
-    const debug = true;
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
+
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
 
 
@@ -43,22 +43,17 @@ function PartEditorRow(props) {
         , isFirst
         , previousFocusId
         , nextFocusId
+        , scenePartIds
     } = props;
-
-
-    log(debug, 'Component:PartEditorRow: props', props)
 
 
     //Redux
     const partPerson = useSelector(state => state.scriptEditor.currentPartPersons[partId])
-    const test = useSelector(state => state.scriptEditor.currentPartPersons)
-
-    log(debug,)
     const nextPartPerson = useSelector(state => state.scriptEditor.currentPartPersons[partPerson?.nextId])
     const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
-    const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
-    const scenePartIds = scene.partIds
+    //const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
+    //const scenePartIds = scene.partIds
 
     const zIndex = 10; //TODO - this needs to be calculated based on the number of parts in the scene
 
@@ -68,7 +63,8 @@ function PartEditorRow(props) {
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
     useEffect(() => {
-        log(debug, 'Component:PartEditorRow useEffect[]')
+        log(logType, 'useEffect[]')
+        log(logType, 'props', props)
         if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
             moveFocusToId(sceneId, START)
         } else { //makes the textarea the focus when created
@@ -78,7 +74,6 @@ function PartEditorRow(props) {
             }
         }
     }, [])
-
 
 
     const partWithTempName = () => {
@@ -102,16 +97,24 @@ function PartEditorRow(props) {
 
     const moveFocus = (direction, position) => {
 
-        const currentPartIndex = scenePartIds.findIndex(item => item.id === partId && item.isActive)
+        const currentPartIndex = scenePartIds.findIndex(id => id === partId)
 
         const nextPart = scenePartIds[currentPartIndex + 1]
         const previousPart = scenePartIds[currentPartIndex - 1]
+        log(logType, 'moveFocus', { partPerson, currentPartIndex, nextPart, previousPart, scenePartIds, sceneId })
+        log(logType, 'partEditorRowId',partEditorRowId(nextPart,sceneId))
 
-        if (direction === UP) { moveFocusToId(previousPart?.id || previousFocusId || partId, position || END); return }
+        let moveToId;
 
-        if (direction === DOWN) { moveFocusToId(nextPart?.id || nextFocusId || partId, position || END); return }
-
+        if (direction === UP && previousPart) moveToId = partEditorRowId(previousPart, sceneId)
+        if (direction === UP && !previousPart) moveToId = previousFocusId
+        if (direction === DOWN && nextPart) moveToId = partEditorRowId(nextPart, sceneId)
+        if (direction === DOWN && !nextPart) moveToId = nextFocusId
+            
+        moveFocusToId(moveToId, position || END); return
     }
+
+
 
     const handleKeyDown = (e) => {
 
@@ -120,7 +123,7 @@ function PartEditorRow(props) {
             if (e.target.selectionEnd === 0) {
                 dispatch(trigger(ADD_PART, { position: ABOVE, sceneId, partId, tempTextValue: tempName }))
             } else {
-              
+
                 dispatch(trigger(ADD_PART, { position: BELOW, sceneId, partId, tempTextValue: tempName }))
             }
             setTempName(null)
@@ -133,7 +136,7 @@ function PartEditorRow(props) {
 
             if (!name || name === null || name === '') {
                 e.preventDefault()
-                log(debug, 'PartPersons: handleKeyDown: Backspace', { name: name, tempName: tempName })
+                log(logType, 'handleKeyDown: Backspace', { name: name, tempName: tempName })
                 partPerson.name = ''
                 dispatch(trigger(DELETE_PART, { direction: UP, sceneId, partId }))
 
@@ -223,14 +226,14 @@ function PartEditorRow(props) {
     }
 
     const handleFocus = () => {
-        dispatch(trigger(CONFIRM_UNDO))
-        dispatch(updateScriptItemInFocus(partId, sceneId )) //update global state of which item is focussed
+        //dispatch(trigger(CONFIRM_UNDO))
+        dispatch(updateScriptItemInFocus(partId, sceneId)) //update global state of which item is focussed
     }
 
 
     const handleBlur = () => {
 
-        log(debug, 'Component:PartEditorRow handleBlur', { tempName: tempName, partName: partPerson.name })
+        log(logType, 'handleBlur', { tempName: tempName, partName: partPerson.name })
         if (tempName || (tempName === '' && partPerson.name !== '')) {
 
             dispatch(trigger(UPDATE_PART_NAME, { partId, value: tempName }))
@@ -242,7 +245,7 @@ function PartEditorRow(props) {
 
         partPerson && (
 
-            <div key={partPerson.id} id={partPerson.id} className={s["part"]} style={{ zIndex: zIndex }}>
+            <div key={partEditorRowId(partId,sceneId)} id={partEditorRowId(partId,sceneId)} className={s["part"]} style={{ zIndex: zIndex }}>
 
                 <PartNameAndAvatar avatar partName
                     avatarInitials={partPerson.avatarInitials}

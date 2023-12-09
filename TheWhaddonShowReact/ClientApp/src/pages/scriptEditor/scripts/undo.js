@@ -2,16 +2,15 @@
 
 import { UNDO, REDO, CONFIRM_UNDO } from '../../../actions/scriptEditor'
 
-export const getUndoUpdates = (props) => {
+export const getUndoUpdates = (triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons, viewAsPartPerson) => {
 
-    const { triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons,storedParts,viewAsPartPerson} = props
 
     let output = {}
 
     switch (triggerType) {
-        case UNDO: output = undo(sceneOrder, currentScriptItems, storedScriptItems, undoSceneId); return
-        case REDO: output = redo(sceneOrder, redoList,currentPartPersons,viewAsPartPerson); return
-        case CONFIRM_UNDO: output = confirmUndo(currentScriptItems, redoList); return;
+        case UNDO: output = undo(sceneOrder, currentScriptItems, storedScriptItems, undoSceneId) || {}; return
+        case REDO: output = redo(sceneOrder, redoList, currentPartPersons, viewAsPartPerson) || {}; return
+        case CONFIRM_UNDO: output = confirmUndo(currentScriptItems, redoList) || {}; return;
         default: break;
     }
 

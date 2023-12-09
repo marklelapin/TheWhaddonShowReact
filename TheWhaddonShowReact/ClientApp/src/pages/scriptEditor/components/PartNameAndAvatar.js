@@ -7,7 +7,7 @@ import {  Input } from 'reactstrap';
 
 import { addPersonInfo } from '../scripts/part'
 
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 import s from '../ScriptItem.module.scss';
 
 function PartNameAndAvatar(props) {

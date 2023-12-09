@@ -8,7 +8,7 @@ import PersonSelector from './PersonSelector'
 
 //utitilites
 
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 
 //Constants
 import ScriptViewerHeader from './ScriptViewerHeader';

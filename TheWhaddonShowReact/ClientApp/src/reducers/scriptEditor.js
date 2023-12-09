@@ -22,7 +22,7 @@ import {
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
 
-import { log } from '../helper';
+import { log, SCRIPT_EDITOR_REDUCER as logType } from '../logging';
 
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 const debug = true;
@@ -155,7 +155,7 @@ export default function scriptEditorReducer(state = initialState, action) {
 
             const newTrigger = { ...action.payload, triggerType: action.triggerType }
 
-            log(debug, 'Reducer:scriptEditor TRIGGER', { newTrigger })
+            log(logType, 'TRIGGER', { newTrigger })
 
             return {
                 ...state,

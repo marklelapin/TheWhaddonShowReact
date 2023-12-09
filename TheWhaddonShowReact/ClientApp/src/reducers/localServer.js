@@ -25,7 +25,7 @@ import {
 } from '../dataAccess/localServerModels';
 import { v4 as uuidv4 } from 'uuid';
 
-import { log } from '../helper.js';
+import { log, LOCAL_SERVER_REDUCER as logType } from '../logging.js';
 
 const defaultState = {
     localCopyId: uuidv4(),
@@ -48,8 +48,6 @@ const defaultState = {
 
 
 export default function localServerReducer(state = defaultState, action) {
-
-    const debug = true;
 
     switch (action.type) {
 
@@ -146,7 +144,7 @@ export default function localServerReducer(state = defaultState, action) {
 
         case ADD_UPDATES:
 
-            log(debug, 'localServer reducer ADD_UPDATES', action.payload)
+            log(logType, 'localServer reducer ADD_UPDATES', action.payload)
 
             if (action.payload.length === 0) { return state }
 
@@ -230,7 +228,7 @@ export default function localServerReducer(state = defaultState, action) {
                 default: return state;
             };
         case SYNC:
-            debug && console.log(`syncing ${action.payloadType}`)
+            log(logType,`syncing ${action.payloadType}`)
             switch (action.payloadType) {
 
                 //**LSMTypeInCode** */
@@ -240,20 +238,15 @@ export default function localServerReducer(state = defaultState, action) {
                 default: return state;
             };
         case END_SYNC:
-            debug && console.log(`end syncing ${action.payloadType}`)
+            log(logType,`end syncing ${action.payloadType}`)
             let lastSyncDate = null
             const error = action.payload
-            debug && console.log('setting lastSyncDate')
             if (error === null) { lastSyncDate = new Date() }
 
             switch (action.payloadType) {
 
                 //**LSMTypeInCode** */
                 case PERSON:
-
-                    debug && console.log(`changing persons redux state: isSyncing: false , error: ${error}, ${lastSyncDate}`)
-
-
                     return {
                         ...state, persons: {
                             ...state.persons, sync: {

@@ -50,7 +50,7 @@ import { getTriggerUpdates } from '../scripts/trigger'
 
 import { CURTAIN, LIGHTING, SOUND, DIALOGUE, OPEN_CURTAIN, CLOSE_CURTAIN } from '../../../dataAccess/scriptItemTypes'
 import { START, END, ABOVE, BELOW, UP, DOWN } from '../scripts/utility'
-import { log } from '../../../helper'
+import { log } from '../../../logging'
 
 const anyValue = expect.anything()
 
@@ -607,7 +607,7 @@ it.each([
     const newPartId = partUpdates.find(item => item.id !== part2.id).id
 
     expect(scriptItemUpdates.length).toEqual(1)
-    expect(sceneOrderUpdates).toEqual([])
+    expect(sceneOrderUpdates.length).toEqual(1)
     expect(previousCurtainUpdates).toEqual([])
     expect(showComments).toEqual(null)
     expect(moveFocus).toEqual(null)
@@ -796,7 +796,7 @@ it.each([
     expect(partUpdates.length).toEqual(1) //because Part13 is not allocated elsewhere (could be zero in other circumstances)
     expect(partPersonUpdates.length).toEqual(1)
 
-    expect(sceneOrderUpdates).toEqual([])
+    expect(sceneOrderUpdates.length).toEqual(1)
     expect(previousCurtainUpdates).toEqual([])
     expect(showComments).toEqual(null)
 

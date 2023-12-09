@@ -4,7 +4,7 @@ import { SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItem
 import { getLatest } from '../../../dataAccess/localServerUtils'
 
 import { getOrderedSceneScriptItems } from './scriptItem'
-import { log } from '../../../helper'
+import { log } from '../../../logging'
 
 export const addPersonsInfo = (parts, persons) => {
 
@@ -200,6 +200,16 @@ export const newPartPersonsFromPersonUpdates = (personUpdates, currentPartPerson
 
     return newPartPersons;
 }
+
+
+export const partEditorRowId = (partId, sceneId) => {
+    if (partId && sceneId) {
+        return `part-${partId}-scene-${sceneId}`
+    }
+    return null
+}
+
+
 const copy = (object) => {
     return JSON.parse(JSON.stringify(object))
 }

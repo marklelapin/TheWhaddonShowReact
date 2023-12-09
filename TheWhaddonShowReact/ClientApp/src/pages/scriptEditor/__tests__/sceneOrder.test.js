@@ -2,7 +2,7 @@
 import {
     sortSceneOrder,
     updateZIndex,
-    refreshHeaderFocus,
+    updateFocusOverrides,
     alignRight,
     refreshSceneOrder,
     mergeSceneOrder,
@@ -47,7 +47,7 @@ import {
 
 } from './mockData'
 
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 
 it.each([
     [1, [scene2, synopsis2, dialogue24, dialogue25, dialogue21, dialogue22, initialCurtain2, initialStaging2, dialogue23], [], part6, mockCurrentPartPersons],
@@ -104,10 +104,9 @@ it.each([
             expect(newSceneOrder[7]).toEqual(currentSceneOrder[7])
             expect(copy(newSceneOrder[8])).toEqual({ ...copy(currentSceneOrder[8]), partIds: ['p4', 'p5'], created: "2023-12-01T00:01:00.000Z" })
             break;
-
         case 2: expect(newSceneOrder).toEqual(currentSceneOrder); break;
         case 3: expect(newSceneOrder).toEqual(currentSceneOrder); break;
-        case 4: expect(newSceneOrder).toEqual(mockSceneOrders[scene1.id]); break;
+        case 4: expect(newSceneOrder).toEqual([scene1, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13, dialogue14]); break;
         default:
             expect(true).toEqual(false); //should never get here - run out of scenarios.
             break;
@@ -222,9 +221,9 @@ it.each([
 
 it.each([
     [mockSceneOrders[scene1.id], ['p4', 'p5', 'p6', 'p10']]
-])('refreshHeaderFocus', (sceneOrder, scenePartIds) => {
+])('updateFocusOverrides', (sceneOrder, scenePartIds) => {
 
-    const newSceneOrder = refreshHeaderFocus(sceneOrder, scenePartIds)
+    const newSceneOrder = copy(updateFocusOverrides(sceneOrder, scenePartIds))
 
     expect(newSceneOrder[0]).toEqual({ ...copy(sceneOrder[0]), previousFocusId: act1.id, nextFocusId: synopsis1.id })
     expect(newSceneOrder[1]).toEqual({ ...copy(sceneOrder[1]), previousFocusId: scene1.id, nextFocusId: part4.id })
@@ -233,7 +232,7 @@ it.each([
     expect(newSceneOrder[4]).toEqual(copy(sceneOrder[4]))
     expect(newSceneOrder[5]).toEqual(copy(sceneOrder[5]))
     expect(newSceneOrder[6]).toEqual(copy(sceneOrder[6]))
-    expect(newSceneOrder[7]).toEqual(copy(sceneOrder[7]))
+    expect(newSceneOrder[7]).toEqual({ ...copy(sceneOrder[7]), nextFocusId: scene2.id })
 })
 
 
@@ -273,8 +272,8 @@ const copy = (object) => {
 it.each([
     [[dialogue11, dialogue12, dialogue13, dialogue14], mockSceneOrders, 1, null],
     [[dialogue11, dialogue22, dialogue33], mockSceneOrders, 3, null],
-    [[show, act1, { ...copy(scene1), text: 'spotThis' }, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13], [], 2, null], //no sceneOrders (must have all parents within scriptITems)
-    [[{ ...copy(scene1), text: 'spotThis' }, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13], { [show.id]: mockSceneOrders[show.id], [act1.id]: mockSceneOrders[act1.id] } //just scene scriptItems but show and act sceneORders in place.
+    [[show, act1, { ...copy(scene1), text: 'spotThis' }, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13,dialogue14], [], 2, null], //no sceneOrders (must have all parents within scriptITems)
+    [[{ ...copy(scene1), text: 'spotThis' }, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13,dialogue14], { [show.id]: mockSceneOrders[show.id], [act1.id]: mockSceneOrders[act1.id] } //just scene scriptItems but show and act sceneORders in place.
         , 2, null]
 
 

@@ -3,13 +3,13 @@ import { clearLocalServerState } from '../actions/localServer'
 import { clearScriptEditorState } from '../actions/scriptEditor'
 
 import { initialState as scriptEditorInitialState } from '../reducers/scriptEditor';
-import {log} from '../helper'
+import {log, LOCAL_STORAGE as logType} from '../logging'
   const debug = true;
 export const saveState = (state) => {
 
     try {
         //properties identified separately are exlcuded from ...stateToSaveToLocalStorage
-        let { localServer, layout } = state;
+        let { localServer, layout, scriptEditor } = state;
 
         //ensure isSyncing is set to false before saving to local storage (otherwise it will be set to true on load and never change)
         localServer = {
@@ -19,7 +19,7 @@ export const saveState = (state) => {
             , parts: { ...localServer.parts, sync: { ...localServer.parts.sync, isSyncing: false } }
         }
 
-        const stateToPersist = { localServer, layout }
+        const stateToPersist = { localServer, layout, scriptEditor }
 
 
 
@@ -40,17 +40,25 @@ export const loadState = () => {
 
         const deserializedState = JSON.parse(serializedState);
 
-        if (new Date(latestLocalServerScriptItems(deserializedState)) !== new Date(latestScriptEditorScriptItems(deserializedState))) {
+        const latestLocalItems = latestLocalServerScriptItems(deserializedState)
+        const latestScriptItems = latestScriptEditorScriptItems(deserializedState)
+
+        const latestLocalParts = latestLocalServerParts(deserializedState)
+        const latestScriptParts = latestScriptEditorParts(deserializedState)
+
+        if (latestLocalItems !== latestScriptItems) {
+            log(logType, 'latest Dates', {latestLocalItems,latestScriptItems})
             throw new Error('LocalServer and scriptEditor ScriptItems are out of sync. Resetting state.')
         }
-        if (new Date(latestLocalServerParts(deserializedState)) !== new Date(latestScriptEditorParts(deserializedState))) {
+        if (latestLocalParts !== latestScriptParts) {
+            log(logType,'latestDates', {latestLocalParts, latestScriptParts })
             throw new Error('LocalServer and scriptEditor Parts are out of sync. Resetting state.')
         }
 
         return deserializedState;
     }
     catch (err) {
-        log(debug,'Failed to get state from local Storage: ' + err);
+        log(logType, 'Failed to get state from local Storage: ' + err);
         return undefined;
     }
 }
@@ -62,7 +70,7 @@ export const clearState = (dispatch) => {
         dispatch(clearScriptEditorState())
     }
     catch (err) {
-        console.log('Failed to clear state from local Storage: ' + err);
+        log(logType,'Failed to clear state from local Storage: ' + err);
     }
 }
 
@@ -73,7 +81,7 @@ const latestLocalServerScriptItems = (state) => {
 
     const latestScriptItem = scriptItems.reduce((acc, item) => {
         if (new Date(item.created) > new Date(acc.created || 0)) {
-            return { item }
+            return  item 
         }
         return acc
     }, {})
@@ -84,11 +92,12 @@ const latestLocalServerScriptItems = (state) => {
 
 const latestScriptEditorScriptItems = (state) => {
 
+    
     const scriptItems = state.scriptEditor.currentScriptItems || {};
 
     const latestScriptItem = Object.values(scriptItems).reduce((acc, item) => {
         if (new Date(item.created) > new Date(acc.created || 0)) {
-            return { item }
+            return  item 
         }
         return acc
     }, {})
@@ -102,7 +111,7 @@ const latestLocalServerParts = (state) => {
 
     const latestPart = parts.reduce((acc, item) => {
         if (new Date(item.created) > new Date(acc.created || 0)) {
-            return { item }
+            return item
         }
         return acc
     }, {})
@@ -113,11 +122,11 @@ const latestLocalServerParts = (state) => {
 
 const latestScriptEditorParts = (state) => {
 
-    const parts = state.scriptEditor.currentParts || {};
+    const parts = state.scriptEditor.currentPartPersons || {};
 
     const latestPart = Object.values(parts).reduce((acc, item) => {
         if (new Date(item.created) > new Date(acc.created || 0)) {
-            return { item }
+            return item 
         }
         return acc
     }, {})

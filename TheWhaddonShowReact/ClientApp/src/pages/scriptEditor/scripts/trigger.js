@@ -36,6 +36,7 @@ import {
 import {
     refreshSceneOrder,
     alignRight,
+    updateFocusOverrides,
 } from '../scripts/sceneOrder'
 
 import { getLatest, prepareUpdates } from '../../../dataAccess/localServerUtils'
@@ -43,7 +44,7 @@ import { getLatest, prepareUpdates } from '../../../dataAccess/localServerUtils'
 import { SCENE, CURTAIN_TYPES, DIALOGUE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
 import { END, UP } from './utility';
 
-import { log } from '../../../helper'
+import { log, SCRIPT_EDITOR_TRIGGER as logType} from '../../../logging'
 
 export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, previousCurtainOpen, show, viewAsPartPerson = null) => {
 
@@ -57,7 +58,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     let moveFocus = null;
     let showComments = null;
 
-
+    log(logType, 'getTriggerUpdates', {trigger})
 
     const { triggerType, value, tag, scriptItem, position, direction, tempTextValue,
         oldPartId, newPartId, partId, personId
@@ -227,7 +228,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             const addPartResult = newUpdatesForAddPart(position, partToAddFrom, tempTextValue, scene);
             partUpdates = addPartResult.newPartUpdates
             scriptItemUpdates = addPartResult.newScriptItemUpdates;
-
+            sceneOrderUpdates.push(updateFocusOverrides(sceneOrder, scriptItemUpdates[0].partIds))
             moveFocus = null //default to newly created part.
             break;
         case DELETE_PART:
@@ -237,6 +238,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
 
             partUpdates = deletePartResult.newPartUpdates
             scriptItemUpdates = deletePartResult.newScriptItemUpdates
+            sceneOrderUpdates.push(updateFocusOverrides(sceneOrder, scriptItemUpdates[0].partIds))
 
             const previousFocusId = sceneOrder.find(item => item.type === SYNOPSIS).id
             const nextFocusId = sceneOrder.find(item => item.type === INITIAL_STAGING).id
@@ -277,7 +279,8 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     const preparedScriptItemUpdates = prepareUpdates(scriptItemUpdates) || []
     const preparedPartUpdates = prepareUpdates(partUpdates) || []
 
-
+    log(logType, 'getTriggerUpdates preparedScriptItemUpdates', preparedScriptItemUpdates)
+    log(logType, 'getTriggerUpdates preparedPartUpates', preparedPartUpdates)
     //SceneOrderUpdates
     let newSceneOrder = sceneOrder;
 

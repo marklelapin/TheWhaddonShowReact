@@ -13,7 +13,7 @@ import PartSelectorDropdown from './PartSelectorDropdown';
 import s from '../ScriptItem.module.scss';
 //Utilities
 
-import { log } from '../../../helper'
+import { log } from '../../../logging'
 
 
 function PartSelector(props) {
@@ -45,7 +45,7 @@ function PartSelector(props) {
 
     const toggleDropdown = (e) => {
         e.stopPropagation();
-        dispatch(trigger(CONFIRM_UNDO)) //confirms undo if user has moved on to another field
+       // dispatch(trigger(CONFIRM_UNDO)) //confirms undo if user has moved on to another field
         setOpenPartSelector(!openPartSelector)
 
     }

@@ -1,7 +1,7 @@
 ﻿
 import { OPEN_CURTAIN, CLOSE_CURTAIN, INITIAL_CURTAIN, CURTAIN, CURTAIN_TYPES } from "../../../dataAccess/scriptItemTypes";
 import {mergeSceneOrder} from './sceneOrder'
-import { log } from '../../../helper'
+import { log } from '../../../logging'
 
 export function refreshCurtain(sceneOrder, newScriptItems = []) {
 

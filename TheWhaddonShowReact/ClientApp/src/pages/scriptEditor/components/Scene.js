@@ -11,8 +11,8 @@ import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
-import { log } from '../../../helper'
-
+import { log } from '../../../logging'
+import { partEditorRowId } from '../scripts/part';
 //styling
 import s from '../Script.module.scss'
 
@@ -73,7 +73,7 @@ function Scene(props) {
                         zIndex={synopsis.zIndex}
                         curtainOpen={previousCurtainOpen}
                         previousFocusId={synopsis.previousFocusId}
-                        nextFocusId={synopsis.nextFocusId}
+                        nextFocusId={partEditorRowId(synopsis.nextFocusId,scene.id)}
                     />
                 }
                 {(scene.type === SCENE) &&
@@ -94,7 +94,7 @@ function Scene(props) {
                             sceneId={scene.id}
                             zIndex={staging.zIndex}
                             curtainOpen={previousCurtainOpen}
-                            previousFocusId={staging.previousFocusId}
+                            previousFocusId={partEditorRowId(staging.previousFocusId,scene.id)}
                             nextFocusId={staging.nextFocusId}
                         />
                     </>

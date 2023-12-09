@@ -10,7 +10,7 @@ import SceneSelectorRow from './SceneSelectorRow'
 
 //Utils
 import { ACT } from '../../../dataAccess/scriptItemTypes'
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 import { moveFocusToId } from '../scripts/utility'
 
 

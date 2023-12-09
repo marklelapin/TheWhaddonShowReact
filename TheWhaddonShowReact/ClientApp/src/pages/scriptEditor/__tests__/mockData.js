@@ -171,9 +171,9 @@ export const mockCurrentPartPersons = {
 
 export const mockSceneOrders = {
     'show': [show, act1, scene1, scene2, scene3, scene4, scene5, act2, scene6, scene7],
-    's1': [scene1, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13, dialogue14],
-    's2': [scene2, synopsis2, initialStaging2, initialCurtain2, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25],
-    's3': [scene3, synopsis3, initialStaging3, initialCurtain3, dialogue31, dialogue32, dialogue33, dialogue34],
+    's1': [{ ...scene1, nextSceneId: scene2.id }, synopsis1, initialStaging1, initialCurtain1, dialogue11, dialogue12, dialogue13, dialogue14],
+    's2': [{ ...scene2, nextSceneId: scene3.id }, synopsis2, initialStaging2, initialCurtain2, dialogue21, dialogue22, dialogue23, dialogue24, dialogue25],
+    's3': [{ ...scene3, nextSceneId: scene4.id }, synopsis3, initialStaging3, initialCurtain3, dialogue31, dialogue32, dialogue33, dialogue34],
     //'s4': [],
     //'s5': [],
     //'s6': [],

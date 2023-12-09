@@ -4,7 +4,7 @@ import { getLatest } from '../../../dataAccess/localServerUtils';
 import { refreshCurtain } from "./curtain";
 import { initial, merge } from "lodash";
 
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 
 const debug = true;
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
@@ -21,7 +21,6 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
     const sortedSceneOrder = sortSceneOrder(head, mergedSceneOrderWithUpdatedHead)
 
     const zIndexedSceneOrder = updateZIndex(sortedSceneOrder)
-
     let finalSceneOrder;
 
     //different processes for different head types
@@ -30,7 +29,7 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
 
         const alignedSceneOrder = (head.type === SCENE) ? alignRight(curtainSceneOrder, viewAsPartPerson, currentPartPersons) : curtainSceneOrder
 
-        finalSceneOrder = refreshHeaderFocus(alignedSceneOrder)
+        finalSceneOrder = updateFocusOverrides(alignedSceneOrder)
     }
 
     if (head.type === SHOW) {
@@ -56,26 +55,33 @@ export const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
 
 export const getHead = (mergedSceneOrder) => {
 
-    let draftHead = null;
-
+    let head = null;
+    
     const show = mergedSceneOrder.find(item => item.type === SHOW)
 
     const scene = mergedSceneOrder.find(item => item.type === SCENE)
 
-    if (show) { draftHead = show } else { draftHead = scene }
+    if (show) {
+        head = show
+    }
+    else if (scene) {
+        //this calculation is required as scene is part of both the show linked llist and its own linked list so needs a nextId swap.
+        head = copy(scene)
+        let headNextId = mergedSceneOrder.find((item) => item.previousId === head.id && item.type !== COMMENT).id;
+        head.nextSceneId = scene.nextId
+        head.nextId = headNextId
+    }
 
 
-    if (draftHead === null || draftHead === undefined) {
+    if (head === null || head === undefined) {
         log(debug, ('Script:SceneOrder getHead - no head found'))
         const emptyHead = {};
         return {
-            head: emptyHead, mergedSceneOrderWithUpdatedHead: []
+            head: emptyHead,
+            mergedSceneOrderWithUpdatedHead: []
         }
     }
 
-    //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Show linked list but also the head of the Scene linked list
-    const headNextId = mergedSceneOrder.find((item) => item.previousId === draftHead.id && item.type !== COMMENT).id;
-    const head = { ...copy(draftHead), nextId: headNextId }
     const mergedSceneOrderWithUpdatedHead = mergedSceneOrder.map(item => {
 
         if (item.id === head.id) {
@@ -178,12 +184,14 @@ export const updateZIndex = (sortedSceneOrder) => {
 }
 
 
-export const refreshHeaderFocus = (sceneOrder, scenePartIds = null) => {
+export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
 
     const scene = copy(sceneOrder.find(item => item.type === SCENE))
+    const partIds = newPartIds || scene.partIds
+
     const synopsis = copy(sceneOrder.find(item => item.type === SYNOPSIS))
     const initialStaging = copy(sceneOrder.find(item => item.type === INITIAL_STAGING))
-    const partIds = scenePartIds || scene.partIds
+    const finalScriptItem = copy(sceneOrder.find(item => item.nextId === null)) 
 
     scene.previousFocusId = scene.previousId
     scene.nextFocusId = synopsis.id
@@ -192,10 +200,14 @@ export const refreshHeaderFocus = (sceneOrder, scenePartIds = null) => {
     initialStaging.previousFocusId = partIds[partIds.length - 1]
     initialStaging.nextFocusId = initialStaging.nextId
 
+    finalScriptItem.nextFocusId = scene.nextSceneId
+
+   
     const newSceneOrder = sceneOrder.map(item => {
-        if (item.type === SCENE) { return scene }
-        if (item.type === SYNOPSIS) { return synopsis }
-        if (item.type === INITIAL_STAGING) { return initialStaging }
+        if (item.type === SCENE) return scene
+        if (item.type === SYNOPSIS) return synopsis
+        if (item.type === INITIAL_STAGING) return initialStaging
+        if (item.id === finalScriptItem.id) return finalScriptItem
         return copy(item)
     })
 
@@ -244,10 +256,10 @@ export const alignRight = (sceneOrder, viewAsPartPerson, currentPartPersons, scr
 }
 
 
-export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItems, sceneOrders,viewAsPartPerson,currentPartPersons) => {
+export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItems, sceneOrders, viewAsPartPerson, currentPartPersons) => {
 
     const sceneIds = currentScriptItemUpdates.map(item => item.parentId)
- 
+
     const uniqueSceneIds = [...new Set(sceneIds)]
 
     //output variables
@@ -262,7 +274,7 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
 
         const newSceneScriptItems = currentScriptItemUpdates.filter(item => item.parentId === sceneId || item.id === sceneId)
 
-      
+
         const newSceneOrder = refreshSceneOrder(sceneOrders[sceneId], newSceneScriptItems, viewAsPartPerson, currentPartPersons)
 
         if (newSceneOrder.length > 0) { //length = 0 can occur if the scene is inActive
@@ -270,11 +282,11 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
 
             const previousCurtainOpen = newSceneOrder[newSceneOrder.length - 1]?.curtainOpen;
             previousCurtainUpdates.push({ sceneId: nextSceneId, previousCurtainOpen })
-           
+
         }
     })
 
-    
+
 
     return { sceneOrderUpdates, previousCurtainUpdates }
 }
@@ -284,9 +296,9 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
 
 export const isSceneAffectedByViewAsPartPerson = (scene, viewAsPartPerson, currentPartPersons) => {
 
-    const scenePartPersonIds = scene.partIds.map(partId => currentPartPersons[partId]).map(partPerson => ({ sceneId: scene.id, partId: partPerson.id, personId: partPerson.personId }))
+    const scenePartPersonIds = scene.partIds.map(partId => currentPartPersons[partId]).map(partPerson => ({ sceneId: scene.id, partId: partPerson?.id, personId: partPerson?.personId }))
 
-    const match = scenePartPersonIds.some(scenePartPerson => scenePartPerson.partId === viewAsPartPerson?.id || scenePartPerson.personId === viewAsPartPerson?.id) 
+    const match = scenePartPersonIds.some(scenePartPerson => scenePartPerson.partId === viewAsPartPerson?.id || scenePartPerson.personId === viewAsPartPerson?.id)
 
     return match
 }

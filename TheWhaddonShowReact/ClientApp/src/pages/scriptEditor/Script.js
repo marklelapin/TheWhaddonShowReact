@@ -12,7 +12,7 @@ import ScriptViewer from './components/ScriptViewer';
 import ShowSelector from './components/ShowSelector';
 
 //Utils
-import { log } from '../../helper.js';
+import { log } from '../../logging.js';
 import isScreen from '../../core/screenHelper';
 
 

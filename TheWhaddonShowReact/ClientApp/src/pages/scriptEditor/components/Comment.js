@@ -12,7 +12,7 @@ import { updateScriptItemInFocus, trigger, DELETE_COMMENT, UPDATE_TEXT, ADD_TAG,
 import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
 
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 //css
 import s from '../ScriptItem.module.scss';
 
@@ -47,11 +47,11 @@ function Comment(props) {
         dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.parentId) )//update global state of which item is focussed
     }
 
-    const handleBlur = () => {
-        log(debug, 'Component:Comment handleBlur ', { tempText })
+    const handleBlur = (e) => {
+        log(debug, 'Component:Comment handleBlur ', { tempText, eventTextValue : e.target.value })
 
-        if (tempText || tempText === '') {
-            dispatch(trigger(UPDATE_TEXT, { scriptItem, value: tempText }))
+        if (scriptItem.text !== e.target.value) {
+            dispatch(trigger(UPDATE_TEXT, { scriptItem, value: e.target.value }))
         }
         setTempText(null)
     }
@@ -77,7 +77,7 @@ function Comment(props) {
                 className={`form-control ${s.autogrow} transition-height ${s['text-input']} text-input`}
                 value={text()}
                 onChange={(e) => handleTextChange(e)}
-                onBlur={() => handleBlur()}
+                onBlur={(e) => handleBlur(e)}
                 onFocus={() => handleFocus()}
             />
 

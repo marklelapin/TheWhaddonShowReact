@@ -24,7 +24,7 @@ import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUN
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 
 //utils
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 
 import { moveFocusToId } from '../scripts/utility';
 

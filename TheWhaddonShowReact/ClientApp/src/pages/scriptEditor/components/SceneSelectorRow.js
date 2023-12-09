@@ -6,7 +6,7 @@ import React from 'react';
 import { Button } from 'reactstrap';
 
 //utils
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 
 function SceneSelectorRow(props) {
 

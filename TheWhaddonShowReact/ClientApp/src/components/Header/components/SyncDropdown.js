@@ -12,7 +12,7 @@ import { clearState } from '../../../dataAccess/localStorage'
 import { setPauseSync } from '../../../actions/localServer';
 //Constants
 import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
-import { log } from '../../../helper';
+import { log, SYNC_DROPDOWN as logType } from '../../../logging';
 
 //css
 import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
@@ -50,6 +50,13 @@ function SyncDropdown(props) {
 
         const syncArray = [personsSync, scriptItemsSync, partsSync]
 
+        const personsCount = persons?.length || 0
+        const scriptItemsCount = scriptItems?.length || 0
+        const partsCount = parts?.length || 0
+
+        const historyCount = (personsCount === 0 || scriptItemsCount === 0 || partsCount === 0) ? 0 : (personsCount + scriptItemsCount + partsCount)
+
+
         let result = syncArray.reduce((acc, item) => {
             // Check isSyncing
             if (item.isSyncing === true) {
@@ -77,6 +84,7 @@ function SyncDropdown(props) {
 
         result.unsyncedUpdates = unsyncedPersonUpdates + unsyncedScriptItemUpdates + unsyncedPartUpdates
 
+        result.historyCount = historyCount;
 
         return result;
 
@@ -131,13 +139,20 @@ function SyncDropdown(props) {
     const getTarget = (type) => {
 
         let target;
+        let historyCount;
 
         switch (type) {
             //**LSMTypeinCode**
             case 'Summary': target = syncSummary(); break;
-            case PERSON: target = { ...personsSync, unsyncedUpdates: unsyncedPersonUpdates }; break;
-            case SCRIPT_ITEM: target = { ...scriptItemsSync, unsyncedUpdates: unsyncedScriptItemUpdates }; break;
-            case PART: target = { ...partsSync, unsyncedUpdates: unsyncedPartUpdates }; break;
+            case PERSON:
+                historyCount = persons?.length || 0
+                target = { ...personsSync, unsyncedUpdates: unsyncedPersonUpdates, historyCount }; break;
+            case SCRIPT_ITEM:
+                historyCount = scriptItems?.length || 0
+                target = { ...scriptItemsSync, unsyncedUpdates: unsyncedScriptItemUpdates, historyCount }; break;
+            case PART:
+                historyCount = parts?.length || 0
+                target = { ...partsSync, unsyncedUpdates: unsyncedPartUpdates, historyCount}; break;
             default: target = null;
         }
 
@@ -148,7 +163,7 @@ function SyncDropdown(props) {
     const syncText = (type) => {
 
         const target = getTarget(type)
-        log(debug, 'SyncDropdown: syncTexttarget', { ...target, type: type })
+        log(logType, 'syncTexttarget', { ...target, type: type })
 
         if (target === null) return (<></>);
 
@@ -169,8 +184,9 @@ function SyncDropdown(props) {
 
             <>
                 {target.isSyncing && <Loader size={16} />}
+                {target.isSyncing && target.historyCount === 0 && <>Syncing...</>}
 
-                {(target.unsyncedUpdates === 0) && <><Icon icon="tick" strapColor="success" />Synced</>}
+                {(target.unsyncedUpdates === 0 && target.historyCount > 0) && <><Icon icon="tick" strapColor="success" />Synced</>}
 
                 {target.unsyncedUpdates > 0 &&
                     <>
@@ -180,10 +196,12 @@ function SyncDropdown(props) {
                         }
 
                         {target.unsyncedUpdates} unsynced updates 
-                        {textTimeSince}
+                        {textTimeSince}.
                     </>
 
                 }
+
+                {!target.isSyncing && target.historyCount ===0 && <>Not synced!</>  }
             </>
         )
 

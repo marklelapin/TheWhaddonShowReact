@@ -4,19 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSync } from '../dataAccess/localServerUtils';
 import { sync } from '../actions/localServer';
 import { PERSON, SCRIPT_ITEM, PART } from '../dataAccess/localServerModels';
-import { log } from '../helper';
+import { log, LOCAL_SERVER_SYNCING as logType } from '../logging';
 
 export function LocalServerSyncing() {
 
-    const debug = true;
     const dispatch = useDispatch();
 
     const pauseSync = useSelector(state => state.localServer.sync.pauseSync);
-    log(debug, 'LocalServerSyncing: pauseSync', pauseSync)
+    log(logType, 'pauseSync:', pauseSync)
 
 
     const syncWithServer = (pauseSync) => {
-        log(debug, 'LocalServerSyncing: syncWithServer pauseSync', pauseSync)
+        log(logType, 'syncWithServer pauseSync:', pauseSync)
         if (!pauseSync) {
             dispatch(sync(SCRIPT_ITEM))
             dispatch(sync(PART))

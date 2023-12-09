@@ -15,7 +15,7 @@ import { Table, Button } from 'reactstrap';
 import User from './User';
 import { PersonUpdate } from '../../../dataAccess/localServerModels';
 import Widget from '../../../components/Widget';
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 //SASS
 import s from '../Users.module.scss';
 

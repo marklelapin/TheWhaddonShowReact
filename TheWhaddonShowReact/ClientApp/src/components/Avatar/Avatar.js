@@ -10,7 +10,7 @@ import { AVATARS } from '../../dataAccess/storageContainerNames';
 import adminDefault from '../../images/chat/chat2.png';
 
 //utils
-import { log } from '../../helper';
+import { log } from '../../logging';
 
 import s from './Avatar.module.scss'; 
 

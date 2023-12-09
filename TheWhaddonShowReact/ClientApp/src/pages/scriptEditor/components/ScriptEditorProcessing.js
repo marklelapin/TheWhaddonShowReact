@@ -19,7 +19,7 @@ import {
 } from '../../../actions/scriptEditor';
 
 //utils
-import { log } from '../../../helper';
+import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../logging';
 import { getTriggerUpdates } from '../scripts/trigger';
 import { getUndoUpdates } from '../scripts/undo';
 import { getScriptItemUpdatesLaterThanCurrent } from '../scripts/scriptItem';
@@ -43,8 +43,6 @@ export function ScriptEditorProcessing() {
 
     const _ = require('lodash');
     const dispatch = useDispatch();
-
-    const debug = true;
 
     ///REDUX
     //localServer (handles syncing)
@@ -74,7 +72,7 @@ export function ScriptEditorProcessing() {
 
     //undo process
     const isUndoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress) || {}
-    const undoSceneId = Object.keys(isUndoInProgress)[0]
+    const undoSceneId = Object.keys(isUndoInProgress)[0] || null
     const redoList = useSelector(state => state.scriptEditor.redoList)
 
     useEffect(() => {
@@ -85,7 +83,7 @@ export function ScriptEditorProcessing() {
             }
         }
 
-        if (currentFocus && currentFocus.sceneId !== sceneInFocus.id) {
+        if (currentFocus && currentFocus.sceneId !== sceneInFocus?.id) {
 
             const newSceneInFocus = currentScriptItems[scriptItemInFocus.parentId]
 
@@ -120,11 +118,17 @@ export function ScriptEditorProcessing() {
 
     useEffect(() => {
 
-        log(debug, 'Component:ScriptEditorProcessing: ScriptEditorTrigger', scriptEditorTrigger)
-
+        log(logType, 'UseEffect :', {scriptEditorTrigger,undoSceneId})
         if (!scriptEditorTrigger || Object.keys(scriptEditorTrigger).length === 0) return
 
         const { triggerType } = scriptEditorTrigger;
+
+        if (triggerType === CONFIRM_UNDO && undoSceneId === null) {
+            return;
+        } else {
+            log(logType, 'ScriptEditorTrigger', scriptEditorTrigger)
+        }
+
         if (triggerType === CLEAR_SCRIPT) {
             dispatch(clearScriptEditorState());
             return;
@@ -133,11 +137,15 @@ export function ScriptEditorProcessing() {
             dispatch(updateViewAsPartPerson(scriptEditorTrigger.partPerson))
         }
 
+
+
         //Undo processing
         //---------------------------------------------------------------------------------
         if ([UNDO, REDO, CONFIRM_UNDO].includes(triggerType)) {
             const sceneId = scriptEditorTrigger.sceneId || undoSceneId
             const sceneOrder = sceneOrders[sceneId]
+
+            const undoUpdates = getUndoUpdates(triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons, viewAsPartPerson) || {}
 
             const { currentScriptItemUpdates = [],
                 redoListUpdates = [],
@@ -145,7 +153,9 @@ export function ScriptEditorProcessing() {
                 scriptItemUpdates = [],
                 sceneOrderUpdates = [],
                 doResetUndo = false
-            } = getUndoUpdates({ triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons, storedParts, viewAsPartPerson })
+            } = undoUpdates
+
+
             if (currentScriptItemUpdates) {
                 dispatch(updateCurrentScriptItems(currentScriptItemUpdates));
             }
@@ -176,7 +186,9 @@ export function ScriptEditorProcessing() {
             sceneOrderUpdates = [],
             previousCurtainUpdates = [],
             moveFocus = null
-        } = getTriggerUpdates({ trigger: scriptEditorTrigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, previousCurtainOpen, show, viewAsPartPerson })
+        } = getTriggerUpdates(scriptEditorTrigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, previousCurtainOpen, show, viewAsPartPerson)
+
+        log(logType, 'ScriptEditorTrigger prior to dispatch', { partUpdates, partPersonUpdates, scriptItemUpdates, sceneOrderUpdates, previousCurtainUpdates })
 
         //Dispatch updates   
         if (scriptItemUpdates.length > 0) {
@@ -191,7 +203,7 @@ export function ScriptEditorProcessing() {
         }
         if (previousCurtainUpdates.length > 0) {
             previousCurtainUpdates.forEach(previousCurtainUpdate => {
-                dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId,previousCurtainUpdate.previousCurtainOpen))
+                dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId, previousCurtainUpdate.previousCurtainOpen))
             })
         }
 
@@ -206,7 +218,7 @@ export function ScriptEditorProcessing() {
 
     //Refresh trigger used to update scriptEditorScenes with additional partPerson info.
     useEffect(() => {
-        log(debug, 'Component:ScriptEditorProcessing localServerTrigger', { type: localServerTrigger.type, updates: localServerTrigger.updates?.length })
+        log(logType, 'localServerTrigger', { type: localServerTrigger.type, updates: localServerTrigger.updates?.length })
 
         if (localServerTrigger.updates && localServerTrigger.type === SCRIPT_ITEM) {
 
@@ -222,7 +234,7 @@ export function ScriptEditorProcessing() {
             }
             if (previousCurtainUpdates.length > 0) {
                 previousCurtainUpdates.forEach(previousCurtainUpdate => {
-                    dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId,previousCurtainUpdate.previousCurtainOpen))
+                    dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId, previousCurtainUpdate.previousCurtainOpen))
                 })
             }
         }

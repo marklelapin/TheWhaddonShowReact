@@ -1,4 +1,4 @@
-import { log } from '../helper'
+import { log } from '../logging'
 
 /* eslint-disable import/prefer-default-export */
 
@@ -28,11 +28,11 @@ export const RESET_UNDO = 'RESET_UNDO';
 export const TRIGGER = 'TRIGGER';
 
 //Trigger types 
-export const UPDATE_TEXT = 'TEXT';
-export const UPDATE_PART_IDS = 'PART_IDS';
-export const UPDATE_TAGS = 'TAGS';
-export const UPDATE_ATTACHMENTS = 'ATTACHMENTS';
-export const UPDATE_TYPE = 'TYPE';
+export const UPDATE_TEXT = 'UPDATE_TEXT';
+export const UPDATE_PART_IDS = 'UPDATE_PART_IDS';
+export const UPDATE_TAGS = 'UPDATE_TAGS';
+export const UPDATE_ATTACHMENTS = 'UPDATE_ATTACHMENTS';
+export const UPDATE_TYPE = 'UPDATE_TYPE';
 export const TOGGLE_CURTAIN = 'TOGGLE_CURTAIN';
 export const ADD_COMMENT = 'ADD_COMMENT';
 export const ADD_TAG = 'ADD_TAG';

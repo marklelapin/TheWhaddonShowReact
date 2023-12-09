@@ -1,12 +1,14 @@
 ﻿import React from 'react';
 import { useSelector  } from 'react-redux';
 
-import {STAGING, INITIAL_STAGING, DIALOGUE} from '../../../dataAccess/scriptItemTypes';
+import {STAGING, INITIAL_STAGING, DIALOGUE, TYPES_WITH_HEADER} from '../../../dataAccess/scriptItemTypes';
 
 import s from '../ScriptItem.module.scss';
 function ScriptItemHeader(props) {
 
     const { type, partIds = null } = props;
+
+    if (TYPES_WITH_HEADER.includes(type) === false) return null;
 
     return (
 

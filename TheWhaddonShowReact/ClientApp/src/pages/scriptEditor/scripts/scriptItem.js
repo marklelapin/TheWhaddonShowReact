@@ -3,7 +3,7 @@ import { OPEN_CURTAIN, SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, DIA
 import { ABOVE, BELOW } from './utility';
 
 import { ScriptItemUpdate, PartUpdate } from "../../../dataAccess/localServerModels";
-import { log } from '../../../helper'
+import { log } from '../../../logging'
 
 export function newScriptItemsForCreateShow(title) {
 
