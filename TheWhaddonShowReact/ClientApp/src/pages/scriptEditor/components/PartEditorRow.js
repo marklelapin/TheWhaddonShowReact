@@ -204,6 +204,11 @@ function PartEditorRow(props) {
             return
         }
 
+        if (e.key === 'tab') {
+            e.preventDefault()
+            moveFocus(DOWN, closestPosition(e))
+            return
+        }
     }
 
     const handleControlsClick = (action, e) => {
@@ -231,12 +236,12 @@ function PartEditorRow(props) {
     }
 
 
-    const handleBlur = () => {
+    const handleBlur = (e) => {
 
-        log(logType, 'handleBlur', { tempName: tempName, partName: partPerson.name })
-        if (tempName || (tempName === '' && partPerson.name !== '')) {
+        log(logType, 'handleBlur', { eventTextValue: e.target.value, partName: partPerson.name })
+        if (partPerson.name !== e.target.value) {
 
-            dispatch(trigger(UPDATE_PART_NAME, { partId, value: tempName }))
+            dispatch(trigger(UPDATE_PART_NAME, { partId, value: e.target.value }))
         }
         setTempName(null)
     }
@@ -253,7 +258,7 @@ function PartEditorRow(props) {
                     onAvatarClick={() => dispatch(updatePersonSelectorConfig({ sceneId, partId }))}
                     onNameChange={(text) => handleNameChange(text)}
                     onKeyDown={(e) => handleKeyDown(e)}
-                    onBlur={() => handleBlur()}
+                    onBlur={(e) => handleBlur(e)}
                     onFocus={() => handleFocus()}
                 />
 

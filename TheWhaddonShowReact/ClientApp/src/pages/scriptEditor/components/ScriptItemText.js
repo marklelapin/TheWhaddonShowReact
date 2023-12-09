@@ -272,7 +272,7 @@ function ScriptItemText(props) {
 
         if (e.key === 'Tab') {
             e.preventDefault()
-            handleBlur();
+           moveFocus(DOWN,END)
         }
 
         if (e.ctrlKey && e.key === 'z' && tempTextValue === scriptItem.text) {

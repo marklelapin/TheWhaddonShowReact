@@ -10,10 +10,10 @@ export const LOCAL_SERVER_REDUCER = { type: NONE, location: 'Reducer:localServer
 
 export const LOCAL_STORAGE = {type:NONE, location: 'Script:localStorage'}
 
-export const PART_EDITOR_ROW = {type: NONE, location: 'Component:PartEditorRow'}
+export const PART_EDITOR_ROW = {type: DEBUG, location: 'Component:PartEditorRow'}
 
 export const SCRIPT_EDITOR_PROCESSING = { type: DEBUG, location: 'Component:ScriptEditorProcessing' }
-export const SCRIPT_EDITOR_REDUCER = {type: NONE, location: 'Reducer:scriptEditor'}
+export const SCRIPT_EDITOR_REDUCER = {type: DEBUG, location: 'Reducer:scriptEditor'}
 export const SCRIPT_EDITOR_TRIGGER = { type: NONE, location: 'Script:trigger' }
 export const SCRIPT_EDITOR_UTILITY = { type: NONE, location: 'Script:utility' }
 

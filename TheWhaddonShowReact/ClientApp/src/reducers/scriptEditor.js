@@ -66,7 +66,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 searchParameters: action.searchParameters,
             };
-     
+
         case TOGGLE_SCENE_SELECTOR:
             return {
                 ...state,
@@ -84,13 +84,11 @@ export default function scriptEditorReducer(state = initialState, action) {
             };
 
         case UPDATE_CURRENT_PART_PERSONS:
-
+            log(logType, 'UPDATE_CURRENT_PART_PERSONS action.partPersons: ', action.partPersons.length)
             const updatedPartPersons = action.partPersons.reduce((acc, partPerson) => {
                 acc[partPerson.id] = { ...partPerson };
                 return acc;
             }, { ...state.currentPartPersons });
-
-            log(debug, 'Reducer:UPDATE_CURRENT_PART_PERSONS updatedPartPersons', updatedPartPersons)
 
             return {
                 ...state,
@@ -162,7 +160,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 trigger: newTrigger,
             }
         case UPDATE_CURRENT_SCRIPT_ITEMS:
-
+            log(logType,'UPDATE_CURRENT_SCRIPT_ITEMS action.scriptItems: ', action.scriptItems.length)
             //update created dates for sceneOrders (mutating the state on purpose) - this created date shouldn't cause a re-render
             //it is used for quick look up of the latest created date when undoing.
             //ensures that sceneOrder created matches the currentSCriptItems created date
@@ -183,6 +181,9 @@ export default function scriptEditorReducer(state = initialState, action) {
                 return acc;
             }, { ...state.currentScriptItems });
 
+            action.scriptItems.forEach(scriptItem => {
+                log(logType, 'UPDATE_CURRENT_SCRIPT_ITEMS', updatedScriptItems[scriptItem])
+            })
 
 
             return {

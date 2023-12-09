@@ -157,6 +157,7 @@ export function ScriptEditorProcessing() {
 
 
             if (currentScriptItemUpdates) {
+                log(logType, 'dispatch updateCurrentScriptItems', currentScriptItemUpdates)
                 dispatch(updateCurrentScriptItems(currentScriptItemUpdates));
             }
             if (sceneOrderUpdates) {
@@ -190,11 +191,13 @@ export function ScriptEditorProcessing() {
 
         log(logType, 'ScriptEditorTrigger prior to dispatch', { partUpdates, partPersonUpdates, scriptItemUpdates, sceneOrderUpdates, previousCurtainUpdates })
 
-        //Dispatch updates   
+        //Dispatch updates
         if (scriptItemUpdates.length > 0) {
+            dispatch(updateCurrentScriptItems(scriptItemUpdates))
             dispatch(addUpdates(scriptItemUpdates, SCRIPT_ITEM)) //localServer
         }
-        if (partUpdates.Length > 0) {
+        if (partUpdates.length > 0) {
+            log(logType,'partUpdates dispatch')
             dispatch(addUpdates(partUpdates, PART)) //localServer
             dispatch(updateCurrentPartPersons(partPersonUpdates))
         }

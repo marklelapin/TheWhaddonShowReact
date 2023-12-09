@@ -318,30 +318,19 @@ export function prepareUpdate(updates, adjustment) {
 
 export function prepareUpdates(updates, adjustment = 1) {
 
-    let output = updates
+    const outputArray = (!Array.isArray(updates)) ? [updates] : updates
 
-    if (!Array.isArray(updates)) {
-        output = [updates]
-    }
+    const cleanedOutputArray = outputArray.filter((update) => update.id !== null && update.id !== undefined);
 
     const createdDate = localServerDateNow(adjustment)
 
-
-    output.forEach((update, index) => {
-
-        output[index] = { ...update, created: createdDate, updatedOnServer: null }
-    })
-
-    output.forEach((update) => {
-
+    const preparedUpdates = cleanedOutputArray.map((update) => {
         delete update.new
         delete update.changed
-
+        return {...update, created: createdDate, updatedOnServer: null }
     })
 
-    return output;
-
-
+    return preparedUpdates;
 }
 
 
