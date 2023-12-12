@@ -68,7 +68,7 @@ import {
 import { SHOW, ACT, SCENE, STAGING, DIALOGUE, SYNOPSIS, INITIAL_CURTAIN, INITIAL_STAGING, COMMENT } from '../../../dataAccess/scriptItemTypes';
 
 import { ABOVE, BELOW } from '../scripts/utility'
-import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
+
 import { log } from '../../../logging';
 
 

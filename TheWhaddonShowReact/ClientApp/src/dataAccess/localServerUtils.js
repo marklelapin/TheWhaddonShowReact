@@ -19,13 +19,12 @@ import {
     processServerToLocalPostBacks,
     addUpdates,
     clearConflicts,
-    //updateConnectionStatus,
     endSync,
     closePostBack,
-
+    clearHasPostedBack
 } from '../actions/localServer';
 
-import { log, LOCAL_SERVER_UTILS as logType} from '../logging.js';
+import { log, LOCAL_SERVER_UTILS as logType } from '../logging.js';
 
 
 export async function useSync() {
@@ -117,18 +116,18 @@ export async function useSync() {
 
     //The actual sync operation
     //-------------------------------------------------------------------------------
-    const sync = async(data, type) => {
+    const sync = async (data, type) => {
 
         let error;
-
+        const postBacksFromLocal = data.filter(x => x.hasPostedBack !== true).map(x => ({ id: x.id, created: x.created, isConflicted: x.isConflicted }))
         try {
 
-            const syncData = await createSyncData(data, localCopyId)
+            const syncData = await createSyncData(data, localCopyId, postBacksFromLocal)
 
             const syncResponse = await postSyncData(syncData, type)
 
             if (syncResponse.status === 200) {
-                const cbpSuccess = await closePostBacks(syncResponse.data.postBacks, type)
+                const cbpSuccess = await closePostBacks(postBacksFromLocal, type)
 
                 const psrSuccess = await processSyncResponse(syncResponse.data, type)
 
@@ -153,14 +152,15 @@ export async function useSync() {
     }
 
 
-    const createSyncData = async (data, copyId) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
+
+    const createSyncData = async (data, copyId, postBacksFromLocal) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
 
         //log(logType,'Redux store data: ', data)
 
         try {
             const syncData = new LocalToServerSyncData(
                 copyId  //identifies the local copy that the data is coming from
-                , data.filter(x => x.hasPostedBack !== true).map(x => ({ id: x.id, created: x.created, isConflicted: x.isConflicted })) // confirmation back to server that updates in the post back have been added to Local.
+                , postBacksFromLocal // confirmation back to server that updates in the post back have been added to Local.
                 , data.filter(x => x.updatedOnServer === null) //local data that hasn't yet been added to server
             )
 
@@ -238,6 +238,7 @@ export async function useSync() {
             else {
                 log(logType, 'Processing updates. ', { type });
                 dispatch(addUpdates(responseData.updates, type))
+                dispatch(clearHasPostedBack(responseData.updates, type)) //TODO - deletes hasPostedBack if there is a value (if it has already postBack but localSErverEngine is still sending the updatea then postBack needs to be resent.)
             }
 
             process = 'conflicts'
@@ -246,17 +247,17 @@ export async function useSync() {
 
             }
             else {
-                log(logType,'Clearing conflicts.')
+                log(logType, 'Clearing conflicts.')
                 dispatch(clearConflicts(responseData.conflictIdsToClear))
             }
 
             process = 'lastSyncDate'
             if (responseData.lastSyncDate == null) {
-                log(logType,'No last sync date to update.')
+                log(logType, 'No last sync date to update.')
             }
 
             else {
-                log(logType,'Updating last sync date.')
+                log(logType, 'Updating last sync date.')
                 dispatch(updateLastSyncDate(responseData.lastSyncDate))
             }
 
@@ -327,7 +328,7 @@ export function prepareUpdates(updates, adjustment = 1) {
     const preparedUpdates = cleanedOutputArray.map((update) => {
         delete update.new
         delete update.changed
-        return {...update, created: createdDate, updatedOnServer: null }
+        return { ...update, created: createdDate, updatedOnServer: null }
     })
 
     return preparedUpdates;

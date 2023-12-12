@@ -2,7 +2,6 @@
 import { UP, DOWN, START, END, BELOW } from './utility.js'
 import { SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes'
 import { getLatest } from '../../../dataAccess/localServerUtils'
-
 import { getOrderedSceneScriptItems } from './scriptItem'
 import { log } from '../../../logging'
 
@@ -128,13 +127,13 @@ export const getDeleteMoveFocus = (partToDelete, scene, direction, previousFocus
     let newFocusPosition = END;
 
     if (direction === UP && previousPartId(partToDelete, scene)) {
-        newFocusId = previousPartId(partToDelete,scene)
+        newFocusId = partEditorRowId(previousPartId(partToDelete,scene),scene.id)
         newFocusPosition = END
     } else if (direction === UP && !previousPartId(partToDelete, scene)) {
         newFocusId = previousFocusId;
         newFocusPosition = END
     } else if (direction === DOWN && nextPartId(partToDelete,scene)) {
-        newFocusId = nextPartId(partToDelete,scene)
+        newFocusId = partEditorRowId(nextPartId(partToDelete,scene), scene.id)
         newFocusPosition = START
     } else if (direction === DOWN && !nextPartId(partToDelete,scene)) {
         newFocusId = nextFocusId;

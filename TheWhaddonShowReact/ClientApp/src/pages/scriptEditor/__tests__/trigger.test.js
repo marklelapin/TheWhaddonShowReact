@@ -401,8 +401,8 @@ it.each([
     expect(showComments).toEqual(null)
 
     if (scenario === 1) expect(moveFocus).toEqual({ id: dialogue22.id, position: END })
-    if (scenario === 2) expect(moveFocus).toEqual({ id: dialogue24.id, position: END })
-    if (scenario === 3) expect(moveFocus).toEqual({ id: dialogue24.id, position: END })
+    if (scenario === 2) expect(moveFocus).toEqual({ id: dialogue24.id, position: START })
+    if (scenario === 3) expect(moveFocus).toEqual({ id: dialogue24.id, position: START })
 
 })
 
@@ -801,7 +801,7 @@ it.each([
     expect(showComments).toEqual(null)
 
 
-    if (scenario === 1) expect(moveFocus).toEqual({ id: part5.id, position: END })
+    if (scenario === 1) expect(moveFocus).toEqual({ id: `part-${part5.id}-scene-${scene3.id}`, position: END })
 
     if (scenario === 2) expect(moveFocus).toEqual({ id: initialStaging3.id, position: START })
 
@@ -847,7 +847,7 @@ it.each([
     expect(showComments).toEqual(null)
 
 
-    if (scenario === 1) expect(moveFocus).toEqual({ id: part5.id, position: END })
+    if (scenario === 1) expect(moveFocus).toEqual({ id: `part-${part5.id}-scene-${scene3.id}`, position: END })
 
     if (scenario === 2) expect(moveFocus).toEqual({ id: initialStaging3.id, position: START })
 

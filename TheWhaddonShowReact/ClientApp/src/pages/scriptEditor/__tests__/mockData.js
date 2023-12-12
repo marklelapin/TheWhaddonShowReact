@@ -114,7 +114,6 @@ export const mockStoredPersons = [personA, personB, personC]
 
 
 export const mockCurrentScriptItems = {
-
     'show': show,
     'a1': act1,
     's1': scene1,

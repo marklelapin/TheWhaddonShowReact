@@ -17,6 +17,7 @@ import Widget from '../../../components/Widget';
 import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts';
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { moveFocusToId, END } from '../scripts/utility';
+import { log, PERSON_SELECTOR as logType } from '../../../logging';
 
 import s from '../Script.module.scss'
 
@@ -62,9 +63,11 @@ function PersonSelector(props) {
     const handleClick = (person) => {
 
         if (partId) {
-            dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, personID: person.id }))
+            log(logType, 'handleClick ALLOCATE_PERSON_TO_PART', { partId, person })
+            dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, personId: person.id }))
 
         } else if (viewAs) {
+            log(logType, 'handleClick UPDATE_VIEW_AS_PART_PERSON', { person })
             dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: person }))
         } else {
             onSelect(person)

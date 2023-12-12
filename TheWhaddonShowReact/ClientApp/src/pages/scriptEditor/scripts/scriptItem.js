@@ -91,7 +91,7 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems, 
 
     let previousScriptItem = copy(currentScriptItems[deleteScriptItem.previousId])
     let nextScriptItem = (deleteScriptItem.nextId) ? copy(currentScriptItems[deleteScriptItem.nextId]) : null
-    
+
 
     if (nextScriptItem) {
         previousScriptItem.nextId = nextScriptItem.id
@@ -102,7 +102,7 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems, 
         previousScriptItem.nextId = null
         newScriptItems.push(previousScriptItem)
     }
-    
+
 
     deleteScriptItem.isActive = false
     newScriptItems.push(deleteScriptItem)
@@ -182,15 +182,41 @@ export function newScriptItemsForMoveScene(scene, newPreviousId, currentScriptIt
     let newPreviousScene = copy(currentScriptItems[newPreviousId])
     let newNextScene = (newPreviousScene.nextId) ? copy(currentScriptItems[newPreviousScene.nextId]) : null
 
+    if (oldPreviousScene.id === newNextScene.id) {
 
-    oldPreviousScene.nextId = oldNextScene?.id || null
-    if (oldNextScene) { oldNextScene.previousId = oldPreviousScene.id }
+        oldPreviousScene.nextId = movingScene.nextId
+        oldPreviousScene.previousId = movingScene.id
 
-    movingScene.previousId = newPreviousScene.id
-    movingScene.nextId = newNextScene?.id || null
+        if (oldNextScene) { oldNextScene.previousId = oldPreviousScene.id }
 
-    newPreviousScene.nextId = movingScene.id
-    if (newNextScene) { newNextScene.previousId = movingScene.id }
+        newPreviousScene.nextId = movingScene.id
+
+        newNextScene = null // as same as oldPreviousScene
+
+        movingScene.previousId = newPreviousScene.id
+        movingScene.nextId = oldPreviousScene.id
+    } else if (oldNextScene.id === newPreviousScene.id) {
+
+        oldPreviousScene.nextId = oldNextScene.id
+        newPreviousScene.previousId = oldPreviousScene.id
+
+        oldNextScene = null //as same as newPreviousScene
+
+        newPreviousScene.nextId = movingScene.id
+        movingScene.previousId = newPreviousScene.id
+
+        if (newNextScene) { newNextScene.previousId = movingScene.id }
+
+    } else {
+        oldPreviousScene.nextId = movingScene.nextId
+        if (oldNextScene) { oldNextScene.previousId = movingScene.previousId }
+
+        newPreviousScene.nextId = movingScene.id
+        if (newNextScene) { newNextScene.previousId = movingScene.id }
+
+        movingScene.previousId = newPreviousScene.id
+        movingScene.nextId = newNextScene?.id || null
+    }
 
 
     const updates = [];
@@ -237,7 +263,7 @@ export const newScriptItemsForDeleteComment = (scriptItem, currentScriptItems) =
 }
 
 
-export const newUpdatesForSwapPart = (oldPartId, newPartId, currentSceneScriptItemsArray,showOrder,currentPartPersons) => {
+export const newUpdatesForSwapPart = (oldPartId, newPartId, currentSceneScriptItemsArray, showOrder, currentPartPersons) => {
 
     //output
     const newPartUpdates = [];
@@ -261,9 +287,9 @@ export const newUpdatesForSwapPart = (oldPartId, newPartId, currentSceneScriptIt
 
     }).filter(item => item !== null)
 
-    
+
     const usedElsewhere = showOrder.some(sceneItem => sceneItem.partIds.includes(oldPartId) && sceneItem.id !== scene.id);
-   
+
     if (!usedElsewhere) {
         let partToDelete = copy(currentPartPersons[oldPartId])
         partToDelete.isActive = false

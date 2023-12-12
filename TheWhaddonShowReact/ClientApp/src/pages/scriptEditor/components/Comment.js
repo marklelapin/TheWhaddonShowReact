@@ -12,14 +12,13 @@ import { updateScriptItemInFocus, trigger, DELETE_COMMENT, UPDATE_TEXT, ADD_TAG,
 import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
 
-import { log } from '../../../logging';
+import { log, COMMENT as logType } from '../../../logging';
 //css
 import s from '../ScriptItem.module.scss';
 
 function Comment(props) {
 
     //constants
-    const debug = true;
     const dispatch = useDispatch();
     const tagOptions = ['Guy ToDo', 'Mark C ToDo', 'Heather ToDo', 'Mark B ToDo'];
 
@@ -30,17 +29,17 @@ function Comment(props) {
     const comment = useSelector(state => state.scriptEditor.currentScriptItems[id]) || [];
     const scriptItem = { ...comment };
 
-    log(debug, 'Component:Comment:', { id, comment })
+    
 
     //internal state
     const [tempText, setTempText] = useState(null);
 
-    const text = () => {
-        return tempText || comment.text;
-    }
-             
+    const finalText = (tempText === null) ? scriptItem.text : tempText
+
+     log(logType, 'props', { id, comment,tempText, finalText})        
+
     const handleTextChange = (e) => {
-        setTempText(e.target.value)
+        setTempText(e.target.value || '')
     }
 
     const handleFocus = () => {
@@ -48,12 +47,12 @@ function Comment(props) {
     }
 
     const handleBlur = (e) => {
-        log(debug, 'Component:Comment handleBlur ', { tempText, eventTextValue : e.target.value })
+        log(logType, 'handleBlur ', { tempText, eventTextValue : e.target.value })
 
         if (scriptItem.text !== e.target.value) {
             dispatch(trigger(UPDATE_TEXT, { scriptItem, value: e.target.value }))
         }
-        setTempText(null)
+       // setTempText(null)
     }
 
 
@@ -75,7 +74,7 @@ function Comment(props) {
                 id={`comment-text-input-${comment.id}`}
                 placeholder='Enter comment...'
                 className={`form-control ${s.autogrow} transition-height ${s['text-input']} text-input`}
-                value={text()}
+                value={finalText}
                 onChange={(e) => handleTextChange(e)}
                 onBlur={(e) => handleBlur(e)}
                 onFocus={() => handleFocus()}

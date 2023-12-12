@@ -8,16 +8,13 @@ import PersonSelector from './PersonSelector'
 
 //utitilites
 
-import { log } from '../../../logging';
+import { log, SCRIPT_VIEWER as logType } from '../../../logging';
 
 //Constants
 import ScriptViewerHeader from './ScriptViewerHeader';
 
 import s from '../Script.module.scss'
 function ScriptViewer(props) {
-
-    //utility consts
-    const debug = true;
 
     //props
     const { show } = props;
@@ -29,7 +26,7 @@ function ScriptViewer(props) {
     const isPersonSelectorOpen = (personSelectorConfig !==null)
 
 
-    log(debug, "Component:ScriptViewer showOrder", showOrder)
+    log(logType, "Component:ScriptViewer showOrder", showOrder)
 
 
     return (

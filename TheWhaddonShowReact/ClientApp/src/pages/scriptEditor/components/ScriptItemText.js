@@ -25,7 +25,7 @@ import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
 
 //constants
-import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER } from '../../../dataAccess/scriptItemTypes';
+import { HEADER_TYPES, INITIAL_CURTAIN, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 //css
@@ -62,6 +62,8 @@ function ScriptItemText(props) {
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
     const [redoTempTextValue, setRedoTempTextValue] = useState(null)
+    const [isFocused, setIsFocused] = useState(false);
+    const [isBeingDeleted, setIsBeingDeleted] = useState(false)
 
     let finalPlaceholder;
 
@@ -237,12 +239,11 @@ function ScriptItemText(props) {
 
             if (e.target.selectionStart === e.target.value.length) {
                 e.preventDefault()
-
                 if (finalText === null || finalText.length === 0) {
 
-
+                    setIsBeingDeleted(true)
                     dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem, direction: DOWN }))
-
+                    log(logType, 'key: delete post dispatch')
                     return
                 }
 
@@ -272,7 +273,7 @@ function ScriptItemText(props) {
 
         if (e.key === 'Tab') {
             e.preventDefault()
-           moveFocus(DOWN,END)
+            moveFocus(DOWN, END)
         }
 
         if (e.ctrlKey && e.key === 'z' && tempTextValue === scriptItem.text) {
@@ -299,19 +300,23 @@ function ScriptItemText(props) {
 
     const handleFocus = () => {
         //if (undoInProgress) { dispatch(trigger(CONFIRM_UNDO)) }
+        setIsFocused(true)
         dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.parentId)) //update global state of which item is focussed
         toggleMedia(false)
     }
 
 
     const handleBlur = (e) => {
-        log(logType, 'handleBlur: ', { scriptItemText :scriptItem.text, eventTextValue: e.target.value })
-
-        if (scriptItem.text !== e.target.value) {
-            log(logType,'dispatch update text')
-            dispatch(trigger(UPDATE_TEXT, { scriptItem, value: e.target.value }))
+        if (isBeingDeleted !== true) {
+            log(logType, 'handleBlur: ', { scriptItemText: scriptItem.text, eventTextValue: e.target.value })
+            setIsFocused(false)
+            if (scriptItem.text !== e.target.value) {
+                log(logType, 'dispatch update text', { scriptItem })
+                dispatch(trigger(UPDATE_TEXT, { scriptItem, value: e.target.value }))
+            }
+            toggleMedia(false)
         }
-        toggleMedia(false)
+
     }
 
 
@@ -325,7 +330,7 @@ function ScriptItemText(props) {
                 key={id}
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
-                className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input`}
+                className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input ${isFocused ? s['focused'] : ''}`}
                 value={finalText}
                 onChange={(e) => handleTextChange(e)}
                 onBlur={(e) => handleBlur(e)}
@@ -338,6 +343,7 @@ function ScriptItemText(props) {
 
             {(focus) &&
                 <ScriptItemControls
+                    key={`script-item-controls-${id}`}
                     scriptItem={scriptItem}
                     header={TYPES_WITH_HEADER.includes(scriptItem.type)}
                     onClick={handleControlsClick}

@@ -4,7 +4,6 @@ export const SCENE = 'Scene';
 export const SYNOPSIS = 'Synopsis';
 export const STAGING = 'Staging';
 export const INITIAL_STAGING = 'InitialStaging';
-export const SONG = 'Song';
 export const DIALOGUE = 'Dialogue';
 export const ACTION = 'Action';
 export const SOUND = 'Sound';
@@ -17,9 +16,9 @@ export const HEADER_TYPES = [SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, INITIA
 
 export const CURTAIN_TYPES = [CURTAIN, INITIAL_CURTAIN]
 
-export const SCRIPT_ITEM_TYPES = [SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, CURTAIN, INITIAL_CURTAIN, COMMENT]
+export const SCRIPT_ITEM_TYPES = [SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, DIALOGUE, ACTION, SOUND, LIGHTING, CURTAIN, INITIAL_CURTAIN, COMMENT]
 
-export const TYPES_WITH_HEADER = [STAGING, INITIAL_STAGING, DIALOGUE]
+export const TYPES_WITH_HEADER = [STAGING, INITIAL_STAGING, DIALOGUE, SOUND, LIGHTING, ACTION]
 
 export const OPEN_CURTAIN = 'OpenCurtain'
 export const CLOSE_CURTAIN = 'CloseCurtain'

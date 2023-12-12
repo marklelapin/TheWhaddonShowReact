@@ -66,7 +66,19 @@ function PartSelectorDropdown(props) {
 
         const finalPartIds = partIds || activePartIds
 
-        setPartsArray(finalPartIds.map(partId => ({ id: partId, selected: false })))
+        const sortedPartIds = finalPartIds.sort((a, b) => {
+            const aPartPerson = partPersons.find(partPerson => partPerson.id === a)
+            const bPartPerson = partPersons.find(partPerson => partPerson.id === b)
+
+            const aName = aPartPerson?.name || 'zzzzzzz'
+            const bName = bPartPerson?.name || 'zzzzzzz'
+
+            return aName.localeCompare(bName)
+        })
+
+
+
+        setPartsArray(sortedPartIds.map(partId => ({ id: partId, selected: false })))
 
 
     }

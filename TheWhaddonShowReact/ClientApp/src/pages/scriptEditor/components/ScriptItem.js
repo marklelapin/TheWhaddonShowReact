@@ -14,9 +14,9 @@ import CheckBox from '../../../components/Forms/CheckBox';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 //utilities
-import { log } from '../../../logging';
+import { log, SCRIPT_ITEM as logType } from '../../../logging';
 //Constants
-import { SCENE, DIALOGUE, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
+import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
 //trigger types
 import {
     trigger,
@@ -32,7 +32,6 @@ import s from '../ScriptItem.module.scss';
 const ScriptItem = memo((props) => {
 
     //utility consts
-    const debug = true;
     const dispatch = useDispatch();
 
 
@@ -46,7 +45,7 @@ const ScriptItem = memo((props) => {
         zIndex
     } = props;
 
-    log(debug, 'Component:ScriptItem props:', props)
+    log(logType, 'Component:ScriptItem props:', props)
 
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments) || true
@@ -56,7 +55,7 @@ const ScriptItem = memo((props) => {
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
 
 
-    log(debug, 'Component:ScriptItem redux:', { showComments, focus, isUndoInProgress, scriptItem })
+    log(logType, 'Component:ScriptItem redux:', { showComments, focus, isUndoInProgress, scriptItem })
 
     const { type, commentId } = scriptItem;
 
@@ -82,9 +81,9 @@ const ScriptItem = memo((props) => {
 
     const handleShowMedia = (value = null) => {
 
-      //  dispatch(trigger(CONFIRM_UNDO)); //automatically confirms undo if started to add media.
+        //  dispatch(trigger(CONFIRM_UNDO)); //automatically confirms undo if started to add media.
 
-        log(debug, 'handleShowMedia', { showMedia: showMedia, value: value })
+        log(logType, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
             setShowMedia(!showMedia)
         } else {
@@ -94,7 +93,7 @@ const ScriptItem = memo((props) => {
 
     const handleMedia = (type, media) => {
 
-       // dispatch(trigger(CONFIRM_UNDO));  //automatically confirms undo if started to add media.
+        // dispatch(trigger(CONFIRM_UNDO));  //automatically confirms undo if started to add media.
 
         let urls = []
 
@@ -182,8 +181,13 @@ const ScriptItem = memo((props) => {
                 </div>
             }
             {scriptItem && CURTAIN_TYPES.includes(type) &&
-
-                <CheckBox checked={scriptItem.curtainOpen} onChange={() => dispatch(trigger(TOGGLE_CURTAIN({ scriptItem })))} ios={true} />
+                <div className={`${s['curtain-checkbox']}` }>
+                    <CheckBox key={scriptItem.id}
+                        id={`curtain-checkbox-${scriptItem.id}`}
+                        checked={scriptItem.tags.includes(OPEN_CURTAIN)}
+                        onChange={() => dispatch(trigger(TOGGLE_CURTAIN, { scriptItem }))}
+                        ios={true} />
+                </div>
             }
             {scriptItem &&
                 <CurtainBackground curtainOpen={finalCurtainOpen} />

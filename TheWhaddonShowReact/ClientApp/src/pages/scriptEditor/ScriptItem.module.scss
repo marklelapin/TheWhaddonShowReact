@@ -2,11 +2,13 @@
 
 //General ScriptItem Styles
 .script-item {
-    padding: 10px 40px 10px 40px;
+    padding: 10px 50px 10px 50px;
     display: flex;
     flex-direction: column;
     background-color: $gray-inverse;
     position: relative;
+
+    overflow: hidden;
 
 
     .text-input {
@@ -17,8 +19,6 @@
         position: relative;
         z-index: 3;
         width: auto;
- 
-        
     }
 
     .dropzone {
@@ -92,6 +92,18 @@
 
 .curtain-open {
     color: white;
+
+    &.scene {
+        color: black;
+    }
+
+    &.synopsis {
+        color: black;
+    }
+
+    &.initialstaging {
+        color: black;
+    }
 }
 
 .curtain-closed {
@@ -104,60 +116,69 @@
     position: relative;
 }
 
-.script-item-controls {
-    position: relative;
+//SCriptItemControls...
 
+.header-controls {
+    position: absolute;
+    top: -20px;
+    right: 0px;
+    z-index: 12;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+.header-controls.header-exists {
+    top: 0px;
+    right: -55px;
+}
+
+.align-right {
     .header-controls {
-        position: absolute;
-        top: -20px;
         right: 0px;
-        z-index: 10;
-        display: flex;
-        flex-direction: row;
-        justify-content: end;
-    }
-
-    .header-controls.header-exists {
-        top: 0px;
-    }
-
-    .header-right-controls {
-        flex: 1;
-        text-align: end;
-        position: relative;
-        z-index: 10;
-        padding-left: 10px;
-        display: flex;
-        flex-direction: row;
-    }
-
-    .header-left-controls {
-        flex: 1;
-        text-align: end;
-        position: relative;
-        z-index: 10;
-    }
-
-    .bottom-right-controls {
-        position: absolute;
-        bottom: 0px;
-        right: -37px;
-        z-index: 10;
-    }
-
-    .header-controls .checkbox-ios i {
-        height: 15px;
-        background-color: black;
-    }
-
-    .header-controls i::before {
-        height: 15px !important;
-        width: 15px !important;
     }
 }
 
+.header-right-controls {
+    flex: 1;
+    text-align: end;
+    position: relative;
+    z-index: 10;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: row;
+}
+
+.header-left-controls {
+    flex: 1;
+    text-align: end;
+    position: relative;
+    z-index: 10;
+}
+
+.bottom-right-controls {
+    position: absolute;
+    bottom: 0px;
+    right: -52px;
+    z-index: 10;
+}
+
+.header-controls .checkbox-ios i {
+    height: 15px;
+    background-color: black;
+}
+
+.header-controls i::before {
+    height: 15px !important;
+    width: 15px !important;
+}
+
+
+//End of SCriptItemControls.
+
+
 .part-editor {
-    padding: 0px 40px 0px 40px;
+    padding: 0px 50px 0px 50px;
     background-color: $gray-inverse;
     display: flex;
     flex-direction: column;
@@ -279,6 +300,7 @@
 
 
 
+
 .autogrow {
     overflow: hidden;
     resize: none;
@@ -356,7 +378,6 @@
         left: 50%;
         transform: translateX(-50%);
     }
-
 }
 
 .align-right {
@@ -406,6 +427,7 @@
 
     textarea {
         font-size: $h2-font-size;
+        text-align: center;
     }
 }
 
@@ -418,37 +440,50 @@
 
 .scene {
     padding-bottom: 0px;
-    
+
 
     .script-item-header {
         font-size: $h6-font-size;
         font-weight: $font-weight-bold;
-       
     }
 
     .script-item-text-area {
-        background-color: white;text-align: center;
-
+        background-color: white;
+        text-align: center;
     }
 
     .dropzone {
         background-color: white;
     }
 
-    .text-input{
+    .text-input {
         font-size: $h5-font-size;
         font-weight: $font-weight-bold;
         background-color: white;
         padding-top: 0px;
         padding-bottom: 0px;
+        text-align: center;
     }
 
     .scene-controls {
         position: absolute;
-        top: 0px;
+        top: 10px;
         right: 0px;
         z-index: 5;
     }
+
+    .bottom-right-controls {
+        bottom: 0px;
+        right: -15px;
+    }
+
+    .header-controls {
+        color: black;
+    }
+}
+
+.scene.header-controls {
+    color: black;
 }
 
 .synopsis {
@@ -465,10 +500,26 @@
         padding-bottom: 0px;
     }
 
-    textarea {
+    .text-input {
         padding-top: 0px;
         padding-bottom: 0px;
         text-align: center;
+    }
+
+    .bottom-right-controls {
+        bottom: 0px;
+        right: -15px;
+    }
+
+    .header-controls {
+        top: unset;
+        bottom: 0px;
+        right: -50px;
+        margin: 0px;
+
+        .header-right-controls {
+            padding-left: 0px;
+        }
     }
 }
 
@@ -483,10 +534,10 @@
         background-color: white;
     }
 
-    textarea {
+    .text-input {
         padding-top: 0px;
         padding-bottom: 0px;
-        text-align:center;
+        text-align: center;
     }
 }
 
@@ -501,21 +552,39 @@
 
 .curtain,
 .initialcurtain {
+    align-items: center;
+
+    .text-input {
+        font-weight: $font-weight-bold;
+        text-align: center;
+        background-color: transparent !important;
+    }
+
+    .curtain-checkbox {
+        position: relative;
+        z-index: 10;
+        max-height: 20px;
+
+        i {
+            background-color: $gray-inverse;
+            height: 20px;
+            color: blue;
+        }
+
+        ::before {
+            height: 20px;
+            width: 20px;
+        }
+    }
 
     &.curtain-open * {
-        color: white;
-
-        .text-input {
-            background-color: transparent;
-        }
+        color: white !important;
     }
 
     &.curtain-closed * {
-        .text-input {
-            background-color: transparent;
-        }
     }
 }
+
 
 .dialogue {
 
@@ -564,5 +633,6 @@
 
     .script-item-header {
         font-size: $small-font-size;
+        align-self: start;
     }
 }

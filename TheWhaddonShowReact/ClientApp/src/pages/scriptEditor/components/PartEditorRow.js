@@ -44,6 +44,7 @@ function PartEditorRow(props) {
         , previousFocusId
         , nextFocusId
         , scenePartIds
+        ,zIndex
     } = props;
 
 
@@ -52,10 +53,9 @@ function PartEditorRow(props) {
     const nextPartPerson = useSelector(state => state.scriptEditor.currentPartPersons[partPerson?.nextId])
     const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
-    //const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
+    const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     //const scenePartIds = scene.partIds
 
-    const zIndex = 10; //TODO - this needs to be calculated based on the number of parts in the scene
 
 
     //internal state
@@ -63,12 +63,11 @@ function PartEditorRow(props) {
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
     useEffect(() => {
-        log(logType, 'useEffect[]')
-        log(logType, 'props', props)
+        log(logType, 'useEffect[] props', props)
         if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
             moveFocusToId(sceneId, START)
         } else { //makes the textarea the focus when created
-            const textInputRef = document.getElementById(`${partPerson?.id}`)?.querySelector('input')
+            const textInputRef = document.getElementById(partEditorRowId(partId,sceneId))?.querySelector('input')
             if (textInputRef) {
                 textInputRef.focus();
             }
@@ -266,6 +265,7 @@ function PartEditorRow(props) {
                     <div className={s['part-editor-controls']} >
                         <ScriptItemControls
                             part={partPerson}
+                            scene={scene}
                             onClick={(action, e) => handleControlsClick(action, e)}
                         />
 

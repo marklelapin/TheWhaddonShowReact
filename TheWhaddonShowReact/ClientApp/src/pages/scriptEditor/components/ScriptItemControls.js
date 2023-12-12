@@ -20,11 +20,11 @@ import { Icon } from '../../../components/Icons/Icons'
 
 
 //Constants
-import { SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN} from '../../../dataAccess/scriptItemTypes';
+import { SHOW, ACT,SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN} from '../../../dataAccess/scriptItemTypes';
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 
 //utils
-import { log } from '../../../logging';
+import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../logging';
 
 import { moveFocusToId } from '../scripts/utility';
 
@@ -35,19 +35,18 @@ export const TOGGLE_PART_SELECTOR = 'TOGGLE_PART_SELECTOR';
 function ScriptItemControls(props) {
 
     //utils
-    const debug = false;
     const dispatch = useDispatch();
     
     //Constants
-    const scriptItemTypes = [CURTAIN, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, SCENE, SYNOPSIS, INITIAL_STAGING, INITIAL_CURTAIN]
-    const attachTypes = [SONG, SOUND, STAGING, INITIAL_STAGING, SYNOPSIS]
+    const bodyScriptItemTypes = [CURTAIN, STAGING, DIALOGUE, ACTION, SOUND, LIGHTING]
+    const attachTypes = [ SOUND, STAGING, INITIAL_STAGING, SYNOPSIS]
 
     //Props
-    const { toggleMedia, onClick, scriptItem = null, part = null, header = null, children } = props;
+    const { toggleMedia, onClick, scriptItem = null,scene=null, part = null, header = null, children } = props;
 
     const hasComment = scriptItem?.commentId || part?.commentId || false;
 
-    log(debug, 'ScriptItemControlsProps', props)
+    log(logType, 'props', props)
 
     //Redux
 
@@ -70,25 +69,27 @@ function ScriptItemControls(props) {
     }
 
     return (
-        <div className={s['script-item-controls']}>
-            <div className={`${s['header-controls']} ${header ? s['header-exists'] : ''}`}>
+        /* <div className={s['script-item-controls']}>*/
+       <>
+       
+         <div className={`${s['header-controls']} ${header ? s['header-exists'] : ''}`}>
 
                 <div className={s['header-left-controls']}>
                     {scriptItem && attachTypes.includes(scriptItem.type) &&
                         <>
-                            <Icon icon="attach" onClick={() => toggleMedia()} />
+                        <Icon key={scriptItem.id} icon="attach" onClick={() => toggleMedia()} />
                         </>
                     }
                 </div>
                 <div className={s['header-right-controls']}>
 
                     {scriptItem && HEADER_TYPES.includes(scriptItem.type) === false &&
-                        < Dropdown isOpen={dropdownOpen} toggle={toggle}>
+                        < Dropdown isOpen={dropdownOpen} toggle={toggle} >
 
                             <Icon icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} />
 
-                            <DropdownMenu>
-                                {scriptItemTypes.map((type) => {
+                            <DropdownMenu >
+                                {bodyScriptItemTypes.map((type) => {
                                     return <DropdownItem key={type} onClick={(e) => handleTypeDropdownClick(e, type)}>{type}</DropdownItem>
                                 })
                                 }
@@ -99,11 +100,11 @@ function ScriptItemControls(props) {
 
 
 
-                    {(!hasComment) &&
-                        <Icon icon='comment-o' onClick={() => dispatch(trigger(ADD_COMMENT, {scriptItem}))} />
+                    {(scriptItem && !hasComment && ![SHOW,ACT,SCENE].includes(scriptItem.type)) &&
+                        <Icon key={`add-comment-${scriptItem.id}`} icon='comment-o' onClick={() => dispatch(trigger(ADD_COMMENT, {scriptItem}))} />
                     }
-                    {(hasComment) &&
-                        <Icon icon='comment' onClick={() => goToComment()} />
+                    {(hasComment && ![SHOW, ACT, SCENE].includes(scriptItem.type)) &&
+                        <Icon key={`add-comment-${scriptItem.id}`} icon='comment' onClick={() => goToComment()} />
                     }
 
                 </div>
@@ -113,12 +114,12 @@ function ScriptItemControls(props) {
 
 
             <div className={s['bottom-right-controls']}>
-                {scriptItem && <Icon icon="play" onClick={() => onClick(CONFIRM)} />}
+                {scriptItem && <Icon key={`confirm-${scriptItem.id}`} icon="play" onClick={() => onClick(CONFIRM)} />}
 
                 {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) && <Icon icon="add" onClick={() => onClick(ADD_SCRIPT_ITEM,null) } />}
 
 
-                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem }))} />}
+                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) && <Icon key={`delete-${scriptItem.id}`} icon="trash" onClick={() => dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem }))} />}
 
             </div>
 
@@ -126,17 +127,20 @@ function ScriptItemControls(props) {
             <div className={s['outside-right-controls']}>
                 {part &&
                     <>
-                        <Icon icon="play" onClick={() => onClick(CONFIRM)} />
-                    <Icon icon="add" onClick={() => onClick(ADD_PART)} />
-                        <Icon icon="search" onClick={(e) => onClick(TOGGLE_PART_SELECTOR,e)} />
-                    <Icon icon="trash" onClick={() => onClick(DELETE_PART, {scriptItemId: scriptItem.id , partId: part.id})} />
+                    <Icon key={`confirm-part-${part.id}-${scene.id}`} icon="play" onClick={() => onClick(CONFIRM)} />
+                    <Icon key={`add-part-${part.id}-${scene.id}`} icon="add" onClick={() => onClick(ADD_PART)} />
+                    <Icon icon="search" onClick={(e) => onClick(TOGGLE_PART_SELECTOR,e)} />
+                    <Icon key={`delete-part-${part.id}-${scene.id}`} icon="trash" onClick={() => onClick(DELETE_PART, {scriptItemId: scene.id , partId: part.id})} />
                     </>
                 }
             </div>
 
             {children}
+       
+       </>
+          
 
-        </div>
+ /*       </div>*/
     )
 }
 

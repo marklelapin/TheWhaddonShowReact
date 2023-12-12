@@ -4,7 +4,7 @@ import { getLatest } from '../../../dataAccess/localServerUtils';
 import { refreshCurtain } from "./curtain";
 import { initial, merge } from "lodash";
 
-import { log } from '../../../logging';
+import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../logging';
 
 const debug = true;
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
@@ -55,11 +55,15 @@ export const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
 
 export const getHead = (mergedSceneOrder) => {
 
+
+
     let head = null;
-    
+
     const show = mergedSceneOrder.find(item => item.type === SHOW)
 
     const scene = mergedSceneOrder.find(item => item.type === SCENE)
+
+    log(logType, 'getHead', { show, scene, mergedSceneOrder })
 
     if (show) {
         head = show
@@ -191,7 +195,7 @@ export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
 
     const synopsis = copy(sceneOrder.find(item => item.type === SYNOPSIS))
     const initialStaging = copy(sceneOrder.find(item => item.type === INITIAL_STAGING))
-    const finalScriptItem = copy(sceneOrder.find(item => item.nextId === null)) 
+    const finalScriptItem = copy(sceneOrder.find(item => item.nextId === null))
 
     scene.previousFocusId = scene.previousId
     scene.nextFocusId = synopsis.id
@@ -202,7 +206,7 @@ export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
 
     finalScriptItem.nextFocusId = scene.nextSceneId
 
-   
+
     const newSceneOrder = sceneOrder.map(item => {
         if (item.type === SCENE) return scene
         if (item.type === SYNOPSIS) return synopsis

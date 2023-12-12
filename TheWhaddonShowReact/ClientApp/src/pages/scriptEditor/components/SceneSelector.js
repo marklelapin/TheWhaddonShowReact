@@ -116,11 +116,6 @@ function SceneSelector(props) {
 
                 {filteredScenes().map(scene => {
 
-                    if (scene.type === ACT) {
-
-                        return <h2 key={scene.id}>{scene.text}</h2>
-                    }
-
                     return <SceneSelectorRow
                         key={scene.id}
                         scene={scene}

@@ -42,9 +42,9 @@ import {
 import { getLatest, prepareUpdates } from '../../../dataAccess/localServerUtils'
 
 import { SCENE, CURTAIN_TYPES, DIALOGUE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
-import { END, UP } from './utility';
+import { END, UP, START } from './utility';
 
-import { log, SCRIPT_EDITOR_TRIGGER as logType} from '../../../logging'
+import { log, SCRIPT_EDITOR_TRIGGER as logType } from '../../../logging'
 
 export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, previousCurtainOpen, show, viewAsPartPerson = null) => {
 
@@ -58,7 +58,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     let moveFocus = null;
     let showComments = null;
 
-    log(logType, 'getTriggerUpdates', {trigger})
+    log(logType, 'getTriggerUpdates', { trigger })
 
     const { triggerType, value, tag, scriptItem, position, direction, tempTextValue,
         oldPartId, newPartId, partId, personId
@@ -69,6 +69,10 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     const scene = currentScriptItems[sceneId]
 
     const sceneOrder = sceneOrders[sceneId]
+    let sceneOrderOverride = []; //used to override the sceneOrder calculation of sceneOrder (e.g. when adding a new scene)
+
+
+
     const part = currentPartPersons[partId]
     const sceneScriptItems = () => {
         return sceneOrder.map(item => currentScriptItems[item.id])
@@ -149,7 +153,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             if (direction === UP) {
                 moveFocus = { id: scriptItem.previousId, position: END };
             } else {
-                moveFocus = { id: scriptItem.nextId, position: END };
+                moveFocus = { id: scriptItem.nextId, position: START };
             };
             break;
         case DELETE_NEXT_SCRIPT_ITEM:
@@ -167,6 +171,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             partUpdates = newHeaderResult.partUpdates;
             previousCurtainUpdates.push({ sceneId: newSceneId, previousCurtainOpen: previousCurtainOpen[scriptItem.nextId] }) //copies over previousCurtain from previous next scene. Further update added later for that next scene.
             doPreviousCurtainUpdate = true;
+            sceneOrderOverride = scriptItemUpdates.filter(item => item.id === newSceneId || item.parentId === newSceneId)
             doRefreshSceneOrder = true;
             doRefreshShowOrder = true;
             moveFocus = { id: scriptItemUpdates[1].id, position: END };
@@ -236,9 +241,13 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
 
             const deletePartResult = newUpdatesForDeletePart(partToDelete, scene, sceneOrders, currentScriptItems, show)
 
-            partUpdates = deletePartResult.newPartUpdates
-            scriptItemUpdates = deletePartResult.newScriptItemUpdates
-            sceneOrderUpdates.push(updateFocusOverrides(sceneOrder, scriptItemUpdates[0].partIds))
+            partUpdates = deletePartResult.newPartUpdates || []
+            scriptItemUpdates = deletePartResult.newScriptItemUpdates || []
+
+            if (scriptItemUpdates.length > 0) {
+                sceneOrderUpdates.push(updateFocusOverrides(sceneOrder, scriptItemUpdates[0].partIds))
+            }
+
 
             const previousFocusId = sceneOrder.find(item => item.type === SYNOPSIS).id
             const nextFocusId = sceneOrder.find(item => item.type === INITIAL_STAGING).id
@@ -282,10 +291,10 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     log(logType, 'getTriggerUpdates preparedScriptItemUpdates', preparedScriptItemUpdates)
     log(logType, 'getTriggerUpdates preparedPartUpates', preparedPartUpdates)
     //SceneOrderUpdates
-    let newSceneOrder = sceneOrder;
+    let newSceneOrder = (sceneOrderOverride.length > 0) ? sceneOrderOverride : sceneOrder ;
 
     if (doRefreshSceneOrder) {
-        newSceneOrder = refreshSceneOrder(sceneOrder, preparedScriptItemUpdates, viewAsPartPerson, currentPartPersons) //adds updates into sceneOrder and reorders.
+        newSceneOrder = refreshSceneOrder(newSceneOrder, preparedScriptItemUpdates, viewAsPartPerson, currentPartPersons) //adds updates into sceneOrder and reorders.
         sceneOrderUpdates.push(newSceneOrder)
 
         if (doPreviousCurtainUpdate) {

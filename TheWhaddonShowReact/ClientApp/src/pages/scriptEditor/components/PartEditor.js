@@ -59,6 +59,7 @@ function PartEditor(props) {
                         scenePartIds = {scenePartIds}
                         previousFocusId={previousFocusId}
                         nextFocusId={nextFocusId}
+                        zIndex = {30-idx}
                     />
 
                 )

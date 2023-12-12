@@ -34,12 +34,10 @@ function Scene(props) {
     //Redux state
     const sceneOrder = useSelector(state => state.scriptEditor.sceneOrders[id]) || []
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen[id])
+    const sceneScriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     log(debug, 'Component:Scene sceneOrder', sceneOrder)
-    //Internal State
-    /* const [scriptItems, setScriptItems] = useState([]); //*/
-    const [loaded, setLoaded] = useState(false); //]
 
-    const scene = { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
+    const scene = (sceneScriptItem.type === ACT) ? sceneScriptItem  : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
     const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
     const staging = { ...sceneOrder.find(item => item.type === INITIAL_STAGING) } || {}
 
@@ -126,7 +124,7 @@ function Scene(props) {
                 className={`${s['scene-footer']} ${finalScriptItem.curtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
             >
 
-                <div className={`${s['add-new-scene']} clickable`} onClick={() => dispatch(trigger(ADD_SCENE, { scriptItem : scene }))}>
+                <div key={`add-scene-${scene.id}`} className={`${s['add-new-scene']} clickable`} onClick={() => dispatch(trigger(ADD_SCENE, { scriptItem : sceneScriptItem }))}>
                     (add new scene)
                 </div>
                 <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />

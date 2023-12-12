@@ -1,5 +1,5 @@
 ﻿import { log, SCRIPT_EDITOR_UTILITY as logType } from '../../../logging.js';
-import {SCENE} from '../../../dataAccess/scriptItemTypes.js'; 
+import {ACT,SCENE} from '../../../dataAccess/scriptItemTypes.js'; 
 
 
 export const START = 'start';
@@ -50,7 +50,7 @@ export const moveFocusFromScriptItem = (scriptItem,direction, position, nextFocu
 
     let newPosition;
     //moving up from scene is a special case where it needs to find the last item in the scene
-    if (scriptItem.type === SCENE && direction === UP) {
+    if ([SCENE,ACT].includes(scriptItem.type) && direction === UP) {
         newPosition = SCENE_END;
     } else {
         newPosition = position || END;
