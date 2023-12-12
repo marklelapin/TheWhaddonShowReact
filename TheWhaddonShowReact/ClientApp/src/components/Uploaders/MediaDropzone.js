@@ -17,7 +17,7 @@ import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils';
 
 
 //utils
-import { log } from '../../helper';
+import { log } from '../../logging';
 
 //constants
 import { MEDIA } from '../../dataAccess/storageContainerNames';

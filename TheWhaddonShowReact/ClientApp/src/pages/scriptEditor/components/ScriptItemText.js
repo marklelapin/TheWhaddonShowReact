@@ -1,54 +1,69 @@
 ﻿import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
+
+import {
+    trigger,
+    UPDATE_TEXT,
+    ADD_SCRIPT_ITEM,
+    DELETE_SCRIPT_ITEM,
+    DELETE_NEXT_SCRIPT_ITEM,
+    UNDO,
+    REDO,
+    CONFIRM_UNDO
+} from '../../../actions/scriptEditor';
 
 //Components
 import TextareaAutosize from 'react-autosize-textarea';
-import ScriptItemControls from './ScriptItemControls';
-import { log } from '../../../helper';
+import ScriptItemControls, { CONFIRM } from './ScriptItemControls';
+import ScriptItemHeader from './ScriptItemHeader';
+import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
 
 
 //Utilities
-import { changeFocus } from '../../../actions/scriptEditor';
+import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
+import { moveFocusFromScriptItem } from '../scripts/utility';
+
+//constants
+import { HEADER_TYPES, INITIAL_CURTAIN, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER } from '../../../dataAccess/scriptItemTypes';
+import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 //css
 import s from '../ScriptItem.module.scss';
-import { HEADER_TYPES, INITIAL_CURTAIN, SONG, SOUND, SCENE, SYNOPSIS, DIALOGUE, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
+
 
 function ScriptItemText(props) {
 
     //utils
-    const debug = true;
     const dispatch = useDispatch()
-
-    //constants
-    const audioTypes = [SONG, SOUND]
-    const videoTypes = [SONG, SOUND, SCENE, SYNOPSIS]
-    const END = 'end'
-    const START = 'start'
-    const UP = 'up'
-    const DOWN = 'down'
 
     const endMargin = 100;
 
-
-
     //Props
-    const { scriptItem, header, onChange, onClick, moveFocus, placeholder = "...", maxWidth = null, toggleMedia, undoDateTime } = props;
+    const { scriptItem,
+        placeholder = "...",
+        maxWidth = null,
+        toggleMedia,
+        previousFocusId = null,
+        nextFocusId = null,
+        isUndoInProgress = false
+    } = props;
 
-    const { id, type, tags } = scriptItem
+    const { id, type } = scriptItem
 
-    log(debug, 'Component:ScriptItemText props', props)
+    const undoInProgress = isUndoInProgress
+    const undoNotInProgress = !undoInProgress
+
 
 
     //REdux
-    const focus = useSelector(state => state.scriptEditor.focus[scriptItem.id])
-
+    const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
 
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
-
+    const [redoTempTextValue, setRedoTempTextValue] = useState(null)
+    const [isFocused, setIsFocused] = useState(false);
+    const [isBeingDeleted, setIsBeingDeleted] = useState(false)
 
     let finalPlaceholder;
 
@@ -61,10 +76,10 @@ function ScriptItemText(props) {
     }
 
     useEffect(() => {
-
+        log(logType, 'Component:ScriptItemText props', props)
         //makes the textarea the focus when created unless during an undo.
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
-        if (textInputRef && undoDateTime === null) {
+        if (textInputRef && undoNotInProgress) {
             textInputRef.focus();
         }
     }, [])
@@ -77,13 +92,13 @@ function ScriptItemText(props) {
             context.font = window.getComputedStyle(textInputRef).font;
             return context;
         }
-        catch  {
+        catch {
             return null
         }
-       
+
     }
 
-    const finalText = tempTextValue || scriptItem.text
+    const finalText = (tempTextValue === null) ? scriptItem.text : tempTextValue
 
     const textToMeasure = finalText || finalPlaceholder
 
@@ -103,124 +118,39 @@ function ScriptItemText(props) {
 
 
 
-
-
-
-
-
-
-
-
-    //Calculations / Utitlity functions
-
-    //const adjustTextareaWidth = (overrideText = null) => {
-    //    const textareaRef = document.getElementById(`script-item-text-${id}`)
-    //    if (textareaRef) {
-    //       // const textWidth = getTextWidth(overrideText);
-
-    //       // const minWidth = (finalPlaceholder.length || 0) + endMargin
-
-    //       // const finalWidth = Math.max(minWidth, Math.min(maxWidth || textWidth, textWidth))
-    //        //let percentageWidth = '20%'
-
-    //        //if (maxWidth) {
-    //        //    const percentage = Math.max(20, Math.min(100, (textWidth / maxWidth) * 100))
-    //        //    percentageWidth = `${percentage}%`
-    //        //}
-    //        //const finalWidthString = `${Math.floor(finalWidth)}px`
-    //       // log(debug, ` adjustTextareaWidth: ${textareaRef.id} : ${finalWidthString}`)
-    //        textareaRef.style.width = finalWidthString;
-    //    }
-    //};
-
-
-    //const text = (overrideText = null) => {
-    //    let finalText;
-    //    if (tempTextValue === '') {
-    //        finalText = overrideText || tempTextValue
-    //    } else {
-    //        finalText = overrideText || tempTextValue || scriptItem.text || ''
-    //    }
-
-    //    log(debug, `EventsCheck: final text: ${finalText}`)
-
-    //    return finalText
-    //}
-
-
-    //const getTextAreaRows = (overrideText = null) => {
-    //    const latestText = text(overrideText)
-
-    //    let textRows = latestText.split('\n') || []
-
-    //    return textRows
-
-    //}
-
-
-
-    //const getTextWidth = (overrideText = null) => {
-    //    const textInputRef = document.getElementById(`script-item-text-input-${id}`)
-    //    const canvas = document.createElement('canvas');
-    //    const context = canvas.getContext('2d');
-    //    context.font = window.getComputedStyle(textInputRef).font;
-
-    //    //let textOfLongestLine = getTextAreaRows(overrideText).reduce((a, b) => (a.length > b.length) ? a : b, '');
-
-    //  //  if (textOfLongestLine === '') { textOfLongestLine = finalPlaceholder }
-
-    //    const textMetrics = context.measureText(textOfLongestLine);
-    //    log(debug, `getTextWidth: ${textMetrics.width + endMargin}`)
-    //    return textMetrics.width + endMargin;
-    //};
-
-
-
-
-
-
-
     //Event Handlers
 
     const handleTextChange = (e) => {
-        log(debug, `EventsCheck: handleTextChange: ${e.target.value || ''} `)
+        log(logType, `handleTextChange: ${e.target.value || ''} `)
+
         setTempTextValue(e.target.value || '')
     }
 
     const handleControlsClick = (action, value) => {
 
-        log(debug, `EventCheck: ScriptItemTextControlsClick: ${action},${value}`)
+        log(logType, 'handlesControlsClick: ', { action, value })
+
         switch (action) {
-            case 'changeType': onChange('type', value); break;
-            case 'toggleCurtain': onChange('toggleCurtain', value); break;
-            case 'confirm': handleBlur(); break; //TODO- only show confirm if tempTextValue is not null.remove focus.
-            case 'add':
-                log(debug, 'EventsCheck: ScriptItemTextControlsClick: add')
-                let text = tempTextValue;
+            case CONFIRM: moveFocus(DOWN, END); break; //TODO- only show confirm if tempTextValue is not null.remove focus.
+            case ADD_SCRIPT_ITEM:
                 setTempTextValue(null)
-                onChange('addScriptItemBelow', text);
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem: scriptItem, tempTextValue }))
                 break;
-            case 'delete': onClick('delete'); break;
-            case 'undo': onClick('undo'); break;
-            case 'redo': onClick('redo'); break;
-            case 'toggleMedia':
-                toggleMedia()
-                break;
-            case 'link':
-                //TODO get linkg
-                const linksToAdd = []
-                onChange('addLinks', linksToAdd);
-                break;
-            case 'addComment': onChange('addComment', null); break;
-            case 'goToComment': onClick('goToComment', null); break;
             default: return;
         }
 
     }
 
+    const moveFocus = (direction, position) => {
+
+        moveFocusFromScriptItem(scriptItem, direction, position, nextFocusId, previousFocusId)
+
+    }
+
+
     const handleKeyDown = (e, scriptItem) => {
 
-        log(debug, `EventsCheck: ScriptItemTextKeyDown: key: ${e.key}`)
+        log(logType, 'handleKeyDown: ', { key: e.key, shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, tempTextValue })
         const closestPosition = () => {
             const percentageAcoss = (e.target.selectionEnd / e.target.value.length)
             const closestPosition = (percentageAcoss > 0.5) ? END : START
@@ -252,26 +182,28 @@ function ScriptItemText(props) {
                 moveFocus(DOWN, END)
                 return;
             }
-            let text = tempTextValue;
-
 
             if (e.target.selectionEnd === 0) {
 
-                onChange('addScriptItemAbove', text)
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: ABOVE, scriptItem: scriptItem, tempTextValue }))
             } else {
-                onChange('addScriptItemBelow', text)
+                dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem: scriptItem, tempTextValue }))
             }
             setTempTextValue(null)
             return
         }
         if (e.key === 'ArrowUp') {
-            e.preventDefault()
-            moveFocus(UP, closestPosition())
+            if (e.target.selectionEnd === 0) {
+                e.preventDefault()
+                moveFocus(UP, END)
+            }
             return
         }
         if (e.key === 'ArrowDown') {
-            e.preventDefault()
-            moveFocus(DOWN, closestPosition())
+            if (e.target.selectionStart === e.target.value.length) {
+                e.preventDefault()
+                moveFocus(DOWN, START)
+            }
             return
         }
         if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length) {
@@ -290,7 +222,9 @@ function ScriptItemText(props) {
 
             if (!finalText || finalText === null || finalText === '') {
                 e.preventDefault()
-                onChange('deleteScriptItem', UP)
+
+                dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem, direction: UP }))
+
                 return
             }
 
@@ -303,17 +237,17 @@ function ScriptItemText(props) {
 
         if (e.key === 'Delete') {
 
-            log(debug, `EventsCheck: ScriptItemTextKeyDown: Delete ${tempTextValue}`)
             if (e.target.selectionStart === e.target.value.length) {
                 e.preventDefault()
-                log(debug, `eventsCheck: Delete STage 1:`)
                 if (finalText === null || finalText.length === 0) {
-                    log(debug, 'eventsCheck: Delete STage 2')
-                    onChange('deleteScriptItem', DOWN)
+
+                    setIsBeingDeleted(true)
+                    dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem, direction: DOWN }))
+                    log(logType, 'key: delete post dispatch')
                     return
                 }
 
-                log(debug, 'eventsCheck: Delete STage 3')
+
                 const nextScriptItemElement = document.getElementById(scriptItem.nextId)
                 if (nextScriptItemElement) {
                     const textInputElement = nextScriptItemElement.querySelector('.text-input')
@@ -322,7 +256,7 @@ function ScriptItemText(props) {
 
                         if (nextScriptItemText === null || nextScriptItemText.length === 0) {
                             e.preventDefault()
-                            onChange('deleteNextScriptItem', UP)
+                            dispatch(trigger(DELETE_NEXT_SCRIPT_ITEM, { scriptItem, direction: UP }))
                             return
                         } else {
                             e.preventDefault();
@@ -338,55 +272,68 @@ function ScriptItemText(props) {
         }
 
         if (e.key === 'Tab') {
-            handleBlur();
-        }
-        log(debug, `EventsCheck: ScriptItemTextKeyDown: key: ${e.key}, tempTextValue = ${tempTextValue}`)
-        if (e.ctrlKey && e.key === 'z' && tempTextValue === scriptItem.text) {
-            setTempTextValue(null)
-            onClick('undo')
+            e.preventDefault()
+            moveFocus(DOWN, END)
         }
 
-        if (e.ctrlKey && e.key === 'y' && undoDateTime !== null) {
-            onClick('redo')
+        if (e.ctrlKey && e.key === 'z' && tempTextValue === scriptItem.text) {
+            if (tempTextValue !== null) {
+                setRedoTempTextValue(tempTextValue)
+                setTempTextValue(null)
+            } else {
+                dispatch(trigger(UNDO, { sceneId: scriptItem.parentId }))
+            }
+        }
+
+        if (e.ctrlKey && e.key === 'y' && undoInProgress) {
+            if (undoNotInProgress && redoTempTextValue !== null) {
+                setTempTextValue(redoTempTextValue)
+                setRedoTempTextValue(null)
+            } else {
+                dispatch(trigger(REDO, { sceneId: scriptItem.parentId }))
+            }
+
         }
 
 
     }
 
     const handleFocus = () => {
-        if (undoDateTime) { onClick('confirmUndo') }
-        dispatch(changeFocus(scriptItem)) //update global state of which item is focussed
+        //if (undoInProgress) { dispatch(trigger(CONFIRM_UNDO)) }
+        setIsFocused(true)
+        dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.parentId)) //update global state of which item is focussed
         toggleMedia(false)
     }
 
 
-    const handleBlur = () => {
-        log(debug, `EventsCheck: ScriptItemTextBlur: ${tempTextValue}`)
-
-        if (tempTextValue || tempTextValue === '') {
-            onChange('text', tempTextValue)
+    const handleBlur = (e) => {
+        if (isBeingDeleted !== true) {
+            log(logType, 'handleBlur: ', { scriptItemText: scriptItem.text, eventTextValue: e.target.value })
+            setIsFocused(false)
+            if (scriptItem.text !== e.target.value) {
+                log(logType, 'dispatch update text', { scriptItem })
+                dispatch(trigger(UPDATE_TEXT, { scriptItem, value: e.target.value }))
+            }
+            toggleMedia(false)
         }
-        log(debug, 'showMedia handleBlur')
-        toggleMedia(false)
+
     }
+
+
 
     return (
         <div id={`script-item-text-${id}`} className={s['script-item-text']}>
 
-            {(header || type === DIALOGUE) &&
-                <div className={s['script-item-header']}>
-                    {header || 'no part'}
-                </div>
-            }
+            <ScriptItemHeader type={scriptItem.type} partIds={scriptItem.partIds} />
 
             <TextareaAutosize
                 key={id}
                 id={`script-item-text-input-${id}`}
                 placeholder={finalPlaceholder}
-                className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input`}
+                className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input ${isFocused ? s['focused'] : ''}`}
                 value={finalText}
                 onChange={(e) => handleTextChange(e)}
-                onBlur={() => handleBlur()}
+                onBlur={(e) => handleBlur(e)}
                 onFocus={() => handleFocus()}
                 onKeyDown={(e) => handleKeyDown(e, scriptItem)}
                 style={{ width: finalWidthPx }}
@@ -396,9 +343,11 @@ function ScriptItemText(props) {
 
             {(focus) &&
                 <ScriptItemControls
+                    key={`script-item-controls-${id}`}
                     scriptItem={scriptItem}
-                    header={header}
-                    onClick={(action, value) => handleControlsClick(action, value)}
+                    header={TYPES_WITH_HEADER.includes(scriptItem.type)}
+                    onClick={handleControlsClick}
+                    toggleMedia={toggleMedia}
                 />
             }
         </div>

@@ -1,4 +1,6 @@
-﻿import { log } from '../../../helper.js';
+﻿import { log, SCRIPT_EDITOR_UTILITY as logType } from '../../../logging.js';
+import {ACT,SCENE} from '../../../dataAccess/scriptItemTypes.js'; 
+
 
 export const START = 'start';
 export const END = 'end';
@@ -37,9 +39,41 @@ export function findScriptItem(element, scriptItems) {
 
 }
 
+
+export const closestPosition = (e) => {
+    const percentageAcross = (e.target.selectionEnd / e.target.value.length)
+    const closestPosition = (percentageAcross > 0.5) ? END : START
+    return closestPosition
+}
+
+export const moveFocusFromScriptItem = (scriptItem,direction, position, nextFocusId = null,previousFocusId = null) => {
+
+    let newPosition;
+    //moving up from scene is a special case where it needs to find the last item in the scene
+    if ([SCENE,ACT].includes(scriptItem.type) && direction === UP) {
+        newPosition = SCENE_END;
+    } else {
+        newPosition = position || END;
+    }
+
+    const newId = (direction === DOWN) ? nextFocusId || scriptItem.nextId : previousFocusId || scriptItem.previousId
+
+    log(logType, 'moveFocusFromScriptItem input', { direction, position, previousFocusId, nextFocusId })
+    log(logType, 'moveFocusFromScriptItem output:', { newId, newPosition })
+    if (newId) {
+        moveFocusToId(newId, newPosition)
+    }
+
+}
+
+
+
+
+
+
 export function moveFocusToId(id, position = START, scroll = false) {
-    const debug = true;
-    console.log(`moveFocusToId id: ${id} position: ${position}`)
+  
+    log(logType,`moveFocusToId id: ${id} position: ${position}`)
     try {
         if (position === SCENE_END) {
 
@@ -76,10 +110,9 @@ export function moveFocusToId(id, position = START, scroll = false) {
             }
         }
 
-
     }
     catch(error) {
-        log(debug, 'Move Focus Error: Cant locate the text-input:', { id, position, scroll, error })
+        log(logType, 'Move Focus Error: Cant locate the text-input:', { id, position, scroll, error })
     }
  
 }
@@ -105,6 +138,6 @@ const getTextInputElement = (id) => {
         } else { throw new Error(`Move Focus Error: Cant locate the text-input for id: ${id}`) }
 
     } else {
-        console.log(`Move Focus Error: Cant locate an element with id = ${id}`) //TODO extend this when more scenes available 
+        log(logType,`getTextInputElement error: Cant locate an element with id = ${id}`) //TODO extend this when more scenes available 
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 import axios from 'axios';
 
-import { log } from '../helper';
+import { log } from '../logging';
 
 export async function uploadFiles(filesObject, containerName, options = {}) {
 

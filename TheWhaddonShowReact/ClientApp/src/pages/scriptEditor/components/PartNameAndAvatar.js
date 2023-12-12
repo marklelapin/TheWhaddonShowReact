@@ -7,44 +7,22 @@ import {  Input } from 'reactstrap';
 
 import { addPersonInfo } from '../scripts/part'
 
-import { log } from '../../../helper';
+import { log } from '../../../logging';
 import s from '../ScriptItem.module.scss';
 
 function PartNameAndAvatar(props) {
 
     const debug = false;
 
-    const { part, onNameChange, onAvatarClick, onClick, onKeyDown, onBlur, onFocus, avatar, partName, personName, size = "md" ,selected = false} = props;
-
+    const { partId = null, partPerson = null, onNameChange, onAvatarClick, onClick, onKeyDown, onBlur, onFocus, avatar, partName, size = "md" ,selected = false} = props;
 
     log(debug, 'PartNameAndAvatar Props', props)
 
-    const storedPersons = useSelector(state => state.localServer.persons.history)
+    //Redux
+    const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId])
 
-
+    const finalPartPerson = partPerson || partPersonFromId || {};
   
-
-
-
-
-
-    const createPartPerson = () => {
-
-        if (part) {
-            const person = getLatest([...storedPersons].filter(person => person.id === part.personId))[0]
-
-            const partPerson = addPersonInfo(part, person)
-
-            return partPerson
-        }
-
-        return part
-
-    }
-
-
-
-
 
     //EVENT HANDLERS
     const handleAvatarClick = (e) => {
@@ -65,9 +43,7 @@ function PartNameAndAvatar(props) {
     }
 
 
-    const partPerson = createPartPerson()
-
-    log(debug, 'PartNameAndAvatar partPerson', partPerson)
+    log(debug, 'Component:PartNameAndAvatar partPerson', finalPartPerson)
     //RENDERING
 
     return (
@@ -78,8 +54,8 @@ function PartNameAndAvatar(props) {
                 <div className={s["part-avatar"]}>
                     < Avatar
                         size={size}
-                        avatarInitials={partPerson.avatarInitials}
-                        person={partPerson}
+                        avatarInitials={finalPartPerson.avatarInitials}
+                        person={finalPartPerson}
                         onClick={(e) => handleAvatarClick(e)} />
                 </div>
             }
@@ -91,9 +67,9 @@ function PartNameAndAvatar(props) {
                      
                         <Input
                         type="text"
-                        key={part.id}
+                        key={finalPartPerson.id}
                         placeholder="enter name"
-                        value={part.name || ''}
+                        value={finalPartPerson.name || ''}
                         onKeyDown={onKeyDown}
                         onChange={(e) => handleNameChange(e.target.value)}
                         onBlur={onBlur}
@@ -106,23 +82,13 @@ function PartNameAndAvatar(props) {
                     {(!onNameChange) && 
                        
 
-                        <p>{part.name}</p>
+                        <p>{finalPartPerson.name}</p>
                       
                         }
                     
                 </div>
-            }
-
-
-            {/*{(personName) &&*/}
-            {/*    <Row>*/}
-            {/*        < small >{(part.personName) && `(${part.personName})`}</small>*/}
-            {/*    </Row>*/}
-            {/*}*/}
-              
+            }            
             
-
-
         </div >
 
     )

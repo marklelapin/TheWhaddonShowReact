@@ -3,21 +3,28 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-
+import {
+    updatePersonSelectorConfig,
+    trigger, ADD_PART, DELETE_PART,
+    DELETE_NEXT_PART, CONFIRM_UNDO,
+    SWAP_PART, UPDATE_PART_NAME,
+    ADD_PART_TAG, REMOVE_PART_TAG
+} from '../../../actions/scriptEditor';
 //Components
 
 import TagsInput from '../../../components/Forms/TagsInput';
 
 import PartNameAndAvatar from './PartNameAndAvatar';
-import ScriptItemControls from './ScriptItemControls';
+import ScriptItemControls, { TOGGLE_PART_SELECTOR, CONFIRM } from './ScriptItemControls';
 import PartSelectorDropdown from './PartSelectorDropdown';
 
 //Utilities
-import { log } from '../../../helper'
-import { changeFocus } from '../../../actions/scriptEditor';
-import { NAME, ADD_TAG, REMOVE_TAG, ADD_PART_ABOVE, ADD_PART_BELOW, DELETE_PART, DELETE_NEXT_PART, PART_ID } from './PartEditor';
-import { DOWN, UP, START, END } from '../scripts/utility';
-import { moveFocusToId } from '../scripts/utility';
+import { log, PART_EDITOR_ROW as logType } from '../../../logging'
+import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
+import { DOWN, UP, START, END, ABOVE, BELOW } from '../scripts/utility';
+import { moveFocusToId, closestPosition } from '../scripts/utility';
+import {partEditorRowId } from '../scripts/part'
+
 
 //styling
 import s from '../ScriptItem.module.scss'
@@ -25,34 +32,42 @@ import s from '../ScriptItem.module.scss'
 function PartEditorRow(props) {
 
     //utility consts
-    const debug = true;
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
 
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
 
 
     //props
-    const { nextPart, sceneId, isFirst, onClick, onChange, moveFocus, undoDateTime, zIndex } = props;
-    log(debug, 'PartEditorProps', props)
-
-    let { part } = props;
+    const { partId
+        , sceneId
+        , isFirst
+        , previousFocusId
+        , nextFocusId
+        , scenePartIds
+        ,zIndex
+    } = props;
 
 
     //Redux
-    const focus = useSelector(state => state.scriptEditor.focus[part.id])
-    
+    const partPerson = useSelector(state => state.scriptEditor.currentPartPersons[partId])
+    const nextPartPerson = useSelector(state => state.scriptEditor.currentPartPersons[partPerson?.nextId])
+    const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
+    const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
+    const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
+    //const scenePartIds = scene.partIds
+
+
 
     //internal state
     const [tempName, setTempName] = useState(null);
-    const [openPartSelector, setOpenPartSelector] = useState(null);
-    log(debug, 'PartEditorRow: openPartSelector', {value:openPartSelector})
+    const [openPartSelector, setOpenPartSelector] = useState(false);
 
     useEffect(() => {
-        log(debug,'PartEditorRow: useEffect')
+        log(logType, 'useEffect[] props', props)
         if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
             moveFocusToId(sceneId, START)
         } else { //makes the textarea the focus when created
-            const textInputRef = document.getElementById(`${part.id}`)?.querySelector('input')
+            const textInputRef = document.getElementById(partEditorRowId(partId,sceneId))?.querySelector('input')
             if (textInputRef) {
                 textInputRef.focus();
             }
@@ -60,39 +75,55 @@ function PartEditorRow(props) {
     }, [])
 
 
-
     const partWithTempName = () => {
-        let partWithTempName = { ...part }
+        let partWithTempName = { ...partPerson }
         if (tempName === '') {
             partWithTempName.name = tempName
         } else {
-            partWithTempName.name = tempName || part.name || ''
+            partWithTempName.name = tempName || partPerson.name || ''
         }
 
         return partWithTempName
     }
 
-    const closestPosition = (e) => {
-        const percentageAcross = (e.target.selectionEnd / e.target.value.length)
-        const closestPosition = (percentageAcross > 0.5) ? END : START
-        return closestPosition
-    }
+
 
     //EVENT HANDLERS
 
     const handleNameChange = (text) => {
-        log(debug, `EventsCheck: handleTextChange: ${text || ''} `)
         setTempName(text || '')
     }
+
+    const moveFocus = (direction, position) => {
+
+        const currentPartIndex = scenePartIds.findIndex(id => id === partId)
+
+        const nextPart = scenePartIds[currentPartIndex + 1]
+        const previousPart = scenePartIds[currentPartIndex - 1]
+        log(logType, 'moveFocus', { partPerson, currentPartIndex, nextPart, previousPart, scenePartIds, sceneId })
+        log(logType, 'partEditorRowId',partEditorRowId(nextPart,sceneId))
+
+        let moveToId;
+
+        if (direction === UP && previousPart) moveToId = partEditorRowId(previousPart, sceneId)
+        if (direction === UP && !previousPart) moveToId = previousFocusId
+        if (direction === DOWN && nextPart) moveToId = partEditorRowId(nextPart, sceneId)
+        if (direction === DOWN && !nextPart) moveToId = nextFocusId
+            
+        moveFocusToId(moveToId, position || END); return
+    }
+
+
 
     const handleKeyDown = (e) => {
 
         if (e.key === 'Enter') {
 
             if (e.target.selectionEnd === 0) {
-                onChange(ADD_PART_ABOVE, tempName);
+                dispatch(trigger(ADD_PART, { position: ABOVE, sceneId, partId, tempTextValue: tempName }))
             } else {
-                onChange(ADD_PART_BELOW, tempName);
+
+                dispatch(trigger(ADD_PART, { position: BELOW, sceneId, partId, tempTextValue: tempName }))
             }
             setTempName(null)
             return
@@ -104,9 +135,9 @@ function PartEditorRow(props) {
 
             if (!name || name === null || name === '') {
                 e.preventDefault()
-                log(debug, 'PartPersons: handleKeyDown: Backspace', { name: name, tempName: tempName })
-                part.name = ''
-                onChange(DELETE_PART, UP)
+                log(logType, 'handleKeyDown: Backspace', { name: name, tempName: tempName })
+                partPerson.name = ''
+                dispatch(trigger(DELETE_PART, { direction: UP, sceneId, partId }))
 
                 return
             }
@@ -127,18 +158,18 @@ function PartEditorRow(props) {
                 e.preventDefault()
 
                 if ((!name || name === null || name.length === 0)) {
-                    part.name = ''
-                    onChange(DELETE_PART, DOWN)
+                    partPerson.name = ''
+                    dispatch(trigger(DELETE_PART, { direction: DOWN, sceneId, partId }))
                     return
                 }
 
-                if (nextPart && (nextPart.name || '') === '') {
-                    part.name = ''
-                    onChange(DELETE_NEXT_PART, DOWN)
+                if (nextPartPerson && (nextPartPerson.name || '') === '') {
+                    partPerson.name = ''
+                    dispatch(trigger(DELETE_NEXT_PART, { direction: UP, sceneId, partId }))
                     return
                 }
 
-                if (nextPart && nextPart.name.length > 0) {
+                if (nextPartPerson && nextPartPerson.name.length > 0) {
                     moveFocus(DOWN, START)
                     return
                 }
@@ -172,102 +203,96 @@ function PartEditorRow(props) {
             return
         }
 
+        if (e.key === 'tab') {
+            e.preventDefault()
+            moveFocus(DOWN, closestPosition(e))
+            return
+        }
     }
 
-
-    const handleControlsClick = (action, value,e) => {
+    const handleControlsClick = (action, e) => {
 
         switch (action) {
-            case 'add':
-                onChange(ADD_PART_BELOW, tempName);
+            case ADD_PART:
+                dispatch(trigger(ADD_PART, { position: BELOW, sceneId, partId, tempTextValue: tempName }));
                 setTempName(null)
                 break;
-            //case 'confirm': handleBlur(); break;
-            case 'delete': onChange(DELETE_PART, DOWN)
+            case DELETE_PART:
+                dispatch(trigger(DELETE_PART, { direction: DOWN, sceneId, partId }));
                 setTempName(null)
-                    ; break;
-            case 'search':
+                break;
+            case CONFIRM: moveFocus(DOWN, END); break;
+            case TOGGLE_PART_SELECTOR:
                 e.stopPropagation();
                 setOpenPartSelector(!openPartSelector); break;
-            case 'togglePartSelectorDropdown': setOpenPartSelector(!openPartSelector); break;
-
-            case 'partIds':
-                onChange(PART_ID, value[0]);
-                break;
-
             default: return;
         }
     }
 
     const handleFocus = () => {
-        if (undoDateTime) { onClick('confirmUndo') }
-
-        dispatch(changeFocus({ ...part, parentId: sceneId })) //update global state of which item is focussed
+        //dispatch(trigger(CONFIRM_UNDO))
+        dispatch(updateScriptItemInFocus(partId, sceneId)) //update global state of which item is focussed
     }
 
 
-    const handleBlur = () => {
+    const handleBlur = (e) => {
 
-        log(debug, 'PartPersons : handleBlur', (tempName === null, { tempName: null, partName: part.name }, { tempName: tempName, partName: part.name }))
-        if (tempName || (tempName === '' && part.name !== '')) {
+        log(logType, 'handleBlur', { eventTextValue: e.target.value, partName: partPerson.name })
+        if (partPerson.name !== e.target.value) {
 
-            onChange(NAME, tempName)
+            dispatch(trigger(UPDATE_PART_NAME, { partId, value: e.target.value }))
         }
         setTempName(null)
     }
 
-
-  
-
-
     return (
 
-        <>
+        partPerson && (
 
-            <div key={part.id} id={part.id} className={s["part"]} style={{zIndex:zIndex} }>
-                <PartNameAndAvatar avatar partName personName
+            <div key={partEditorRowId(partId,sceneId)} id={partEditorRowId(partId,sceneId)} className={s["part"]} style={{ zIndex: zIndex }}>
 
-                    avatarInitials={part.avatarInitials}
-                    part={partWithTempName()}
-                    onAvatarClick={(e, linkId) => onClick('avatar', null)}
+                <PartNameAndAvatar avatar partName
+                    avatarInitials={partPerson.avatarInitials}
+                    partPerson={partWithTempName()}
+                    onAvatarClick={() => dispatch(updatePersonSelectorConfig({ sceneId, partId }))}
                     onNameChange={(text) => handleNameChange(text)}
                     onKeyDown={(e) => handleKeyDown(e)}
-                    onBlur={() => handleBlur()}
+                    onBlur={(e) => handleBlur(e)}
                     onFocus={() => handleFocus()}
                 />
-                
-                {(focus) &&
+
+                {(scriptItemInFocus) &&
                     <div className={s['part-editor-controls']} >
                         <ScriptItemControls
-                            part={part}
-                            onClick={(action, value, e) => handleControlsClick(action, value, e)}
+                            part={partPerson}
+                            scene={scene}
+                            onClick={(action, e) => handleControlsClick(action, e)}
                         />
 
                         {(openPartSelector) &&
                             <PartSelectorDropdown
-                                    allowMultiSelect={false}
-                                    allowClear={false}
-                                    centered
-                                    onClick={(action, partIds) => handleControlsClick(action, partIds)} />
+                                allowMultiSelect={false}
+                                allowClear={false}
+                                centered
+                                toggle={(e) => setOpenPartSelector(!openPartSelector)}
+                                onSelect={(selectedPartIds) => dispatch(trigger(SWAP_PART, { sceneId, oldPartId: partId, newPartId: selectedPartIds[0] }))} />
                         }
                     </div>
                 }
                 <div className={s['part-tags']}>
                     <TagsInput
                         strapColor="primary"
-                        tags={part.tags}
+                        tags={partPerson.tags}
                         tagOptions={(focus) ? tagOptions : []}
-                        onClickAdd={(tag) => onChange(ADD_TAG, tag)}
-                        onClickRemove={(tag) => onChange(REMOVE_TAG, tag)} />
+                        onClickAdd={(tag) => dispatch(trigger(ADD_PART_TAG, { partId, tag }))}
+                        onClickRemove={(tag) => dispatch(trigger(REMOVE_PART_TAG, { partId, tag }))} />
                 </div>
 
 
             </div>
 
 
-        </>
-
-
+        )
 
     )
 

@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
     <PackageReference Include="MimeMapping" Version="2.0.0" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
-    <PackageReference Include="TheWhaddonShow.ClassLibrary" Version="1.0.2" />
+    <PackageReference Include="TheWhaddonShow.ClassLibrary" Version="1.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\src\dataAccess\__tests__\" />
     <Folder Include="ClientApp\src\images\NewFolder1\" />
     <Folder Include="ClientApp\src\images\NewFolder\" />
   </ItemGroup>

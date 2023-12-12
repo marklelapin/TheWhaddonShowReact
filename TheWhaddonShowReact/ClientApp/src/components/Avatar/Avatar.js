@@ -10,7 +10,7 @@ import { AVATARS } from '../../dataAccess/storageContainerNames';
 import adminDefault from '../../images/chat/chat2.png';
 
 //utils
-import { log } from '../../helper';
+import { log } from '../../logging';
 
 import s from './Avatar.module.scss'; 
 
@@ -19,9 +19,14 @@ export function Avatar(props) {
 
     const debug = true;
 
-    const { person: draftPerson, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
+    const { person: draftPerson, partId = null, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
 
-    const person = draftPerson || {}
+    const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId]) || null
+
+    const person = draftPerson || partPersonFromId || {}
+
+    log(debug, 'Component:Avatar props', props)
+    log(debug, 'Component:Avatar person', {person,draftPerson,partPersonFromId})
 
     const { firstName = null, email = null, pictureRef = null } = person;
 

@@ -159,15 +159,7 @@ function Sidebar() {
                         iconName="flaticon-document"
                         link="/app/script"
                         index=""
-                        childrenLinks={[
-                            {
-                                header: 'View', link: '/app/script',
-                            },
-      
-                            {
-                                header: 'Import', link: '/app/script/import',
-                            },
-                        ]}
+                  
                     />
                     <LinksGroup
                         onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}

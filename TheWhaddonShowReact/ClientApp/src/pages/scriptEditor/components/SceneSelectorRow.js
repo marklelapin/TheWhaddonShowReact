@@ -6,7 +6,9 @@ import React from 'react';
 import { Button } from 'reactstrap';
 
 //utils
-import { log } from '../../../helper';
+import { log } from '../../../logging';
+
+import { ACT, SCENE } from '../../../dataAccess/scriptItemTypes';
 
 function SceneSelectorRow(props) {
 
@@ -31,13 +33,15 @@ function SceneSelectorRow(props) {
             draggable={true}
         >
 
-              <div className="information" onClick={()=>onClick('goto',scene.id) }>
-                <h5>{(scene.sceneNumber) ? `${scene.sceneNumber}. ` : ``} {scene.text}</h5>
-                   {/* <small>{synopsis.text}</small>*/}
-                    {scene.tags.map((tag) => <Button key={`${scene.id}-${tag}`} size='xs'>tag</Button>)}
-                </div>
+            <div className="information" onClick={() => onClick('goto', scene.id)}>
 
-        {/*       <Icon key={scene.id} icon="move-up-down" onClick={() => moveFocusToId(scene.id)}/>*/}
+                {(scene.type === ACT) && <h2 key={scene.id}>{scene.text}</h2>}
+                    
+                {(scene.type === SCENE) && <h5>{(scene.sceneNumber) ? `${scene.sceneNumber}. ` : ``} {scene.text}</h5>}
+                  
+                {scene.tags.map((tag) => <Button key={`${scene.id}-${tag}`} size='xs'>tag</Button>)}
+
+                </div>
 
         </div>
 

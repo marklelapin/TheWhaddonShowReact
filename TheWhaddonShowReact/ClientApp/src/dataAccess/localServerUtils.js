@@ -19,25 +19,16 @@ import {
     processServerToLocalPostBacks,
     addUpdates,
     clearConflicts,
-    //updateConnectionStatus,
     endSync,
     closePostBack,
-    setPauseSync
+    clearHasPostedBack
 } from '../actions/localServer';
 
-import { log } from '../helper.js';
+import { log, LOCAL_SERVER_UTILS as logType } from '../logging.js';
 
-import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
 export async function useSync() {
 
-    const debug = true;
-
-
-    //Set up state internal to this component
-    const [data, setData] = useState(null)
-    const [type, setType] = useState(null)
-    const [triggerSync, setTriggerSync] = useState(false)
 
     //Access state from redux store 
     const localCopyId = useSelector((state) => state.localServer.localCopyId);
@@ -49,7 +40,7 @@ export async function useSync() {
     const pauseSync = useSelector((state) => state.localServer.sync.pauseSync);
 
 
-    log(debug, 'Use Sync: isSyncing: ', { persons: persons.sync.isSyncing, scriptItems: scriptItems.sync.isSyncing, parts: parts.sync.isSyncing })
+    log(logType, 'Use Sync: isSyncing: ', { persons: persons.sync.isSyncing, scriptItems: scriptItems.sync.isSyncing, parts: parts.sync.isSyncing })
     const dispatch = useDispatch();
 
     //Use Effect Hooks to assing the data and url to be used in the sync operation. **LSMTypeInCode**
@@ -57,7 +48,7 @@ export async function useSync() {
 
     useEffect(() => {
 
-        log(debug, `${PERSON} isSyncing: ${persons.sync.isSyncing}`)
+        log(logType, `UseEffect ${PERSON} isSyncing: ${persons.sync.isSyncing}`)
 
         const runSync = async () => {
 
@@ -79,7 +70,7 @@ export async function useSync() {
 
     useEffect(() => {
 
-        log(debug, `${SCRIPT_ITEM} isSyncing: ${scriptItems.sync.isSyncing}`)
+        log(logType, `UseEffect ${SCRIPT_ITEM} isSyncing: ${scriptItems.sync.isSyncing}`)
 
         const runSync = async () => {
 
@@ -101,7 +92,7 @@ export async function useSync() {
 
     useEffect(() => {
 
-        log(debug, `${PART} isSyncing: ${parts.sync.isSyncing}`)
+        log(logType, `UseEffect ${PART} isSyncing: ${parts.sync.isSyncing}`)
 
         const runSync = async () => {
 
@@ -125,18 +116,18 @@ export async function useSync() {
 
     //The actual sync operation
     //-------------------------------------------------------------------------------
-    const sync = async(data, type) => {
+    const sync = async (data, type) => {
 
         let error;
-
+        const postBacksFromLocal = data.filter(x => x.hasPostedBack !== true).map(x => ({ id: x.id, created: x.created, isConflicted: x.isConflicted }))
         try {
 
-            const syncData = await createSyncData(data, localCopyId)
+            const syncData = await createSyncData(data, localCopyId, postBacksFromLocal)
 
             const syncResponse = await postSyncData(syncData, type)
 
             if (syncResponse.status === 200) {
-                const cbpSuccess = await closePostBacks(syncResponse.data.postBacks, type)
+                const cbpSuccess = await closePostBacks(postBacksFromLocal, type)
 
                 const psrSuccess = await processSyncResponse(syncResponse.data, type)
 
@@ -152,8 +143,8 @@ export async function useSync() {
 
             }
 
-        } catch (error) {
-            error = ('sync Error: ' + error.message)
+        } catch (e) {
+            error = ('sync Error: ' + e.message)
         }
 
         return { error }
@@ -161,16 +152,15 @@ export async function useSync() {
     }
 
 
-    const createSyncData = async (data, copyId) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
 
-        debug && console.log('Redux store data: ')
+    const createSyncData = async (data, copyId, postBacksFromLocal) => { //data = all the updates pertaining to a particular type of data (e.g. persons)
 
-        debug && console.log(data)
+        //log(logType,'Redux store data: ', data)
 
         try {
             const syncData = new LocalToServerSyncData(
                 copyId  //identifies the local copy that the data is coming from
-                , data.filter(x => x.hasPostedBack !== true).map(x => ({ id: x.id, created: x.created, isConflicted: x.isConflicted })) // confirmation back to server that updates in the post back have been added to Local.
+                , postBacksFromLocal // confirmation back to server that updates in the post back have been added to Local.
                 , data.filter(x => x.updatedOnServer === null) //local data that hasn't yet been added to server
             )
 
@@ -184,19 +174,17 @@ export async function useSync() {
 
 
 
-    const postSyncData = async (syncData, type, dispatch, debug) => {
+    const postSyncData = async (syncData, type, dispatch, logType) => {
 
         const url = `${type}s/sync`
 
         try {
 
-            log(debug, "postSyncData: ", { type, syncData });
+            log(logType, "postSyncData: post", { type, url, syncData });
 
-
-            log(debug, 'postSyncData: url', url)
             const response = await axios.post(url, syncData);
 
-            log(debug, 'postSyncData response: ', { status: response.status, data: response.data })
+            log(logType, 'postSyncData response: ', { status: response.status, data: response.data })
 
             //dispatch(updateConnectionStatus('Ok'))
 
@@ -209,7 +197,7 @@ export async function useSync() {
 
     const closePostBacks = (postBacks, type) => {
 
-        log(debug, 'sync closePostBacks: ', { postBacks: postBacks, type: type })
+        log(logType, 'closePostBacks: ', { postBacks, type })
 
         try {
             const postBacksArray = Object.values(postBacks)
@@ -226,19 +214,17 @@ export async function useSync() {
     const processSyncResponse = async (responseData, type) => {
 
         let process = ''
-        log(debug, 'processSyncResponse:', { responseData, type })
+        log(logType, 'processSyncResponse:', { responseData, type })
 
         try {
             process = 'postBacks'
             if (responseData.postBacks.length === 0) {
 
-                debug && console.log('No PostBack to process.');
-                debug && console.log(type)
+                log(logType, 'No PostBack to process.', { type })
 
             }
             else {
-                debug && console.log('Processing postBacks.')
-                debug && console.log(type)
+                log(logType, 'Processing postBacks.', { type })
 
                 const postBacksArray = Object.values(responseData.postBacks)
 
@@ -247,33 +233,31 @@ export async function useSync() {
 
             process = 'updates'
             if (responseData.updates.length === 0) {
-                debug && console.log('No updates to process.');
-                debug && console.log(type)
+                log(logType, 'No updates to process.', { type });
             }
             else {
-                debug && console.log('Processing updates.');
-                debug && console.log(type)
+                log(logType, 'Processing updates. ', { type });
                 dispatch(addUpdates(responseData.updates, type))
+                dispatch(clearHasPostedBack(responseData.updates, type)) //TODO - deletes hasPostedBack if there is a value (if it has already postBack but localSErverEngine is still sending the updatea then postBack needs to be resent.)
             }
 
             process = 'conflicts'
             if (responseData.conflictIdsToClear.length === 0) {
-                debug && console.log('No conflicts to clear.');
-                debug && console.log(type)
+                log(logType, 'No conflicts to clear.', { type });
 
             }
             else {
-                debug && console.log('Clearing conflicts.')
+                log(logType, 'Clearing conflicts.')
                 dispatch(clearConflicts(responseData.conflictIdsToClear))
             }
 
             process = 'lastSyncDate'
             if (responseData.lastSyncDate == null) {
-                debug && console.log('No last sync date to update.')
+                log(logType, 'No last sync date to update.')
             }
 
             else {
-                debug && console.log('Updating last sync date.')
+                log(logType, 'Updating last sync date.')
                 dispatch(updateLastSyncDate(responseData.lastSyncDate))
             }
 
@@ -289,15 +273,15 @@ export async function useSync() {
 
     const finishSync = (error, type) => {
         if (error) {
-            log(debug, `Error syncing ${type}: ${error}`)
+            log(logType, `Error syncing ${type}: ${error}`)
         }
         dispatch(endSync(error, type))
     }
 
 }
 
-export function getLatest(history, undoDateTime = null, includeInActive = false, includeSamples = false) {
-    const undoDate = (undoDateTime) ? new Date(undoDateTime) : null
+
+export function getLatest(history, includeInActive = false, includeSamples = false) {
 
     if (history === undefined) {
         throw new Error("getLatest passed undefined history property")
@@ -305,14 +289,10 @@ export function getLatest(history, undoDateTime = null, includeInActive = false,
 
     if (!Array.isArray(history) || history.length === 0) { return [] }
 
-    const unDoneHistory = history
-        .map(item => ({ ...item, created: new Date(item.created) }))
-        .filter((update) => (undoDate === null || update.created < undoDate))
-
-    const sampleHistory = unDoneHistory.filter((update) => update.isSample === false || includeSamples === true)
+    const sampleHistory = history.filter((update) => !update.isSample || includeSamples === true)
 
     const latestUpdates = sampleHistory.reduce((acc, update) => {
-        if (!acc[update.id] || update.created > acc[update.id].created) {
+        if (!acc[update.id] || new Date(update.created) > new Date(acc[update.id].created)) {
             acc[update.id] = update;
         }
 
@@ -337,32 +317,21 @@ export function prepareUpdate(updates, adjustment) {
     return prepareUpdates(updates, adjustment)
 }
 
-export function prepareUpdates(updates, adjustment) {
+export function prepareUpdates(updates, adjustment = 1) {
 
-    let output = updates
+    const outputArray = (!Array.isArray(updates)) ? [updates] : updates
 
-    if (!Array.isArray(updates)) {
-        output = [updates]
-    }
+    const cleanedOutputArray = outputArray.filter((update) => update.id !== null && update.id !== undefined);
 
     const createdDate = localServerDateNow(adjustment)
 
-
-    output.forEach((update, index) => {
-
-        output[index] = { ...update, created: createdDate, updatedOnServer: null }
-    })
-
-    output.forEach((update) => {
-
+    const preparedUpdates = cleanedOutputArray.map((update) => {
         delete update.new
         delete update.changed
-
+        return { ...update, created: createdDate, updatedOnServer: null }
     })
 
-    return output;
-
-
+    return preparedUpdates;
 }
 
 

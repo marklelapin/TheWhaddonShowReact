@@ -1,132 +1,9 @@
 ﻿
-import { SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, CURTAIN, INITIAL_CURTAIN, DIALOGUE, COMMENT } from "../../../dataAccess/scriptItemTypes";
-
-import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
-import { getLatest } from '../../../dataAccess/localServerUtils';
-import { log } from '../../../helper';
-
+import { OPEN_CURTAIN, SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, DIALOGUE, HEADER_TYPES, INITIAL_CURTAIN, COMMENT } from "../../../dataAccess/scriptItemTypes";
 import { ABOVE, BELOW } from './utility';
-import { updatePreviousCurtain } from '../../../actions/scriptEditor';
 
-//Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
-//--------------------------------------------------------------------------------------------------
-export function sortLatestScriptItems(head, scriptItems, undoDateTime = null) {
-
-    const latestScriptItems = getLatest(scriptItems, undoDateTime);
-
-    const sortedScriptItems = sortScriptItems(head, latestScriptItems);
-
-    const activeComments = latestScriptItems.filter(item => item.isActive && item.type === COMMENT)
-    const commentedScriptItems = sortedScriptItems.map(item => ({ ...item, comment: activeComments.find(comment => comment.id === item.commentId) }))
-
-    return commentedScriptItems;
-
-}
-
-export function sortScriptItems(head, scriptItems) {
-
-    const debug = true
-
-    if (scriptItems.length === 1) return scriptItems;
-
-
-    log(debug, 'Sort Head: ', head)
-    log(debug, 'Sort ScriptItems', scriptItems)
-
-    if (scriptItems.length === 0) return [];
-
-    let targetArray = [...scriptItems];
-
-    log(debug, 'EventsCheck sortScriptItems', { head: head, scriptItems: scriptItems })
-
-    //this calculates a new nextId for head to allow it to swap between different linked lists. e.g. a SCene is part ofthe Act linked list but also the head of the Scene linked list
-    const originalHeadNextId = head.nextId //this gets put back at end of process.
-    const headNextId = targetArray.filter((item) => item.previousId === head.id)[0].id;
-    targetArray = targetArray.map(item => item.id === head.id ? { ...item, nextId: headNextId } : item)
-
-    log(debug, 'EventsCheck sortScriptItems after head change', { targetArray: targetArray })
-
-    //create objectMap of all items in the targetArray
-    const idToObjectMap = {};
-
-    for (const item of targetArray) {
-        idToObjectMap[item.id] = item;
-    }
-
-    //Sort the targetArray by nextId
-    const sortedLinkedList = [];
-    let currentId = head.id
-    const initialCurtain = scriptItems.find(item => item.type === INITIAL_CURTAIN)
-    let curtainOpen = (initialCurtain) ? initialCurtain.tags.includes('OpenCurtain') : false
-    let previousCurtainOpen;
-
-    while (currentId !== null) {
-        let currentItem = idToObjectMap[currentId];
-
-        if (currentItem) {
-            if (opensCurtain(currentItem)) { curtainOpen = true }
-            if (closesCurtain(currentItem)) { curtainOpen = false }
-
-            currentItem.previousCurtainOpen = previousCurtainOpen;
-            currentItem.curtainOpen = curtainOpen;
-            previousCurtainOpen = curtainOpen;
-
-            currentId = currentItem.nextId;
-            currentItem = (currentItem.id === head.id) ? { ...currentItem, nextId: originalHeadNextId } : currentItem //returns head.nextId back to original
-
-            sortedLinkedList.push(currentItem);
-
-        } else {
-            currentId = null;
-        }
-
-    }
-
-
-
-    return sortedLinkedList;
-}
-
-const opensCurtain = (scriptItem) => {
-
-    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
-        return scriptItem.tags.includes('OpenCurtain')
-    }
-
-    return false
-}
-
-const closesCurtain = (scriptItem) => {
-
-    if (scriptItem.type === 'InitialCurtain' || scriptItem.type === 'Curtain') {
-        return scriptItem.tags.includes('CloseCurtain')
-    }
-
-    return false
-}
-
-
-export function addSceneNumbers (scenes) {
-
-    let i = 1;
-    const numberedScenes = scenes.map(scene => {
-        if (scene.type === SCENE) {
-            const numberedScene = { ...scene, sceneNumber: i }
-            i++;
-            return numberedScene
-            
-        } else {
-            return scene }
-        
-        
-    })
-
-    return numberedScenes
-}
-
-
-//Functions to create scriptItem updates for various crud style operations
-//----------------------------------------------------------------------------------
+import { ScriptItemUpdate, PartUpdate } from "../../../dataAccess/localServerModels";
+import { log } from '../../../logging'
 
 export function newScriptItemsForCreateShow(title) {
 
@@ -146,8 +23,6 @@ export function newScriptItemsForCreateShow(title) {
 
     const scriptItems = [show, act1, act2]
 
-
-
     return scriptItems
 
 }
@@ -155,19 +30,16 @@ export function newScriptItemsForCreateShow(title) {
 
 
 
-export function newScriptItemsForCreate(placement, _existingScriptItem, _currentScriptItems, type = DIALOGUE) {
+export function newScriptItemsForCreate(placement, _existingScriptItem, currentScriptItems, type = DIALOGUE, tempTextValue) {
 
-    const currentScriptItems = [..._currentScriptItems]
-    const existingScriptItem = { ..._existingScriptItem }
-
+    const existingScriptItem = { ...copy(_existingScriptItem), text: (tempTextValue) ? tempTextValue : _existingScriptItem.text }
 
     if (!existingScriptItem) throw new Error('ExistingScriptItem missing from createNewScriptItem. A new scriptItem must be created relative to an existing scriptItem.')
 
-    let previousScriptItem = currentScriptItems.find(item => item.id === existingScriptItem.previousId)
+    let previousScriptItem = copy(currentScriptItems[existingScriptItem.previousId])
+    let nextScriptItem = (existingScriptItem.nextId) ? copy(currentScriptItems[existingScriptItem.nextId]) : null
+    let newScriptItem = new ScriptItemUpdate(type || DIALOGUE)
 
-    let nextScriptItem = currentScriptItems.find(item => item.id === existingScriptItem.nextId)
-
-    let newScriptItem = new ScriptItemUpdate(type)
     newScriptItem.parentId = existingScriptItem.parentId
 
     let newScriptItems = [];
@@ -175,14 +47,11 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
     if (placement === ABOVE) {
 
         previousScriptItem.nextId = newScriptItem.id
-        previousScriptItem.changed = true
 
         newScriptItem.previousId = previousScriptItem.id
         newScriptItem.nextId = existingScriptItem.id
-        newScriptItem.changed = true;
 
         existingScriptItem.previousId = newScriptItem.id
-        existingScriptItem.changed = true
 
         newScriptItems = [previousScriptItem, newScriptItem, existingScriptItem]
 
@@ -191,15 +60,12 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
     if (placement === BELOW) {
 
         existingScriptItem.nextId = newScriptItem.id;
-        existingScriptItem.changed = true
 
         newScriptItem.previousId = existingScriptItem.id
         newScriptItem.nextId = (nextScriptItem) ? nextScriptItem.id : null
-        newScriptItem.changed = true
 
         if (nextScriptItem) {
             nextScriptItem.previousId = newScriptItem.id
-            nextScriptItem.changed = true
         }
 
         newScriptItems = [existingScriptItem, newScriptItem]
@@ -213,94 +79,60 @@ export function newScriptItemsForCreate(placement, _existingScriptItem, _current
 
 }
 
-export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems) {
+export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems, confirmSceneDelete = false) {
 
-    let deleteScriptItem = { ...scriptItemToDelete }
+    if (HEADER_TYPES.includes(scriptItemToDelete.type) && confirmSceneDelete === false) {
+        alert('You cannot delete a header item')
+        return;
+    }
+
+    let deleteScriptItem = copy(scriptItemToDelete)
     const newScriptItems = [];
 
-    let previousScriptItem = currentScriptItems.find(item => item.id === deleteScriptItem.previousId)
-    let nextScriptItem = currentScriptItems.find(item => item.id === deleteScriptItem.nextId)
+    let previousScriptItem = copy(currentScriptItems[deleteScriptItem.previousId])
+    let nextScriptItem = (deleteScriptItem.nextId) ? copy(currentScriptItems[deleteScriptItem.nextId]) : null
 
-    if (previousScriptItem) {
 
-        if (nextScriptItem) {
-            previousScriptItem.nextId = nextScriptItem.id
-        } else {
-            previousScriptItem.nextId = null
-        }
-
-        previousScriptItem.changed = true
-
+    if (nextScriptItem) {
+        previousScriptItem.nextId = nextScriptItem.id
+        nextScriptItem.previousId = previousScriptItem.id
+        newScriptItems.push(previousScriptItem)
+        newScriptItems.push(nextScriptItem)
+    } else {
+        previousScriptItem.nextId = null
         newScriptItems.push(previousScriptItem)
     }
 
-    if (nextScriptItem) {
-        nextScriptItem.previousId = previousScriptItem.id
-        nextScriptItem.changed = true
-
-        newScriptItems.push(nextScriptItem)
-    }
 
     deleteScriptItem.isActive = false
-    deleteScriptItem.changed = true
     newScriptItems.push(deleteScriptItem)
 
-
-
-
-
     //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
     return newScriptItems
 
 }
 
-export function newScriptItemsForSceneDelete(sceneToDelete, currentScenes) {
+export function newScriptItemsForSceneDelete(sceneToDelete, currentScriptItems) {
+    const confirmSceneDelete = window.confirm('Are you sure you want to delete this scene?')
 
-    let deleteScene = { ...sceneToDelete }
-    const newScriptItems = [];
-
-    let previousScene = currentScenes.find(scene => scene.id === deleteScene.previousId)
-    let nextScene = currentScenes.find(scene => scene.id === deleteScene.nextId)
-
-
-
-    if (previousScene) {
-
-        if (nextScene) {
-            previousScene.nextId = nextScene.id
-        } else {
-            previousScene.nextId = null
-        }
-
-        newScriptItems.push(previousScene)
+    if (confirmSceneDelete === true) {
+        return newScriptItemsForDelete(sceneToDelete, currentScriptItems, confirmSceneDelete)
+    } else {
+        return []
     }
-
-    if (nextScene) {
-        nextScene.previousId = previousScene.id
-
-        newScriptItems.push(nextScene)
-    }
-
-    deleteScene.isActive = false
-
-    newScriptItems.push(deleteScene)
-
-    //these scriptItems and not sorted and Latest and need sortLatestScriptItems applied in the calling function (because this is where the head is known)
-    return newScriptItems
-
 
 }
 
-export function newScriptItemsForCreateHeader(previousScene, nextScene = null) {
+export function newUpdatesForCreateHeader(previousScene, currentScriptItems) {
 
-    let newPreviousScene = { ...previousScene }
-    let newNextScene = (nextScene) ? { ...nextScene } : null
+    let newPreviousScene = copy(previousScene)
+    let newNextScene = (previousScene.nextId) ? copy(currentScriptItems[previousScene.nextId]) : null
 
     let scene = new ScriptItemUpdate(SCENE)
     let synopsis = new ScriptItemUpdate(SYNOPSIS)
     let initialStaging = new ScriptItemUpdate(INITIAL_STAGING)
     let initialCurtain = new ScriptItemUpdate(INITIAL_CURTAIN)
-    initialCurtain.tags.push('OpenCurtain')
+    initialCurtain.tags.push(OPEN_CURTAIN)
 
     let dialogue = new ScriptItemUpdate(DIALOGUE)
 
@@ -331,57 +163,168 @@ export function newScriptItemsForCreateHeader(previousScene, nextScene = null) {
 
 
 
-    const newUpdates = [newPreviousScene, scene, synopsis, initialStaging, initialCurtain, dialogue]
-    if (newNextScene) { newUpdates.push(newNextScene) }
+    const scriptItemUpdates = [newPreviousScene, scene, synopsis, initialStaging, initialCurtain, dialogue]
+    if (newNextScene) { scriptItemUpdates.push(newNextScene) }
 
-    return newUpdates
+    const partUpdates = [{ ...new PartUpdate(), id: scene.partIds[0] }]
+
+    return { scriptItemUpdates, partUpdates }
 }
 
 
-export function newScriptItemsForMoveScene(sceneId, newPreviousId, scenes) {
+export function newScriptItemsForMoveScene(scene, newPreviousId, currentScriptItems) {
 
-    const scene = scenes.find(scene => scene.id === sceneId)
+    let movingScene = copy(scene)
+    if (scene.id === newPreviousId || movingScene.previousId === newPreviousId) return []
 
-    if (sceneId === newPreviousId || scene.previousId === newPreviousId) return []
+    let oldPreviousScene = copy(currentScriptItems[movingScene.previousId])
+    let oldNextScene = (movingScene.nextId) ? copy(currentScriptItems[movingScene.nextId]) : null
+    let newPreviousScene = copy(currentScriptItems[newPreviousId])
+    let newNextScene = (newPreviousScene.nextId) ? copy(currentScriptItems[newPreviousScene.nextId]) : null
 
-    const newNextId = [...scenes].find(scene => scene.id === newPreviousId)?.nextId || null
-    const oldPreviousId = [...scenes].find(scene => scene.id === sceneId)?.previousId || null
-    const oldNextId = [...scenes].find(scene => scene.id === sceneId)?.nextId || null
+    if (oldPreviousScene.id === newNextScene.id) {
 
-    const affectedIds = [...new Set([sceneId, newPreviousId, newNextId, oldPreviousId, oldNextId])].filter(item => item !== null)
+        oldPreviousScene.nextId = movingScene.nextId
+        oldPreviousScene.previousId = movingScene.id
 
-    let updateObjects = [...scenes]
-        .filter(scene => affectedIds.includes(scene.id))
-        .reduce((idToObjectMap, scene) => {
-            idToObjectMap[scene.id] = scene;
-            return idToObjectMap;
-        }, {})
+        if (oldNextScene) { oldNextScene.previousId = oldPreviousScene.id }
 
-    updateObjects[sceneId].previousId = newPreviousId //handles case where swaping with element directly next to it.
-    updateObjects[sceneId].nextId = newNextId //handles case where swaping with element directly next to it.
-    updateObjects[sceneId].parentId = updateObjects[newPreviousId].parentId
+        newPreviousScene.nextId = movingScene.id
 
-    updateObjects[newPreviousId].nextId = sceneId
-    if (newNextId) { updateObjects[newNextId].previousId = sceneId }
+        newNextScene = null // as same as oldPreviousScene
 
-    updateObjects[oldPreviousId].nextId = oldNextId
-    if (oldNextId) { updateObjects[oldNextId].previousId = oldPreviousId }
+        movingScene.previousId = newPreviousScene.id
+        movingScene.nextId = oldPreviousScene.id
+    } else if (oldNextScene.id === newPreviousScene.id) {
 
-    const updates = Object.values(updateObjects)
+        oldPreviousScene.nextId = oldNextScene.id
+        newPreviousScene.previousId = oldPreviousScene.id
+
+        oldNextScene = null //as same as newPreviousScene
+
+        newPreviousScene.nextId = movingScene.id
+        movingScene.previousId = newPreviousScene.id
+
+        if (newNextScene) { newNextScene.previousId = movingScene.id }
+
+    } else {
+        oldPreviousScene.nextId = movingScene.nextId
+        if (oldNextScene) { oldNextScene.previousId = movingScene.previousId }
+
+        newPreviousScene.nextId = movingScene.id
+        if (newNextScene) { newNextScene.previousId = movingScene.id }
+
+        movingScene.previousId = newPreviousScene.id
+        movingScene.nextId = newNextScene?.id || null
+    }
+
+
+    const updates = [];
+
+    updates.push(oldPreviousScene)
+    if (oldNextScene) { updates.push(oldNextScene) }
+    updates.push(movingScene)
+    updates.push(newPreviousScene)
+    if (newNextScene) { updates.push(newNextScene) }
 
     return updates
 
 }
 
+export const newScriptItemsForAddComment = (scriptItem, tempTextValue = null) => {
 
+    let newScriptItem = copy(scriptItem)
 
-export function updatePreviousCurtainValue(scene, scriptItems, dispatch) {
-
-    const sortedScriptItems = sortLatestScriptItems(scene, scriptItems)
-    
-    if (scene.nextId) {
-        const finalCurtainOpen = sortedScriptItems[sortedScriptItems.length - 1].curtainOpen
-        dispatch(updatePreviousCurtain(scene.nextId, finalCurtainOpen))
+    if (tempTextValue || tempTextValue === '') {
+        newScriptItem.text = tempTextValue
     }
+
+    let newComment = new ScriptItemUpdate(COMMENT)
+
+    newComment.parentId = newScriptItem.parentId
+    newComment.previousId = newScriptItem.id
+
+    newScriptItem.commentId = newComment.id
+
+    const newUpdates = [newComment, newScriptItem]
+
+    return newUpdates
+}
+
+export const newScriptItemsForDeleteComment = (scriptItem, currentScriptItems) => {
+
+    const deleteCommentUpdate = { ...copy(scriptItem), isActive: false }
+
+    const scriptItemUpdate = { ...copy(currentScriptItems[scriptItem.previousId]), commentId: null }
+
+    const newUpdates = [deleteCommentUpdate, scriptItemUpdate]
+
+    return newUpdates;
+}
+
+
+export const newUpdatesForSwapPart = (oldPartId, newPartId, currentSceneScriptItemsArray, showOrder, currentPartPersons) => {
+
+    //output
+    const newPartUpdates = [];
+    let newScriptItemUpdates = [];
+
+    const scene = currentSceneScriptItemsArray.find(item => item.type === SCENE)
+
+    if (scene.partIds.includes(newPartId)) {
+        alert('The part is already associated with this scene')
+        return;
+    }
+
+    newScriptItemUpdates = currentSceneScriptItemsArray.map(item => {
+
+        const copyItem = copy(item)
+
+        if (item.partIds.includes(oldPartId)) {
+            return { ...copyItem, partIds: [...copyItem.partIds].map(partId => (partId === oldPartId) ? newPartId : partId) }
+        }
+        return null
+
+    }).filter(item => item !== null)
+
+
+    const usedElsewhere = showOrder.some(sceneItem => sceneItem.partIds.includes(oldPartId) && sceneItem.id !== scene.id);
+
+    if (!usedElsewhere) {
+        let partToDelete = copy(currentPartPersons[oldPartId])
+        partToDelete.isActive = false
+        newPartUpdates.push(partToDelete) //only delete if not usedElsewhere
+    }
+
+    return { newPartUpdates, newScriptItemUpdates };
+
+}
+
+
+export const getScriptItemUpdatesLaterThanCurrent = (scriptItemUpdates, currentScriptItems) => {
+
+    //the updates that are newer than the current scriptItems so will affect script Editor
+    const updatesLaterThanExisting = scriptItemUpdates.filter(update => new Date(update.created) > new Date(currentScriptItems[update.id]?.created || 0))
+
+    //find the latest currentScriptItemUpdates for each id
+    const currentScriptItemUpdates = Object.values(updatesLaterThanExisting.reduce((acc, item) => {
+        if (!acc[item.id] || new Date(acc[item.id].created) < new Date(item.created || 0)) {
+            acc[item.id] = item;
+        }
+        return acc;
+    }, {}))
+
+
+    return currentScriptItemUpdates;
+
+}
+
+const copy = (object) => {
+    return JSON.parse(JSON.stringify(object))
+}
+
+export const getOrderedSceneScriptItems = (sceneOrder, currentScriptItems) => {
+
+    return copy(sceneOrder.map(item => currentScriptItems[item.id]))
 
 }

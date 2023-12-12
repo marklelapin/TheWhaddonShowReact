@@ -1,9 +1,8 @@
 ﻿
 //React and Redux
 import React from 'react';
-import { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
-
+import { memo, useState, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 //Components
 import Comment from './Comment';
 
@@ -11,51 +10,56 @@ import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 import { Icon } from '../../../components/Icons/Icons';
 import { Button } from 'reactstrap';
+import CheckBox from '../../../components/Forms/CheckBox';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 //utilities
-import { log } from '../../../helper';
-
+import { log, SCRIPT_ITEM as logType } from '../../../logging';
 //Constants
-import { SCENE, DIALOGUE, STAGING, INITIAL_STAGING , } from '../../../dataAccess/scriptItemTypes';
+import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
+//trigger types
+import {
+    trigger,
+    REDO, UNDO, CONFIRM_UNDO,
+    DELETE_SCENE, UPDATE_ATTACHMENTS,
+    UPDATE_PART_IDS, TOGGLE_CURTAIN
+} from '../../../actions/scriptEditor';
 
 //styling
 import s from '../ScriptItem.module.scss';
 
-function ScriptItem(props) {
+
+const ScriptItem = memo((props) => {
 
     //utility consts
-    const debug = true;
-    const moment = require('moment');
+    const dispatch = useDispatch();
+
 
     // get specific props
     const { id = null,
-        created = null,
         sceneId = null,
-        sceneNumber = null,
         alignRight = false,
-        onClick,
-        onChange,
-        moveFocus,
-        undoDateTime,
         curtainOpen = null,
-        zIndex=0} = props;
+        previousFocusId = null,
+        nextFocusId = null,
+        zIndex
+    } = props;
 
-    const createdString = moment(created).format('YYYY-MM-DDTHH:mm:ss.SSS')
-
-    log(debug, 'Component:ScriptItem', { id, created })
+    log(logType, 'Component:ScriptItem props:', props)
 
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments) || true
-    const scenePartPersons = useSelector(state => state.scriptEditor.scenePartPersons[sceneId]) || []
-    const focus = useSelector(state => (state.scriptEditor.focus[id])) || false
 
-    const scriptItemHistory = useSelector(state => state.scriptEditor.scriptItemHistory[id]) || []
-    const scriptItem = scriptItemHistory.find(item => item.created === createdString) || {}
+    const focus = useSelector(state => (state.scriptEditor.scriptItemInFocus[id])) || false
+    const isUndoInProgress = useSelector(state => (state.scriptEditor.isUndoInProgress[id]))
+    const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
+
+
+    log(logType, 'Component:ScriptItem redux:', { showComments, focus, isUndoInProgress, scriptItem })
+
     const { type, commentId } = scriptItem;
 
-    log (debug,'Component:ScriptItem scriptItemHistory:',scriptItemHistory)
-    log (debug,'Component:ScriptItem scriptItem:',scriptItem)
+
 
     //Refs
     const textInputRef = useRef(null)
@@ -63,9 +67,6 @@ function ScriptItem(props) {
 
     //internal state
     const [showMedia, setShowMedia] = useState(false)
-
-
-
 
 
     //calculations functions
@@ -76,35 +77,13 @@ function ScriptItem(props) {
         }
     }
 
-    const header = () => {
-        switch (type) {
-            case DIALOGUE:
-                if (scenePartPersons) {
-                    log(debug, 'ScriptItem: changePart scriptItem:', scriptItem)
-                    log(debug, 'ScriptItem:  changePart scenePartPersons', scenePartPersons)
-                    const partPersons = scriptItem.partIds.map(partId => scenePartPersons.partPersons.find(partPerson => partPerson.id === partId))
 
-                    const partNames = partPersons.map(partPersons => partPersons?.name).join(',')
 
-                    return partNames || '-'
-                }; break;
-            case SCENE:
-                return `Scene ${sceneNumber}.` || null
-            case STAGING:
-                return 'Staging' || null
-            case INITIAL_STAGING:
-                return 'Initial Staging' || null
-
-            default: return null;
-        }
-
-    }
-    
     const handleShowMedia = (value = null) => {
 
-        if (undoDateTime) { onClick('confirmUndo') }
+        //  dispatch(trigger(CONFIRM_UNDO)); //automatically confirms undo if started to add media.
 
-        log(debug, 'handleShowMedia', { showMedia: showMedia, value: value })
+        log(logType, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
             setShowMedia(!showMedia)
         } else {
@@ -114,7 +93,7 @@ function ScriptItem(props) {
 
     const handleMedia = (type, media) => {
 
-        if (undoDateTime) { onClick('confirmUndo') }
+        // dispatch(trigger(CONFIRM_UNDO));  //automatically confirms undo if started to add media.
 
         let urls = []
 
@@ -132,33 +111,26 @@ function ScriptItem(props) {
             default: return;
         }
 
-        onChange('attachments', updatedAttachments)
+        dispatch(trigger(UPDATE_ATTACHMENTS, { scriptItem, value: updatedAttachments }))
     }
-
-    log(debug, 'ScriptItemProps', props)
-    log(debug, 'ScriptItem: showMedia', { showMedia: showMedia })
-    log(debug, 'ScriptItem: focus', { focus: focus })
-
-    
 
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
     return (
-        <div id={id}
-            className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight) ? s['align-right'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
-            style={{zIndex:zIndex}}
-        >                             
 
-            {showParts() &&
+        <div id={id}
+
+            className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight) ? s['align-right'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
+            style={{ zIndex: zIndex }}
+        >
+
+            {scriptItem && showParts() &&
                 <div className={s['script-item-parts']}>
                     <PartSelector
                         key={id}
-                        scriptItemId={id}
                         sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
-                        undoDateTime={undoDateTime}
-                        onClick={onClick}
-                        onChange={(selectedPartIds) => onChange('partIds', selectedPartIds)}
+                        onSelect={(selectedPartIds) => dispatch(trigger(UPDATE_PART_IDS, { scriptItem, value: selectedPartIds }))}
                     />
                 </div>
             }
@@ -168,52 +140,61 @@ function ScriptItem(props) {
                     key={id}
                     maxWidth={textInputRef.current?.offsetWidth}
                     scriptItem={scriptItem}
-                    header={header()}
-                    onClick={onClick}
                     toggleMedia={(value) => handleShowMedia(value)}
-                    onChange={onChange}
-                    undoDateTime={undoDateTime}
-                    moveFocus={moveFocus}
+                    previousFocusId={previousFocusId}
+                    nextFocusId={nextFocusId}
+                    isUndoInProgress={isUndoInProgress}
                 />
 
             </div>
-            {((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
+            {scriptItem && ((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
                 <div className={s['dropzone']}>
-                <MediaDropzone
-                    existingMediaURLs={scriptItem.attachments}
-                    addMedia={(media) => handleMedia('add', media)}
-                    removeMedia={(media) => handleMedia('remove', media)}
-                    showControls={(showMedia && focus) }
-                    autoLoad={true}
+                    <MediaDropzone
+                        existingMediaURLs={scriptItem.attachments}
+                        addMedia={(media) => handleMedia('add', media)}
+                        removeMedia={(media) => handleMedia('remove', media)}
+                        showControls={(showMedia && focus)}
+                        autoLoad={true}
                     />
                 </div>
             }
 
             {(commentId) && (showComments) &&
-                <Comment id={commentId} onChange={onChange} />
+                <Comment id={commentId} />
             }
 
             {/*Elements specific for each scriptItem type*/}
 
             {(type === SCENE) &&
-                <div className={s['scene-controls'] }>
-                    {scriptItem.undoDateTime &&
-                        <Button size='xs' color="primary" onClick={() => onClick('confirmUndo')} >confirm undo</Button>
+                <div className={s['scene-controls']}>
+                    {isUndoInProgress &&
+                        <Button size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>
                     }
-                    <Icon icon="undo" onClick={() => onClick('undo')} />
-                    {scriptItem.undoDateTime &&
-                        <Icon icon="redo" onClick={() => onClick('redo')} />
+                    <Icon icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} />
+                    {isUndoInProgress &&
+                        <Icon icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} />
                     }
-                    <Icon icon="trash" onClick={() => onClick('deleteScene', null)} />
+                    <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} />
 
 
 
                 </div>
             }
+            {scriptItem && CURTAIN_TYPES.includes(type) &&
+                <div className={`${s['curtain-checkbox']}` }>
+                    <CheckBox key={scriptItem.id}
+                        id={`curtain-checkbox-${scriptItem.id}`}
+                        checked={scriptItem.tags.includes(OPEN_CURTAIN)}
+                        onChange={() => dispatch(trigger(TOGGLE_CURTAIN, { scriptItem }))}
+                        ios={true} />
+                </div>
+            }
+            {scriptItem &&
+                <CurtainBackground curtainOpen={finalCurtainOpen} />
+            }
 
-            <CurtainBackground curtainOpen={finalCurtainOpen} />
         </div>
     )
-}
+})
 
 export default ScriptItem;

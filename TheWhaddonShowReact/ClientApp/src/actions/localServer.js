@@ -4,6 +4,8 @@ export const SET_LOCALCOPYID = 'SET_LOCALCOPYID';
 export const UPDATE_CONNECTION_STATUS = 'UPDATE_CONNECTION_STATUS';
 export const SET_PAUSE_SYNC = 'SET_PAUSE_SYNC';
 export const CLEAR_LOCAL_SERVER_STATE = 'CLEAR_LOCAL_SERVER_STATE';
+
+
 export function updateLastSyncDate(payload) {
     return {
         type: UPDATE_LASTSYNCDATE,
@@ -46,6 +48,7 @@ export const CLEAR_CONFLICTS = 'CLEAR_CONFLICTS';
 export const SYNC = 'SYNC';
 export const END_SYNC = 'END_SYNC';
 export const CLOSE_POSTBACK = 'CLOSE_POSTBACK';
+export const CLEAR_HAS_POSTED_BACK = 'CLEAR_HAS_POSTED_BACK';
 
 export function resetList(payload,payloadType) {
     return {
@@ -66,6 +69,14 @@ export function processServerToLocalPostBacks(payload,payloadType) {
 export function closePostBack(payload, payloadType) {
     return {
         type: CLOSE_POSTBACK,
+        payload,
+        payloadType
+    };
+}
+
+export function clearHasPostedBack(payload, payloadType) {
+    return {
+        type: CLEAR_HAS_POSTED_BACK,
         payload,
         payloadType
     };

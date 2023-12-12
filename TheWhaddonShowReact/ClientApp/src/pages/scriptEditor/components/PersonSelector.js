@@ -1,7 +1,12 @@
 ﻿//React and Redux
 import React from 'react';
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+import {
+    trigger, ALLOCATE_PERSON_TO_PART, UPDATE_VIEW_AS_PART_PERSON,
+    updatePersonSelectorConfig
+} from '../../../actions/scriptEditor'
 
 //Components
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -11,38 +16,73 @@ import Widget from '../../../components/Widget';
 //utilities
 import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts';
 import { getLatest } from '../../../dataAccess/localServerUtils';
+import { moveFocusToId, END } from '../scripts/utility';
+import { log, PERSON_SELECTOR as logType } from '../../../logging';
+
+import s from '../Script.module.scss'
+
 function PersonSelector(props) {
 
-    //Props
-    const { persons = null, tags = [], onClick, closeModal, deselect = true, additionalCategory = null } = props;
+    const dispatch = useDispatch();
+
+    //props 
+    const { onSelect = null, closeModal, viewAs } = props;
+
 
     //Redux state
+    const config = useSelector(state => state.scriptEditor.personSelectorConfig) || null
     const storedPersons = useSelector(state => state.localServer.persons.history)
+    const { persons = null, personIds = null, sceneId = null, tags = [], additionalCategory = null, partId } = config || {};
+
+
+    const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId]) || {}
+    const scenePartIds = scene.partIds || []
+
+    const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
 
 
-    //calculations
-    const finalPersons = persons || getLatest(storedPersons) || []
+    //calcs
+
+    const scenePartPersonIds = scenePartIds.map(partId => partPersons[partId]) || []
+
+    const allocatedPersonIds = scenePartPersonIds.filter(item => item.personId !== null).map(person => person.id)
+
+    const finalPersons = (persons) ? persons
+        : ((personIds) ? getLatest(storedPersons.filter(person => personIds.includes(person.id)))
+            : (allocatedPersonIds.length>0) ? getLatest(storedPersons.filter(person => allocatedPersonIds.includes(person.id) === false))
+                : getLatest(storedPersons) || [])
 
     const personsWithFriendlyName = addFriendlyName(finalPersons);
 
-   const categorisedPersons = categorisePersons(personsWithFriendlyName, tags);
+    const categorisedPersons = categorisePersons(personsWithFriendlyName, tags);
 
     const deselectPerson = { id: null, friendlyName: 'Deselect', avatarInitials: 'X', pictureRef: null }
 
-    
-    
 
+    const handleClick = (person) => {
 
-  
+        if (partId) {
+            log(logType, 'handleClick ALLOCATE_PERSON_TO_PART', { partId, person })
+            dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, personId: person.id }))
+
+        } else if (viewAs) {
+            log(logType, 'handleClick UPDATE_VIEW_AS_PART_PERSON', { person })
+            dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: person }))
+        } else {
+            onSelect(person)
+        }
+        dispatch(updatePersonSelectorConfig(null))
+        moveFocusToId(partId,END)
+    }
 
     const personJSX = (person) => {
 
         const { id, friendlyName } = person;
 
         return (
-            <div key={id}className="person-button" >
-                <Avatar onClick={() => onClick(person)} person={person} avatarInitials={(person.avatarInitials) || null} />
+            <div key={id} className="person-button" >
+                <Avatar onClick={() => handleClick(person)} person={person} avatarInitials={(person.avatarInitials) || null} />
                 <span >{friendlyName}</span>
             </div>
         )
@@ -51,8 +91,8 @@ function PersonSelector(props) {
 
 
     return (
-
-        <Modal isOpen={true} toggle={closeModal}>
+        (config) &&
+        <Modal isOpen={true} toggle={closeModal} className={s['person-selector']}>
             <ModalHeader toggle={closeModal}>Select Person</ModalHeader>
             <ModalBody className="bg-white">
 
@@ -78,7 +118,7 @@ function PersonSelector(props) {
                         </>
 
                     }
-                        
+
                     {(tags.length > 0) &&
 
                         <>
@@ -91,7 +131,7 @@ function PersonSelector(props) {
                                     return personJSX(person)
 
                                 })}
-                        
+
                             </div>
                         </>
                     }
@@ -116,12 +156,12 @@ function PersonSelector(props) {
 
                     </div>
 
-            </Widget>
+                </Widget>
 
-        </ModalBody>
+            </ModalBody>
             <ModalFooter>
-                {personJSX(deselectPerson) }
-</ModalFooter>
+                {personJSX(deselectPerson)}
+            </ModalFooter>
         </Modal >
     )
 

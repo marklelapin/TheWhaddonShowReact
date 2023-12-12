@@ -89,7 +89,7 @@ class Layout extends React.Component {
                                         <Route path="/app/main" exact component={Home}  />
                                       
                                         <Route path="/app/script" exact component={Script} />
-                                        <Route path="/app/script/import" exact component={ScriptImporter} />
+                                        {/*<Route path="/app/script/import" exact component={ScriptImporter} />*/}
 
                                         <Route path="/app/planning/cast" exact component={UnderConstruction} />
                                         <Route path="/app/planning/props" exact component={UnderConstruction} />

@@ -9,6 +9,7 @@
     SYNC,
     END_SYNC,
     CLOSE_POSTBACK,
+    CLEAR_HAS_POSTED_BACK,
     SET_PAUSE_SYNC,
     CLEAR_LOCAL_SERVER_STATE
 } from '../actions/localServer';
@@ -23,9 +24,10 @@ import {
     , PART
     , LocalServerModel
 } from '../dataAccess/localServerModels';
+import {SCENE } from '../dataAccess/scriptItemTypes';
 import { v4 as uuidv4 } from 'uuid';
 
-import { log } from '../helper.js';
+import { log, LOCAL_SERVER_REDUCER as logType } from '../logging.js';
 
 const defaultState = {
     localCopyId: uuidv4(),
@@ -36,7 +38,7 @@ const defaultState = {
         pauseSync: false
 
     },
-    refresh: {},
+    updateTrigger: {},
     //**LSMTypeInCode**
     persons: new LocalServerModel(PERSON), //object holding all information with regard to persons
     scriptItems: new LocalServerModel(SCRIPT_ITEM), //object holding all information with regard to scriptItems
@@ -48,8 +50,6 @@ const defaultState = {
 
 
 export default function localServerReducer(state = defaultState, action) {
-
-    const debug = true;
 
     switch (action.type) {
 
@@ -142,11 +142,42 @@ export default function localServerReducer(state = defaultState, action) {
                 case PART: return { ...state, parts: { ...state.parts, history: updatedHistory } };
                 default: return state;
             };
+        case CLEAR_HAS_POSTED_BACK:
 
+            const updatesToClear = action.payload
+
+            //Get the correct array of data to update
+            let dataset = null;
+            switch (action.payloadType) {
+                //**LSMTypeInCode** */
+                case PERSON: dataset = [...state.persons.history]; break
+                case SCRIPT_ITEM: dataset = [...state.scriptItems.history]; break
+                case PART: dataset = [...state.parts.history]; break
+                default: return state;
+            }
+
+            const newHistory = dataset.map(item => {
+                const matchingUpdate = updatesToClear.find(update => update.id === item.id && update.created === item.created)
+
+                if (matchingUpdate) {
+                    return { ...item, hasPostedBack: false }
+                } else {
+                    return item
+                }
+            })
+
+            //update the correct array of data
+            switch (action.payloadType) {
+                //**LSMTypeInCode** */
+                case PERSON: return { ...state, persons: { ...state.persons, history: newHistory } };
+                case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: newHistory } };
+                case PART: return { ...state, parts: { ...state.parts, history: newHistory } };
+                default: return state;
+            };
 
         case ADD_UPDATES:
 
-            log(debug, 'localServer reducer ADD_UPDATES', action.payload)
+            log(logType, 'localServer reducer ADD_UPDATES', action.payload)
 
             if (action.payload.length === 0) { return state }
 
@@ -162,7 +193,10 @@ export default function localServerReducer(state = defaultState, action) {
 
             //filter out any updates from payload that are already in the store. This can happen if postBacks have failed due to poor connection.
 
-            const updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => (existingUpdate.id === update.id && existingUpdate.created === update.created)))
+            let updatesToAdd = action.payload.filter((update) => !history.some(existingUpdate => (existingUpdate.id === update.id && existingUpdate.created === update.created)))
+
+            const updatesFromServer = updatesToAdd.filter(item => item.updatedOnServer !== null)
+
 
             //update correct data set to update
 
@@ -172,17 +206,17 @@ export default function localServerReducer(state = defaultState, action) {
                     case PERSON: return {
                         ...state,
                         persons: { ...state.persons, history: [...state.persons.history, ...updatesToAdd] },
-                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                        updateTrigger: { updates: updatesFromServer, type: action.payloadType }
                     };
                     case SCRIPT_ITEM: return {
                         ...state,
                         scriptItems: { ...state.scriptItems, history: [...state.scriptItems.history, ...updatesToAdd] },
-                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                        updateTrigger: { updates: updatesFromServer, type: action.payloadType }
                     };
                     case PART: return {
                         ...state,
                         parts: { ...state.parts, history: [...state.parts.history, ...updatesToAdd] },
-                        refresh: { updates: updatesToAdd, type: action.payloadType }
+                        updateTrigger: { updates: updatesFromServer, type: action.payloadType }
                     };
                     default: return state
                 };
@@ -228,7 +262,7 @@ export default function localServerReducer(state = defaultState, action) {
                 default: return state;
             };
         case SYNC:
-            debug && console.log(`syncing ${action.payloadType}`)
+            log(logType, `syncing ${action.payloadType}`)
             switch (action.payloadType) {
 
                 //**LSMTypeInCode** */
@@ -238,20 +272,15 @@ export default function localServerReducer(state = defaultState, action) {
                 default: return state;
             };
         case END_SYNC:
-            debug && console.log(`end syncing ${action.payloadType}`)
+            log(logType, `end syncing ${action.payloadType}`)
             let lastSyncDate = null
             const error = action.payload
-            debug && console.log('setting lastSyncDate')
             if (error === null) { lastSyncDate = new Date() }
 
             switch (action.payloadType) {
 
                 //**LSMTypeInCode** */
                 case PERSON:
-
-                    debug && console.log(`changing persons redux state: isSyncing: false , error: ${error}, ${lastSyncDate}`)
-
-
                     return {
                         ...state, persons: {
                             ...state.persons, sync: {

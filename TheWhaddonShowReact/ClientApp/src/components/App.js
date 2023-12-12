@@ -8,7 +8,7 @@ import { ConnectedRouter } from 'connected-react-router';
 
 //dataAccess Components
 import LocalServerSyncing from '../dataAccess/LocalServerSyncing';
-import ScriptEditorProcessing from '../dataAccess/ScriptEditorProcessing';
+import ScriptEditorProcessing from '../pages/scriptEditor/components/ScriptEditorProcessing';
 
 //Components
 import LayoutComponent from '../components/Layout';

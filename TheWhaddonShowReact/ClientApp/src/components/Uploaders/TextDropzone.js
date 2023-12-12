@@ -9,7 +9,7 @@ import TextareaAutosize from 'react-autosize-textarea';
 
 //utils
 import { getFileTextContents } from '../../dataAccess/fileUtils';
-import { log } from '../../helper';
+import { log } from '../../logging';
 
 //css
 import s from './Uploaders.module.scss';

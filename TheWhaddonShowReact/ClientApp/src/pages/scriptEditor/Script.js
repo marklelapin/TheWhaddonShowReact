@@ -12,7 +12,7 @@ import ScriptViewer from './components/ScriptViewer';
 import ShowSelector from './components/ShowSelector';
 
 //Utils
-import { log } from '../../helper.js';
+import { log } from '../../logging.js';
 import isScreen from '../../core/screenHelper';
 
 
@@ -54,19 +54,10 @@ function Script() {
 
     const isSmallerScreen = () => {
 
-        return (isScreen('xs') || isScreen('sm') || isScreen('md'))
+        return (isScreen('xs') || isScreen('sm') || isScreen('md') || isScreen('lg'))
 
     }
 
-
-    const handleScriptViewerClick = (action) => {
-        switch (action) {
-            case 'clearScript': dispatch(setShow(null)); break;
-            default: return;
-        }
-
-
-    }
 
 
     log(debug, 'Script: show', show)
@@ -88,7 +79,7 @@ function Script() {
                     }
 
                     {(!showSceneSelector || isLargerScreen) &&   
-                            <ScriptViewer show={show} onClick={(action) => handleScriptViewerClick(action)} />
+                            <ScriptViewer show={show} />
                     }
 
                 </div>
@@ -102,9 +93,6 @@ function Script() {
 
 
         </div>
-
-
-
     )
 
 
