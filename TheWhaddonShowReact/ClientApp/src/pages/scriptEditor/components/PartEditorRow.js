@@ -66,7 +66,7 @@ function PartEditorRow(props) {
         log(logType, 'useEffect[] props', props)
         if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
             moveFocusToId(sceneId, START)
-        } else { //makes the textarea the focus when created
+        } else  if (partPerson.updatedOnServer === null) { //makes the textarea the focus when created unless it has come from the server.
             const textInputRef = document.getElementById(partEditorRowId(partId,sceneId))?.querySelector('input')
             if (textInputRef) {
                 textInputRef.focus();

@@ -56,7 +56,7 @@ function ScriptItemText(props) {
 
 
 
-    //REdux
+    //Redux
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
 
     //Internal state
@@ -77,9 +77,9 @@ function ScriptItemText(props) {
 
     useEffect(() => {
         log(logType, 'Component:ScriptItemText props', props)
-        //makes the textarea the focus when created unless during an undo.
+        //makes the textarea the focus when created unless during an undo or if the item has already been updated on the server (entered by someone else in which case you don't want it to be your focus)
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
-        if (textInputRef && undoNotInProgress) {
+        if (textInputRef && undoNotInProgress && scriptItem.updatedOnServer === null) {
             textInputRef.focus();
         }
     }, [])
