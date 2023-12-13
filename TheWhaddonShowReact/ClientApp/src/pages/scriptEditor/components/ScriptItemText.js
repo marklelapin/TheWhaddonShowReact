@@ -37,12 +37,11 @@ function ScriptItemText(props) {
     //utils
     const dispatch = useDispatch()
 
-    const endMargin = 100;
+    const defaultEndMargin = 100;
 
     //Props
     const { scriptItem,
         placeholder = "...",
-        maxWidth = null,
         toggleMedia,
         previousFocusId = null,
         nextFocusId = null,
@@ -55,17 +54,21 @@ function ScriptItemText(props) {
     const undoNotInProgress = !undoInProgress
 
 
-
     //Redux
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
+    const maxWidth = useSelector(state => state.scriptEditor.maxScriptItemTextWidth)
 
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
     const [redoTempTextValue, setRedoTempTextValue] = useState(null)
     const [isFocused, setIsFocused] = useState(false);
     const [isBeingDeleted, setIsBeingDeleted] = useState(false)
+    const [finalWidthPx, setFinalWidthPx] = useState(null)
+    const [endMargin,setEndMargin] = useState(defaultEndMargin)
 
     let finalPlaceholder;
+
+    const finalText = (tempTextValue === null) ? scriptItem.text : tempTextValue
 
     switch (type) {
         case SCENE: finalPlaceholder = 'enter title for scene'; break;
@@ -76,7 +79,10 @@ function ScriptItemText(props) {
     }
 
     useEffect(() => {
-        log(logType, 'Component:ScriptItemText props', props)
+        log(logType, 'props', { props })
+
+        setFinalWidthPx(getFinalWidth())
+
         //makes the textarea the focus when created unless during an undo or if the item has already been updated on the server (entered by someone else in which case you don't want it to be your focus)
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
         if (textInputRef && undoNotInProgress && scriptItem.updatedOnServer === null) {
@@ -84,12 +90,19 @@ function ScriptItemText(props) {
         }
     }, [])
 
+    useEffect(() => {
+        setFinalWidthPx(getFinalWidth())
+    }, [tempTextValue,scriptItem.text,maxWidth,endMargin])
+
+    //log(logType, 'width props', { maxWidth, endMargin, finalWidthPx })
+
     const getContext = (type) => {
         try {
             const textInputRef = document.getElementById(`text-area-context-${type?.toLowerCase()}`)
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             context.font = window.getComputedStyle(textInputRef).font;
+           
             return context;
         }
         catch {
@@ -98,31 +111,33 @@ function ScriptItemText(props) {
 
     }
 
-    const finalText = (tempTextValue === null) ? scriptItem.text : tempTextValue
+    const getFinalWidth = () => {
 
-    const textToMeasure = finalText || finalPlaceholder
+        const textToMeasure = finalText || finalPlaceholder
 
-    const textToMeasureRows = textToMeasure.split('\n') || []
+        const textToMeasureRows = textToMeasure.split('\n') || []
 
-    const longestRow = textToMeasureRows.reduce((a, b) => (a.length > b.length) ? a : b, '');
+        const longestRow = textToMeasureRows.reduce((a, b) => (a.length > b.length) ? a : b, '');
 
-    const context = getContext(type)
+        const context = getContext(type)
 
-    const textMetrics = (context) ? context.measureText(longestRow) : { width: 0 }
+        const textMetrics = (context) ? context.measureText(longestRow) : { width: 0 }
 
-    const idealWidth = textMetrics.width + endMargin
+        const idealWidth = textMetrics.width + endMargin
 
-    const finalWidth = Math.max(endMargin, Math.min(maxWidth || idealWidth, idealWidth))
+        const finalWidth = Math.max(endMargin, Math.min(maxWidth || idealWidth, idealWidth))
 
-    const finalWidthPx = `${Math.floor(finalWidth)}px`
+        const finalWidthPx = `${Math.floor(finalWidth)}px`
 
+        return finalWidthPx;
+    }
 
 
     //Event Handlers
 
     const handleTextChange = (e) => {
         log(logType, `handleTextChange: ${e.target.value || ''} `)
-
+        setEndMargin(100)
         setTempTextValue(e.target.value || '')
     }
 
@@ -300,15 +315,18 @@ function ScriptItemText(props) {
 
     const handleFocus = () => {
         //if (undoInProgress) { dispatch(trigger(CONFIRM_UNDO)) }
+        
         setIsFocused(true)
-        dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.parentId)) //update global state of which item is focussed
+        dispatch(updateScriptItemInFocus(scriptItem.id, (scriptItem.type === SCENE) ? scriptItem.id : scriptItem.parentId)) //update global state of which item is focussed
         toggleMedia(false)
     }
 
 
     const handleBlur = (e) => {
+        
         if (isBeingDeleted !== true) {
             log(logType, 'handleBlur: ', { scriptItemText: scriptItem.text, eventTextValue: e.target.value })
+            setEndMargin(defaultEndMargin)
             setIsFocused(false)
             if (scriptItem.text !== e.target.value) {
                 log(logType, 'dispatch update text', { scriptItem })

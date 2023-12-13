@@ -128,7 +128,7 @@
 
 .header-controls.header-exists {
     top: 0px;
-    right: -55px;
+    right: -52px;
 }
 
 .align-right {
@@ -470,6 +470,12 @@
         z-index: 5;
     }
 
+    &.curtain-open {
+        .scene-controls {
+            color: white;
+        }
+    }
+
     .bottom-right-controls {
         bottom: 0px;
         right: -15px;
@@ -483,6 +489,7 @@
 .scene.header-controls {
     color: black;
 }
+
 
 .synopsis {
     padding-top: 0px;
@@ -512,7 +519,7 @@
     .header-controls {
         top: unset;
         bottom: 0px;
-        right: -50px;
+        right: -45px;
         margin: 0px;
 
         .header-right-controls {
@@ -592,7 +599,7 @@
         flex-direction: row;
 
         &.align-right {
-            padding-left: 70px;
+            padding-left: 50px;
             padding-right: 10px;
         }
     }

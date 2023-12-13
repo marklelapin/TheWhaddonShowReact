@@ -134,11 +134,10 @@ const ScriptItem = memo((props) => {
                     />
                 </div>
             }
-            <div ref={textInputRef} className={s['script-item-text-area']}>
+            <div className={s['script-item-text-area']}>
 
                 <ScriptItemText
                     key={id}
-                    maxWidth={textInputRef.current?.offsetWidth}
                     scriptItem={scriptItem}
                     toggleMedia={(value) => handleShowMedia(value)}
                     previousFocusId={previousFocusId}

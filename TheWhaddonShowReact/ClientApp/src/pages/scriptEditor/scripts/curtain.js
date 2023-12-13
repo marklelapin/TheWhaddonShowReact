@@ -38,8 +38,6 @@ export const newScriptItemsForToggleCurtain = (scriptItem, sceneOrder, previousC
     if (scriptItem.type === CURTAIN) {
         isCurrentlyOpen = sceneOrder.find(item => item.id === scriptItem.id)?.curtainOpen || false
     }
-        if (isCurrentlyOpen === overrideNewValue) return [] //the override value is the same as the current value so no change is required.
-
 
 
     const currentlyOpensCurtain = (overrideNewValue) ? !overrideNewValue : opensCurtain(scriptItem)

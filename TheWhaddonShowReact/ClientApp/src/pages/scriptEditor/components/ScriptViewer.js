@@ -1,25 +1,33 @@
 ﻿//React and REdux
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector,  useDispatch } from 'react-redux';
+
+import { updateMaxScriptItemTextWidth } from '../../../actions/scriptEditor';
 
 //Components
 import Scene from './Scene'
 import PersonSelector from './PersonSelector'
-
+import ScriptViewerHeader from './ScriptViewerHeader';
 //utitilites
-
 import { log, SCRIPT_VIEWER as logType } from '../../../logging';
 
 //Constants
-import ScriptViewerHeader from './ScriptViewerHeader';
+
 
 import s from '../Script.module.scss'
-function ScriptViewer(props) {
 
+
+
+function ScriptViewer(props) {
+    
     //props
     const { show } = props;
 
+    
+
     //Redux 
+    const dispatch = useDispatch();
+
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig) || null
@@ -27,6 +35,37 @@ function ScriptViewer(props) {
 
 
     log(logType, "Component:ScriptViewer showOrder", showOrder)
+
+
+    useEffect(() => {
+
+        let timeoutId;
+        const handleScriptViewerResizeDebounce = () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => handleScriptViewerResize(), 1000);
+        }
+
+        handleScriptViewerResize()
+
+        window.addEventListener('resize', handleScriptViewerResizeDebounce);
+
+        return () => { window.removeEventListener('resize', handleScriptViewerResizeDebounce); }
+    }, []);
+
+
+    useEffect(() => {
+        handleScriptViewerResize()
+    },[showComments])
+
+    const handleScriptViewerResize = () => {
+
+        const scriptBody = document.getElementById('script-body')
+
+        const scriptBodyWidth = (showComments === true) ? (scriptBody.offsetWidth - 310) : scriptBody.offsetWidth;
+        const maxScriptItemTextWidth = scriptBodyWidth - 100
+        log(logType,'hanldeScriptViewerResize', {scriptBodyWidth, showComments, maxScriptItemTextWidth})
+        dispatch(updateMaxScriptItemTextWidth(maxScriptItemTextWidth))
+    }
 
 
     return (

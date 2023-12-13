@@ -97,9 +97,10 @@ export function moveFocusToId(id, position = START, scroll = false) {
 
         if (newTextInput) {
             if (scroll) {
-                const offset = newTextInput.getBoundingClientRect().top + window.scrollY;
-                window.scrollTo({ top: offset, behaviour: 'smooth' })
+                newTextInput.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                return;
             }
+
             newTextInput.focus();
             if (position === START) {
                 newTextInput.selectionStart = 0
@@ -141,3 +142,5 @@ const getTextInputElement = (id) => {
         log(logType,`getTextInputElement error: Cant locate an element with id = ${id}`) //TODO extend this when more scenes available 
     }
 }
+
+

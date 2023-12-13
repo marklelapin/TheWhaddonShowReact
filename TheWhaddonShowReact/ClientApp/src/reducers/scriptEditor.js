@@ -16,7 +16,8 @@ import {
     ADD_ITEMS_TO_REDO_LIST,
     REMOVE_ITEMS_FROM_REDO_LIST,
     RESET_UNDO,
-    UPDATE_PERSON_SELECTOR_CONFIG
+    UPDATE_PERSON_SELECTOR_CONFIG,
+    UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH
 
 } from '../actions/scriptEditor';
 
@@ -56,6 +57,7 @@ export const initialState = {
     redoList: [],
     trigger: {},
     personSelectorConfig: null,
+    maxScriptItemTextWidth: 720,
 
 }
 
@@ -208,7 +210,11 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 personSelectorConfig: action.config
             }
-
+        case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
+            return {
+                ...state,
+maxScriptItemTextWidth: action.maxWidth
+            }
         default: return state;
     }
 }

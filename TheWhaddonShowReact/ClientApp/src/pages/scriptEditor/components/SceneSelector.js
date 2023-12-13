@@ -9,9 +9,9 @@ import ScriptSearch from './ScriptSearch'
 import SceneSelectorRow from './SceneSelectorRow'
 
 //Utils
-import { ACT } from '../../../dataAccess/scriptItemTypes'
+
 import { log } from '../../../logging';
-import { moveFocusToId } from '../scripts/utility'
+import { moveFocusToId, END } from '../scripts/utility'
 
 
 
@@ -94,7 +94,7 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                moveFocusToId(id)
+                moveFocusToId(id,END,true)
                 dispatch(toggleSceneSelector())
                 break;
             default:

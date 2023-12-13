@@ -109,7 +109,8 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
         case UPDATE_ATTACHMENTS: scriptItemUpdates.push({ ...copy(scriptItem), attachments: value });
             moveFocus = { id: scriptItem.id, position: END }
             break;
-        case UPDATE_TYPE: let newTypeUpdate = { ...copy(scriptItem), type: value };
+        case UPDATE_TYPE:
+            let newTypeUpdate = { ...copy(scriptItem), type: value };
             if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
 
                 newTypeUpdate = newScriptItemsForToggleCurtain(newTypeUpdate, sceneOrder, previousCurtainOpen, true) //set it to open curtain.

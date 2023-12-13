@@ -25,6 +25,9 @@ export const ADD_ITEMS_TO_REDO_LIST = 'ADD_ITEMS_TO_REDO_LIST';
 export const REMOVE_ITEMS_FROM_REDO_LIST = 'REMOVE_ITEMS_FROM_REDO_LIST';
 export const RESET_UNDO = 'RESET_UNDO';
 
+export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH'
+
+
 export const TRIGGER = 'TRIGGER';
 
 //Trigger types 
@@ -185,5 +188,12 @@ export function updatePersonSelectorConfig(config) {
     return {
         type: UPDATE_PERSON_SELECTOR_CONFIG,
         config,
+    }
+}
+
+export function updateMaxScriptItemTextWidth(maxWidth) {
+    return {
+        type: UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
+        maxWidth
     }
 }

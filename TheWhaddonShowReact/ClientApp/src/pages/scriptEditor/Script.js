@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
-import { setShow } from '../../actions/scriptEditor';
+import { setShow, updateShowComments } from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
@@ -35,7 +35,7 @@ function Script() {
         let timeoutId;
         const handleResizeDebounce = () => {
             clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => handleScriptScreenResize(), 300);
+            timeoutId = setTimeout(() => handleScriptScreenResize(), 1000);
         }
 
         handleScriptScreenResize()
@@ -48,10 +48,13 @@ function Script() {
     //eventHandlers
     const handleScriptScreenResize = () => {
         if (isSmallerScreen()) {
+            dispatch(updateShowComments(false))
             setIsLargerScreen(false)
-        } else setIsLargerScreen(true)
+        } else {
+            dispatch(updateShowComments(true))
+            setIsLargerScreen(true)
+        }
     }
-
     const isSmallerScreen = () => {
         return (isScreen('xs') || isScreen('sm') || isScreen('md') || isScreen('lg'))
     }

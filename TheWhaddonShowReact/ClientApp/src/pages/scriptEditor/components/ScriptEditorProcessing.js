@@ -85,7 +85,7 @@ export function ScriptEditorProcessing() {
 
         if (currentFocus && currentFocus.sceneId !== sceneInFocus?.id) {
 
-            const newSceneInFocus = currentScriptItems[scriptItemInFocus.parentId]
+            const newSceneInFocus = currentScriptItems[currentFocus.sceneId]
 
             dispatch(updateSceneInFocus(newSceneInFocus))
         }

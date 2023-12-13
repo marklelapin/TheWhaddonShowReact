@@ -9,7 +9,7 @@ import {
 } from '../../../actions/scriptEditor'
 
 //Components
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar';
 import Widget from '../../../components/Widget';
 
@@ -34,14 +34,12 @@ function PersonSelector(props) {
     const storedPersons = useSelector(state => state.localServer.persons.history)
     const { persons = null, personIds = null, sceneId = null, tags = [], additionalCategory = null, partId } = config || {};
 
-
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId]) || {}
     const scenePartIds = scene.partIds || []
 
     const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
-
-
+    const additionalCategoryPersons = additionalCategory.persons || additionalCategory?.partIds?.map(partId=>partPersons[partId]) || null
     //calcs
 
     const scenePartPersonIds = scenePartIds.map(partId => partPersons[partId]) || []
@@ -50,7 +48,7 @@ function PersonSelector(props) {
 
     const finalPersons = (persons) ? persons
         : ((personIds) ? getLatest(storedPersons.filter(person => personIds.includes(person.id)))
-            : (allocatedPersonIds.length>0) ? getLatest(storedPersons.filter(person => allocatedPersonIds.includes(person.id) === false))
+            : (allocatedPersonIds.length > 0) ? getLatest(storedPersons.filter(person => allocatedPersonIds.includes(person.id) === false))
                 : getLatest(storedPersons) || [])
 
     const personsWithFriendlyName = addFriendlyName(finalPersons);
@@ -73,18 +71,19 @@ function PersonSelector(props) {
             onSelect(person)
         }
         dispatch(updatePersonSelectorConfig(null))
-        moveFocusToId(partId,END)
+        moveFocusToId(partId, END)
     }
 
     const personJSX = (person) => {
 
-        const { id, friendlyName } = person;
+        const { id, friendlyName, name } = person;
 
         return (
-            <div key={id} className="person-button" >
-                <Avatar onClick={() => handleClick(person)} person={person} avatarInitials={(person.avatarInitials) || null} />
-                <span >{friendlyName}</span>
-            </div>
+            <div key={id} className="person-button" onClick={() => handleClick(person)} >
+                    <Avatar onClick={() => handleClick(person)} person={person} avatarInitials={(person.avatarInitials) || null} />
+                    <span >{friendlyName || name}</span>
+                </div>
+
         )
 
     }
@@ -105,11 +104,11 @@ function PersonSelector(props) {
                     </div>}
                     bodyClass={"pt-3 px-0 py-0"}
                 >
-                    {(additionalCategory && additionalCategory.persons) &&
+                    {(additionalCategory && additionalCategoryPersons) &&
                         <>
                             <h5>{additionalCategory.name.toUpperCase()}</h5>
                             <div className="select-person-section">
-                                {additionalCategory.persons.map(person => {
+                                {additionalCategoryPersons.map(person => {
                                     return personJSX(person)
                                 })}
 
@@ -160,7 +159,10 @@ function PersonSelector(props) {
 
             </ModalBody>
             <ModalFooter>
-                {personJSX(deselectPerson)}
+                    {personJSX(deselectPerson)}
+                    <div key={'cancel-person-selector-button'} className="person-button" >
+                        <Button onClick={() => dispatch(updatePersonSelectorConfig(null))}>Cancel</Button>
+                    </div>
             </ModalFooter>
         </Modal >
     )

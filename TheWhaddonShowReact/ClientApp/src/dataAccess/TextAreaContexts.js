@@ -17,14 +17,16 @@ export function TextAreaContexts() {
         <div id="text-area-contexts" style={{ display: 'none' }}>
             {SCRIPT_ITEM_TYPES.map(type => {
                 return (
-                    <div id={`text-area-context-${type.toLowerCase()}`} className={`${s['script-item']} ${s[type?.toLowerCase()]}`} key={type}>
-                        <TextareaAutosize key={type} className={`${s['text-input']}`}></TextareaAutosize>
+                    <div className={`${s['script-item']} ${s[type?.toLowerCase()]}`} key={type}>
+                      
+                        <TextareaAutosize id={`text-area-context-${type.toLowerCase()}`} key={type} className={`${s['text-input']}`}></TextareaAutosize>
+                
                     </div>
                 )
             })
             }
 
-        </div>
+        </div >
 
     )
 

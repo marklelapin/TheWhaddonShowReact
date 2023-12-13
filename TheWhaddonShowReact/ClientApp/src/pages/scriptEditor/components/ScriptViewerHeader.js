@@ -68,7 +68,7 @@ function ScriptViewer(props) {
 
             dispatch(updatePersonSelectorConfig(null))
         } else {
-            dispatch(updatePersonSelectorConfig({ additionalCategory: { name: 'Parts', partIds: sceneInFocus.partIds } }))
+            dispatch(updatePersonSelectorConfig({ additionalCategory: { name: 'Parts', partIds: sceneInFocus?.partIds || [] }} ))
         }
 
     }
