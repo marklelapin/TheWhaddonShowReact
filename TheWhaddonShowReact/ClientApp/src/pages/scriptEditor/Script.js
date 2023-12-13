@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
-import {setShow} from '../../actions/scriptEditor';
+import { setShow } from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
@@ -31,31 +31,29 @@ function Script() {
 
     //UseEffect Hooks
     useEffect(() => {
-        window.addEventListener('resize', handleScriptScreenResize);
 
-        return () => { window.removeEventListener('resize', handleScriptScreenResize); }
-    }, []);
+        let timeoutId;
+        const handleResizeDebounce = () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => handleScriptScreenResize(), 300);
+        }
 
-
-    useEffect(() => {
         handleScriptScreenResize()
-    }, [])
 
+        window.addEventListener('resize', handleResizeDebounce);
+
+        return () => { window.removeEventListener('resize', handleResizeDebounce); }
+    }, []);
 
     //eventHandlers
     const handleScriptScreenResize = () => {
-        //console.log(`hadnle resize static: ${sidebarStatic} opened: ${sidebarOpened}`)
         if (isSmallerScreen()) {
             setIsLargerScreen(false)
-
-        } else
-            setIsLargerScreen(true)
+        } else setIsLargerScreen(true)
     }
 
     const isSmallerScreen = () => {
-
         return (isScreen('xs') || isScreen('sm') || isScreen('md') || isScreen('lg'))
-
     }
 
 
@@ -75,20 +73,20 @@ function Script() {
             {show &&
                 <div id="script-page-content" className="page-content flex-full-width">
                     {(showSceneSelector || isLargerScreen) &&
-                            <SceneSelector show={show} />
+                        <SceneSelector show={show} />
                     }
 
-                    {(!showSceneSelector || isLargerScreen) &&   
-                            <ScriptViewer show={show} />
+                    {(!showSceneSelector || isLargerScreen) &&
+                        <ScriptViewer show={show} />
                     }
 
                 </div>
             }
 
             {!show &&
-       
-                <ShowSelector onClick={(show) => dispatch(setShow(show))} />            
-   
+
+                <ShowSelector onClick={(show) => dispatch(setShow(show))} />
+
             }
 
 
