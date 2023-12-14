@@ -54,6 +54,8 @@ function PartEditorRow(props) {
     const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
+    const viewStyle = useSelector(state => state.scriptEditor.viewStyle) 
+
     //const scenePartIds = scene.partIds
 
 
@@ -249,9 +251,9 @@ function PartEditorRow(props) {
 
         partPerson && (
 
-            <div key={partEditorRowId(partId,sceneId)} id={partEditorRowId(partId,sceneId)} className={s["part"]} style={{ zIndex: zIndex }}>
+            <div key={partEditorRowId(partId, sceneId)} id={partEditorRowId(partId, sceneId)} className={`${s["part"]} ${[viewStyle]}`} style={{ zIndex: zIndex }}>
 
-                <PartNameAndAvatar avatar partName
+                <PartNameAndAvatar avatar={viewStyle === 'chat'} personName={viewStyle === 'classic'} partName
                     avatarInitials={partPerson.avatarInitials}
                     partPerson={partWithTempName()}
                     onAvatarClick={() => dispatch(updatePersonSelectorConfig({ sceneId, partId }))}

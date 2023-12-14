@@ -53,7 +53,7 @@ const ScriptItem = memo((props) => {
     const focus = useSelector(state => (state.scriptEditor.scriptItemInFocus[id])) || false
     const isUndoInProgress = useSelector(state => (state.scriptEditor.isUndoInProgress[id]))
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
-
+    const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
 
     log(logType, 'Component:ScriptItem redux:', { showComments, focus, isUndoInProgress, scriptItem })
 
@@ -119,8 +119,7 @@ const ScriptItem = memo((props) => {
     return (
 
         <div id={id}
-
-            className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight) ? s['align-right'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
+            className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight & viewStyle==='chat') ? s['align-right'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']} ${s[viewStyle]}`}
             style={{ zIndex: zIndex }}
         >
 
@@ -134,7 +133,7 @@ const ScriptItem = memo((props) => {
                     />
                 </div>
             }
-            <div className={s['script-item-text-area']}>
+            <div className={`${s['script-item-text-area']} ${s[viewStyle]}`}>
 
                 <ScriptItemText
                     key={id}
@@ -147,7 +146,7 @@ const ScriptItem = memo((props) => {
 
             </div>
             {scriptItem && ((showMedia && focus) || (scriptItem.attachments?.length > 0)) &&
-                <div className={s['dropzone']}>
+                <div className={`${s['dropzone']} ${s[viewStyle.toLowerCase()]}`}>
                     <MediaDropzone
                         existingMediaURLs={scriptItem.attachments}
                         addMedia={(media) => handleMedia('add', media)}
@@ -180,7 +179,7 @@ const ScriptItem = memo((props) => {
                 </div>
             }
             {scriptItem && CURTAIN_TYPES.includes(type) &&
-                <div className={`${s['curtain-checkbox']}` }>
+                <div className={`${s['curtain-checkbox']} ${s[viewStyle.toLowerCase()]} ${s[viewStyle]} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']}` }>
                     <CheckBox key={scriptItem.id}
                         id={`curtain-checkbox-${scriptItem.id}`}
                         checked={scriptItem.tags.includes(OPEN_CURTAIN)}

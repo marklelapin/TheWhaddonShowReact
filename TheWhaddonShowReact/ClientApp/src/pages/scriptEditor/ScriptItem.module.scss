@@ -1,5 +1,13 @@
 @import '../../styles/app';
 
+
+.classic {
+    .avatar {
+        display: none;
+    }
+}
+
+
 //General ScriptItem Styles
 .script-item {
     padding: 10px 50px 10px 50px;
@@ -7,7 +15,15 @@
     flex-direction: column;
     background-color: $gray-inverse;
     position: relative;
+    color: black;
 
+    &.classic {
+        align-items: center;
+    }
+
+    &.classic {
+        background-color: white;
+    }
 
     .text-input {
         text-align: start;
@@ -21,6 +37,10 @@
 
     .dropzone {
         z-index: 2;
+
+        &.classic {
+            display: none;
+        }
     }
     /*Layout*/
     .script-item-text-area {
@@ -30,6 +50,10 @@
         justify-content: center;
         max-width: 100%;
         z-index: 2;
+
+        &.classic {
+            justify-content: start;
+        }
 
         .script-item-text {
             display: flex;
@@ -41,7 +65,14 @@
 
             .script-item-header {
                 position: relative;
-                z-index: 4;
+                z-index: 5;
+                font-weight: $font-weight-bold;
+
+                &.classic {
+                    font-size: $h6-font-size;
+                    text-align: center;
+                    align-self: center;
+                }
             }
 
             &.align-right {
@@ -55,6 +86,18 @@
             .text-input {
                 position: relative;
                 z-index: 4;
+            }
+
+            .open-bracket {
+                position: absolute;
+                top: 27px;
+                left: 25px;
+            }
+
+            .close-bracket {
+                position: absolute;
+                bottom: 7px;
+                right: 25px;
             }
         }
     }
@@ -88,23 +131,11 @@
     }
 }
 
-.curtain-open {
+.curtain-open.chat {
     color: white;
-
-    &.scene {
-        color: black;
-    }
-
-    &.synopsis {
-        color: black;
-    }
-
-    &.initialstaging {
-        color: black;
-    }
 }
 
-.curtain-closed {
+.curtain-closed.chat {
     color: black;
 }
 
@@ -183,6 +214,9 @@
     position: relative;
     z-index: 3;
 
+    &.classic {
+        background-color: white;
+    }
 
     p {
         z-index: 2;
@@ -208,8 +242,6 @@
         }
     }
 
-
-
     .part-avatar-name {
         flex: 1;
         z-index: 2;
@@ -229,23 +261,42 @@
     z-index: 2;
 }
 
+.classic {
+
+    .part-avatar-name{
+        flex: auto;
+        justify-content: start;
+        .text-input {
+            font-weight: $font-weight-bold;
+        }
+    }
+
+    .part-tags {
+        flex: 1;
+    }
+
+    .part-person-name {
+        flex: unset;
+        padding-left: 10px;
+    }
+}
+
+
 /*PART AVATAR NAME*/
 .part-avatar-name {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: start;
+    align-items: center;
+}
+
+.part-person-name {
+    flex: auto;
+    text-align: start;
     align-items: center;
 }
 
 .part-avatar {
-}
-
-.part-name {
-    flex: 1;
-    text-align: start;
-    display: flex;
-    align-self: stretch;
-    align-items: center;
 }
 
 
@@ -422,15 +473,14 @@
 
 //Type Specific ScriptItem Styles
 .show {
-
-    textarea {
+    .text-input {
         font-size: $h2-font-size;
         text-align: center;
     }
 }
 
 .act {
-    textarea {
+    .text-input {
         font-size: $h2-font-size;
         text-align: center;
     }
@@ -471,6 +521,9 @@
     }
 
     &.curtain-open {
+        .script-item-controls{
+            color: black;
+        }
         .scene-controls {
             color: white;
         }
@@ -571,18 +624,23 @@
         max-height: 20px;
 
         i {
-            background-color: $gray-inverse;
+            background-color: $danger;
             height: 20px;
-            color: blue;
         }
 
         ::before {
             height: 20px;
             width: 20px;
         }
+
+        &.classic.curtain-open {
+            i {
+                background-color: $gray-inverse;
+            }
+        }
     }
 
-    &.curtain-open * {
+    &.curtain-open.chat * {
         color: white !important;
     }
 
@@ -593,7 +651,7 @@
 
 .dialogue {
 
-    &.script-item {
+    &.script-item.chat {
         padding-left: 10px;
         padding-right: 70px;
         flex-direction: row;
@@ -639,5 +697,26 @@
     .script-item-header {
         font-size: $small-font-size;
         align-self: start;
+    }
+}
+
+.action,
+.sound,
+.lighting,
+.staging {
+
+    .text-input {
+        //font-weight: $font-weight-bold;
+        text-align: center;
+        background-color: transparent !important;
+        color: black;
+    }
+
+
+
+    &.curtain-open.chat {
+        .text-input {
+            color: white;
+        }
     }
 }

@@ -33,7 +33,6 @@ function PartSelector(props) {
     //Internal State
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
-
     const partsArray = scenePartIds.map(id => allocatedPartIds.includes(id) ?  {id, allocated: true } : { id, allocated: false }) || []
     log(debug, 'Component:PartSelector partsArray', { scene: scene.text, scenePartIds, partsArray })
     //Event Handlers

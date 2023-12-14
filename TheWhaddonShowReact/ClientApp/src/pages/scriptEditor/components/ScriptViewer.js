@@ -32,6 +32,7 @@ function ScriptViewer(props) {
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig) || null
     const isPersonSelectorOpen = (personSelectorConfig !==null)
+    const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
 
 
     log(logType, "Component:ScriptViewer showOrder", showOrder)
@@ -74,7 +75,7 @@ function ScriptViewer(props) {
                 <ScriptViewerHeader />
 
                 <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
-                    <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']}`}>
+                    <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']} ${s[viewStyle]}`}>
                         <p className={`${s['comments-title']}`}>Comments</p>
                         {(showOrder && showOrder.length > 0) &&
                             showOrder.map((scene) => {

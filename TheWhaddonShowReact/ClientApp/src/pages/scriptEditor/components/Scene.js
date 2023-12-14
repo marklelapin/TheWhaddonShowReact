@@ -35,6 +35,7 @@ function Scene(props) {
     const sceneOrder = useSelector(state => state.scriptEditor.sceneOrders[id]) || []
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen[id])
     const sceneScriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
+    const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
     log(debug, 'Component:Scene sceneOrder', sceneOrder)
 
     const scene = (sceneScriptItem.type === ACT) ? sceneScriptItem  : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
@@ -101,6 +102,7 @@ function Scene(props) {
 
             </div>
 
+            
 
             <div className={s['scene-body']}>
                 {bodyOrder.map((scriptItem) => {
@@ -123,8 +125,7 @@ function Scene(props) {
             <div id={`scene-footer-${scene.id}`}
                 className={`${s['scene-footer']} ${finalScriptItem.curtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
             >
-
-                <div key={`add-scene-${scene.id}`} className={`${s['add-new-scene']} clickable`} onClick={() => dispatch(trigger(ADD_SCENE, { scriptItem : sceneScriptItem }))}>
+                <div key={`add-scene-${scene.id}`} className={`${s['add-new-scene']} ${s[viewStyle]} clickable`} onClick={() => dispatch(trigger(ADD_SCENE, { scriptItem : sceneScriptItem }))}>
                     (add new scene)
                 </div>
                 <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />

@@ -11,6 +11,7 @@ export const LOCAL_SERVER_REDUCER = { type: NONE, location: 'Reducer:localServer
 export const LOCAL_STORAGE = {type:NONE, location: 'Script:localStorage'}
 
 export const PART_EDITOR_ROW = {type: NONE, location: 'Component:PartEditorRow'}
+export const PART_SELECTOR_DROPDOWN = {type: DEBUG, location: 'Component:PartSelectorDropdown'}
 
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
 

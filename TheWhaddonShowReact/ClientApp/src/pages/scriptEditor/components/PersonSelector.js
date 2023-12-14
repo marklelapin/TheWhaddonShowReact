@@ -39,7 +39,7 @@ function PersonSelector(props) {
 
     const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
-    const additionalCategoryPersons = additionalCategory.persons || additionalCategory?.partIds?.map(partId=>partPersons[partId]) || null
+    const additionalCategoryPersons = additionalCategory?.persons || additionalCategory?.partIds?.map(partId=>partPersons[partId]) || null
     //calcs
 
     const scenePartPersonIds = scenePartIds.map(partId => partPersons[partId]) || []

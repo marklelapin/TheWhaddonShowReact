@@ -17,6 +17,10 @@
     flex-direction: column;
     align-items: center;
     background-color: $gray-700;
+
+    &.classic {
+        background-color: $gray-900;
+    }
 }
 
 
@@ -27,9 +31,13 @@
     width: 100%;
 
     &.show-comments {
-        background-color: $gray-default;
+        background-color: $gray-900;
         padding-right: $script-comments-width;
         max-width: $script-body-max-width + $script-comments-width;
+    }
+
+    &.classic {
+        background-color: $gray-900;
     }
 }
 
@@ -80,7 +88,12 @@
     text-align: center;
 }
 
+
+
 .add-new-scene {
+    padding: 20px;
+    background-color: $gray-900;
+    color: white;
 }
 
 .curtain-open {

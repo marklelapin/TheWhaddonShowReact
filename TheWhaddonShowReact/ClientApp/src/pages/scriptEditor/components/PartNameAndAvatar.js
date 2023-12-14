@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { getLatest, } from '../../../dataAccess/localServerUtils';
 import Avatar from '../../../components/Avatar/Avatar';
-import {  Input } from 'reactstrap';
+import { Input } from 'reactstrap';
 
 import { addPersonInfo } from '../scripts/part'
 
@@ -14,7 +14,7 @@ function PartNameAndAvatar(props) {
 
     const debug = false;
 
-    const { partId = null, partPerson = null, onNameChange, onAvatarClick, onClick, onKeyDown, onBlur, onFocus, avatar, partName, size = "md" ,selected = false} = props;
+    const { partId = null, partPerson = null, onNameChange, onAvatarClick, onClick, onKeyDown, onBlur, onFocus, avatar, partName, personName, size = "md", selected = false } = props;
 
     log(debug, 'PartNameAndAvatar Props', props)
 
@@ -22,7 +22,7 @@ function PartNameAndAvatar(props) {
     const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId])
 
     const finalPartPerson = partPerson || partPersonFromId || {};
-  
+
 
     //EVENT HANDLERS
     const handleAvatarClick = (e) => {
@@ -48,7 +48,7 @@ function PartNameAndAvatar(props) {
 
     return (
 
-        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected)? s['selected'] : ''}` } onClick={onClick} >
+        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected) ? s['selected'] : ''}`} onClick={onClick} >
 
             {(avatar) &&
                 <div className={s["part-avatar"]}>
@@ -64,31 +64,41 @@ function PartNameAndAvatar(props) {
             {(partName) &&
                 <div className={s["part-name"]}>
                     {(onNameChange) &&
-                     
+
                         <Input
-                        type="text"
-                        key={finalPartPerson.id}
-                        placeholder="enter name"
-                        value={finalPartPerson.name || ''}
-                        onKeyDown={onKeyDown}
-                        onChange={(e) => handleNameChange(e.target.value)}
-                        onBlur={onBlur}
-                        onFocus={onFocus}
-                        className="text-input"
-                            />               
-               
+                            type="text"
+                            key={finalPartPerson.id}
+                            placeholder="enter name"
+                            value={finalPartPerson.name || ''}
+                            onKeyDown={onKeyDown}
+                            onChange={(e) => handleNameChange(e.target.value)}
+                            onBlur={onBlur}
+                            onFocus={onFocus}
+                            className={s['text-input']}
+                        />
+
                     }
 
-                    {(!onNameChange) && 
-                       
+                    {(!onNameChange) &&
+
 
                         <p>{finalPartPerson.name}</p>
-                      
-                        }
-                    
+
+                    }
+
                 </div>
-            }            
-            
+            }
+            {(personName) &&
+                <div className={`${s["part-person-name"]} clickable`} onClick={(e) => handleAvatarClick(e)}>
+                    {(finalPartPerson.personName) &&
+                        ` played by ${finalPartPerson.personName}`
+                    }
+                    {(!finalPartPerson.personName) &&
+                        ' (unallocated)'    
+                    }
+                </div>
+
+            }
         </div >
 
     )

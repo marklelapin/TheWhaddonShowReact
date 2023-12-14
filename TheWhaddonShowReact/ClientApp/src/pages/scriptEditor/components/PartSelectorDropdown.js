@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 //Components
 import { Button } from 'reactstrap';
-import { log } from '../../../logging'
+import { log, PART_SELECTOR_DROPDOWN as logType } from '../../../logging'
 import PartNameAndAvatar from './PartNameAndAvatar';
 
 //styles
@@ -13,9 +13,8 @@ import s from '../ScriptItem.module.scss';
 
 function PartSelectorDropdown(props) {
 
-    const debug = true;
 
-    log(debug, 'Component:PartSelectorDropdown Props', props)
+    log(logType, 'Component:PartSelectorDropdown Props', props)
     //Props
     const { partIds = null, onSelect, toggle, allowMultiSelect = true, allowClear = true, centered } = props;
 
@@ -30,7 +29,7 @@ function PartSelectorDropdown(props) {
 
     useEffect(() => {
 
-        log(debug, 'Component:PartSelectorDropdown useEffect')
+        log(logType, 'Component:PartSelectorDropdown useEffect')
         //add eventlistener to close dropdown if user clicks outside of it
         const toggleIfOutsideDropdown = (e) => {
             const isInsideDropdown = e.target.closest('.part-selector-dropdown')
@@ -88,7 +87,7 @@ function PartSelectorDropdown(props) {
     const handleClickPart = (event, partId) => {
         event.stopPropagation();
         //event.preventDefault();
-        log(debug, 'Component:PartSelectorDropdown handlePartSelectorClick')
+        log(logType, 'Component:PartSelectorDropdown handlePartSelectorClick')
 
         if (partId === null) {
 
@@ -142,7 +141,7 @@ function PartSelectorDropdown(props) {
 
             {(partsArray.length > 0 && allowClear) &&
                 <>
-                    < PartNameAndAvatar part={{ id: 0, name: 'Clear all parts', personId: null }} onClick={(e) => handleClickPart(e, null)} avatar partName />
+                    < PartNameAndAvatar partPerson={{ id: 0, name: 'Clear all parts', personId: null }} onClick={(e) => handleClickPart(e, null)} avatar partName />
                     <div className="dropdown-divider"></div>
                 </>
 

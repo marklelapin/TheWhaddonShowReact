@@ -40,12 +40,13 @@ function PartEditor(props) {
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const scenePartIds = scene.partIds
 
+    const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
 
     log(debug, 'Component:PartEditor scenePartIds', scenePartIds)
 
     return (
 
-        <div className={s[`part-editor`]} style={{ zIndex: zIndex }}>
+        <div className={`${s[`part-editor`]} ${s[viewStyle]}`} style={{ zIndex: zIndex }}>
             <p>Parts:</p>
             {scenePartIds.map((partId, idx) => {
 

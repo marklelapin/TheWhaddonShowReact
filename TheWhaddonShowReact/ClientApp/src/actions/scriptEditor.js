@@ -26,7 +26,7 @@ export const REMOVE_ITEMS_FROM_REDO_LIST = 'REMOVE_ITEMS_FROM_REDO_LIST';
 export const RESET_UNDO = 'RESET_UNDO';
 
 export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH'
-
+export const UPDATE_VIEW_STYLE = 'UPDATE_VIEW_STYLE';
 
 export const TRIGGER = 'TRIGGER';
 
@@ -195,5 +195,12 @@ export function updateMaxScriptItemTextWidth(maxWidth) {
     return {
         type: UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
         maxWidth
+    }
+}
+
+export function updateViewStyle(viewStyle) {
+    return {
+        type: UPDATE_VIEW_STYLE,
+        viewStyle,
     }
 }

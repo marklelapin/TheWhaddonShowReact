@@ -17,7 +17,8 @@ import {
     REMOVE_ITEMS_FROM_REDO_LIST,
     RESET_UNDO,
     UPDATE_PERSON_SELECTOR_CONFIG,
-    UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH
+    UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
+    UPDATE_VIEW_STYLE
 
 } from '../actions/scriptEditor';
 
@@ -58,6 +59,7 @@ export const initialState = {
     trigger: {},
     personSelectorConfig: null,
     maxScriptItemTextWidth: 720,
+    viewStyle: 'chat',
 
 }
 
@@ -162,7 +164,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 trigger: newTrigger,
             }
         case UPDATE_CURRENT_SCRIPT_ITEMS:
-            log(logType,'UPDATE_CURRENT_SCRIPT_ITEMS action.scriptItems: ', action.scriptItems.length)
+            log(logType, 'UPDATE_CURRENT_SCRIPT_ITEMS action.scriptItems: ', action.scriptItems.length)
             //update created dates for sceneOrders (mutating the state on purpose) - this created date shouldn't cause a re-render
             //it is used for quick look up of the latest created date when undoing.
             //ensures that sceneOrder created matches the currentSCriptItems created date
@@ -213,7 +215,13 @@ export default function scriptEditorReducer(state = initialState, action) {
         case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
             return {
                 ...state,
-maxScriptItemTextWidth: action.maxWidth
+                maxScriptItemTextWidth: action.maxWidth
+            }
+
+        case UPDATE_VIEW_STYLE:
+            return {
+                ...state,
+                viewStyle: action.viewStyle
             }
         default: return state;
     }

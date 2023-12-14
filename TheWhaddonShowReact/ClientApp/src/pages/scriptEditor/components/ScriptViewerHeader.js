@@ -7,6 +7,7 @@ import {
     toggleSceneSelector,
     updateShowComments,
     updatePersonSelectorConfig,
+    updateViewStyle,
     trigger,
     CLEAR_SCRIPT
 } from '../../../actions/scriptEditor';
@@ -20,6 +21,8 @@ import Avatar from '../../../components/Avatar/Avatar'
 import { isSmallerScreen } from '../../../components/Sidebar/Sidebar'
 import { log } from '../../../logging';
 
+//css
+import si from '../ScriptItem.module.scss'
 
 function ScriptViewer(props) {
     const debug = false;
@@ -27,8 +30,8 @@ function ScriptViewer(props) {
     //utils
     const _ = require('lodash');
     const dispatch = useDispatch();
-    const CLASSIC = 'Classic'
-    const CHAT = 'Chat'
+    const CLASSIC = 'classic'
+    const CHAT = 'chat'
 
     //props
 
@@ -37,12 +40,8 @@ function ScriptViewer(props) {
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
- 
+    const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
     log(debug, 'Component:ScriptViewerHeader sceneInFocus',sceneInFocus)
-
-    //Internal State
-    const [viewStyle, setViewStyle] = useState(CHAT)
-
 
     //Event Handlers
     const handlePrint = () => {
@@ -52,7 +51,7 @@ function ScriptViewer(props) {
 
     const handleNavLink = (type) => {
 
-        setViewStyle(type)
+        dispatch(updateViewStyle(type))
     }
 
     const handleArrowLeft = () => {

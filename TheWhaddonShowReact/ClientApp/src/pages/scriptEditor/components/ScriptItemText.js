@@ -25,7 +25,7 @@ import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
 
 //constants
-import { HEADER_TYPES, INITIAL_CURTAIN, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER } from '../../../dataAccess/scriptItemTypes';
+import { HEADER_TYPES, INITIAL_CURTAIN, ACTION,LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 //css
@@ -68,7 +68,7 @@ function ScriptItemText(props) {
 
     let finalPlaceholder;
 
-    const finalText = (tempTextValue === null) ? scriptItem.text : tempTextValue
+    const finalText = (tempTextValue === null) ? scriptItem.text : tempTextValue;
 
     switch (type) {
         case SCENE: finalPlaceholder = 'enter title for scene'; break;
@@ -342,8 +342,9 @@ function ScriptItemText(props) {
     return (
         <div id={`script-item-text-${id}`} className={s['script-item-text']}>
 
-            <ScriptItemHeader type={scriptItem.type} partIds={scriptItem.partIds} />
+            <ScriptItemHeader scriptItem={scriptItem} />
 
+            {[ACTION, LIGHTING, SOUND].includes(scriptItem.type) && <div className={s['open-bracket']}>(</div>}
             <TextareaAutosize
                 key={id}
                 id={`script-item-text-input-${id}`}
@@ -358,6 +359,7 @@ function ScriptItemText(props) {
             //rows={getTextAreaRows().length}
             >
             </TextareaAutosize>
+            {[ACTION,LIGHTING,SOUND].includes(scriptItem.type) && <div className ={s['close-bracket']}>)</div>}
 
             {(focus) &&
                 <ScriptItemControls
