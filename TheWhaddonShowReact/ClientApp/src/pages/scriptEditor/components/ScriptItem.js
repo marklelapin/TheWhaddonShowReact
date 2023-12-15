@@ -9,10 +9,11 @@ import Comment from './Comment';
 import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 import { Icon } from '../../../components/Icons/Icons';
-import { Button } from 'reactstrap';
+import { Button, Tooltip } from 'reactstrap';
 import CheckBox from '../../../components/Forms/CheckBox';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
+import QuickToolTip from '../../../components/Forms/QuickToolTip';
 //utilities
 import { log, SCRIPT_ITEM as logType } from '../../../logging';
 //Constants
@@ -55,19 +56,21 @@ const ScriptItem = memo((props) => {
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
 
-    log(logType, 'Component:ScriptItem redux:', { showComments, focus, isUndoInProgress, scriptItem })
+    log(logType, 'redux:', { showComments, focus, isUndoInProgress, scriptItem })
 
-    const { type, commentId } = scriptItem;
-
-
-
-    //Refs
-    const textInputRef = useRef(null)
-
+    const { type, commentId, nextId } = scriptItem;
 
     //internal state
     const [showMedia, setShowMedia] = useState(false)
 
+    //icon ids
+    const curtainCheckboxId = `curtain-checkbox-${scriptItem?.id}`;
+    const partSelectorId = `part-selector-${scriptItem?.id}`
+    const confirmUndoId = `confirm-undo-${sceneId}`;
+    const undoId = `undo-${sceneId}`
+    const redoId = `redo-${sceneId}`
+    const deleteSceneId = `delete-scene-${sceneId}`
+    const printSceneId = `print-scene-${sceneId}`
 
     //calculations functions
     const showParts = () => {
@@ -116,22 +119,31 @@ const ScriptItem = memo((props) => {
 
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
+    const handlePrint = () => {
+       alert("Sorry not yet implemented!")
+    }
+
     return (
 
         <div id={id}
-            className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight & viewStyle==='chat') ? s['align-right'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']} ${s[viewStyle]}`}
+            className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight & viewStyle === 'chat') ? s['align-right'] : ''} ${(alignRight & viewStyle === 'classic') ? s['highlight'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']} ${s[viewStyle]} ${(nextId === null) ? s['final-script-item'] : ''}`}
             style={{ zIndex: zIndex }}
         >
 
             {scriptItem && showParts() &&
-                <div className={s['script-item-parts']}>
+
+                <div id={partSelectorId} className={s['script-item-parts']}>
                     <PartSelector
+                        id={`part-selector-${scriptItem.id}` }
                         key={id}
                         sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
                         onSelect={(selectedPartIds) => dispatch(trigger(UPDATE_PART_IDS, { scriptItem, value: selectedPartIds }))}
                     />
                 </div>
+
+
+
             }
             <div className={`${s['script-item-text-area']} ${s[viewStyle]}`}>
 
@@ -166,26 +178,31 @@ const ScriptItem = memo((props) => {
             {(type === SCENE) &&
                 <div className={s['scene-controls']}>
                     {isUndoInProgress &&
-                        <Button size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>
+                        <Button id={confirmUndoId} key={confirmUndoId} size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>
                     }
-                    <Icon icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} />
+                    <Icon id={undoId} key={undoId} icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} toolTip="Undo"/>
+
                     {isUndoInProgress &&
-                        <Icon icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} />
+                        <Icon id={redoId} key={redoId} icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />
                     }
-                    <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} />
-
-
+                    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>
+                    <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />
 
                 </div>
             }
             {scriptItem && CURTAIN_TYPES.includes(type) &&
-                <div className={`${s['curtain-checkbox']} ${s[viewStyle.toLowerCase()]} ${s[viewStyle]} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']}` }>
-                    <CheckBox key={scriptItem.id}
-                        id={`curtain-checkbox-${scriptItem.id}`}
-                        checked={scriptItem.tags.includes(OPEN_CURTAIN)}
-                        onChange={() => dispatch(trigger(TOGGLE_CURTAIN, { scriptItem }))}
-                        ios={true} />
+                <>
+                    <div id={curtainCheckboxId} className={`${s['curtain-checkbox']} ${s[viewStyle.toLowerCase()]} ${s[viewStyle]} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']}`}>
+                        <CheckBox key={scriptItem.id}
+                            id={'checkbox-' + curtainCheckboxId}
+                            checked={scriptItem.tags.includes(OPEN_CURTAIN)}
+                            onChange={() => dispatch(trigger(TOGGLE_CURTAIN, { scriptItem }))}
+                            toolTip="Toggle Curtain"
+                            ios={true} />
                 </div>
+                    <QuickToolTip id={curtainCheckboxId} tip="Toggle Curtain" />
+                </>
+
             }
             {scriptItem &&
                 <CurtainBackground curtainOpen={finalCurtainOpen} />

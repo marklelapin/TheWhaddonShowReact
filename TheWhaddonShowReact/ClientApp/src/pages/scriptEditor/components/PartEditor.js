@@ -46,7 +46,7 @@ function PartEditor(props) {
 
     return (
 
-        <div className={`${s[`part-editor`]} ${s[viewStyle]}`} style={{ zIndex: zIndex }}>
+        <div className={`${s[`part-editor`]} ${s[viewStyle]} ${curtainOpen ? s['curtain-open'] : s['curtain-closed']}`} style={{ zIndex: zIndex }}>
             <p>Parts:</p>
             {scenePartIds.map((partId, idx) => {
 

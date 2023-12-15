@@ -27,6 +27,7 @@ function Comment(props) {
 
     //redux
     const comment = useSelector(state => state.scriptEditor.currentScriptItems[id]) || [];
+    const showComments = useSelector(state => state.scriptEditor.showComments);
     const scriptItem = { ...comment };
 
     
@@ -59,12 +60,12 @@ function Comment(props) {
 
     return (
 
-        (comment) &&
+        (comment) && showComments &&
 
         <div id={comment.id} key={comment.id} className={s['script-item-comment']}>
             <div className={s['comment-header']}>
                 <div className={s['created-by']}>Mark Carter</div>
-                    <Icon icon="trash" onClick={() => dispatch(trigger(DELETE_COMMENT, {scriptItem}))} />
+                    <Icon id={`delete-${comment.id}`} icon="trash" onClick={() => dispatch(trigger(DELETE_COMMENT, {scriptItem}))} toolTip="Delete comment"/>
             </div>
 
 

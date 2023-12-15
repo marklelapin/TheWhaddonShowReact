@@ -7,6 +7,17 @@
 
 
 
+.view-as-control {
+    flex: 0 0 100px;
+    display: flex;
+    align-items: center;
+    justify-content:space-evenly;
+
+    &.selected.classic {
+        background-color: $highlight;
+    }
+}
+
 
 
 
@@ -19,9 +30,12 @@
     background-color: $gray-700;
 
     &.classic {
-        background-color: $gray-900;
+        background-color: $gray-700;
     }
 }
+
+
+
 
 
 .script-body {
@@ -31,13 +45,13 @@
     width: 100%;
 
     &.show-comments {
-        background-color: $gray-900;
+        background-color: $gray-700;
         padding-right: $script-comments-width;
         max-width: $script-body-max-width + $script-comments-width;
     }
 
     &.classic {
-        background-color: $gray-900;
+        background-color: $gray-700;
     }
 }
 
@@ -69,6 +83,11 @@
 
 .scene-group {
     position: relative;
+
+    @include dropdown-box;
+
+    border-color: $gray-900;
+ 
 }
 
 .scene-header {
@@ -91,8 +110,8 @@
 
 
 .add-new-scene {
-    padding: 20px;
-    background-color: $gray-900;
+    padding: 40px;
+    background-color: $gray-700;
     color: white;
 }
 

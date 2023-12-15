@@ -1,5 +1,5 @@
 ﻿//React & Redux
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { updateSearchParameters, toggleSceneSelector, trigger, MOVE_SCENE } from '../../../actions/scriptEditor';
@@ -24,6 +24,8 @@ function SceneSelector(props) {
 
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
+
+    const [beingDragged, setBeingDragged] = useState(false)
 
     const handleSearchParameterChange = (type, value) => {
         let newSearchParameters = { ...searchParameters }
@@ -64,6 +66,7 @@ function SceneSelector(props) {
 
     const handleDragStart = (e) => {
         e.dataTransfer.setData("text/plain", `sceneId:${e.currentTarget.dataset.sceneid}`)
+        setBeingDragged(true)
     }
     const handleDragOver = (e) => {
         e.preventDefault()
@@ -78,7 +81,7 @@ function SceneSelector(props) {
     }
     const handleDrop = (e) => {
         e.preventDefault()
-
+        setBeingDragged(false)
         const newPreviousId = e.currentTarget.dataset.sceneid
 
         const sceneId = e.dataTransfer.getData("text/plain").substring(8)
@@ -124,6 +127,7 @@ function SceneSelector(props) {
                         onDrop={handleDrop}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
+                        beingDragged={beingDragged}
 
                     />
 

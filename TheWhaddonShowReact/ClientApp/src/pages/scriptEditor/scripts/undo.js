@@ -19,7 +19,7 @@ export const getUndoUpdates = (triggerType, sceneOrder, currentScriptItems, stor
 
 
 ///Undo processing
-export const undo = (currentSceneOrder, currentScriptItems, storedScriptItems, undoSceneId) => {
+export const undo = (currentSceneOrder, currentScriptItems, storedScriptItems,currentPartPersons,  storedParts, storedPersons, undoSceneId) => {
 
     const sceneId = currentSceneOrder[0].id
     if (sceneId !== undoSceneId) {

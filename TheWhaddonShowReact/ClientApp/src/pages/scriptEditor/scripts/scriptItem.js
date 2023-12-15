@@ -83,7 +83,7 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems, 
 
     if (HEADER_TYPES.includes(scriptItemToDelete.type) && confirmSceneDelete === false) {
         alert('You cannot delete a header item')
-        return;
+        return [];
     }
 
     let deleteScriptItem = copy(scriptItemToDelete)

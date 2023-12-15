@@ -1,11 +1,14 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
+
+import { Tooltip } from 'reactstrap';
+
 import s from './Icons.module.scss'; // eslint-disable-line css-modules/no-unused-class'
 
 export function TickOrCross(value) {
 
-    if (value) return Icon({ icon:"tick", strapColor:"success" } )
+    if (value) return Icon({ icon: "tick", strapColor: "success" })
 
-    return Icon({ icon: "tick", strapColor:"success" } )
+    return Icon({ icon: "tick", strapColor: "success" })
 }
 
 
@@ -23,9 +26,12 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    let { icon = null, style = null, strapColor,strapBackgroundColor,onClick} = props 
+    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top' } = props
 
+    let { icon } = props
     if (icon === null) { icon = props }
+
+    const [toolTipOpen, setToolTipOpen] = useState(null);
 
     const dictionary = {
         "sync": "fa fa-cloud",
@@ -65,14 +71,32 @@ export function Icon(props) {
         icon = dictionary[icon.toLowerCase()];
     }
 
-    return <i className={`m-1 
-                        ${icon} 
-                        ${(strapColor) ? 'text-' + strapColor : ''} 
-                        ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}
-                        ${(onClick) ? 'clickable' : ''}
-                        `}
-        style={style}
-        onClick={onClick} />
+    const toolTipDelay = { show: 300, hide: 250 };
+
+
+    const toggleToolTip = (id) => {
+        setToolTipOpen(toolTipOpen === id ? null : id)
+    }
+
+
+
+    if (id === null) {
+        return <i className={`m-1 ${icon} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} `}
+            style={style}
+            onClick={onClick} />
+    }
+    if (id !== null) {
+        return <>
+            <i id={id}
+                className={`m-1 ${icon}  ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''}  `}
+                style={style}
+                onClick={onClick} />
+
+            {toolTip && <Tooltip placement={toolTipPlacement} isOpen={toolTipOpen === id} toggle={() => toggleToolTip(id)} target={id} delay={toolTipDelay}>{toolTip}</Tooltip>}
+        </>
+
+    }
+
 }
 
 

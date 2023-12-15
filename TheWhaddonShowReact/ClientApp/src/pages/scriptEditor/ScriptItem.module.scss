@@ -10,24 +10,41 @@
 
 //General ScriptItem Styles
 .script-item {
-    padding: 10px 50px 10px 50px;
+    padding: 10px 50px 0px 50px;
     display: flex;
     flex-direction: column;
-    background-color: $gray-inverse;
     position: relative;
     color: black;
+
 
     &.classic {
         align-items: center;
     }
 
-    &.classic {
-        background-color: white;
+    &.chat {
+        color: white;
+        background-color: $gray-inverse;
     }
 
     .text-input {
         text-align: start;
+        color: black;
     }
+
+    &.curtain-open.chat {
+        color: white;
+
+        .text-input {
+            color: white;
+        }
+    }
+
+    &.curtain-closed.chat {
+        ::placeholder {
+            color: $gray-900;
+        }
+    }
+
 
     .script-item-parts {
         position: relative;
@@ -37,6 +54,7 @@
 
     .dropzone {
         z-index: 2;
+        background-color: transparent;
 
         &.classic {
             display: none;
@@ -86,6 +104,13 @@
             .text-input {
                 position: relative;
                 z-index: 4;
+                background-color: transparent;
+
+                &.classic {
+                    font-size: $h5-font-size;
+                    text-align: center;
+                    align-self: center;
+                }
             }
 
             .open-bracket {
@@ -101,6 +126,10 @@
             }
         }
     }
+}
+
+.final-script-item {
+    padding-bottom: 10px;
 }
 
 .stage-curtain {
@@ -131,8 +160,11 @@
     }
 }
 
-.curtain-open.chat {
-    color: white;
+.curtain-open {
+
+    &.chat {
+        color: white;
+    }
 }
 
 .curtain-closed.chat {
@@ -207,12 +239,13 @@
 
 
 .part-editor {
-    padding: 0px 50px 0px 50px;
+    padding: 0px 50px 10px 50px;
     background-color: $gray-inverse;
     display: flex;
     flex-direction: column;
     position: relative;
     z-index: 3;
+    font-weight: $font-weight-bold;
 
     &.classic {
         background-color: white;
@@ -220,9 +253,9 @@
 
     p {
         z-index: 2;
-        background-color: white;
         margin: 0;
         padding-left: 20px;
+        padding-top: 0px;
     }
 
     .part {
@@ -230,15 +263,41 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 0px 0px 10px 20px;
+        justify-content: space-between;
+        padding: 0px 0px 4px 20px;
         position: relative;
         z-index: 2;
-        background-color: white;
+
+        .text-input {
+            background-color: transparent;
+            border: 0px;
+            color: black;
+            font-weight: $font-weight-bold;
+        }
+
+        .part-avatar-name {
+            font-weight: $font-weight-base;
+        }
+
+        ::placeholder {
+            color: black;
+        }
+
 
 
         .part-editor-controls {
             position: relative;
             z-index: 5;
+        }
+    }
+
+    &.chat.curtain-open {
+        color: white;
+
+        .part {
+            .text-input {
+                color: white;
+            }
         }
     }
 
@@ -254,6 +313,7 @@
     text-align: start;
 }
 
+
 .part-tags {
     flex: 1;
     text-align: start;
@@ -263,9 +323,10 @@
 
 .classic {
 
-    .part-avatar-name{
+    .part-avatar-name {
         flex: auto;
         justify-content: start;
+
         .text-input {
             font-weight: $font-weight-bold;
         }
@@ -314,12 +375,16 @@
     display: flex;
     flex-direction: column;
     text-align: justify;
+    padding: 2px;
 
+    @include dropdown-box();
 
     .comment-header {
         display: flex;
         flex-direction: row;
         color: black;
+        padding-left: 5px;
+        font-weight: $font-weight-bold;
 
         .created-by {
             flex: 1;
@@ -330,6 +395,9 @@
         text-align: justify;
         font-size: $font-size-base;
         font-weight: $font-weight-base;
+        border-width: 0px;
+        padding: 0px 5px 0px 5px !important;
+        border-width: 0px !important;
     }
 
     .comment-footer {
@@ -429,6 +497,13 @@
     }
 }
 
+.classic {
+    .part-selector-dropdown {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
 .align-right {
     .part-selector-dropdown {
         right: 0;
@@ -496,18 +571,15 @@
     }
 
     .script-item-text-area {
-        background-color: white;
         text-align: center;
     }
 
     .dropzone {
-        background-color: white;
     }
 
     .text-input {
         font-size: $h5-font-size;
         font-weight: $font-weight-bold;
-        background-color: white;
         padding-top: 0px;
         padding-bottom: 0px;
         text-align: center;
@@ -519,19 +591,22 @@
         right: 0px;
         z-index: 5;
     }
-
-    &.curtain-open {
+    /*&.curtain-open {
         .script-item-controls{
             color: black;
+        }
+
+        .text-input {
+            color: white;
         }
         .scene-controls {
             color: white;
         }
-    }
+    }*/
 
     .bottom-right-controls {
         bottom: 0px;
-        right: -15px;
+        right: -17px;
     }
 
     .header-controls {
@@ -549,11 +624,9 @@
     padding-bottom: 0px;
 
     .script-item-text-area {
-        background-color: white;
     }
 
     .dropzone {
-        background-color: white;
         padding-top: 0px;
         padding-bottom: 0px;
     }
@@ -566,13 +639,13 @@
 
     .bottom-right-controls {
         bottom: 0px;
-        right: -15px;
+        right: -17px;
     }
 
     .header-controls {
         top: unset;
         bottom: 0px;
-        right: -45px;
+        right: -57px;
         margin: 0px;
 
         .header-right-controls {
@@ -585,11 +658,9 @@
     padding-top: 0px;
 
     .script-item-text-area {
-        background-color: white
     }
 
     .dropzone {
-        background-color: white;
     }
 
     .text-input {
@@ -615,7 +686,6 @@
     .text-input {
         font-weight: $font-weight-bold;
         text-align: center;
-        background-color: transparent !important;
     }
 
     .curtain-checkbox {
@@ -651,6 +721,10 @@
 
 .dialogue {
 
+    .script-item-text-area {
+        justify-content: flex-start;
+    }
+
     &.script-item.chat {
         padding-left: 10px;
         padding-right: 70px;
@@ -662,19 +736,21 @@
         }
     }
 
-    .script-item-text-area {
-        justify-content: flex-start;
-    }
+
 
     .script-item-text {
         align-items: flex-start;
 
         .text-input {
-            border-radius: 0px 20px 20px 20px;
+            border-color: $gray-700;
+            color: black !important;
+            border-radius: 0px 20px 20px 20px !important;
             padding: 10px 15px;
             font-size: 16px;
             width: 100%;
             z-index: 2;
+            background-color: white;
+            overflow: hidden !important;
         }
     }
 
@@ -688,8 +764,8 @@
 
         .script-item-text {
             .text-input {
-                border-radius: 20px 0px 20px 20px;
-                background-color: yellowgreen;
+                border-radius: 20px 0px 20px 20px !important;
+                background-color: yellowgreen !important;
             }
         }
     }
@@ -697,6 +773,33 @@
     .script-item-header {
         font-size: $small-font-size;
         align-self: start;
+    }
+
+    &.highlight {
+        .script-item-header {
+            background-color: $highlight;
+        }
+    }
+
+    &.classic {
+        .text-input {
+            border-radius: 0px 0px 0px 0px !important;
+            padding: 5px 10px;
+        }
+    }
+
+    &.chat.curtain-closed {
+        .text-input {
+            @include dropdown-box();
+            border-color: $gray-700;
+        }
+    }
+
+    &.chat.curtain-open {
+        .text-input {
+            @include dropdown-box();
+            border-color: black;
+        }
     }
 }
 
