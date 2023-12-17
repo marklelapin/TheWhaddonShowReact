@@ -235,7 +235,6 @@ function PartEditorRow(props) {
     }
 
     const handleFocus = () => {
-        //dispatch(trigger(CONFIRM_UNDO))
         dispatch(updateScriptItemInFocus(partId, sceneId)) //update global state of which item is focussed
     }
 

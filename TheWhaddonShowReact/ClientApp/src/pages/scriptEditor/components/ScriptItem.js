@@ -46,13 +46,13 @@ const ScriptItem = memo((props) => {
         zIndex
     } = props;
 
-    log(logType, 'Component:ScriptItem props:', props)
+    log(logType, 'props:', props)
 
     //Redux state
     const showComments = useSelector(state => state.scriptEditor.showComments) || true
 
     const focus = useSelector(state => (state.scriptEditor.scriptItemInFocus[id])) || false
-    const isUndoInProgress = useSelector(state => (state.scriptEditor.isUndoInProgress[id]))
+    const isUndoInProgress = useSelector(state => (state.scriptEditor.currentUndo[sceneId]))
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
 
@@ -84,8 +84,6 @@ const ScriptItem = memo((props) => {
 
     const handleShowMedia = (value = null) => {
 
-        //  dispatch(trigger(CONFIRM_UNDO)); //automatically confirms undo if started to add media.
-
         log(logType, 'handleShowMedia', { showMedia: showMedia, value: value })
         if (value === null) {
             setShowMedia(!showMedia)
@@ -95,8 +93,6 @@ const ScriptItem = memo((props) => {
     }
 
     const handleMedia = (type, media) => {
-
-        // dispatch(trigger(CONFIRM_UNDO));  //automatically confirms undo if started to add media.
 
         let urls = []
 
@@ -185,7 +181,7 @@ const ScriptItem = memo((props) => {
                     {isUndoInProgress &&
                         <Icon id={redoId} key={redoId} icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />
                     }
-                    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>
+                    <Icon id={printSceneId} key={printSceneId}  icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>
                     <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />
 
                 </div>

@@ -54,7 +54,7 @@ export const initialState = {
     sceneInFocus: {},
     previousCurtainOpen: {},
     textAreaContext: {},
-    isUndoInProgress: {},
+    currentUndo: {},
     redoList: [],
     trigger: {},
     personSelectorConfig: null,
@@ -64,6 +64,8 @@ export const initialState = {
 }
 
 export default function scriptEditorReducer(state = initialState, action) {
+    log(logType, 'action:', action)
+
     switch (action.type) {
         case UPDATE_SEARCH_PARAMETERS:
             return {
@@ -138,19 +140,22 @@ export default function scriptEditorReducer(state = initialState, action) {
         case RESET_UNDO:
             return {
                 ...state,
-                isUndoInProgress: {},
+                currentUndo: {},
                 redoList: [],
             }
         case ADD_ITEMS_TO_REDO_LIST:
+
+            log(logType, 'ADD_ITEMS_TO_REDO_LIST action.items', {items: action.items,sceneId: action.sceneId})
+            log(logType, 'redo list', state.redoList)
             return {
                 ...state,
-                isUndoInProgress: { ...state.isUndoInProgress, [action.sceneId]: true },
+                currentUndo: { ...state.undoSceneId, [action.sceneId]: true },
                 redoList: [...state.redoList, ...action.items],
             }
         case REMOVE_ITEMS_FROM_REDO_LIST:
             return {
                 ...state,
-                redoList: [...state.redoList.filter(item => new Date(item.created) !== new Date(action.createdDate))],
+                redoList: [...state.redoList.filter(item => new Date(item.created).getTime() !== new Date(action.createdDate).getTime())],
             }
 
         case TRIGGER:
@@ -168,15 +173,17 @@ export default function scriptEditorReducer(state = initialState, action) {
             //update created dates for sceneOrders (mutating the state on purpose) - this created date shouldn't cause a re-render
             //it is used for quick look up of the latest created date when undoing.
             //ensures that sceneOrder created matches the currentSCriptItems created date
+            if (action.scriptItems) {
+                action.scriptItems.forEach(scriptItem => {
+                    const sceneOrder = (scriptItem.type === SCENE) ? state.sceneOrders[scriptItem.id] : state.sceneOrders[scriptItem.parentId] || [];
 
-            action.scriptItems.forEach(scriptItem => {
-                const sceneOrder = (scriptItem.type === SCENE) ? state.sceneOrders[scriptItem.id] : state.sceneOrders[scriptItem.parentId] || [];
+                    const sceneOrderItem = sceneOrder?.find(item => item.id === scriptItem.id);
+                    if (sceneOrderItem) {
+                        sceneOrderItem.created = scriptItem?.created;
+                    }
+                })
+            }
 
-                const sceneOrderItem = sceneOrder?.find(item => item.id === scriptItem.id);
-                if (sceneOrderItem) {
-                    sceneOrderItem.created = scriptItem.created;
-                }
-            })
 
 
             //update for currenSCriptItems
@@ -195,9 +202,9 @@ export default function scriptEditorReducer(state = initialState, action) {
                 currentScriptItems: updatedScriptItems
             }
         case UPDATE_SCENE_ORDERS:
-
+            log(logType, 'UPDATE_SCENE_ORDERS action.sceneOrders:', { noSceneOrders: action.sceneOrders.length, sceneOrder0: action.sceneOrders[0] })
             const updatedSceneOrders = action.sceneOrders.reduce((acc, sceneOrder) => {
-                acc[sceneOrder[0].id] = [...sceneOrder];
+                acc[sceneOrder[0]?.id] = [...sceneOrder];
 
                 return acc;
             }, { ...state.sceneOrders });

@@ -5,7 +5,7 @@ import PartSelectorDropdown from './PartSelectorDropdown';
 
 import { STAGING, INITIAL_STAGING, DIALOGUE, SOUND, LIGHTING, TYPES_WITH_HEADER, ACTION } from '../../../dataAccess/scriptItemTypes';
 
-import { trigger, UPDATE_PART_IDS } from '../../../actions/scriptEditor';
+import { trigger, UPDATE_PART_IDS, CONFIRM_UNDO } from '../../../actions/scriptEditor';
 import { log, SCRIPT_ITEM_HEADER as logType } from '../../../logging';
 
 import s from '../ScriptItem.module.scss';
@@ -37,7 +37,7 @@ function ScriptItemHeader(props) {
             {(type === DIALOGUE) && (partIds === null || partIds.length === 0) &&
                 <>
                     <HeaderPartName key={`blankPart-${scriptItem.id}`} scriptItem={scriptItem} />
-                    <QuickToolTip id={headerId} tip='Assign part' />
+                    <QuickToolTip id={headerId} key={headerId} tip='Assign part' />
                 </>
 
             }
@@ -47,14 +47,11 @@ function ScriptItemHeader(props) {
                     {partIds.map((partId, idx) => {
 
                         return (
-                            <>
-                                <HeaderPartName key={partId} partId={partId} scriptItem={scriptItem} isEnd={(idx === partIds.length - 1)} />
-                            </>
-
+                                <HeaderPartName key={headerId + partId} partId={partId} scriptItem={scriptItem} isEnd={(idx === partIds.length - 1)} />
                         )
                     })
                     }
-                    <QuickToolTip id={headerId} tip='Assign part' />
+                     <QuickToolTip id={headerId} key={`${headerId}`} tip='Assign part' />
                 </>
 
             }
@@ -83,7 +80,6 @@ function HeaderPartName(props) {
 
     const toggleDropdown = (e) => {
         e.stopPropagation();
-        // dispatch(trigger(CONFIRM_UNDO)) //confirms undo if user has moved on to another field
         setOpenPartSelector(!openPartSelector)
     }
 

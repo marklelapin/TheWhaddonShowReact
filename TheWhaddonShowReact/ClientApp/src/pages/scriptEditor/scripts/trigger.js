@@ -277,22 +277,25 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     }
 
 
-    if (partUpdates.length > 0) {
+
+
+    const now = new Date()
+
+    const preparedScriptItemUpdates = prepareUpdates(scriptItemUpdates, now) || []
+    const preparedPartUpdates = prepareUpdates(partUpdates, now) || []
+    if (preparedPartUpdates.length > 0) {
         const persons = getLatest(storedPersons)
-        partPersonUpdates = partUpdates.map(partUpdate => {
+        partPersonUpdates = preparedPartUpdates.map(partUpdate => {
             const person = persons.find(person => person.id === partUpdate.personId)
             const partPerson = addPersonInfo(partUpdate, person)
             return partPerson
         })
     }
 
-    const preparedScriptItemUpdates = prepareUpdates(scriptItemUpdates) || []
-    const preparedPartUpdates = prepareUpdates(partUpdates) || []
-
     log(logType, 'getTriggerUpdates preparedScriptItemUpdates', preparedScriptItemUpdates)
     log(logType, 'getTriggerUpdates preparedPartUpates', preparedPartUpdates)
     //SceneOrderUpdates
-    let newSceneOrder = (sceneOrderOverride.length > 0) ? sceneOrderOverride : sceneOrder ;
+    let newSceneOrder = (sceneOrderOverride.length > 0) ? sceneOrderOverride : sceneOrder;
 
     if (doRefreshSceneOrder) {
         newSceneOrder = refreshSceneOrder(newSceneOrder, preparedScriptItemUpdates, viewAsPartPerson, currentPartPersons) //adds updates into sceneOrder and reorders.

@@ -92,7 +92,11 @@ function ScriptItemText(props) {
 
     useEffect(() => {
         setFinalWidthPx(getFinalWidth())
-    }, [tempTextValue,scriptItem.text,maxWidth,endMargin])
+    }, [tempTextValue, scriptItem.text, maxWidth, endMargin])
+
+    useEffect(() => {
+        setTempTextValue(null)
+    },[scriptItem.text])
 
     //log(logType, 'width props', { maxWidth, endMargin, finalWidthPx })
 
@@ -148,8 +152,8 @@ function ScriptItemText(props) {
         switch (action) {
             case CONFIRM: moveFocus(DOWN, END); break; //TODO- only show confirm if tempTextValue is not null.remove focus.
             case ADD_SCRIPT_ITEM:
-                setTempTextValue(null)
                 dispatch(trigger(ADD_SCRIPT_ITEM, { position: BELOW, scriptItem: scriptItem, tempTextValue }))
+                setTempTextValue(null)
                 break;
             default: return;
         }
@@ -314,8 +318,6 @@ function ScriptItemText(props) {
     }
 
     const handleFocus = () => {
-        //if (undoInProgress) { dispatch(trigger(CONFIRM_UNDO)) }
-        
         setIsFocused(true)
         dispatch(updateScriptItemInFocus(scriptItem.id, (scriptItem.type === SCENE) ? scriptItem.id : scriptItem.parentId)) //update global state of which item is focussed
         toggleMedia(false)
@@ -329,7 +331,7 @@ function ScriptItemText(props) {
             setEndMargin(defaultEndMargin)
             setIsFocused(false)
             if (scriptItem.text !== e.target.value) {
-                log(logType, 'dispatch update text', { scriptItem })
+                log(logType, 'dispatch update text', { scriptItem, value: e.target.value })
                 dispatch(trigger(UPDATE_TEXT, { scriptItem, value: e.target.value }))
             }
             toggleMedia(false)

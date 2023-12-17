@@ -1,8 +1,7 @@
 ﻿
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
+import { SHOW,  SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { refreshCurtain } from "./curtain";
-import { initial, merge } from "lodash";
 
 import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../logging';
 
@@ -41,7 +40,6 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
     } else {
         return []
     }
-
 
 }
 
@@ -119,12 +117,14 @@ export const sortSceneOrder = (head, unsortedSceneOrder) => {
 
         if (currentItem) {
             currentId = currentItem.nextId;
-            sortedLinkedList.push(currentItem);
+            sortedLinkedList.push(copy(currentItem));
 
         } else {
             currentId = null;
         }
     }
+
+    sortedLinkedList[sortedLinkedList.length - 1].nextId = null; //ensures last item in list has a nextId of null
 
     return sortedLinkedList;
 }
@@ -204,7 +204,7 @@ export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
     initialStaging.previousFocusId = partIds[partIds.length - 1]
     initialStaging.nextFocusId = initialStaging.nextId
 
-    finalScriptItem.nextFocusId = scene.nextSceneId
+    finalScriptItem.nextFocusId = scene.nextId
 
 
     const newSceneOrder = sceneOrder.map(item => {

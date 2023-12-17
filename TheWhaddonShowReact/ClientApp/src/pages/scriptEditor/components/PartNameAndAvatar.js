@@ -88,7 +88,7 @@ function PartNameAndAvatar(props) {
                             onChange={(e) => handleNameChange(e.target.value)}
                             onBlur={onBlur}
                             onFocus={onFocus}
-                            className={s['text-input']}
+                            className={`${s['text-input']} text-input`}
                         />
 
                     }

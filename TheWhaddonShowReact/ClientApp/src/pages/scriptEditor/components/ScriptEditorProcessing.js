@@ -71,8 +71,8 @@ export function ScriptEditorProcessing() {
 
 
     //undo process
-    const isUndoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress) || {}
-    const undoSceneId = Object.keys(isUndoInProgress)[0] || null
+    const currentUndo = useSelector(state => state.scriptEditor.currentUndo) || {}
+    const undoSceneId = Object.keys(currentUndo)[0] || null
     const redoList = useSelector(state => state.scriptEditor.redoList)
 
     useEffect(() => {
@@ -141,42 +141,56 @@ export function ScriptEditorProcessing() {
 
         //Undo processing
         //---------------------------------------------------------------------------------
-        if ([UNDO, REDO, CONFIRM_UNDO].includes(triggerType)) {
+        if ([UNDO, REDO, CONFIRM_UNDO].includes(triggerType) || undoSceneId) {  //|| undoSceneId combinedd with finalTriggerType allows for confirm undo if another action is triggered and undo not yet confirmed.
             const sceneId = scriptEditorTrigger.sceneId || undoSceneId
             const sceneOrder = sceneOrders[sceneId]
 
-            const undoUpdates = getUndoUpdates(triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons, viewAsPartPerson) || {}
+            const finalTriggerType = [UNDO, REDO, CONFIRM_UNDO].includes(triggerType) ? triggerType : CONFIRM_UNDO
+
+            const undoUpdates = getUndoUpdates(finalTriggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, sceneId, currentPartPersons,storedParts, viewAsPartPerson) || {}
 
             const { currentScriptItemUpdates = [],
+                currentPartPersonUpdates = [],
                 redoListUpdates = [],
                 redoCreated = null,
                 scriptItemUpdates = [],
                 sceneOrderUpdates = [],
+                partUpdates = [],
                 doResetUndo = false
             } = undoUpdates
 
+            log(logType, 'getUndoUpdates', { undoUpdates,sceneOrderUpdates: undoUpdates.sceneOrderUpdates})
 
-            if (currentScriptItemUpdates) {
+            if (currentScriptItemUpdates.length>0) {
                 log(logType, 'dispatch updateCurrentScriptItems', currentScriptItemUpdates)
                 dispatch(updateCurrentScriptItems(currentScriptItemUpdates));
             }
-            if (sceneOrderUpdates) {
+            if (currentPartPersonUpdates.length>0) {
+                dispatch(updateCurrentPartPersons(currentPartPersonUpdates))
+            }
+            if (sceneOrderUpdates.length>0) {
+                log(logType, 'dispatch updateSceneOrders', sceneOrderUpdates)
                 dispatch(updateSceneOrders(sceneOrderUpdates));
             }
-            if (redoListUpdates) {
+            if (redoListUpdates.length > 0) {
+                log(logType, 'dispatch addItemsToRedoList', redoListUpdates)
                 dispatch(addItemsToRedoList(sceneId, redoListUpdates));
             }
             if (redoCreated) {
                 dispatch(removeItemsFromRedoList(redoCreated))
             }
-            if (scriptItemUpdates) {
+            if (scriptItemUpdates.length>0) {
                 dispatch(addUpdates(scriptItemUpdates, SCRIPT_ITEM))
+            }
+            if (partUpdates.length > 0) {
+                dispatch(addUpdates(partUpdates, PART))
             }
             if (doResetUndo) {
                 dispatch(resetUndo())
             }
 
-            return;
+            if ([REDO,UNDO,CONFIRM_UNDO].includes(triggerType)) return; //if undo or redo then return as no further processing required.)
+            //else continue to remaining processing having confirmed undo.
         }
 
         //Remaining Processing = scriptItem and part updates
@@ -267,3 +281,9 @@ export function ScriptEditorProcessing() {
 }
 
 export default ScriptEditorProcessing;
+
+
+
+const copy = (obj) => {
+return JSON.parse(JSON.stringify(obj))
+}   

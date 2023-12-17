@@ -21,6 +21,7 @@ function PartSelector(props) {
 
 
     const debug = true;
+    const dispatch = useDispatch();
 
     log(debug, 'Component:PartSelector props', props)
     //Props
@@ -44,28 +45,27 @@ function PartSelector(props) {
 
     const toggleDropdown = (e) => {
         e.stopPropagation();
-        // dispatch(trigger(CONFIRM_UNDO)) //confirms undo if user has moved on to another field
         setOpenPartSelector(!openPartSelector)
 
     }
 
     return (
-        <div className={s['part-selector']} >
-            <div id={`${id}-avatar`} className={`${s['part-selector-avatars']} clickable`} onClick={(e) => toggleDropdown(e)}>
+        <div key={`${id}-part-selector`} className={s['part-selector']} >
+            <div id={`${id}-avatar`} key={`${id}-avatar`} className={`${s['part-selector-avatars']} clickable`} onClick={(e) => toggleDropdown(e)}>
 
                 {partsArray.filter(part => part.allocated === true).map(part => {
                     return (
-                        <>
-                            <div className={s['avatar']} key={part.id}>
+                        
+                            <div className={s['avatar']} key={`${id}-${part.id}`}>
                                 <Avatar  onClick={(e) => toggleDropdown(e)} size={size} key={part.id} partId={part.id} avatar />
                             </div>
                            
-                        </>
+                       
 
                     )
                 })}
                 {(partsArray.some(part => part.allocated === true)) === false &&
-                    <div  className={s['avatar']}>
+                    <div className={s['avatar']} key={`${id}-0`}>
                         < Avatar onClick={(e) => toggleDropdown(e)} person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
                        
                     </div>
