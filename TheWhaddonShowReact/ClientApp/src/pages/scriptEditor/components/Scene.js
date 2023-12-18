@@ -106,13 +106,14 @@ function Scene(props) {
 
 
                 <div className={s['scene-body']}>
-                    {bodyOrder.map((scriptItem) => {
+                    {bodyOrder.map((scriptItem,idx) => {
                         return (
                             <ScriptItem
                                 id={scriptItem.id}
                                 key={scriptItem.id}
                                 sceneId={scene.id}
                                 zIndex={scriptItem.zIndex}
+                                previousCurtainOpen={bodyOrder[idx-1]?.curtainOpen || previousCurtainOpen}
                                 curtainOpen={scriptItem.curtainOpen}
                                 alignRight={scriptItem.alignRight}
                                 previousFocusId={scriptItem.previousFocusId}

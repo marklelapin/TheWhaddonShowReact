@@ -113,7 +113,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             let newTypeUpdate = { ...copy(scriptItem), type: value };
             if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
 
-                newTypeUpdate = newScriptItemsForToggleCurtain(newTypeUpdate, sceneOrder, previousCurtainOpen, true) //set it to open curtain.
+                newTypeUpdate = newScriptItemsForToggleCurtain(newTypeUpdate, true) //set it to open curtain.
                 scriptItemUpdates = newTypeUpdate
                 doRefreshCurtain = true;
             } else if (CURTAIN_TYPES.includes(scriptItem.type)) { //i.e. its coming from a curtain type
@@ -129,7 +129,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             moveFocus = { id: scriptItem.id, position: END }
             break;
         case TOGGLE_CURTAIN:
-            scriptItemUpdates = newScriptItemsForToggleCurtain(scriptItem, sceneOrder, previousCurtainOpen);
+            scriptItemUpdates = newScriptItemsForToggleCurtain(scriptItem);
             doRefreshCurtain = true;
             moveFocus = { id: scriptItem.id, position: END }
             break;

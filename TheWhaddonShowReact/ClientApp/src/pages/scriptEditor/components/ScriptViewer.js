@@ -15,6 +15,7 @@ import { log, SCRIPT_VIEWER as logType } from '../../../logging';
 
 
 import s from '../Script.module.scss'
+import { useLayoutEffect } from 'react';
 
 
 
@@ -36,6 +37,18 @@ function ScriptViewer(props) {
 
 
     log(logType, "Component:ScriptViewer showOrder", showOrder)
+
+    useEffect(() => {
+        const handleAfterPaint = () => {
+           console.log('hello')
+        };
+
+        // Use requestAnimationFrame to schedule the callback after the next paint
+        const animationFrameId = requestAnimationFrame(handleAfterPaint);
+
+        // Cleanup function (optional): Cancel the animation frame on component unmount
+        return () => cancelAnimationFrame(animationFrameId);
+    }, []); 
 
 
     useEffect(() => {

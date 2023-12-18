@@ -41,6 +41,7 @@ const ScriptItem = memo((props) => {
         sceneId = null,
         alignRight = false,
         curtainOpen = null,
+        previousCurtainOpen = null,
         previousFocusId = null,
         nextFocusId = null,
         zIndex
@@ -146,6 +147,7 @@ const ScriptItem = memo((props) => {
                 <ScriptItemText
                     key={id}
                     scriptItem={scriptItem}
+                    previousCurtainOpen={previousCurtainOpen}
                     toggleMedia={(value) => handleShowMedia(value)}
                     previousFocusId={previousFocusId}
                     nextFocusId={nextFocusId}

@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useLayoutEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -21,11 +21,12 @@ import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
 
 
 //Utilities
+import { curtainText } from '../scripts/curtain';
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
 
 //constants
-import { HEADER_TYPES, INITIAL_CURTAIN, ACTION,LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER } from '../../../dataAccess/scriptItemTypes';
+import { HEADER_TYPES, INITIAL_CURTAIN, ACTION,LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 //css
@@ -43,6 +44,7 @@ function ScriptItemText(props) {
     const { scriptItem,
         placeholder = "...",
         toggleMedia,
+        previousCurtainOpen = null,
         previousFocusId = null,
         nextFocusId = null,
         isUndoInProgress = false
@@ -57,7 +59,7 @@ function ScriptItemText(props) {
     //Redux
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const maxWidth = useSelector(state => state.scriptEditor.maxScriptItemTextWidth)
-
+    
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
     const [redoTempTextValue, setRedoTempTextValue] = useState(null)
@@ -68,7 +70,20 @@ function ScriptItemText(props) {
 
     let finalPlaceholder;
 
-    const finalText = (tempTextValue === null) ? scriptItem.text : tempTextValue;
+    const getFinalText = () => {
+        log(logType, 'getFinalText', {id: scriptItem.id, scriptItemText: scriptItem.text, tempTextValue,previousCurtainOpen})
+        let finalText = scriptItem.text //default
+        if (CURTAIN_TYPES.includes(scriptItem.type)) {
+            finalText = curtainText(scriptItem, previousCurtainOpen)
+            log(logType, 'getFinalText curtain_types:', { finalText, scriptItem})
+        } else if (tempTextValue !== null) {
+            finalText = tempTextValue;
+        }
+
+        return finalText
+    }
+
+    const finalText = getFinalText()
 
     switch (type) {
         case SCENE: finalPlaceholder = 'enter title for scene'; break;
@@ -77,6 +92,9 @@ function ScriptItemText(props) {
         case INITIAL_CURTAIN: finalPlaceholder = 'enter initial curtain for scene'; break;
         default: finalPlaceholder = placeholder;
     }
+
+    
+
 
     useEffect(() => {
         log(logType, 'props', { props })
@@ -97,6 +115,7 @@ function ScriptItemText(props) {
     useEffect(() => {
         setTempTextValue(null)
     },[scriptItem.text])
+
 
     //log(logType, 'width props', { maxWidth, endMargin, finalWidthPx })
 

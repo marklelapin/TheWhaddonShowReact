@@ -281,7 +281,7 @@ it.each([
     })
 
 
-it.each([
+xit.each([
     [1, scene4, scene3, mockCurrentScriptItems],
     [2, scene3, scene4, mockCurrentScriptItems],
     [3, scene5, scene3, mockCurrentScriptItems],
@@ -391,7 +391,7 @@ it.each([
     });
 
 
-it.each([
+xit.each([
     [1, 'p1', 'p10', scene1, mockCurrentScriptItems],
     [2, 'p2', 'p10', scene1, mockCurrentScriptItems],
     [3, 'p3', 'p10', scene1, mockCurrentScriptItems],

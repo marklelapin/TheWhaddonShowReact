@@ -30,7 +30,8 @@ export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 
 export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 
-export const TEST = { type: NONE, location: 'Test: ' }
+export const TEST = { type: DEBUG, location: 'Test: ' }
+export const TEST_CURTAIN = { type: DEBUG, location: 'Script:curtain' }
 
 export function log(logObject, message, object = null) {
 
