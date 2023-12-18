@@ -69,7 +69,7 @@ import { SHOW, ACT, SCENE, STAGING, DIALOGUE, SYNOPSIS, INITIAL_CURTAIN, INITIAL
 
 import { ABOVE, BELOW } from '../scripts/utility'
 
-import { log } from '../../../logging';
+import { log, TEST } from '../../../logging';
 
 
 it('newScriptItemsForCreateShow', () => {
@@ -281,21 +281,16 @@ it.each([
     })
 
 
-xit.each([
+it.each([
     [1, scene4, scene3, mockCurrentScriptItems],
     [2, scene3, scene4, mockCurrentScriptItems],
-    [3, scene5, scene3, mockCurrentScriptItems],
+    [3, scene6, scene3, mockCurrentScriptItems],
     [4, scene7, scene1, mockCurrentScriptItems],
-    [5, scene1, scene7, mockCurrentScriptItems],
+     [5, scene1, scene7, mockCurrentScriptItems],
     [6, scene1, scene1, mockCurrentScriptItems],
-])
-    ('newScriptItemsForMoveScene', (scenario, movingScene, newPreviousScene, currentScriptItems) => {
+])    ('newScriptItemsForMoveScene', (scenario, movingScene, newPreviousScene, currentScriptItems) => {
 
         const debug = false;
-
-        const oldPreviousScene = currentScriptItems[movingScene.previousId]
-        const oldNextScene = currentScriptItems[movingScene.nextId]
-        const newNextScene = currentScriptItems[newPreviousScene.nextId]
 
         const actualResult = newScriptItemsForMoveScene(movingScene, newPreviousScene.id, currentScriptItems)
         log(debug, 'newScriptItemsForMoveScene', { scenario, movingScene, actualResult });
@@ -304,31 +299,39 @@ xit.each([
         if (scenario === 1) {
             expect(actualResult.length).toEqual(0) //scene4 already below scene3
         }
+        
+        if (scenario === 2) {
+            expect(actualResult.length).toEqual(4)
+            expect(actualResult[0]).toEqual({ ...copy(scene2), nextId: scene4.id })
+            expect(actualResult[1]).toEqual({ ...copy(scene3), previousId: scene4.id, nextId: scene5.id })
+            expect(actualResult[2]).toEqual({ ...copy(scene4), previousId: scene2.id, nextId: scene3.id })
+            expect(actualResult[3]).toEqual({ ...copy(scene5), previousId: scene3.id})
+        }
 
 
-        if ([2, 3].includes(scenario)) {
+        if (scenario === 3) {
             expect(actualResult.length).toEqual(5)
-            expect(actualResult[0]).toEqual({ ...copy(oldPreviousScene), nextId: movingScene.nextId })
-            expect(actualResult[1]).toEqual({ ...copy(oldNextScene), previousId: movingScene.previousId })
-            expect(actualResult[2]).toEqual({ ...copy(movingScene), previousId: newPreviousScene.id, nextId: newNextScene.id })
-            expect(actualResult[3]).toEqual({ ...copy(newPreviousScene), nextId: movingScene.id })
-            expect(actualResult[4]).toEqual({ ...copy(newNextScene), previousId: movingScene.id })
+            expect(actualResult[0]).toEqual({ ...copy(act2), nextId: scene7.id })
+            expect(actualResult[1]).toEqual({ ...copy(scene7), previousId: act2.id })
+            expect(actualResult[2]).toEqual({ ...copy(scene6), previousId: scene3.id, nextId: scene4.id })
+            expect(actualResult[3]).toEqual({ ...copy(scene3), nextId: scene6.id })
+            expect(actualResult[4]).toEqual({ ...copy(scene4), previousId: scene6.id })
         }
 
         if (scenario === 4) { //moving scene with no next scene
             expect(actualResult.length).toEqual(4)
-            expect(actualResult[0]).toEqual({ ...copy(oldPreviousScene), nextId: null })
-            expect(actualResult[1]).toEqual({ ...copy(movingScene), previousId: newPreviousScene.id, nextId: newNextScene.id })
-            expect(actualResult[2]).toEqual({ ...copy(newPreviousScene), nextId: movingScene.id })
-            expect(actualResult[3]).toEqual({ ...copy(newNextScene), previousId: movingScene.id })
+            expect(actualResult[0]).toEqual({ ...copy(scene6), nextId: null })
+            expect(actualResult[1]).toEqual({ ...copy(scene7), previousId: scene1.id, nextId: scene2.id })
+            expect(actualResult[2]).toEqual({ ...copy(scene1), nextId: scene7.id })
+            expect(actualResult[3]).toEqual({ ...copy(scene2), previousId: scene7.id })
         }
 
         if (scenario === 5) { //moving to scene with no next scene
             expect(actualResult.length).toEqual(4)
-            expect(actualResult[0]).toEqual({ ...copy(oldPreviousScene), nextId: movingScene.nextId })
-            expect(actualResult[1]).toEqual({ ...copy(oldNextScene), previousId: movingScene.previousId })
-            expect(actualResult[2]).toEqual({ ...copy(movingScene), previousId: newPreviousScene.id, nextId: null })
-            expect(actualResult[3]).toEqual({ ...copy(newPreviousScene), nextId: movingScene.id })
+            expect(actualResult[0]).toEqual({ ...copy(act1), nextId: scene2.id })
+            expect(actualResult[1]).toEqual({ ...copy(scene2), previousId: act1.id })
+            expect(actualResult[2]).toEqual({ ...copy(scene1), previousId: scene7.id, nextId: null })
+            expect(actualResult[3]).toEqual({ ...copy(scene7), nextId: scene1.id })
         }
 
         if (scenario === 6) {
@@ -391,7 +394,7 @@ it.each([
     });
 
 
-xit.each([
+it.each([
     [1, 'p1', 'p10', scene1, mockCurrentScriptItems],
     [2, 'p2', 'p10', scene1, mockCurrentScriptItems],
     [3, 'p3', 'p10', scene1, mockCurrentScriptItems],
@@ -403,9 +406,9 @@ xit.each([
 
     //log(debug,'input :', { scenario, partId, newPartId, currentSceneScriptItems })
 
-    const actualResult = newUpdatesForSwapPart(partId, newPartId, currentSceneScriptItems,mockSceneOrders[show.id],mockCurrentPartPersons)
+    const actualResult = newUpdatesForSwapPart(partId, newPartId, currentSceneScriptItems, mockSceneOrders[show.id], mockCurrentPartPersons)
 
-    log(debug, 'newUpdatesForSwapPart', actualResult)
+    log(debug, 'newUpdatesForSwapPart', { scenario, actualResult })
 
     const actualScriptItemUpdates = actualResult.newScriptItemUpdates
     const actualPartUpdates = actualResult.newPartUpdates
@@ -417,7 +420,7 @@ xit.each([
         expect(actualScriptItemUpdates[1]).toEqual({ ...copy(dialogue11), partIds: ['p10'] })
         expect(actualScriptItemUpdates[2]).toEqual({ ...copy(dialogue14), partIds: ['p10', 'p2', 'p3'] })
 
-        expect(actualPartUpdates).toEqual([]) //part1 appears in scene 6 so shouldn't be deleted.
+        expect(actualPartUpdates).toEqual([]) //part1 appears in scene 5 so shouldn't be deleted.
     }
     if (scenario === 2) {
         expect(actualScriptItemUpdates.length).toEqual(3)
@@ -433,7 +436,7 @@ xit.each([
         expect(actualScriptItemUpdates[1]).toEqual({ ...copy(dialogue13), partIds: ['p10'] })
         expect(actualScriptItemUpdates[2]).toEqual({ ...copy(dialogue14), partIds: ['p1', 'p2', 'p10'] })
 
-        expect(actualPartUpdates).toEqual([{...copy(part3),isActive: false}])
+        expect(actualPartUpdates).toEqual([{ ...copy(part3), isActive: false }])
     }
     if (scenario === 4) { //part not in scene
         expect(actualScriptItemUpdates.length).toEqual(0)
@@ -451,7 +454,7 @@ it.each([
     [3, removePart6FromScene2MixedCreatedDates, mockCurrentScriptItems],
     [4, removePart6FromScene2MultipleCreatedDates, mockCurrentScriptItems],
     [5, removePart6FromScene2, mockCurrentScriptItems],
-])  ('scriptItemUpdatesLaterThanCurrent', (scenario,scriptItemUpdates, currentScriptItems) => {
+])('scriptItemUpdatesLaterThanCurrent', (scenario, scriptItemUpdates, currentScriptItems) => {
 
     const actualResult = getScriptItemUpdatesLaterThanCurrent(scriptItemUpdates, currentScriptItems)
 
@@ -474,8 +477,8 @@ it.each([
     }
 
 
-    }
-    )
+}
+)
 
 const copy = (object) => {
 

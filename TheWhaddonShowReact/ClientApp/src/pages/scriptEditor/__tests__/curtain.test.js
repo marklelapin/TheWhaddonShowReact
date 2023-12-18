@@ -55,7 +55,7 @@ it.each([
     [3, dialogue13, true], //set original state to open from closed 
     [4,dialogue13, false], //set original state to closed from closed (should return nothing)
 ])('newScriptItemsForToggleCurtain', (scenario, scriptItem, overrideNewValue = null) => {
-    const logType = TEST;
+    const logType = false//TEST;
 
     const actualResult = newScriptItemsForToggleCurtain(scriptItem, overrideNewValue)
 

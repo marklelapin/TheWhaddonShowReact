@@ -182,39 +182,38 @@ export function newScriptItemsForMoveScene(scene, newPreviousId, currentScriptIt
     let newPreviousScene = copy(currentScriptItems[newPreviousId])
     let newNextScene = (newPreviousScene.nextId) ? copy(currentScriptItems[newPreviousScene.nextId]) : null
 
-    if (oldPreviousScene.id === newNextScene.id) {
+    if (oldPreviousScene.id === newNextScene?.id) {
 
-        oldPreviousScene.nextId = movingScene.nextId
-        oldPreviousScene.previousId = movingScene.id
+        oldPreviousScene.nextId = copy(movingScene.nextId)
+        oldPreviousScene.previousId = copy(movingScene.id)
 
-        if (oldNextScene) { oldNextScene.previousId = oldPreviousScene.id }
+        if (oldNextScene) { oldNextScene.previousId = copy(oldPreviousScene.id) }
 
-        newPreviousScene.nextId = movingScene.id
+        newPreviousScene.nextId = copy(movingScene.id)
 
         newNextScene = null // as same as oldPreviousScene
 
-        movingScene.previousId = newPreviousScene.id
-        movingScene.nextId = oldPreviousScene.id
-    } else if (oldNextScene.id === newPreviousScene.id) {
+        movingScene.previousId = copy(newPreviousScene.id)
+        movingScene.nextId = copy(oldPreviousScene.id)
+    } else if (oldNextScene?.id === copy(newPreviousScene.id)) {
 
-        oldPreviousScene.nextId = oldNextScene.id
-        newPreviousScene.previousId = oldPreviousScene.id
+        oldPreviousScene.nextId = copy(oldNextScene.id)
+        newPreviousScene.previousId = copy(oldPreviousScene.id)
 
+        newPreviousScene.nextId = copy(movingScene.id)
+        movingScene.previousId = copy(newPreviousScene.id)
+        movingScene.nextId = copy(oldNextScene.nextId)
+
+        if (newNextScene) { newNextScene.previousId = copy(movingScene.id) }
         oldNextScene = null //as same as newPreviousScene
-
-        newPreviousScene.nextId = movingScene.id
-        movingScene.previousId = newPreviousScene.id
-
-        if (newNextScene) { newNextScene.previousId = movingScene.id }
-
     } else {
-        oldPreviousScene.nextId = movingScene.nextId
-        if (oldNextScene) { oldNextScene.previousId = movingScene.previousId }
+        oldPreviousScene.nextId = copy(movingScene.nextId)
+        if (oldNextScene) { oldNextScene.previousId = copy(movingScene.previousId) }
 
-        newPreviousScene.nextId = movingScene.id
-        if (newNextScene) { newNextScene.previousId = movingScene.id }
+        newPreviousScene.nextId = copy(movingScene.id)
+        if (newNextScene) { newNextScene.previousId = copy(movingScene.id) }
 
-        movingScene.previousId = newPreviousScene.id
+        movingScene.previousId = copy(newPreviousScene.id)
         movingScene.nextId = newNextScene?.id || null
     }
 

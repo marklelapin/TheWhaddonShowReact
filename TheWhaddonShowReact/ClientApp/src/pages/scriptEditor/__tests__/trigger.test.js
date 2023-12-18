@@ -515,7 +515,7 @@ it.each([
 
 })
 
-xit.each([
+it.each([
    [1, scene1.id, scene3.id],
   [2, scene1.id, scene7.id],
     [3, scene7.id, scene1.id],
