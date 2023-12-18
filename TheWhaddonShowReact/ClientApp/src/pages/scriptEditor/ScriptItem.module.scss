@@ -590,6 +590,10 @@
         top: 10px;
         right: 0px;
         z-index: 5;
+
+        .hide-redo {
+            color: transparent;
+        }
     }
     /*&.curtain-open {
         .script-item-controls{

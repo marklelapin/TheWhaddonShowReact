@@ -177,10 +177,10 @@ const ScriptItem = memo((props) => {
                         <Button id={confirmUndoId} key={confirmUndoId} size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>
                     }
                     <Icon id={undoId} key={undoId} icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} toolTip="Undo"/>
-
-                    {isUndoInProgress &&
-                        <Icon id={redoId} key={redoId} icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />
-                    }
+                    <Icon id={redoId}
+                        key={redoId}
+                        className={isUndoInProgress ? s['show-redo'] : s['hide-redo'] }
+                        icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />
                     <Icon id={printSceneId} key={printSceneId}  icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>
                     <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />
 

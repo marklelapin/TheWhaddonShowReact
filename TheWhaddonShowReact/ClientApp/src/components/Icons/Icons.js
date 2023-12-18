@@ -26,7 +26,7 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top' } = props
+    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top',className } = props
 
     let { icon } = props
     if (icon === null) { icon = props }
@@ -81,14 +81,14 @@ export function Icon(props) {
 
 
     if (id === null) {
-        return <i className={`m-1 ${icon} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} `}
+        return <i className={`m-1 ${icon} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
             style={style}
             onClick={onClick} />
     }
     if (id !== null) {
         return <>
             <i id={id}
-                className={`m-1 ${icon}  ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''}  `}
+                className={`m-1 ${icon}  ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
                 style={style}
                 onClick={onClick} />
 

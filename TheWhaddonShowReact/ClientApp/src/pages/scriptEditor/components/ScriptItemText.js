@@ -295,22 +295,22 @@ function ScriptItemText(props) {
             moveFocus(DOWN, END)
         }
 
-        if (e.ctrlKey && e.key === 'z' && tempTextValue === scriptItem.text) {
-            if (tempTextValue !== null) {
-                setRedoTempTextValue(tempTextValue)
-                setTempTextValue(null)
-            } else {
+        if (e.ctrlKey && e.key === 'z' && (tempTextValue === null || tempTextValue === '')) {
+            //if (tempTextValue !== null) {
+            //    setRedoTempTextValue(tempTextValue)
+            //    setTempTextValue(null)
+            //} else {
                 dispatch(trigger(UNDO, { sceneId: scriptItem.parentId }))
-            }
+            //}
         }
 
         if (e.ctrlKey && e.key === 'y' && undoInProgress) {
-            if (undoNotInProgress && redoTempTextValue !== null) {
-                setTempTextValue(redoTempTextValue)
-                setRedoTempTextValue(null)
-            } else {
+            //if (undoNotInProgress && redoTempTextValue !== null) {
+            //    setTempTextValue(redoTempTextValue)
+            //    setRedoTempTextValue(null)
+            //} else {
                 dispatch(trigger(REDO, { sceneId: scriptItem.parentId }))
-            }
+            //}
 
         }
 
