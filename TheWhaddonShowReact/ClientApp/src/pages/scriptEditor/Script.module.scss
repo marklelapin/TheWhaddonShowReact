@@ -7,16 +7,45 @@
 
 
 
-.view-as-control {
-    flex: 0 0 100px;
-    display: flex;
-    align-items: center;
-    justify-content:space-evenly;
 
-    &.selected.classic {
-        background-color: $highlight;
+
+
+.script-viewer-header {
+    text-align: end;
+    align-items: center;
+    flex: 0 0 50px;
+
+    .left-controls {
+        flex: 0 0 20px;
+    }
+
+    .center-controls {
+        flex: 1;
+        justify-self: center;
+    }
+
+    .script-viewer-navlink.reduced-padding {
+        padding: 5px 3px !important;
+    }
+
+    .view-as-control {
+        flex: 0 0 100px;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+
+        &.selected.classic {
+            background-color: $highlight;
+        }
+    }
+
+    .right-controls {
+        flex: 0 0 60px;
     }
 }
+
+
+
 
 
 
@@ -85,9 +114,7 @@
     position: relative;
 
     @include dropdown-box;
-
     border-color: $gray-900;
- 
 }
 
 .scene-header {

@@ -1,29 +1,27 @@
 ﻿//React and REdux
 import React from 'react';
-import { useState} from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
+    CLEAR_SCRIPT,
     toggleSceneSelector,
-    updateShowComments,
-    updatePersonSelectorConfig,
-    updateViewStyle,
     trigger,
-    CLEAR_SCRIPT
+    updatePersonSelectorConfig,
+    updateShowComments,
+    updateViewStyle
 } from '../../../actions/scriptEditor';
 
 //Components
 import { Nav, NavItem, NavLink } from 'reactstrap';
-import { Icon } from '../../../components/Icons/Icons'
-import Avatar from '../../../components/Avatar/Avatar'
+import Avatar from '../../../components/Avatar/Avatar';
+import { Icon } from '../../../components/Icons/Icons';
 
 //utitilites
-import { isSmallerScreen } from '../../../components/Sidebar/Sidebar'
+import { isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { log } from '../../../logging';
-
 //css
-import s from '../Script.module.scss'
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
+import s from '../Script.module.scss';
 
 
 function ScriptViewer(props) {
@@ -43,7 +41,8 @@ function ScriptViewer(props) {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-    log(debug, 'Component:ScriptViewerHeader sceneInFocus',sceneInFocus)
+    const screenSize = useSelector(state => state.layout.screenSize)
+    log(debug, 'Component:ScriptViewerHeader sceneInFocus', sceneInFocus)
 
     //Event Handlers
     const handlePrint = () => {
@@ -70,25 +69,25 @@ function ScriptViewer(props) {
 
             dispatch(updatePersonSelectorConfig(null))
         } else {
-            dispatch(updatePersonSelectorConfig({ additionalCategory: { name: 'Parts', partIds: sceneInFocus?.partIds || [] }} ))
+            dispatch(updatePersonSelectorConfig({ additionalCategory: { name: 'Parts', partIds: sceneInFocus?.partIds || [] } }))
         }
 
     }
 
-
+    const singleSection = isScreenSmallerThan('md')
 
     return (
+        
+        <div id="script-viewer-header" className={`bg-light flex-full-width ${s['script-viewer-header']}`}>
 
-        <div id="script-viewer-header" className="bg-light flex-full-width script-viewer-header">
-
-            <div className="left-controls justify-content-start align-items-center">
+            <div className={`${s['left-controls']} justify-content-start align-items-center`}>
                 <Icon icon="arrow-left" onClick={() => handleArrowLeft()}></Icon>
             </div>
-            <div className="center-controls justify-content-center">
+            <div className={`${s['center-controls']} justify-content-center`}>
                 <Nav className="bg-light" tabs>
                     <NavItem>
                         <NavLink id ="chat-mode"
-                            className={`script-viewer-navlink ${(viewStyle === CHAT) ? 'active' : ''}`}
+                            className={`${s['script-viewer-navlink']} ${(viewStyle === CHAT) ? 'active' : ''}`}
                             onClick={() => handleNavLink(CHAT)}
                         >
                             <span>Chat</span><Icon icon="chat-mode" />
@@ -96,7 +95,7 @@ function ScriptViewer(props) {
                     </NavItem>
                     <NavItem>
                         <NavLink id="classic-mode"
-                            className={`script-viewer-navlink ${(viewStyle === CLASSIC) ? 'active' : ''}`}
+                            className={`${s['script-viewer-navlink']} ${singleSection ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? 'active' : ''}`}
                             onClick={() => handleNavLink(CLASSIC)}>
                             <span>Classic</span><Icon icon="classic-mode" />
                         </NavLink>
@@ -118,15 +117,16 @@ function ScriptViewer(props) {
 
             </div>
             <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
-            <div className="right-controls justify-content-end align-items-center">
-                {(isSmallerScreen() === false) &&
-
+            <div className={`${['right-controls']} justify-content-end align-items-center`}>
+                {singleSection  &&
                     (showComments) ? <Icon id="script-viewer-comments" icon="comment" onClick={() => toggleShowComments()} toolTip="Hide comments"></Icon>
                     : <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>
                 }
 
                 <Icon id="script-viewer-print" icon="print" onClick={() => handlePrint()} toolTip="Print whole script"></Icon>
-                <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>
+                {singleSection &&
+                    <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>
+                }
             </div>
 
         </div>

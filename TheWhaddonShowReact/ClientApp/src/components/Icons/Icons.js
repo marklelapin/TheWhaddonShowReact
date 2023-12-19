@@ -33,6 +33,8 @@ export function Icon(props) {
 
     const [toolTipOpen, setToolTipOpen] = useState(null);
 
+
+
     const dictionary = {
         "sync": "fa fa-cloud",
         "add": "fa fa-plus",
@@ -81,14 +83,14 @@ export function Icon(props) {
 
 
     if (id === null) {
-        return <i className={`m-1 ${icon} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
+        return <i className={`m-1 ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
             style={style}
             onClick={onClick} />
     }
     if (id !== null) {
         return <>
             <i id={id}
-                className={`m-1 ${icon}  ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
+                className={`m-1 ${icon}  ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
                 style={style}
                 onClick={onClick} />
 

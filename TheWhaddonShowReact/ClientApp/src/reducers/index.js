@@ -7,6 +7,7 @@ import layout from './layout';
 import localServer from './localServer';
 import scriptEditor from './scriptEditor';
 import cache from './cache';
+import user from './user';
 import { connectRouter } from 'connected-react-router';
 
 export default (history) =>
@@ -20,4 +21,5 @@ export default (history) =>
         localServer,
         scriptEditor,
         cache,
+        user,
     });

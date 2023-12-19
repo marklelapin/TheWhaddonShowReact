@@ -18,8 +18,8 @@ import {
     RESET_UNDO,
     UPDATE_PERSON_SELECTOR_CONFIG,
     UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
-    UPDATE_VIEW_STYLE
-
+    UPDATE_VIEW_STYLE,
+    SET_READ_ONLY
 } from '../actions/scriptEditor';
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
@@ -60,6 +60,7 @@ export const initialState = {
     personSelectorConfig: null,
     maxScriptItemTextWidth: 720,
     viewStyle: 'chat',
+    readOnly: false,
 
 }
 
@@ -229,6 +230,11 @@ export default function scriptEditorReducer(state = initialState, action) {
             return {
                 ...state,
                 viewStyle: action.viewStyle
+            }
+        case SET_READ_ONLY:
+return {
+                ...state,
+                readOnly: action.readOnly
             }
         default: return state;
     }

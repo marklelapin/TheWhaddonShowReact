@@ -90,33 +90,6 @@
     background-color: #f0f0f0;
 }
 
-#script-viewer-header {
-    text-align: end;
-    align-items: center;
-    flex: 0 0 50px;
-}
-
-
-
-
-.script-viewer-header .left-controls {
-    flex: 0 0 20px;
-}
-
-.script-viewer-header .center-controls {
-    flex: 1;
-    justify-self: center;
-}
-
-.script-viewer-header .view-as-control {
-    flex: 0 0 100px;
-    display: flex;
-    align-items: center
-}
-
-.script-viewer-header .right-controls {
-    flex: 0 0 60px;
-}
 
 
 

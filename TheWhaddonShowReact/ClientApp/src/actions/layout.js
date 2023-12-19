@@ -3,6 +3,7 @@ export const CHANGE_SIDEBAR_COLOR = 'CHANGE_SIDEBAR_COLOR';
 export const CHANGE_NAVBAR_COLOR = 'CHANGE_NAVBAR_COLOR';
 export const NAVBAR_TYPE_TOGGLE = 'NAVBAR_TYPE_TOGGLE';
 export const SIDEBAR_TYPE_TOGGLE = 'SIDEBAR_TYPE_TOGGLE';
+export const UPDATE_SCREEN_SIZE = 'UPDATE_SCREEN_SIZE';
 
 export function changeTheme(payload) {
   return {
@@ -39,3 +40,9 @@ export function sidebarTypeToggle(value) {
   }
 }
 
+export function updateScreenSize(screenSize) {
+    return {
+        type: UPDATE_SCREEN_SIZE,
+        screenSize
+    };
+}

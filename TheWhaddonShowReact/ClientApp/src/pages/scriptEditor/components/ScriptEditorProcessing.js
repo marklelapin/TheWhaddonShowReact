@@ -14,6 +14,7 @@ import {
     updateCurrentScriptItems,
     clearScriptEditorState,
     updateViewAsPartPerson,
+    setReadOnly,
     UNDO, REDO, CONFIRM_UNDO, CLEAR_SCRIPT, UPDATE_VIEW_AS_PART_PERSON
 
 } from '../../../actions/scriptEditor';
@@ -36,6 +37,7 @@ import { moveFocusToId, END } from '../scripts/utility';
 
 //constants
 import { SCRIPT_ITEM, PART, PERSON } from '../../../dataAccess/localServerModels'
+import { isScreenSmallerThan } from '../../../core/screenHelper';
 
 export function ScriptEditorProcessing() {
 
@@ -74,6 +76,11 @@ export function ScriptEditorProcessing() {
     const currentUndo = useSelector(state => state.scriptEditor.currentUndo) || {}
     const undoSceneId = Object.keys(currentUndo)[0] || null
     const redoList = useSelector(state => state.scriptEditor.redoList)
+
+    const readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const screenSize = useSelector(state => state.layout.screenSize)
+
+
 
     useEffect(() => {
         let currentFocus = null;
@@ -275,6 +282,15 @@ export function ScriptEditorProcessing() {
         }
 
     }, [localServerTrigger]) //eslint disable-line react-hooks/exhaustive-deps
+
+
+    useEffect(() => {
+        if (isScreenSmallerThan('md')) {
+            dispatch(setReadOnly(true))
+        }
+    },[screenSize])
+
+
 
 
     return (null)

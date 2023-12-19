@@ -27,6 +27,7 @@ export const RESET_UNDO = 'RESET_UNDO';
 
 export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH'
 export const UPDATE_VIEW_STYLE = 'UPDATE_VIEW_STYLE';
+export const SET_READ_ONLY = 'SET_READ_ONLY';
 
 export const TRIGGER = 'TRIGGER';
 
@@ -204,3 +205,10 @@ export function updateViewStyle(viewStyle) {
         viewStyle,
     }
 }
+
+    export function setReadOnly(readOnly) {
+        return {
+            type: SET_READ_ONLY,
+            readOnly,
+        }
+    }

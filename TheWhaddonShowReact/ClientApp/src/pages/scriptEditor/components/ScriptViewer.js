@@ -35,7 +35,11 @@ function ScriptViewer(props) {
     const isPersonSelectorOpen = (personSelectorConfig !==null)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
 
-  
+    const reLoad = useSelector(state => state.scriptEditor.reLoad)
+
+
+    const [loadedShowOrder, setLoadedShowOrder] = useState(showOrder)
+
     log(logType, "Component:ScriptViewer showOrder", showOrder)
 
     useEffect(() => {
@@ -66,6 +70,24 @@ function ScriptViewer(props) {
         return () => { window.removeEventListener('resize', handleScriptViewerResizeDebounce); }
     }, []);
 
+
+    useEffect(() => {
+
+        setLoadedScenes(0)
+
+
+    },[reLoad])
+
+
+    useEffect(() => {
+
+        if loadedScenes === showOrder.length) {
+
+
+        }
+
+
+    },[loadedScenes])
 
     useEffect(() => {
         handleScriptViewerResize()

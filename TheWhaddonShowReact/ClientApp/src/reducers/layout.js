@@ -3,7 +3,8 @@ import {
   CHANGE_SIDEBAR_COLOR,
   CHANGE_NAVBAR_COLOR,
   NAVBAR_TYPE_TOGGLE,
-  SIDEBAR_TYPE_TOGGLE
+    SIDEBAR_TYPE_TOGGLE,
+  UPDATE_SCREEN_SIZE,
 } from '../actions/layout';
 
 import config from '../config'
@@ -38,7 +39,8 @@ const defaultState = {
   sidebarColor: DashboardThemes.DARK,
   navbarColor:  config.app.colors.light,
   navbarType: NavbarTypes.STATIC,
-  sidebarType: SidebarTypes.SOLID
+    sidebarType: SidebarTypes.SOLID,
+  screenSize: null,
 };
 
 export default function layoutReducer(state = defaultState, action) {
@@ -68,6 +70,11 @@ export default function layoutReducer(state = defaultState, action) {
         ...state,
         sidebarType: action.payload
       }
+      case UPDATE_SCREEN_SIZE:
+return {
+          ...state,
+          screenSize: action.screenSize
+        }
     default:
       return state;
   }
