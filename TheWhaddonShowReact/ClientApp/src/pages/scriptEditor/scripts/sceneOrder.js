@@ -45,7 +45,25 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
 
 export const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
 
-    const mergedSceneOrder = getLatest([...currentSceneOrder, ...newScriptItems])
+    const preparedNewScriptItems = newScriptItems.map(item => { //adds current scene order calcs into newSCriptItems to preserver these before they are overwritten in later operations if required.
+        const currentSceneOrderItem = currentSceneOrder.find(currentItem => currentItem.id === item.id)
+        if (currentSceneOrderItem) {
+            return {
+                ...item,
+                curtainOpen: currentSceneOrderItem.curtainOpen,
+                zIndex: currentSceneOrderItem.zIndex,
+                nextFocusId: currentSceneOrderItem.nextFocusId,
+                previousFocusId: currentSceneOrderItem.previousFocusId,
+                alignRight: currentSceneOrderItem.alignRight
+
+            }
+        } else {
+            return item
+        }
+    })
+
+
+    const mergedSceneOrder = getLatest([...currentSceneOrder, ...preparedNewScriptItems])
 
     return mergedSceneOrder;
 }

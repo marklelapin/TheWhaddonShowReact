@@ -272,7 +272,7 @@ export const newUpdatesForSwapPart = (oldPartId, newPartId, currentSceneScriptIt
 
     if (scene.partIds.includes(newPartId)) {
         alert('The part is already associated with this scene')
-        return;
+        return { newPartUpdates, newScriptItemUpdates };
     }
 
     newScriptItemUpdates = currentSceneScriptItemsArray.map(item => {

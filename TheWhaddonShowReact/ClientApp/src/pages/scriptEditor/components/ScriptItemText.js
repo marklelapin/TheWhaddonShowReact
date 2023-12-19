@@ -26,7 +26,7 @@ import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
 
 //constants
-import { HEADER_TYPES, INITIAL_CURTAIN, ACTION,LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN } from '../../../dataAccess/scriptItemTypes';
+import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN, ACT } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
 
 //css
@@ -59,23 +59,55 @@ function ScriptItemText(props) {
     //Redux
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const maxWidth = useSelector(state => state.scriptEditor.maxScriptItemTextWidth)
-    
+
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
     const [redoTempTextValue, setRedoTempTextValue] = useState(null)
     const [isFocused, setIsFocused] = useState(false);
     const [isBeingDeleted, setIsBeingDeleted] = useState(false)
     const [finalWidthPx, setFinalWidthPx] = useState(null)
-    const [endMargin,setEndMargin] = useState(defaultEndMargin)
+    const [endMargin, setEndMargin] = useState(defaultEndMargin)
 
     let finalPlaceholder;
 
+
+
+
+
+    const addBrackets = (text) => {
+        return changeBrackets(text, true)
+    }
+
+    const removeBrackets = (text) => {
+        return changeBrackets(text, false)
+    }
+
+    const changeBrackets = (text, addBrackets) => {
+
+        let output = text;
+        if (![ACTION, LIGHTING, SOUND].includes(scriptItem.type)) { return output }
+
+        switch (addBrackets) {
+            case true:
+                if (output[0] !== '(') { output = `(${output}` }
+                if (output[output.length - 1] !== ')') { output = `${output})` }
+                return output;
+            case false:
+                if (output[0] === '(') { output = output.substring(1) }
+                if (output[output.length - 1] === ')') { output = output.substring(0, output.length - 1) }
+                return output;
+            default: return output;
+        }
+
+    }
+
     const getFinalText = () => {
-        log(logType, 'getFinalText', {id: scriptItem.id, scriptItemText: scriptItem.text, tempTextValue,previousCurtainOpen})
+        log(logType, 'getFinalText', { id: scriptItem.id, scriptItemText: scriptItem.text, tempTextValue, previousCurtainOpen })
         let finalText = scriptItem.text //default
+        finalText = addBrackets(finalText) //adds brackets according to rules set out within addBrackets function
         if (CURTAIN_TYPES.includes(scriptItem.type)) {
             finalText = curtainText(scriptItem, previousCurtainOpen)
-            log(logType, 'getFinalText curtain_types:', { finalText, scriptItem})
+            log(logType, 'getFinalText curtain_types:', { finalText, scriptItem })
         } else if (tempTextValue !== null) {
             finalText = tempTextValue;
         }
@@ -93,7 +125,7 @@ function ScriptItemText(props) {
         default: finalPlaceholder = placeholder;
     }
 
-    
+
 
 
     useEffect(() => {
@@ -114,7 +146,7 @@ function ScriptItemText(props) {
 
     useEffect(() => {
         setTempTextValue(null)
-    },[scriptItem.text])
+    }, [scriptItem.text])
 
 
     //log(logType, 'width props', { maxWidth, endMargin, finalWidthPx })
@@ -125,7 +157,7 @@ function ScriptItemText(props) {
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
             context.font = window.getComputedStyle(textInputRef).font;
-           
+
             return context;
         }
         catch {
@@ -161,12 +193,23 @@ function ScriptItemText(props) {
     const handleTextChange = (e) => {
         log(logType, `handleTextChange: ${e.target.value || ''} `)
         setEndMargin(100)
-        setTempTextValue(e.target.value || '')
+        let newTempTextValue = e.target.value || ''
+        newTempTextValue = addBrackets(newTempTextValue)
+
+        setTempTextValue(newTempTextValue)
     }
 
-    const handleControlsClick = (action, value) => {
+    const handlePaste = (e) => {
+        e.preventDefault();
+        const clipboardData = e.clipboardData || window.clipboardData;
+        const pastedText = clipboardData.getData('text');
+        setEndMargin(100)
+        setTempTextValue(pastedText)
+    }
 
-        log(logType, 'handlesControlsClick: ', { action, value })
+    const handleControlsClick = (e, action) => {
+        e.preventDefault();
+        log(logType, 'handlesControlsClick: ', { action })
 
         switch (action) {
             case CONFIRM: moveFocus(DOWN, END); break; //TODO- only show confirm if tempTextValue is not null.remove focus.
@@ -319,7 +362,7 @@ function ScriptItemText(props) {
             //    setRedoTempTextValue(tempTextValue)
             //    setTempTextValue(null)
             //} else {
-                dispatch(trigger(UNDO, { sceneId: scriptItem.parentId }))
+            dispatch(trigger(UNDO, { sceneId: scriptItem.parentId }))
             //}
         }
 
@@ -328,7 +371,7 @@ function ScriptItemText(props) {
             //    setTempTextValue(redoTempTextValue)
             //    setRedoTempTextValue(null)
             //} else {
-                dispatch(trigger(REDO, { sceneId: scriptItem.parentId }))
+            dispatch(trigger(REDO, { sceneId: scriptItem.parentId }))
             //}
 
         }
@@ -344,14 +387,17 @@ function ScriptItemText(props) {
 
 
     const handleBlur = (e) => {
-        
+
         if (isBeingDeleted !== true) {
             log(logType, 'handleBlur: ', { scriptItemText: scriptItem.text, eventTextValue: e.target.value })
             setEndMargin(defaultEndMargin)
             setIsFocused(false)
-            if (scriptItem.text !== e.target.value) {
-                log(logType, 'dispatch update text', { scriptItem, value: e.target.value })
-                dispatch(trigger(UPDATE_TEXT, { scriptItem, value: e.target.value }))
+            let targetText = e.target.value || ''
+            targetText = removeBrackets(targetText)
+
+            if (scriptItem.text !== targetText) {
+                log(logType, 'dispatch update text', { scriptItem, value: targetText })
+                dispatch(trigger(UPDATE_TEXT, { scriptItem, value: targetText }))
             }
             toggleMedia(false)
         }
@@ -359,13 +405,11 @@ function ScriptItemText(props) {
     }
 
 
-
     return (
         <div id={`script-item-text-${id}`} className={s['script-item-text']}>
 
             <ScriptItemHeader scriptItem={scriptItem} />
 
-            {[ACTION, LIGHTING, SOUND].includes(scriptItem.type) && <div className={s['open-bracket']}>(</div>}
             <TextareaAutosize
                 key={id}
                 id={`script-item-text-input-${id}`}
@@ -377,17 +421,17 @@ function ScriptItemText(props) {
                 onFocus={() => handleFocus()}
                 onKeyDown={(e) => handleKeyDown(e, scriptItem)}
                 style={{ width: finalWidthPx }}
+                onPaste={(e) => handlePaste(e)}
             //rows={getTextAreaRows().length}
             >
             </TextareaAutosize>
-            {[ACTION,LIGHTING,SOUND].includes(scriptItem.type) && <div className ={s['close-bracket']}>)</div>}
 
             {(focus) &&
                 <ScriptItemControls
                     key={`script-item-controls-${id}`}
                     scriptItem={scriptItem}
                     header={TYPES_WITH_HEADER.includes(scriptItem.type)}
-                    onClick={handleControlsClick}
+                    onClick={(e, action) => handleControlsClick(e, action)}
                     toggleMedia={toggleMedia}
                 />
             }

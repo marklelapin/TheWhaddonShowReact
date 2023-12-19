@@ -99,7 +99,7 @@ function ScriptItemControls(props) {
                 <div className={s['header-right-controls']}>
 
                     {scriptItem && HEADER_TYPES.includes(scriptItem.type) === false &&
-                        < Dropdown isOpen={dropdownOpen} toggle={toggle} >
+                        < Dropdown isOpen={dropdownOpen} toggle={toggle} className={`${s['type-dropdown']}` } >
                             <Icon id={changeTypeId} key={changeTypeId} icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} toolTip="Change Type to Action, Staging etc." />
                             <DropdownMenu >
                                 {bodyScriptItemTypes.map((type) => {
@@ -126,10 +126,10 @@ function ScriptItemControls(props) {
 
             <div className={s['bottom-right-controls']}>
                 {scriptItem &&
-                    <Icon id={confirmScriptItemId} key={confirmScriptItemId} icon="play" onClick={() => onClick(CONFIRM)} toolTip="Confirm text (tab)" />
+                    <Icon id={confirmScriptItemId} key={confirmScriptItemId} icon="play" onClick={(e) => onClick(e,CONFIRM)} toolTip="Confirm text (tab)" />
                 }
                 {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) &&
-                    <Icon id={addScriptItemId} key={addScriptItemId} icon="add" onClick={() => onClick(ADD_SCRIPT_ITEM, null)} toolTip="Add new line (return)" />
+                    <Icon id={addScriptItemId} key={addScriptItemId} icon="add" onClick={(e) => onClick(e,ADD_SCRIPT_ITEM)} toolTip="Add new line (return)" />
                 }
                 {scriptItem && !HEADER_TYPES.includes(scriptItem.type) &&
                     

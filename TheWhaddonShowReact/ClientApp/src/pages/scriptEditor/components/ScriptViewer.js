@@ -35,7 +35,7 @@ function ScriptViewer(props) {
     const isPersonSelectorOpen = (personSelectorConfig !==null)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
 
-
+  
     log(logType, "Component:ScriptViewer showOrder", showOrder)
 
     useEffect(() => {
@@ -93,10 +93,10 @@ function ScriptViewer(props) {
                         {(showOrder && showOrder.length > 0) &&
                             showOrder.map((scene) => {
 
-                            return <Scene key={scene.id}
-                                id={scene.id}
-                                sceneNumber={scene.sceneNumber}
-                                zIndex={scene.zIndex}
+                                return <Scene key={scene.id}
+                                    id={scene.id}
+                                    sceneNumber={scene.sceneNumber}
+                                    zIndex={scene.zIndex}
                             />
                         }
 

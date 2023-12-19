@@ -4,7 +4,10 @@ import { clearScriptEditorState } from '../actions/scriptEditor'
 
 import { initialState as scriptEditorInitialState } from '../reducers/scriptEditor';
 import {log, LOCAL_STORAGE as logType} from '../logging'
-  const debug = true;
+const debug = true;
+
+export const resetSyncId = '9967fe80-a9d0-4c18-a021-b45073d564a2'
+
 export const saveState = (state) => {
 
     try {
@@ -53,6 +56,10 @@ export const loadState = () => {
         if (latestLocalParts !== latestScriptParts) {
             log(logType,'latestDates', {latestLocalParts, latestScriptParts })
             throw new Error('LocalServer and scriptEditor Parts are out of sync. Resetting state.')
+        }
+        if (deserializedState.localServer.resetSyncId !== resetSyncId) { //mechanism with which to force new sync across all devices when deployed.
+            log(logType, 'resetSyncId', { resetSyncId, deserializedState })
+            throw new Error('RestSyncId does not match. Resetting state.')
         }
 
         return deserializedState;

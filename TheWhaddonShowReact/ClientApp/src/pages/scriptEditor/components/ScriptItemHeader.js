@@ -32,7 +32,7 @@ function ScriptItemHeader(props) {
 
             {(type === LIGHTING) && <span>Lighting</span>}
 
-            {(type === ACTION) && <span>Action</span>}
+        {/*    {(type === ACTION) && <span>Action</span>}*/}
 
             {(type === DIALOGUE) && (partIds === null || partIds.length === 0) &&
                 <>

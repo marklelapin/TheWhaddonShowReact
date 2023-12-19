@@ -91,6 +91,10 @@
                     text-align: center;
                     align-self: center;
                 }
+
+                .type-dropdown {
+                    z-index: 1;
+                }
             }
 
             &.align-right {
@@ -106,6 +110,14 @@
                 z-index: 4;
                 background-color: transparent;
 
+                .bracketed-text::before {
+                    content: '( ';
+                }
+
+                .bracketed-text::after {
+                    content: ' )';
+                }
+
                 &.classic {
                     font-size: $h5-font-size;
                     text-align: center;
@@ -115,14 +127,14 @@
 
             .open-bracket {
                 position: absolute;
-                top: 27px;
-                left: 25px;
+                top: 7px;
+                left: 20px;
             }
 
             .close-bracket {
                 position: absolute;
                 bottom: 7px;
-                right: 25px;
+                right: 20px;
             }
         }
     }
@@ -161,10 +173,10 @@
 }
 
 .curtain-open {
-
     &.chat {
         color: white;
     }
+
 }
 
 .curtain-closed.chat {
@@ -209,6 +221,7 @@
     display: flex;
     flex-direction: row;
 }
+
 
 .header-left-controls {
     flex: 1;
@@ -393,11 +406,12 @@
 
     .text-input {
         text-align: justify;
-        font-size: $font-size-base;
-        font-weight: $font-weight-base;
+        font-size: $font-size-base !important;
+        font-weight: $font-weight-base !important;
         border-width: 0px;
         padding: 0px 5px 0px 5px !important;
         border-width: 0px !important;
+        color: black;
     }
 
     .comment-footer {
@@ -424,6 +438,13 @@
 }
 
 .script-comments {
+
+    .text-input {
+        font-size: $font-size-base !important;
+        font-weight: $font-weight-base !important;
+        color: black;
+    }
+
     &.show-comments {
         flex: 0 0 310px;
     }
@@ -714,11 +735,26 @@
         }
     }
 
-    &.curtain-open.chat * {
-        color: white !important;
-    }
+   /* &.curtain-open.chat * {
+        color: white;
+
+        .type-dropdown {
+            color: black;
+        }
+    }*/
 
     &.curtain-closed * {
+    }
+
+    .header-controls {
+        top: unset;
+        bottom: 0px;
+        right: -105px;
+        margin: 0px;
+
+        .header-right-controls {
+            padding-left: 0px;
+        }
     }
 }
 
@@ -789,6 +825,7 @@
         .text-input {
             border-radius: 0px 0px 0px 0px !important;
             padding: 5px 10px;
+            text-align: center;
         }
     }
 

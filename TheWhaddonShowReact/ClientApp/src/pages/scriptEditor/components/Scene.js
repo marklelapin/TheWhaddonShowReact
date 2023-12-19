@@ -11,7 +11,7 @@ import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
-import { log } from '../../../logging'
+import { log, SCENE as logType } from '../../../logging'
 import { partEditorRowId } from '../scripts/part';
 //styling
 import s from '../Script.module.scss'
@@ -24,19 +24,18 @@ import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess
 function Scene(props) {
 
     //utility constants
-    const debug = true;
     const dispatch = useDispatch();
 
     //props
     const { id, sceneNumber, zIndex } = props;
-    log(debug, 'Component:Scene props:', props)
+    log(logType, 'props:', props)
 
     //Redux state
     const sceneOrder = useSelector(state => state.scriptEditor.sceneOrders[id]) || []
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen[id])
     const sceneScriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-    log(debug, 'Component:Scene sceneOrder', sceneOrder)
+    log(logType, 'sceneOrder', sceneOrder)
 
     const scene = (sceneScriptItem.type === ACT) ? sceneScriptItem : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
     const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
@@ -46,7 +45,7 @@ function Scene(props) {
 
     const finalScriptItem = bodyOrder[bodyOrder.length - 1] || {}
 
-    log(debug, 'Component:Scene scene', scene)
+    log(logType, 'scene', scene)
     return (
         <>
             <div id={`scene-${scene.id}`} className={s[`scene-group`]} style={{ zIndex: zIndex }}>
@@ -106,14 +105,14 @@ function Scene(props) {
 
 
                 <div className={s['scene-body']}>
-                    {bodyOrder.map((scriptItem,idx) => {
+                    {bodyOrder.map((scriptItem, idx) => {
                         return (
                             <ScriptItem
                                 id={scriptItem.id}
                                 key={scriptItem.id}
                                 sceneId={scene.id}
                                 zIndex={scriptItem.zIndex}
-                                previousCurtainOpen={bodyOrder[idx-1]?.curtainOpen || previousCurtainOpen}
+                                previousCurtainOpen={bodyOrder[idx - 1]?.curtainOpen || previousCurtainOpen}
                                 curtainOpen={scriptItem.curtainOpen}
                                 alignRight={scriptItem.alignRight}
                                 previousFocusId={scriptItem.previousFocusId}
@@ -127,14 +126,16 @@ function Scene(props) {
 
 
             </div>
-            <div id={`scene-footer-${scene.id}`}
-                className={`${s['scene-footer']} ${finalScriptItem.curtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
-            >
-                <div key={`add-scene-${scene.id}`} className={`${s['add-new-scene']} ${s[viewStyle]} clickable`} onClick={() => dispatch(trigger(ADD_SCENE, { scriptItem: sceneScriptItem }))}>
-                    (add new scene)
+            {scene.type !== SHOW &&
+                <div id={`scene-footer-${scene.id}`}
+                    className={`${s['scene-footer']} ${finalScriptItem.curtainOpen ? s['curtain-open'] : s['curtain-closed']}`}
+                >
+                    <div key={`add-scene-${scene.id}`} className={`${s['add-new-scene']} ${s[viewStyle]} clickable`} onClick={() => dispatch(trigger(ADD_SCENE, { scriptItem: sceneScriptItem }))}>
+                        (add new scene)
+                    </div>
+                    <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />
                 </div>
-                <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />
-            </div>
+            }
         </>
     )
 }

@@ -317,7 +317,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     if (doRefreshAlignment) {
 
         if (triggerType === ALLOCATE_PERSON_TO_PART) {
-            const sceneOrdersAffected = Object.values(sceneOrders).filter(sceneOrder => sceneOrder[0].partIds.includes(partId))
+            const sceneOrdersAffected = Object.values(sceneOrders).filter(sceneOrder => sceneOrder[0]?.partIds.includes(partId))
 
             sceneOrdersAffected.forEach(sceneOrder => {
                 const newCurrentPartPersons = { ...copy(currentPartPersons), [partId]: { ...copy(part), personId } }

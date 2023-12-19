@@ -29,6 +29,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { log, LOCAL_SERVER_REDUCER as logType } from '../logging.js';
 
+import {resetSyncId } from '../dataAccess/localStorage';
+
 const defaultState = {
     localCopyId: uuidv4(),
     sync: {
@@ -36,14 +38,14 @@ const defaultState = {
         error: null,
         lastSyncDate: null,
         pauseSync: false
-
     },
     updateTrigger: {},
     //**LSMTypeInCode**
     persons: new LocalServerModel(PERSON), //object holding all information with regard to persons
     scriptItems: new LocalServerModel(SCRIPT_ITEM), //object holding all information with regard to scriptItems
     parts: new LocalServerModel(PART),//object holding all information with regard to parts
-    connectionStatus: 'Ok'
+    connectionStatus: 'Ok',
+    resetSyncId: resetSyncId
 };
 
 

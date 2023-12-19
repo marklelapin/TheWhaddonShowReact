@@ -15,6 +15,8 @@ export const PART_SELECTOR_DROPDOWN = {type: NONE, location: 'Component:PartSele
 
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
 
+export const SCENE = { type: NONE, location: 'Component:Scene' }
+
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }
 export const SCRIPT_EDITOR_REDUCER = { type: NONE, location: 'Reducer:scriptEditor' }
 export const SCRIPT_EDITOR_SCENE_ORDER = { type: NONE, location: 'Component:ScriptEditorSceneOrder' }
@@ -24,14 +26,14 @@ export const SCRIPT_EDITOR_UTILITY = { type: NONE, location: 'Script:utility' }
 
 export const SCRIPT_ITEM = {type: NONE,location: 'Component:ScriptItem' }
 export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptItemControls' }
-export const SCRIPT_ITEM_TEXT = { type: DEBUG, location: 'Component:ScriptItemText' }
+export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 
 export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 
 export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 
-export const TEST = { type: DEBUG, location: 'Test: ' }
-export const TEST_CURTAIN = { type: DEBUG, location: 'Script:curtain' }
+export const TEST = { type: NONE, location: 'Test: ' }
+export const TEST_CURTAIN = { type: NONE, location: 'Script:curtain' }
 
 export function log(logObject, message, object = null) {
 
