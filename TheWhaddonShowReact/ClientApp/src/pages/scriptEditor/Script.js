@@ -12,9 +12,9 @@ import ScriptViewer from './components/ScriptViewer';
 import ShowSelector from './components/ShowSelector';
 
 //Utils
-import { log } from '../../logging.js';
+import { log, SCRIPT as logType } from '../../logging.js';
 import isScreen from '../../core/screenHelper';
-
+import { getShowBools } from './scripts/layout';
 
 function Script() {
 
@@ -23,64 +23,51 @@ function Script() {
     const dispatch = useDispatch();
 
     //Redux State
-    const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
+    const defaultShowSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
+    const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
     const show = useSelector((state) => state.scriptEditor.show)
-    //Internal State
-    const [isLargerScreen, setIsLargerScreen] = useState(null)
+    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) || []
+    const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
+
+    const { showSceneSelector, showScriptViewer } = getShowBools(defaultShowSceneSelector, defaultShowComments)
+
+    const [scenesToLoad, setScenesToLoad] = useState(1)
 
 
-    //UseEffect Hooks
     useEffect(() => {
-
-        let timeoutId;
-        const handleResizeDebounce = () => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => handleScriptScreenResize(), 1000);
+        log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder.length })
+        if (scenesToLoad !== showOrder.length && scenesToLoad !==null) setScenesToLoad(scenesToLoad + 1)
+        if (scenesToLoad === showOrder.length && scenesToLoad !== null) {
+            setScenesToLoad(null)
         }
-
-        handleScriptScreenResize()
-
-        window.addEventListener('resize', handleResizeDebounce);
-
-        return () => { window.removeEventListener('resize', handleResizeDebounce); }
-    }, []);
-
-    //eventHandlers
-    const handleScriptScreenResize = () => {
-        if (isSmallerScreen()) {
-            dispatch(updateShowComments(false))
-            setIsLargerScreen(false)
-        } else {
-            dispatch(updateShowComments(true))
-            setIsLargerScreen(true)
-        }
-    }
-    const isSmallerScreen = () => {
-        return (isScreen('xs') || isScreen('sm') || isScreen('md') || isScreen('lg'))
-    }
+    }, [sceneLoaded,scenesToLoad,showOrder])
 
 
 
-    log(debug, 'Script: show', show)
+
+    log(logType, 'Script: show', { scenesToLoad })
     //-----------------------------------------------------------------------
     return (
 
         <div id="script-page" className="flex-full-height">
 
-            {(isLargerScreen) && !show &&
-                <div className="page-top">
-                    <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>
-                </div>
-            }
+            {/*{(isLargerScreen) && !show &&*/}
+            {/*    <div className="page-top">*/}
+            {/*        <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>*/}
+            {/*    </div>*/}
+            {/*}*/}
 
             {show &&
                 <div id="script-page-content" className="page-content flex-full-width">
-                    {(showSceneSelector || isLargerScreen) &&
-                        <SceneSelector show={show} />
+                    {(showSceneSelector) &&
+                        <SceneSelector show={show} scenesToLoad={scenesToLoad} />
                     }
 
-                    {(!showSceneSelector || isLargerScreen) &&
-                        <ScriptViewer show={show} />
+                    {(showScriptViewer) &&
+                        <ScriptViewer show={show}
+                            scenesToLoad={scenesToLoad}
+                            setScenesToLoad={(value) => setScenesToLoad(value)}
+                             />
                     }
 
                 </div>

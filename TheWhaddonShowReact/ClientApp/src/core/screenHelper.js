@@ -20,7 +20,7 @@ const config = {
     },
 };
 
-export default function isScreen(size) {
+export function isScreen(size) {
     const screenPx = window.innerWidth;
     return (screenPx >= config.settings.screenMins[`${size}`] || size === 'xs')
         && (screenPx <= config.settings.screenMaxs[`${size}`] || size === 'xl');
@@ -28,14 +28,14 @@ export default function isScreen(size) {
 
 export function isScreenSmallerThan(size) {
     const screenPx = window.innerWidth;
-    const maxPx = config.settings.screenMaxs[`${size}-max`];
+    const maxPx = config.settings.screenMaxs[`${size}`];
 
     return screenPx <= maxPx;
 }
 
 export function isScreenLargerThan(size) {
     const screenPx = window.innerWidth;
-    const minPx = config.settings.screenMins[`${size}-min`];
+    const minPx = config.settings.screenMins[`${size}`];
 
 return screenPx >= minPx;
 }

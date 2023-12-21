@@ -28,6 +28,7 @@ export const RESET_UNDO = 'RESET_UNDO';
 export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH'
 export const UPDATE_VIEW_STYLE = 'UPDATE_VIEW_STYLE';
 export const SET_READ_ONLY = 'SET_READ_ONLY';
+export const UPDATE_SCENE_LOADED = 'UPDATE_SCENE_LOADED';
 
 export const TRIGGER = 'TRIGGER';
 
@@ -210,5 +211,12 @@ export function updateViewStyle(viewStyle) {
         return {
             type: SET_READ_ONLY,
             readOnly,
+        }
+}
+
+    export function updateSceneLoaded(id) {
+        return {
+            type: UPDATE_SCENE_LOADED,
+            id,
         }
     }

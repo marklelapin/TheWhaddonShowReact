@@ -92,9 +92,6 @@ function Header(props) {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <AccountDropdown user={user} menuOpen={accountMenuOpen} onClick={toggleAccountMenu} />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <SettingsDropdown menuOpen={settingsMenuOpen} onClick={toggleSettingsMenu} />
-                </div>
             </Nav>
 
         </Navbar >

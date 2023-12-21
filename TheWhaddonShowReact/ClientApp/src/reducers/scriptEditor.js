@@ -19,8 +19,15 @@ import {
     UPDATE_PERSON_SELECTOR_CONFIG,
     UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
     UPDATE_VIEW_STYLE,
-    SET_READ_ONLY
+    SET_READ_ONLY,
+    UPDATE_SCENE_LOADED,
 } from '../actions/scriptEditor';
+
+import {
+    IMPERSONATE_USER,
+    LOGIN,
+    LOGOUT
+} from '../actions/user';
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
 
@@ -146,7 +153,7 @@ export default function scriptEditorReducer(state = initialState, action) {
             }
         case ADD_ITEMS_TO_REDO_LIST:
 
-            log(logType, 'ADD_ITEMS_TO_REDO_LIST action.items', {items: action.items,sceneId: action.sceneId})
+            log(logType, 'ADD_ITEMS_TO_REDO_LIST action.items', { items: action.items, sceneId: action.sceneId })
             log(logType, 'redo list', state.redoList)
             return {
                 ...state,
@@ -232,9 +239,29 @@ export default function scriptEditorReducer(state = initialState, action) {
                 viewStyle: action.viewStyle
             }
         case SET_READ_ONLY:
-return {
+            return {
                 ...state,
                 readOnly: action.readOnly
+            }
+        case UPDATE_SCENE_LOADED:
+            return {
+                ...state,
+                sceneLoaded: action.id
+            }
+        case LOGIN:
+            return {
+                ...state,
+                viewAsPartPerson: action.person,
+            }
+        case IMPERSONATE_USER:
+            return {
+                ...state,
+                viewAsPartPerson: action.person,
+            }
+        case LOGOUT:
+            return {
+                ...state,
+                viewAsPartPerson: null,
             }
         default: return state;
     }

@@ -12,8 +12,6 @@ export function CacheProcessing() {
 
     const dispatch = useDispatch();
 
-    const debug = true;
-
     //Redux - localServer (handles syncing)
     const storedPersons = useSelector(state => state.localServer.persons.history)
 

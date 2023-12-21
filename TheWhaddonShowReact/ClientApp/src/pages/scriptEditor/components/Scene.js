@@ -1,9 +1,9 @@
 ﻿//React and Redux
 import React from 'react';
-import { useState } from 'react';
+import { useLayoutEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { trigger, ADD_SCENE } from '../../../actions/scriptEditor'
+import { trigger, ADD_SCENE, updateSceneLoaded } from '../../../actions/scriptEditor'
 
 //Components
 import ScriptItem from '../../../pages/scriptEditor/components/ScriptItem.js';
@@ -27,7 +27,7 @@ function Scene(props) {
     const dispatch = useDispatch();
 
     //props
-    const { id, sceneNumber, zIndex } = props;
+    const { id, sceneNumber, zIndex, onLoaded } = props;
     log(logType, 'props:', props)
 
     //Redux state
@@ -44,6 +44,12 @@ function Scene(props) {
     const bodyOrder = [...sceneOrder].filter(item => ([SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING].includes(item.type) === false)) || []//returns the body scriptItems
 
     const finalScriptItem = bodyOrder[bodyOrder.length - 1] || {}
+
+    useLayoutEffect(() => {
+        log(logType,'dispatching updateSceneLoaded updateState',id)
+       dispatch(updateSceneLoaded(id))
+    }, [])
+
 
     log(logType, 'scene', scene)
     return (

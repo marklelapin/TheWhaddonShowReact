@@ -13,7 +13,7 @@ import {
     , closeSidebar as closeSidebarAction
     , changeActiveSidebarItem
 } from '../../actions/navigation';
-import isScreen from '../../core/screenHelper';
+import { isScreen } from '../../core/screenHelper';
 
 
 import Home from '../../images/sidebar/basil/Home';

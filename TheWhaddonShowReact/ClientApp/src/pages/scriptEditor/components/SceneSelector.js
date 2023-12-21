@@ -18,7 +18,7 @@ import { moveFocusToId, END } from '../scripts/utility'
 function SceneSelector(props) {
     const debug = true;
 
-    const { show } = props;
+    const { show, scenesToLoad } = props;
 
     const dispatch = useDispatch();
 
@@ -117,9 +117,11 @@ function SceneSelector(props) {
             <h2>Scenes</h2>
             <div className="full-height-overflow">
 
-                {filteredScenes().map(scene => {
+                {filteredScenes().map((scene,idx) => {
+                    
+                    return (idx < scenesToLoad || scenesToLoad === null) &&
 
-                    return <SceneSelectorRow
+                    <SceneSelectorRow
                         key={scene.id}
                         scene={scene}
                         onClick={(action, id) => handleClick(action, id)}

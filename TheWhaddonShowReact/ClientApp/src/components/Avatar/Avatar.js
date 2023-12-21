@@ -40,11 +40,9 @@ export function Avatar(props) {
 
     const avatarImageObjectURL = useSelector(state => state.cache[AVATARS][pictureRef])
 
-    const avatarURL = avatarImageObjectURL ? avatarImageObjectURL : pictureRef 
+    //const avatarURL = avatarImageObjectURL ? avatarImageObjectURL : pictureRef 
 
     log(debug, 'Avatar person', person)
-
-
 
     //Event Handlers
     const handleImageClick = (event) => {
@@ -60,7 +58,7 @@ export function Avatar(props) {
     }
 
     const handleImageChange = async (event) => {
-
+        event.preventDefault();
         const files = event.target.files
         if (files.length > 1) {
             alert('Please only select 1 file.')
@@ -95,8 +93,8 @@ export function Avatar(props) {
         return (
 
             <span className={`${s.avatar} rounded-circle float-start avatar ${(onClick) ? 'clickable' : ''}`} onClick={(e) => handleImageClick(e)} style={avatarSize()}>
-                {avatarURL ?
-                    <img src={avatarURL} onError={e => e.target.src = adminDefault} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} />
+                {avatarImageObjectURL ?
+                    <img src={avatarImageObjectURL} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} /> //={e => e.target.src = adminDefault} 
                     :
                     < span title={avatarTitle} > {avatarText} </span>
                 }

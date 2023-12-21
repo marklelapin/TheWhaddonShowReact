@@ -1,6 +1,6 @@
 ﻿//React and REdux
-import React, { useEffect } from 'react';
-import { useSelector,  useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { updateMaxScriptItemTextWidth } from '../../../actions/scriptEditor';
 
@@ -10,99 +10,65 @@ import PersonSelector from './PersonSelector'
 import ScriptViewerHeader from './ScriptViewerHeader';
 //utitilites
 import { log, SCRIPT_VIEWER as logType } from '../../../logging';
-
+import { getShowBools, getMaxScriptItemTextWidth } from '../scripts/layout';
 //Constants
 
-
 import s from '../Script.module.scss'
-import { useLayoutEffect } from 'react';
-
 
 
 function ScriptViewer(props) {
-    
-    //props
-    const { show } = props;
 
-    
+    //props
+    const { show, scenesToLoad, setScenesToLoad,onSceneLoaded } = props;
 
     //Redux 
     const dispatch = useDispatch();
 
-    const showComments = useSelector(state => state.scriptEditor.showComments)
+    const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
+    const defaultShowSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig) || null
-    const isPersonSelectorOpen = (personSelectorConfig !==null)
+    const isPersonSelectorOpen = (personSelectorConfig !== null)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
 
-    const reLoad = useSelector(state => state.scriptEditor.reLoad)
+    const { showSceneSelector, showScriptViewer, showComments } = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
+    //useEffect(() => {
 
-    const [loadedShowOrder, setLoadedShowOrder] = useState(showOrder)
+    //    handleScriptViewerResize()
 
-    log(logType, "Component:ScriptViewer showOrder", showOrder)
+    //}, [defaultShowSceneSelector, defaultShowComments])
 
-    useEffect(() => {
-        const handleAfterPaint = () => {
-           console.log('hello')
-        };
+    
+    //useEffect(() => {
+    //    log(logType,'scenesLoaded: ',{scenesToLoad})
+       
+    //},[])
 
-        // Use requestAnimationFrame to schedule the callback after the next paint
-        const animationFrameId = requestAnimationFrame(handleAfterPaint);
-
-        // Cleanup function (optional): Cancel the animation frame on component unmount
-        return () => cancelAnimationFrame(animationFrameId);
-    }, []); 
-
-
-    useEffect(() => {
-
-        let timeoutId;
-        const handleScriptViewerResizeDebounce = () => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => handleScriptViewerResize(), 1000);
-        }
-
-        handleScriptViewerResize()
-
-        window.addEventListener('resize', handleScriptViewerResizeDebounce);
-
-        return () => { window.removeEventListener('resize', handleScriptViewerResizeDebounce); }
-    }, []);
-
-
-    useEffect(() => {
-
-        setLoadedScenes(0)
-
-
-    },[reLoad])
-
-
-    useEffect(() => {
-
-        if loadedScenes === showOrder.length) {
-
-
-        }
-
-
-    },[loadedScenes])
-
-    useEffect(() => {
-        handleScriptViewerResize()
-    },[showComments])
 
     const handleScriptViewerResize = () => {
+        log(logType, 'handleScriptViewerResize updateState')
 
-        const scriptBody = document.getElementById('script-body')
+        const maxScriptItemTextWidth = getMaxScriptItemTextWidth(showSceneSelector, showScriptViewer, showComments)
 
-        const scriptBodyWidth = (showComments === true) ? (scriptBody.offsetWidth - 310) : scriptBody.offsetWidth;
-        const maxScriptItemTextWidth = scriptBodyWidth - 100
-        log(logType,'hanldeScriptViewerResize', {scriptBodyWidth, showComments, maxScriptItemTextWidth})
-        dispatch(updateMaxScriptItemTextWidth(maxScriptItemTextWidth))
+        if (maxScriptItemTextWidth !== null) {
+            dispatch(updateMaxScriptItemTextWidth(maxScriptItemTextWidth))
+            setScenesToLoad(0)
+        }
     }
 
+    //const handleSceneLoaded = (idx) => {
+    //    log(logType, 'sceneLoaded:', idx + 1)
+    //    onScenesLoaded()
+    //}
+
+    if (scenesToLoad === 0) { //this allows a reset of scenesToLoad to occur.
+        log(logType,'updateState scenesToLoad',0)
+        setScenesToLoad(1)
+        return null
+    }
+
+    log(logType, 'render', { scenesToLoad })
 
     return (
         <>
@@ -113,16 +79,18 @@ function ScriptViewer(props) {
                     <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']} ${s[viewStyle]}`}>
                         <p className={`${s['comments-title']}`}>Comments</p>
                         {(showOrder && showOrder.length > 0) &&
-                            showOrder.map((scene) => {
+                            showOrder.map((scene, idx) => {
 
-                                return <Scene key={scene.id}
-                                    id={scene.id}
-                                    sceneNumber={scene.sceneNumber}
-                                    zIndex={scene.zIndex}
-                            />
-                        }
+                                return ((idx < scenesToLoad) || scenesToLoad === null) &&
+                                    <Scene key={scene.id}
+                                        id={scene.id}
+                                        sceneNumber={scene.sceneNumber}
+                                        zIndex={scene.zIndex}
+                                        onLoaded={onSceneLoaded}
+                                    />
+                            }
 
-                        )}
+                            )}
 
                     </div>
 
@@ -130,7 +98,7 @@ function ScriptViewer(props) {
             </div>
 
             {(isPersonSelectorOpen) &&
-                  <PersonSelector viewAs />
+                <PersonSelector viewAs />
             }
 
         </>

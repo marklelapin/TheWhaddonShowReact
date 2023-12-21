@@ -113,6 +113,9 @@ export async function fetchFiles(containerName, fileNames) {
                     containerName: containerName,
                     fileName: fileName
                 }
+                , headers: { 
+                    'Cache-Control': `public, max-age=${60*60*24}`, 
+                },
             });
 
 

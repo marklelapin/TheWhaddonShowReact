@@ -67,6 +67,8 @@ export function Icon(props) {
         "arrows-v": "fa fa-arrows-v",
         "sound": "fa fa-volume-up",
         "lightbulb": "fa fa-lightbulb-o",
+        "man": "fa fa-male",
+        "child": "fa fa-child",
     };
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {

@@ -6,7 +6,7 @@
   top: 0;
   bottom: 0;
   border-right: $sidebar-border;
-  background-color: var(--sidebar-bg-color);
+  background-color: $gray-inverse; //var(--sidebar-bg-color);
   color: var(--sidebar-color);
   overflow-y: auto;
   position: absolute;
@@ -86,7 +86,7 @@
   margin: 35px 0 5px 11px;
   font-size: $font-size-mini;
   transition: opacity $sidebar-transition-time ease-in-out;
-  color: var(--sidebar-section);
+  color: $primary; //var(--sidebar-section);
   opacity: .6;
   font-weight: bold;
 }
@@ -137,7 +137,7 @@
 
   li > a {
     font-size: $font-size-mini;
-    color: var(--sidebar-color);
+    color: $danger; //var(--sidebar-color);
     text-decoration: none;
 
     > i {
