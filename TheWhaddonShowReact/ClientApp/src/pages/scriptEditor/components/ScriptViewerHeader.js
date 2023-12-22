@@ -17,7 +17,7 @@ import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
 
 //utitilites
-import { isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
+import { isScreen,isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { log } from '../../../logging';
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
@@ -41,7 +41,7 @@ function ScriptViewer(props) {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-    const screenSize = useSelector(state => state.layout.screenSize)
+
     log(debug, 'Component:ScriptViewerHeader sceneInFocus', sceneInFocus)
 
     //Event Handlers
@@ -74,7 +74,7 @@ function ScriptViewer(props) {
 
     }
 
-    const singleSection = isScreenSmallerThan('md')
+    const singleSection = isScreenSmallerThan('xl')
 
     return (
         
@@ -118,14 +118,11 @@ function ScriptViewer(props) {
             </div>
             <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
             <div className={`${['right-controls']} justify-content-end align-items-center`}>
-                {singleSection  &&
-                    (showComments) ? <Icon id="script-viewer-comments" icon="comment" onClick={() => toggleShowComments()} toolTip="Hide comments"></Icon>
-                    : <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>
-                }
-
+               
+                {showComments && !singleSection && <Icon id="script-viewer-comments" icon="comment" onClick={() => toggleShowComments()} toolTip="Hide comments"></Icon>}
+                {!showComments && !singleSection && <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>}
                 <Icon id="script-viewer-print" icon="print" onClick={() => handlePrint()} toolTip="Print whole script"></Icon>
-                {singleSection &&
-                    <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>
+                {!singleSection && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>
                 }
             </div>
 

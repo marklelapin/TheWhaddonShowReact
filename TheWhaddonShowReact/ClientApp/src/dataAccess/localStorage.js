@@ -22,6 +22,10 @@ export const saveState = (state) => {
             , parts: { ...localServer.parts, sync: { ...localServer.parts.sync, isSyncing: false } }
         }
 
+        layout = {
+            ...layout, maxScriptItemTextWidth: null
+        }
+
         const stateToPersist = { localServer, layout, scriptEditor }
 
 

@@ -30,9 +30,9 @@ export function Avatar(props) {
     //get storedObjectUrl of create one.
     const storedObjectURL = useSelector(state => state.cache[AVATARS][pictureRef])
 
-
+    log(logType, 'props', { storedObjectURL })
     if (storedObjectURL === undefined && pictureRef) {
-      createAvatarObjectURL(pictureRef, dispatch)
+        createAvatarObjectURL(pictureRef, dispatch)
     }
     //log(logType, 'Component:Avatar props', props)
     //log(logType, 'Component:Avatar person', { person, draftPerson, partPersonFromId })
@@ -137,7 +137,7 @@ export default Avatar
 
 
 
-const createAvatarObjectURL = async (pictureRef,dispatch) => {
+const createAvatarObjectURL = async (pictureRef, dispatch) => {
     log(logType, 'createAvatarObjectURL', { pictureRef })
 
     let imageObjectURL = null

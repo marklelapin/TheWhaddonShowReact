@@ -61,6 +61,7 @@ function ScriptItemText(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const showSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
     const showComments = useSelector(state => state.scriptEditor.showComments)
+    const maxTextWidth = useSelector(state => state.layout.maxScriptItemTextWidth) //used to
 
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
@@ -79,7 +80,7 @@ function ScriptItemText(props) {
     }
 
     const finalText = getFinalText(scriptItem, tempTextValue, previousCurtainOpen)
-    const finalWidthPx = getTextAreaWidthPx(finalText, finalPlaceholder, scriptItem.type, endMargin, showSceneSelector, showComments)
+    const finalWidthPx = getTextAreaWidthPx(finalText, finalPlaceholder, scriptItem.type, endMargin, showSceneSelector, showComments,maxTextWidth)
 
     useEffect(() => {
         log(logType, 'props', { props })
@@ -94,8 +95,6 @@ function ScriptItemText(props) {
     useEffect(() => {
         setTempTextValue(null)
     }, [scriptItem.text])
-
-
 
 
 
@@ -315,6 +314,12 @@ function ScriptItemText(props) {
 
     }
 
+
+    if (maxTextWidth === null || maxTextWidth === 0 || maxTextWidth === undefined) {
+
+        return null
+
+    }
 
     return (
         <div id={`script-item-text-${id}`} className={s['script-item-text']}>

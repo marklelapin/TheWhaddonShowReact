@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateMaxScriptItemTextWidth } from '../../../actions/scriptEditor';
+import { updateMaxScriptItemTextWidth } from '../../../actions/layout';
 
 //Components
 import Scene from './Scene'
@@ -14,13 +14,14 @@ import { getShowBools, getMaxScriptItemTextWidth } from '../scripts/layout';
 //Constants
 
 import s from '../Script.module.scss'
+import { remove } from 'lodash';
 
 
 function ScriptViewer(props) {
 
     //props
     const { show, scenesToLoad, setScenesToLoad,onSceneLoaded } = props;
-
+    const _ = require('lodash');
     //Redux 
     const dispatch = useDispatch();
 
@@ -30,39 +31,39 @@ function ScriptViewer(props) {
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig) || null
     const isPersonSelectorOpen = (personSelectorConfig !== null)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-
+    const maxScriptItemTextWidth = useSelector(state => state.layout.maxScriptItemTextWidth)
     const { showSceneSelector, showScriptViewer, showComments } = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
-    //internal state
-    const [renderScenes, setRenderScenes] = useState(false) //delays the rendering of scenes until the script-body element has been mounted as this is required for the calculation of the maxScriptItemTextWidth
+    let timerId
 
     useEffect(() => {
-        setRenderScenes(true)
+        log(logType, 'useEffect[]: old maxScriptItemWidth', maxScriptItemTextWidth )
+        const maxWidth = getMaxScriptItemTextWidth(showSceneSelector, showScriptViewer, showComments)
+        log(logType, 'useEffect[]: new maxScriptItemWidth', maxWidth)
+        dispatch(updateMaxScriptItemTextWidth(maxWidth))
+        //SORT OUT DEBOUNCE
+        /*       const scriptBody = document.getElementById('script-body')*/
+        //function handleScriptBodyResizeDebounce() {
+        //    clearTimeout(timerId)
+        //    timerId = setTimeout(handleScriptBodyResize, 100)
+        //}
+
+        //window.addEventListener('resize', handleScriptBodyResizeDebounce)
+        //return () => {
+        //    window.removeEventListener('resize', handleScriptBodyResizeDebounce)
+        //}
+
     },[])
 
 
-
-    //useEffect(() => {
-
-    //    handleScriptViewerResize()
-
-    //}, [defaultShowSceneSelector, defaultShowComments])
-
-    
-    //useEffect(() => {
-    //    log(logType,'scenesLoaded: ',{scenesToLoad})
-       
-    //},[])
-
-
-    const handleScriptViewerResize = () => {
+    const handleScriptBodyResize = () => {
         log(logType, 'handleScriptViewerResize updateState')
 
-        const maxScriptItemTextWidth = getMaxScriptItemTextWidth(showSceneSelector, showScriptViewer, showComments)
+        const maxScriptItemTextWidth = getMaxScriptItemTextWidth(showSceneSelector, showComments)
 
         if (maxScriptItemTextWidth !== null) {
             dispatch(updateMaxScriptItemTextWidth(maxScriptItemTextWidth))
-            setScenesToLoad(0)
+           // setScenesToLoad(0)
         }
     }
 
@@ -87,7 +88,7 @@ function ScriptViewer(props) {
                 <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
                     <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']} ${s[viewStyle]}`}>
                         <p className={`${s['comments-title']}`}>Comments</p>
-                        {(renderScenes && showOrder && showOrder.length > 0) &&
+                        {(maxScriptItemTextWidth && showOrder && showOrder.length > 0) &&
                             showOrder.map((scene, idx) => {
 
                                 return ((idx < scenesToLoad) || scenesToLoad === null) &&
@@ -117,3 +118,19 @@ function ScriptViewer(props) {
 }
 
 export default ScriptViewer;
+
+
+//function debounce(func, delay) {
+//    let timerId;
+
+//    return function () {
+//        const context = this;
+//        const args = arguments;
+
+//        clearTimeout(timerId);
+
+//        timerId = setTimeout(function () {
+//            func.apply(context, args);
+//        }, delay);
+//    };
+//}

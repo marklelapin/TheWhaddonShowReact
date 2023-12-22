@@ -3,9 +3,8 @@
 
 
 .icon {
+    font-size: 18px !important;
     @media only screen and (max-width: breakpoint-max(sm)) {
-
-        font-size:18px;
-
+        font-size: 26px !important;
     }
 }

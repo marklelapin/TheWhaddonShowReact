@@ -120,6 +120,7 @@ function MediaDisplay(props) {
                     title={title || youTubeUrl}
                     src={youTubeEmbedUrl}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    loading="lazy"
                 >
                 </iframe>
             </div>

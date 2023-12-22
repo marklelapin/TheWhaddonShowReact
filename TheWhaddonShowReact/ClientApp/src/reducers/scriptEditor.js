@@ -17,7 +17,6 @@ import {
     REMOVE_ITEMS_FROM_REDO_LIST,
     RESET_UNDO,
     UPDATE_PERSON_SELECTOR_CONFIG,
-    UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
     UPDATE_VIEW_STYLE,
     SET_READ_ONLY,
     UPDATE_SCENE_LOADED,
@@ -221,11 +220,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 personSelectorConfig: action.config
             }
-        case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
-            return {
-                ...state,
-                maxScriptItemTextWidth: action.maxWidth
-            }
+       
 
         case UPDATE_VIEW_STYLE:
             return {

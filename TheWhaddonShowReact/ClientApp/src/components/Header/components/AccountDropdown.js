@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from 'reactstrap';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Badge } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar.js';
 import UserDefault from '../../../images/sidebar/basil/UserDefault';
 
@@ -46,6 +46,7 @@ function AccountDropdown(props) {
     }
 
     const handlePersonSelect = (person) => {
+        log(logType,'handlePersonSelect', { person })
         dispatch(impersonateUser(person))
         dispatch(updateViewAsPartPerson(person))
     }
@@ -107,14 +108,14 @@ function AccountDropdown(props) {
                                 }
                                 {authenticatedUser.isAdmin && currentUser.id !== authenticatedUser.id &&
                                     <>
-                                        <DropdownItem >
+                                <DropdownItem onClick={(e) => handleStopImpersonating(e)}>
                                             <div className={s['currently-impersonating']}>
                                                 <div>Currently impersonating:</div>
                                                 <div className={s['impersonated-person']}>
                                                     <Avatar person={currentUser} />
                                                     <div>{`${currentUser.firstName} ${currentUser.lastName}`}</div>
                                                 </div>
-                                                <Button onClick={(e) => handleStopImpersonating(e)} color="danger">Stop impersonating</Button>
+                                                <Badge color="danger">Stop impersonating</Badge>
                                             </div>
                                         </DropdownItem>
                                         <DropdownItem divider />

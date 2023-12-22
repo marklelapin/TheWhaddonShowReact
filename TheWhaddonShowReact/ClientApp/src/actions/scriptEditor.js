@@ -25,7 +25,7 @@ export const ADD_ITEMS_TO_REDO_LIST = 'ADD_ITEMS_TO_REDO_LIST';
 export const REMOVE_ITEMS_FROM_REDO_LIST = 'REMOVE_ITEMS_FROM_REDO_LIST';
 export const RESET_UNDO = 'RESET_UNDO';
 
-export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH'
+
 export const UPDATE_VIEW_STYLE = 'UPDATE_VIEW_STYLE';
 export const SET_READ_ONLY = 'SET_READ_ONLY';
 export const UPDATE_SCENE_LOADED = 'UPDATE_SCENE_LOADED';
@@ -193,12 +193,7 @@ export function updatePersonSelectorConfig(config) {
     }
 }
 
-export function updateMaxScriptItemTextWidth(maxWidth) {
-    return {
-        type: UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
-        maxWidth
-    }
-}
+
 
 export function updateViewStyle(viewStyle) {
     return {

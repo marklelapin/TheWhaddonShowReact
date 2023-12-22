@@ -34,9 +34,8 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
 
 
 
-export const getTextAreaWidthPx = (finalText, finalPlaceholder, type, endMargin, showSceneSelector, showComments) => {
+export const getTextAreaWidthPx = (finalText, finalPlaceholder, type, endMargin, showSceneSelector, showComments, maxTextAreaWidth) => {
 
-    const maxWidth = getMaxScriptItemTextWidth(showSceneSelector, showComments)
     const context = getContext(type)
 
     const textToMeasure = finalText || finalPlaceholder
@@ -45,7 +44,7 @@ export const getTextAreaWidthPx = (finalText, finalPlaceholder, type, endMargin,
 
     const textMetrics = (context) ? context.measureText(longestRow) : { width: 0 }
     const idealWidth = textMetrics.width + endMargin
-    const finalWidth = Math.max(endMargin, Math.min(maxWidth || idealWidth, idealWidth))
+    const finalWidth = Math.max(endMargin, Math.min(maxTextAreaWidth || idealWidth, idealWidth))
 
     const finalWidthPx = `${Math.floor(finalWidth)}px`
 
@@ -55,12 +54,12 @@ export const getTextAreaWidthPx = (finalText, finalPlaceholder, type, endMargin,
 
 export const getMaxScriptItemTextWidth = (showSceneSelector, showComments) => {
 
-    const scriptPage = document.getElementById('script-page')
+    const scriptBody = document.getElementById('script-body')
 
-    if (scriptPage) {
-        const widthDeductions = ((showComments === true) ? 310 : 0) + ((showSceneSelector === true) ? 300 : 0)
-        const scriptBodyWidth = Math.min(800, scriptPage.clientWidth - widthDeductions)
-        const maxScriptItemTextWidth = scriptBodyWidth - 100//for gap either side of dialogue etc.
+    if (scriptBody) {
+        const widthDeductions = ((showComments === true) ? 310 : 0) //+ ((showSceneSelector === true) ? 300 : 0)
+        const scriptWidth = Math.min(800, scriptBody.clientWidth - widthDeductions)
+        const maxScriptItemTextWidth = scriptWidth - 100//for gap either side of dialogue etc.
 
         return maxScriptItemTextWidth
     }
