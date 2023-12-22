@@ -52,7 +52,7 @@ function MediaDropzone(props) {
     useEffect(() => {
         log(logType, 'useEffect[existingMediaURLS,newMediaFiles]', {existingMediaURLs,newMediaFiles})
         refreshMediaFiles()
-    }, [existingMediaURLs, newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
+    }, [existingMediaURLs,newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
 
     const refreshMediaFiles = async () => {
 
@@ -62,7 +62,7 @@ function MediaDropzone(props) {
         const existingFiles = await fetchFiles(MEDIA, fileURLs) || []
 
         const newFiles = [...youTubeURLs, ...existingFiles, ...newMediaFiles]
-        if (newFiles && newFiles.length > 0) setMediaFiles(newFiles)
+        if (newFiles && newFiles.length > 0) { setMediaFiles(newFiles) }
         log(logType, 'refreshMediaFiles setMediaFiles:', newFiles)
     }
 

@@ -24,6 +24,7 @@ import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
 import { curtainText } from '../scripts/curtain';
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
+import { getTextAreaWidthPx } from '../scripts/layout';
 
 //constants
 import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN, ACT } from '../../../dataAccess/scriptItemTypes';
@@ -58,65 +59,17 @@ function ScriptItemText(props) {
 
     //Redux
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
-    const maxWidth = useSelector(state => state.scriptEditor.maxScriptItemTextWidth)
+    const showSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
+    const showComments = useSelector(state => state.scriptEditor.showComments)
 
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
-    const [redoTempTextValue, setRedoTempTextValue] = useState(null)
     const [isFocused, setIsFocused] = useState(false);
     const [isBeingDeleted, setIsBeingDeleted] = useState(false)
-    const [finalWidthPx, setFinalWidthPx] = useState(null)
     const [endMargin, setEndMargin] = useState(defaultEndMargin)
 
+
     let finalPlaceholder;
-
-
-
-
-
-    const addBrackets = (text) => {
-        return changeBrackets(text, true)
-    }
-
-    const removeBrackets = (text) => {
-        return changeBrackets(text, false)
-    }
-
-    const changeBrackets = (text, addBrackets) => {
-
-        let output = text;
-        if (![ACTION, LIGHTING, SOUND].includes(scriptItem.type)) { return output }
-
-        switch (addBrackets) {
-            case true:
-                if (output[0] !== '(') { output = `(${output}` }
-                if (output[output.length - 1] !== ')') { output = `${output})` }
-                return output;
-            case false:
-                if (output[0] === '(') { output = output.substring(1) }
-                if (output[output.length - 1] === ')') { output = output.substring(0, output.length - 1) }
-                return output;
-            default: return output;
-        }
-
-    }
-
-    const getFinalText = () => {
-        log(logType, 'getFinalText', { id: scriptItem.id, scriptItemText: scriptItem.text, tempTextValue, previousCurtainOpen })
-        let finalText = scriptItem.text //default
-        finalText = addBrackets(finalText) //adds brackets according to rules set out within addBrackets function
-        if (CURTAIN_TYPES.includes(scriptItem.type)) {
-            finalText = curtainText(scriptItem, previousCurtainOpen)
-            log(logType, 'getFinalText curtain_types:', { finalText, scriptItem })
-        } else if (tempTextValue !== null) {
-            finalText = tempTextValue;
-        }
-
-        return finalText
-    }
-
-    const finalText = getFinalText()
-
     switch (type) {
         case SCENE: finalPlaceholder = 'enter title for scene'; break;
         case SYNOPSIS: finalPlaceholder = 'enter brief synopsis for scene'; break;
@@ -125,13 +78,11 @@ function ScriptItemText(props) {
         default: finalPlaceholder = placeholder;
     }
 
-
-
+    const finalText = getFinalText(scriptItem, tempTextValue, previousCurtainOpen)
+    const finalWidthPx = getTextAreaWidthPx(finalText, finalPlaceholder, scriptItem.type, endMargin, showSceneSelector, showComments)
 
     useEffect(() => {
         log(logType, 'props', { props })
-
-        setFinalWidthPx(getFinalWidth())
 
         //makes the textarea the focus when created unless during an undo or if the item has already been updated on the server (entered by someone else in which case you don't want it to be your focus)
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
@@ -141,51 +92,11 @@ function ScriptItemText(props) {
     }, [])
 
     useEffect(() => {
-        setFinalWidthPx(getFinalWidth())
-    }, [tempTextValue, scriptItem.text, maxWidth, endMargin])
-
-    useEffect(() => {
         setTempTextValue(null)
     }, [scriptItem.text])
 
 
-    //log(logType, 'width props', { maxWidth, endMargin, finalWidthPx })
 
-    const getContext = (type) => {
-        try {
-            const textInputRef = document.getElementById(`text-area-context-${type?.toLowerCase()}`)
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            context.font = window.getComputedStyle(textInputRef).font;
-
-            return context;
-        }
-        catch {
-            return null
-        }
-
-    }
-
-    const getFinalWidth = () => {
-
-        const textToMeasure = finalText || finalPlaceholder
-
-        const textToMeasureRows = textToMeasure.split('\n') || []
-
-        const longestRow = textToMeasureRows.reduce((a, b) => (a.length > b.length) ? a : b, '');
-
-        const context = getContext(type)
-
-        const textMetrics = (context) ? context.measureText(longestRow) : { width: 0 }
-
-        const idealWidth = textMetrics.width + endMargin
-
-        const finalWidth = Math.max(endMargin, Math.min(maxWidth || idealWidth, idealWidth))
-
-        const finalWidthPx = `${Math.floor(finalWidth)}px`
-
-        return finalWidthPx;
-    }
 
 
     //Event Handlers
@@ -194,7 +105,7 @@ function ScriptItemText(props) {
         log(logType, `handleTextChange: ${e.target.value || ''} `)
         setEndMargin(100)
         let newTempTextValue = e.target.value || ''
-        newTempTextValue = addBrackets(newTempTextValue)
+        newTempTextValue = addBrackets(scriptItem.type, newTempTextValue)
 
         setTempTextValue(newTempTextValue)
     }
@@ -393,7 +304,7 @@ function ScriptItemText(props) {
             setEndMargin(defaultEndMargin)
             setIsFocused(false)
             let targetText = e.target.value || ''
-            targetText = removeBrackets(targetText)
+            targetText = removeBrackets(scriptItem.type, targetText)
 
             if (scriptItem.text !== targetText) {
                 log(logType, 'dispatch update text', { scriptItem, value: targetText })
@@ -441,3 +352,49 @@ function ScriptItemText(props) {
 }
 
 export default ScriptItemText;
+
+
+
+
+
+const addBrackets = (type, text) => {
+    return changeBrackets(type, text, true)
+}
+
+const removeBrackets = (type, text) => {
+    return changeBrackets(type, text, false)
+}
+
+const changeBrackets = (type, text, addBrackets) => {
+
+    let output = text;
+    if (![ACTION, LIGHTING, SOUND].includes(type)) { return output }
+
+    switch (addBrackets) {
+        case true:
+            if (output[0] !== '(') { output = `(${output}` }
+            if (output[output.length - 1] !== ')') { output = `${output})` }
+            return output;
+        case false:
+            if (output[0] === '(') { output = output.substring(1) }
+            if (output[output.length - 1] === ')') { output = output.substring(0, output.length - 1) }
+            return output;
+        default: return output;
+    }
+
+}
+
+const getFinalText = (scriptItem, tempTextValue, previousCurtainOpen) => {
+    log(logType, 'getFinalText', { id: scriptItem.id, scriptItemText: scriptItem.text, tempTextValue, previousCurtainOpen })
+    let finalText = scriptItem.text //default
+    finalText = addBrackets(scriptItem.type, finalText) //adds brackets according to rules set out within addBrackets function
+    if (CURTAIN_TYPES.includes(scriptItem.type)) {
+        finalText = curtainText(scriptItem, previousCurtainOpen)
+        log(logType, 'getFinalText curtain_types:', { finalText, scriptItem })
+    } else if (tempTextValue !== null) {
+        finalText = tempTextValue;
+    }
+
+    return finalText
+}
+

@@ -33,6 +33,15 @@ function ScriptViewer(props) {
 
     const { showSceneSelector, showScriptViewer, showComments } = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
+    //internal state
+    const [renderScenes, setRenderScenes] = useState(false) //delays the rendering of scenes until the script-body element has been mounted as this is required for the calculation of the maxScriptItemTextWidth
+
+    useEffect(() => {
+        setRenderScenes(true)
+    },[])
+
+
+
     //useEffect(() => {
 
     //    handleScriptViewerResize()
@@ -78,7 +87,7 @@ function ScriptViewer(props) {
                 <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
                     <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']} ${s[viewStyle]}`}>
                         <p className={`${s['comments-title']}`}>Comments</p>
-                        {(showOrder && showOrder.length > 0) &&
+                        {(renderScenes && showOrder && showOrder.length > 0) &&
                             showOrder.map((scene, idx) => {
 
                                 return ((idx < scenesToLoad) || scenesToLoad === null) &&

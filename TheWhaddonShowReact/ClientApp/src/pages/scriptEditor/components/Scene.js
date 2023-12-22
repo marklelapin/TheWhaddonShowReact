@@ -1,5 +1,5 @@
 ﻿//React and Redux
-import React from 'react';
+import React, { memo } from 'react';
 import { useLayoutEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -21,7 +21,7 @@ import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess
 
 
 
-function Scene(props) {
+const Scene = memo((props) => {
 
     //utility constants
     const dispatch = useDispatch();
@@ -145,5 +145,6 @@ function Scene(props) {
         </>
     )
 }
+)
 
 export default Scene;

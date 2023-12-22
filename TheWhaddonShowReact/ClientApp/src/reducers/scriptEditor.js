@@ -23,12 +23,6 @@ import {
     UPDATE_SCENE_LOADED,
 } from '../actions/scriptEditor';
 
-import {
-    IMPERSONATE_USER,
-    LOGIN,
-    LOGOUT
-} from '../actions/user';
-
 import { SCENE } from '../dataAccess/scriptItemTypes';
 
 import { log, SCRIPT_EDITOR_REDUCER as logType } from '../logging';
@@ -248,21 +242,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 sceneLoaded: action.id
             }
-        case LOGIN:
-            return {
-                ...state,
-                viewAsPartPerson: action.person,
-            }
-        case IMPERSONATE_USER:
-            return {
-                ...state,
-                viewAsPartPerson: action.person,
-            }
-        case LOGOUT:
-            return {
-                ...state,
-                viewAsPartPerson: null,
-            }
+   
         default: return state;
     }
 }

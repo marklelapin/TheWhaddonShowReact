@@ -210,7 +210,7 @@ function SyncDropdown(props) {
 
 
     return (
-        <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown">
+        <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown" className={`${s['sync-dropdown']}`}>
             <DropdownToggle nav caret className={`${s.headerSvgFlipColor} text-center`} >
 
                 {syncText('Summary')}

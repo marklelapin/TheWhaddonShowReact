@@ -4,6 +4,9 @@ const NONE = 'NONE'
 
 //logTypes
 export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdown' }
+
+export const AVATAR = { type: DEBUG, location: 'Component:Avatar' }
+
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 export const LOCAL_SERVER_UTILS = { type: NONE, location: 'Script:localServerUtils' }
 export const LOCAL_SERVER_SYNCING = { type: NONE, location: 'Component:LocalServerSyncing' }
@@ -19,7 +22,7 @@ export const PART_SELECTOR_DROPDOWN = {type: NONE, location: 'Component:PartSele
 
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
 
-export const SCENE = { type: NONE, location: 'Component:Scene' }
+export const SCENE = { type: DEBUG, location: 'Component:Scene' }
 export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }

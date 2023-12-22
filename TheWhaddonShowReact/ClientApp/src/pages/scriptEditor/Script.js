@@ -31,13 +31,13 @@ function Script() {
 
     const { showSceneSelector, showScriptViewer } = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
-    const [scenesToLoad, setScenesToLoad] = useState(1)
+    const [scenesToLoad, setScenesToLoad] = useState(5)
 
 
     useEffect(() => {
         log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder.length })
         if (scenesToLoad !== showOrder.length && scenesToLoad !==null) setScenesToLoad(scenesToLoad + 1)
-        if (scenesToLoad === showOrder.length && scenesToLoad !== null) {
+        if (scenesToLoad >= showOrder.length && scenesToLoad !== null) {
             setScenesToLoad(null)
         }
     }, [sceneLoaded,scenesToLoad,showOrder])

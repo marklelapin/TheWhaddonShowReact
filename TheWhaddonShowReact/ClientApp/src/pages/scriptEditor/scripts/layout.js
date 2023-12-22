@@ -32,21 +32,54 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
 }
 
 
+
+
+export const getTextAreaWidthPx = (finalText, finalPlaceholder, type, endMargin, showSceneSelector, showComments) => {
+
+    const maxWidth = getMaxScriptItemTextWidth(showSceneSelector, showComments)
+    const context = getContext(type)
+
+    const textToMeasure = finalText || finalPlaceholder
+    const textToMeasureRows = textToMeasure.split('\n') || []
+    const longestRow = textToMeasureRows.reduce((a, b) => (a.length > b.length) ? a : b, '');
+
+    const textMetrics = (context) ? context.measureText(longestRow) : { width: 0 }
+    const idealWidth = textMetrics.width + endMargin
+    const finalWidth = Math.max(endMargin, Math.min(maxWidth || idealWidth, idealWidth))
+
+    const finalWidthPx = `${Math.floor(finalWidth)}px`
+
+    return finalWidthPx;
+}
+
+
 export const getMaxScriptItemTextWidth = (showSceneSelector, showComments) => {
 
     const scriptPage = document.getElementById('script-page')
 
     if (scriptPage) {
         const widthDeductions = ((showComments === true) ? 310 : 0) + ((showSceneSelector === true) ? 300 : 0)
-
         const scriptBodyWidth = Math.min(800, scriptPage.clientWidth - widthDeductions)
         const maxScriptItemTextWidth = scriptBodyWidth - 100//for gap either side of dialogue etc.
 
         return maxScriptItemTextWidth
-    } else {
-        console.error('script-page not found')
-        return null;
-    } 
+    }
+    return null
 
+}
+
+const getContext = (type) => {
+    try {
+        const textInputRef = document.getElementById(`text-area-context-${type?.toLowerCase()}`)
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        context.font = window.getComputedStyle(textInputRef).font;
+        context.fontSize = window.getComputedStyle(textInputRef).fontSize;
+
+        return context;
+    }
+    catch {
+        return null
+    }
 
 }

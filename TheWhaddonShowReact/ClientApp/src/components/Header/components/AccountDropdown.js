@@ -6,7 +6,7 @@ import Avatar from '../../../components/Avatar/Avatar.js';
 import UserDefault from '../../../images/sidebar/basil/UserDefault';
 
 import { impersonateUser, stopImpersonating, login, logout } from '../../../actions/user';
-import { updatePersonSelectorConfig } from '../../../actions/scriptEditor';
+import { updatePersonSelectorConfig, updateViewAsPartPerson } from '../../../actions/scriptEditor';
 import { addUpdates } from '../../../actions/localServer';
 import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
 import PowerButton from '../../../images/sidebar/basil/PowerButton';
@@ -37,14 +37,17 @@ function AccountDropdown(props) {
         log(logType, 'login', { mark })
 
         dispatch(login(mark))
+        dispatch(updateViewAsPartPerson(mark))
     }
 
     const doLogout = () => {
         dispatch(logout())
+        dispatch(updateViewAsPartPerson(null))
     }
 
     const handlePersonSelect = (person) => {
         dispatch(impersonateUser(person))
+        dispatch(updateViewAsPartPerson(person))
     }
 
     const handleAvatarToggle = (e) => {

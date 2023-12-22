@@ -1,34 +1,41 @@
 ﻿import React from 'react';
-import {  useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 //Components
 
 import { uploadFiles } from '../../dataAccess/fileUtils.js';
 
 //Constants
+import { fetchFiles } from '../../dataAccess/fileUtils';
+import { addToCache } from '../../actions/cache';
 import { AVATARS } from '../../dataAccess/storageContainerNames';
-import adminDefault from '../../images/chat/chat2.png';
 
 //utils
-import { log } from '../../logging';
+import { log, AVATAR as logType } from '../../logging';
 
-import s from './Avatar.module.scss'; 
+import s from './Avatar.module.scss';
 
 
 export function Avatar(props) {
 
-    const debug = true;
+    const dispatch = useDispatch();
 
     const { person: draftPerson, partId = null, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
 
+    //establish person object
     const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId]) || null
-
     const person = draftPerson || partPersonFromId || {}
-
-    log(debug, 'Component:Avatar props', props)
-    log(debug, 'Component:Avatar person', {person,draftPerson,partPersonFromId})
-
     const { firstName = null, email = null, pictureRef = null } = person;
+
+    //get storedObjectUrl of create one.
+    const storedObjectURL = useSelector(state => state.cache[AVATARS][pictureRef])
+
+
+    if (storedObjectURL === undefined && pictureRef) {
+      createAvatarObjectURL(pictureRef, dispatch)
+    }
+    //log(logType, 'Component:Avatar props', props)
+    //log(logType, 'Component:Avatar person', { person, draftPerson, partPersonFromId })
 
     const firstUserLetter = (person && firstName) ? firstName[0].toUpperCase() : '?'
 
@@ -38,11 +45,8 @@ export function Avatar(props) {
 
     const inputId = `avatar-image-upload-${person.id}`
 
-    const avatarImageObjectURL = useSelector(state => state.cache[AVATARS][pictureRef])
+    const avatarImageObjectURL = (storedObjectURL) || null
 
-    //const avatarURL = avatarImageObjectURL ? avatarImageObjectURL : pictureRef 
-
-    log(debug, 'Avatar person', person)
 
     //Event Handlers
     const handleImageClick = (event) => {
@@ -69,7 +73,11 @@ export function Avatar(props) {
 
             const pictureRef = response.blobNames[0].toString()
 
-            log(debug, 'handleImageChange pictureRef', pictureRef)
+            const imageObjectURL = await createObjectURL(files[0])
+
+            dispatch(addToCache(AVATARS, pictureRef, imageObjectURL))
+
+            log(logType, 'handleImageChange pictureRef', pictureRef)
             onChange(pictureRef)
 
         }
@@ -110,8 +118,8 @@ export function Avatar(props) {
             //hidden image file upload element
             <div style={{ cursor: 'pointer' }}>
                 <input
-                    accept="image/*" onChange={(e)=>handleImageChange(e)}
-                   
+                    accept="image/*" onChange={(e) => handleImageChange(e)}
+
                     className="avatar-image-upload"
                     id={inputId}
                     type="file" name="file" />
@@ -126,3 +134,41 @@ export function Avatar(props) {
 }
 
 export default Avatar
+
+
+
+const createAvatarObjectURL = async (pictureRef,dispatch) => {
+    log(logType, 'createAvatarObjectURL', { pictureRef })
+
+    let imageObjectURL = null
+
+    const file = await fetchFile(pictureRef)
+    if (file) {
+        imageObjectURL = await createObjectURL(file)
+    }
+    dispatch(addToCache(AVATARS, pictureRef, imageObjectURL))
+
+    return imageObjectURL
+}
+
+const fetchFile = async (pictureRef) => {
+
+    try {
+        let files = []
+        files = await fetchFiles(AVATARS, pictureRef)
+        return files[0]
+    }
+    catch (error) {
+        console.log('Failed to fetch pictureRef :' + pictureRef + '. error: ' + error.message)
+    }
+}
+
+const createObjectURL = async (file) => {
+    try {
+        const imageObjectURL = URL.createObjectURL(file)
+        return imageObjectURL
+    }
+    catch (error) {
+        throw new Error(`Error creating object URL for ${AVATARS} files: ` + error.message)
+    }
+}

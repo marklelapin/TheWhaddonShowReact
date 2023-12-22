@@ -105,6 +105,14 @@
 }
 
 
+.sync-dropdown {
+    margin-right: 10px;
+    ::after{
+margin-left: 0px !important;
+    }
+}
+
+
 .headerTitle {
     color: var(--input-color)
 }
