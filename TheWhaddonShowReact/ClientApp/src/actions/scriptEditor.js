@@ -15,6 +15,8 @@ export const UPDATE_PERSON_SELECTOR_CONFIG = 'UPDATE_PERSON_SELECTOR_CONFIG';
 
 
 export const UPDATE_SCRIPT_ITEM_IN_FOCUS = 'CHANGE_SCRIPT_ITEM_IN_FOCUS';
+export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH';
+export const UPDATE_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_SCRIPT_ITEM_TEXT_WIDTH';
 export const UPDATE_SCENE_IN_FOCUS = 'CHANGE_SCENE_IN_FOCUS';
 
 export const CLEAR_IMPORT_UPDATES = 'CLEAR_IMPORT_UPDATES';
@@ -29,6 +31,7 @@ export const RESET_UNDO = 'RESET_UNDO';
 export const UPDATE_VIEW_STYLE = 'UPDATE_VIEW_STYLE';
 export const SET_READ_ONLY = 'SET_READ_ONLY';
 export const UPDATE_SCENE_LOADED = 'UPDATE_SCENE_LOADED';
+export const UPDATE_INITIAL_SYNC_PROGRESS = 'INITIAL_SYNC_PROGRESS';
 
 export const TRIGGER = 'TRIGGER';
 
@@ -202,16 +205,39 @@ export function updateViewStyle(viewStyle) {
     }
 }
 
-    export function setReadOnly(readOnly) {
-        return {
-            type: SET_READ_ONLY,
-            readOnly,
-        }
+export function setReadOnly(readOnly) {
+    return {
+        type: SET_READ_ONLY,
+        readOnly,
+    }
 }
 
-    export function updateSceneLoaded(id) {
-        return {
-            type: UPDATE_SCENE_LOADED,
-            id,
-        }
+export function updateSceneLoaded(id) {
+    return {
+        type: UPDATE_SCENE_LOADED,
+        id,
     }
+}
+
+export function updateInitialSyncProgress(progress) {
+    return {
+        type: UPDATE_INITIAL_SYNC_PROGRESS,
+        progress,
+    }
+}
+
+export function updateScriptItemTextWidth(id, width) {
+    return {
+        type: UPDATE_SCRIPT_ITEM_TEXT_WIDTH,
+        id,
+        width,
+    }
+}
+
+export function updateMaxScriptItemTextWidth(maxWidth) {
+
+    return {
+        type: UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
+        maxWidth
+    }
+}

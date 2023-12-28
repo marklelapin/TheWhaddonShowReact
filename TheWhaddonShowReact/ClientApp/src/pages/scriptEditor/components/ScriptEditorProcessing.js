@@ -15,6 +15,7 @@ import {
     clearScriptEditorState,
     updateViewAsPartPerson,
     setReadOnly,
+    updateInitialSyncProgress,
     UNDO, REDO, CONFIRM_UNDO, CLEAR_SCRIPT, UPDATE_VIEW_AS_PART_PERSON
 
 } from '../../../actions/scriptEditor';
@@ -231,6 +232,7 @@ export function ScriptEditorProcessing() {
             })
         }
 
+
         //Moves Focus
         if (moveFocus) {
             moveFocusToId(moveFocus.id, moveFocus.position)
@@ -280,6 +282,18 @@ export function ScriptEditorProcessing() {
 
             dispatch(updateCurrentPartPersons(newPartPersons))
         }
+
+        const personsInitiallySynced = (storedPersons.length >0) ? 1 : 0
+        const partsInitiallySynced = (storedParts.length > 0) ? 1 : 0
+        const scriptItemsInitiallySynced = (storedScriptItems.length > 0) ? 3 : 0 //weighted as much larger than part and persons.
+        const currentScriptItemsInitiallySynced = (Object.keys(currentScriptItems).length > 0) ? 3 : 0 
+        const currentPartPersonsInitiallySynced = (Object.keys(currentPartPersons).length > 0) ? 1 : 0 
+
+        const totalInitiallySynced = parseFloat(personsInitiallySynced + partsInitiallySynced + scriptItemsInitiallySynced + currentScriptItemsInitiallySynced + currentPartPersonsInitiallySynced)
+        const totalToSync = parseFloat(9)
+
+        dispatch(updateInitialSyncProgress(totalInitiallySynced /totalToSync))
+
 
     }, [localServerTrigger]) //eslint disable-line react-hooks/exhaustive-deps
 

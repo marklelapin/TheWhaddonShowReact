@@ -35,7 +35,6 @@ const Scene = memo((props) => {
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen[id])
     const sceneScriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-    log(logType, 'sceneOrder', sceneOrder)
 
     const scene = (sceneScriptItem.type === ACT) ? sceneScriptItem : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
     const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
@@ -46,7 +45,7 @@ const Scene = memo((props) => {
     const finalScriptItem = bodyOrder[bodyOrder.length - 1] || {}
 
     useLayoutEffect(() => {
-        log(logType,'dispatching updateSceneLoaded updateState',id)
+        log(logType,'useEffect[] dispatching updateSceneLoaded',id)
        dispatch(updateSceneLoaded(id))
     }, [])
 

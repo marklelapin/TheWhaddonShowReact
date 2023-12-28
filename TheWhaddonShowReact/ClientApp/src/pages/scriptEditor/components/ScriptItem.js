@@ -120,6 +120,8 @@ const ScriptItem = memo((props) => {
        alert("Sorry not yet implemented!")
     }
 
+    log(logType, 'rendering:', { id })
+
     return (
 
         <div id={id}

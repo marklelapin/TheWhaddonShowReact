@@ -26,17 +26,19 @@ function Script() {
     const defaultShowSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
     const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
     const show = useSelector((state) => state.scriptEditor.show)
+    const sceneOrders = useSelector((state) => state.scriptEditor.sceneOrders)
+   
     const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) || []
     const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
 
     const { showSceneSelector, showScriptViewer } = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
-    const [scenesToLoad, setScenesToLoad] = useState(60)
+    const [scenesToLoad, setScenesToLoad] = useState(3)
 
 
     useEffect(() => {
         log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder.length })
-        if (scenesToLoad !== showOrder.length && scenesToLoad !==null) setScenesToLoad(scenesToLoad + 1)
+        if (scenesToLoad !== showOrder.length && scenesToLoad !==null) setScenesToLoad(scenesToLoad + 3)
         if (scenesToLoad >= showOrder.length && scenesToLoad !== null) {
             setScenesToLoad(null)
         }
@@ -45,7 +47,7 @@ function Script() {
 
 
 
-    log(logType, 'Script: show', { scenesToLoad })
+    log(logType, 'Script: show', { scenesToLoad,show })
     //-----------------------------------------------------------------------
     return (
 

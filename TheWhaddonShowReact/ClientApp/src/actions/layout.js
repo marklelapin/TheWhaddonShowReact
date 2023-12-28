@@ -47,9 +47,3 @@ export function updateScreenSize(screenSize) {
     };
 }
 
-export function updateMaxScriptItemTextWidth(maxWidth) {
-    return {
-        type: UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
-        maxWidth
-    }
-}

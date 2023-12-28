@@ -7,7 +7,7 @@ import ReduxThunk from 'redux-thunk'
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
 import throttle from 'lodash/throttle';
-import { saveState, loadState } from './dataAccess/localStorage';
+import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from './dataAccess/browserStorage';
 import App from './components/App';
 import config from './config';
 import createRootReducer from './reducers';
@@ -28,7 +28,7 @@ if (token) {
     axios.defaults.headers.common['Authorization'] = "Bearer " + token;
 }
 
-const preloadedState = loadState();
+const preloadedState = loadStateFromBrowserStorage();
 
 export const store = createStore(
     createRootReducer(history),
@@ -42,7 +42,7 @@ export const store = createStore(
 );
 
 store.subscribe(
-    throttle(() => saveState(store.getState()), 5000)
+    throttle(() => saveStateToBrowserStorage(store.getState()), 5000)
 )
 
 store.dispatch(doInit());

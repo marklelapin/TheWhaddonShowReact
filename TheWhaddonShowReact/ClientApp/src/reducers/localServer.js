@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { log, LOCAL_SERVER_REDUCER as logType } from '../logging.js';
 
-import {resetSyncId } from '../dataAccess/localStorage';
+import {resetSyncId } from '../dataAccess/browserStorage';
 
 const defaultState = {
     localCopyId: uuidv4(),

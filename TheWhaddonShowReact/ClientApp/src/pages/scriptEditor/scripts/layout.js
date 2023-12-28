@@ -8,20 +8,20 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
 
     if (isScreenSmallerThan('md')) {
         showSceneSelector = defaultShowSceneSelector
-        showScriptViewer = defaultShowSceneSelector
+        showScriptViewer = !defaultShowSceneSelector
         showComments = false
     }
-    if (isScreen('md') && defaultShowComments === true) {
+    if ((isScreen('lg') || isScreen('md')) && defaultShowComments === true) {
         showSceneSelector = defaultShowSceneSelector
         showScriptViewer = true
         showComments = !defaultShowSceneSelector
     }
-    if (isScreen('md') && defaultShowComments === false) {
+    if ((isScreen('lg') || isScreen('md')) && defaultShowComments === false) {
         showSceneSelector = true
         showScriptViewer = true
         showComments = false
     }
-    if (isScreenLargerThan('md')) {
+    if (isScreen('xl')) {
         showSceneSelector = true
         showScriptViewer = true
         showComments = defaultShowComments
@@ -34,7 +34,9 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
 
 
 
-export const getTextAreaWidthPx = (finalText, finalPlaceholder, type, endMargin, showSceneSelector, showComments, maxTextAreaWidth) => {
+export const getTextAreaWidth = (finalText, finalPlaceholder, type, endMargin, showSceneSelector, showComments) => {
+
+    const maxTextAreaWidth = getMaxScriptItemTextWidth(showSceneSelector, showComments)
 
     const context = getContext(type)
 
@@ -46,9 +48,9 @@ export const getTextAreaWidthPx = (finalText, finalPlaceholder, type, endMargin,
     const idealWidth = textMetrics.width + endMargin
     const finalWidth = Math.max(endMargin, Math.min(maxTextAreaWidth || idealWidth, idealWidth))
 
-    const finalWidthPx = `${Math.floor(finalWidth)}px`
+    const finalWidthInteger = Math.floor(finalWidth)
 
-    return finalWidthPx;
+    return finalWidthInteger;
 }
 
 

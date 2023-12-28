@@ -3,6 +3,7 @@ import { useEffect, useState, useLayoutEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
+    updateScriptItemTextWidth,
     trigger,
     UPDATE_TEXT,
     ADD_SCRIPT_ITEM,
@@ -24,7 +25,7 @@ import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
 import { curtainText } from '../scripts/curtain';
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
-import { getTextAreaWidthPx } from '../scripts/layout';
+import { getTextAreaWidth } from '../scripts/layout';
 
 //constants
 import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN, ACT } from '../../../dataAccess/scriptItemTypes';
@@ -61,8 +62,8 @@ function ScriptItemText(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const showSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
     const showComments = useSelector(state => state.scriptEditor.showComments)
-    const maxTextWidth = useSelector(state => state.layout.maxScriptItemTextWidth) //used to
-
+    const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
+    log(logType,'storedTextWidth',storedTextWidth)
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
     const [isFocused, setIsFocused] = useState(false);
@@ -79,23 +80,29 @@ function ScriptItemText(props) {
         default: finalPlaceholder = placeholder;
     }
 
-    const finalText = getFinalText(scriptItem, tempTextValue, previousCurtainOpen)
-    const finalWidthPx = getTextAreaWidthPx(finalText, finalPlaceholder, scriptItem.type, endMargin, showSceneSelector, showComments,maxTextWidth)
-
     useEffect(() => {
-        log(logType, 'props', { props })
+    //    log(logType, 'props', { props })
 
         //makes the textarea the focus when created unless during an undo or if the item has already been updated on the server (entered by someone else in which case you don't want it to be your focus)
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
         if (textInputRef && undoNotInProgress && scriptItem.updatedOnServer === null) {
             textInputRef.focus();
         }
+
     }, [])
 
     useEffect(() => {
         setTempTextValue(null)
     }, [scriptItem.text])
 
+
+    const finalText = getFinalText(scriptItem, tempTextValue, previousCurtainOpen)
+    const finalWidth = getTextAreaWidth(finalText, finalPlaceholder, scriptItem.type, endMargin, showSceneSelector, showComments)
+    const finalWidthPx = `${finalWidth}px`
+    if (finalWidth !== storedTextWidth) {
+        log(logType, 'finalWidthPx !== storedTextWidth', {id: scriptItem.id, finalWidth, storedTextWidth })
+        dispatch(updateScriptItemTextWidth( scriptItem.id, finalWidth ))
+    }
 
 
     //Event Handlers
@@ -314,12 +321,6 @@ function ScriptItemText(props) {
 
     }
 
-
-    if (maxTextWidth === null || maxTextWidth === 0 || maxTextWidth === undefined) {
-
-        return null
-
-    }
 
     return (
         <div id={`script-item-text-${id}`} className={s['script-item-text']}>
