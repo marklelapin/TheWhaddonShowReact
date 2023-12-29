@@ -27,7 +27,7 @@ function Script() {
     const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
     const show = useSelector((state) => state.scriptEditor.show)
     const sceneOrders = useSelector((state) => state.scriptEditor.sceneOrders)
-   
+
     const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) || []
     const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
 
@@ -38,16 +38,22 @@ function Script() {
 
     useEffect(() => {
         log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder.length })
-        if (scenesToLoad !== showOrder.length && scenesToLoad !==null) setScenesToLoad(scenesToLoad + 3)
-        if (scenesToLoad >= showOrder.length && scenesToLoad !== null) {
+        if (showOrder.length === 0) {
+            //do nothing
+        }
+        if (showOrder.length > 0 && scenesToLoad !== null && scenesToLoad < showOrder.length) {
+            setScenesToLoad(scenesToLoad + 1)
+        }
+        if (showOrder.length > 0 && scenesToLoad !== null && scenesToLoad >= showOrder.length) {
             setScenesToLoad(null)
         }
-    }, [sceneLoaded,scenesToLoad,showOrder])
+        //else do nothing
+    }, [sceneLoaded, scenesToLoad, showOrder])
 
 
 
 
-    log(logType, 'Script: show', { scenesToLoad,show })
+    log(logType, 'Script: show', { scenesToLoad, show })
     //-----------------------------------------------------------------------
     return (
 
@@ -69,7 +75,7 @@ function Script() {
                         <ScriptViewer show={show}
                             scenesToLoad={scenesToLoad}
                             setScenesToLoad={(value) => setScenesToLoad(value)}
-                             />
+                        />
                     }
 
                 </div>

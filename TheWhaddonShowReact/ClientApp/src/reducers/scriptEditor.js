@@ -23,7 +23,6 @@ import {
     UPDATE_INITIAL_SYNC_PROGRESS,
     UPDATE_SCRIPT_ITEM_TEXT_WIDTH,
     UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
-    updateScriptItemTextWidth,
 } from '../actions/scriptEditor';
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
@@ -31,7 +30,7 @@ import { SCENE } from '../dataAccess/scriptItemTypes';
 import { log, SCRIPT_EDITOR_REDUCER as logType } from '../logging';
 
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
-const debug = true;
+import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
 
 export const initialState = {
     searchParameters: {
@@ -71,7 +70,7 @@ export const initialState = {
 }
 
 export default function scriptEditorReducer(state = initialState, action) {
-   // log(logType, 'action:', action)
+    // log(logType, 'action:', action)
 
     switch (action.type) {
         case UPDATE_SEARCH_PARAMETERS:
@@ -79,7 +78,6 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 searchParameters: action.searchParameters,
             };
-
         case TOGGLE_SCENE_SELECTOR:
             return {
                 ...state,
@@ -97,7 +95,7 @@ export default function scriptEditorReducer(state = initialState, action) {
             };
 
         case UPDATE_CURRENT_PART_PERSONS:
-         //   log(logType, 'UPDATE_CURRENT_PART_PERSONS action.partPersons: ', action.partPersons.length)
+            //   log(logType, 'UPDATE_CURRENT_PART_PERSONS action.partPersons: ', action.partPersons.length)
             const updatedPartPersons = action.partPersons.reduce((acc, partPerson) => {
                 acc[partPerson.id] = { ...partPerson };
                 return acc;
@@ -152,8 +150,8 @@ export default function scriptEditorReducer(state = initialState, action) {
             }
         case ADD_ITEMS_TO_REDO_LIST:
 
-        //    log(logType, 'ADD_ITEMS_TO_REDO_LIST action.items', { items: action.items, sceneId: action.sceneId })
-        //    log(logType, 'redo list', state.redoList)
+            //    log(logType, 'ADD_ITEMS_TO_REDO_LIST action.items', { items: action.items, sceneId: action.sceneId })
+            //    log(logType, 'redo list', state.redoList)
             return {
                 ...state,
                 currentUndo: { ...state.undoSceneId, [action.sceneId]: true },
@@ -176,7 +174,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 trigger: newTrigger,
             }
         case UPDATE_CURRENT_SCRIPT_ITEMS:
-           // log(logType, 'UPDATE_CURRENT_SCRIPT_ITEMS action.scriptItems: ', action.scriptItems.length)
+            // log(logType, 'UPDATE_CURRENT_SCRIPT_ITEMS action.scriptItems: ', action.scriptItems.length)
             //update created dates for sceneOrders (mutating the state on purpose) - this created date shouldn't cause a re-render
             //it is used for quick look up of the latest created date when undoing.
             //ensures that sceneOrder created matches the currentSCriptItems created date
@@ -191,25 +189,18 @@ export default function scriptEditorReducer(state = initialState, action) {
                 })
             }
 
-
-
             //update for currenSCriptItems
             const updatedScriptItems = action.scriptItems.reduce((acc, scriptItem) => {
                 acc[scriptItem.id] = { ...scriptItem }
                 return acc;
             }, { ...state.currentScriptItems });
 
-            action.scriptItems.forEach(scriptItem => {
-          //      log(logType, 'UPDATE_CURRENT_SCRIPT_ITEMS', updatedScriptItems[scriptItem])
-            })
-
-
             return {
                 ...state,
-                currentScriptItems: updatedScriptItems
+                currentScriptItems: updatedScriptItems,
             }
         case UPDATE_SCENE_ORDERS:
-          //  log(logType, 'UPDATE_SCENE_ORDERS action.sceneOrders:', { noSceneOrders: action.sceneOrders.length, sceneOrder0: action.sceneOrders[0] })
+            //  log(logType, 'UPDATE_SCENE_ORDERS action.sceneOrders:', { noSceneOrders: action.sceneOrders.length, sceneOrder0: action.sceneOrders[0] })
             const updatedSceneOrders = action.sceneOrders.reduce((acc, sceneOrder) => {
                 acc[sceneOrder[0]?.id] = [...sceneOrder];
 
@@ -221,7 +212,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 sceneOrders: updatedSceneOrders
             }
         case UPDATE_PERSON_SELECTOR_CONFIG:
-          //  log(debug, 'Reducer:UPDATE_PERSON_SELECTOR_CONFIG action.config', action.config)
+            //  log(debug, 'Reducer:UPDATE_PERSON_SELECTOR_CONFIG action.config', action.config)
             return {
                 ...state,
                 personSelectorConfig: action.config
@@ -248,35 +239,47 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 initialSyncProgress: action.progress
             }
-        case UPDATE_SCRIPT_ITEM_TEXT_WIDTH:
-            const test = action
-        //log(logType, 'Update script item text width: ', { test} )
-            return {
-                ...state,
-                scriptItemTextWidths: { ...state.scriptItemTextWidths, [action.id]: action.width }
-            }
         case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
 
-            if (action.maxWidth === null) {
+            const newMaxWidth = getMaxScriptItemTextWidth(state.showSceneSelector, state.showComments)
+
+            if (newMaxWidth === null) {
                 return {
                     ...state,
                     scriptBodyPreviouslyLoaded: false,
                 }
             }
-            let updatedScriptItemTextWidths = { ...state.scriptItemTextWidths };
-            
-            updatedScriptItemTextWidths = Object.keys(updatedScriptItemTextWidths).reduce((result, id) => {
-                const width = updatedScriptItemTextWidths[id];
-                result[id] = width > action.maxWidth ? null : width;
-                return result;
-            }, {});
 
-            const totalChanges = Object.values(updatedScriptItemTextWidths).filter(item => item === null).length
-            log(logType, 'Update max script item text: ', { maxWidth: action.maxWidth, changes: totalChanges } )
+            let updatedScriptItemTextWidths = { ...state.scriptItemTextWidths }
+
+            Object.keys(state.currentScriptItems).forEach(id => {
+                const scriptItem = state.currentScriptItems[id];
+                const textWidth = getTextAreaWidth(scriptItem.text, scriptItem.type, null, newMaxWidth);
+                
+                if (!state.scriptItemsTextWidths[id]) {
+                    updatedScriptItemTextWidths = { ...updatedScriptItemTextWidths, [id]: textWidth }
+                } else
+                    if (state.scriptItemTextWidths[id] !== textWidth) {
+                        updatedScriptItemTextWidths[id] = textWidth;
+                    }
+                  
+            })
+
             return {
                 ...state,
                 scriptBodyPreviouslyLoaded: true
                 , scriptItemTextWidths: updatedScriptItemTextWidths
+                , maxScriptItemTextWidth: newMaxWidth
+            }
+        case UPDATE_SCRIPT_ITEM_TEXT_WIDTH:
+
+            const maxWidth = state.maxScriptItemTextWidth
+
+            const newTextWidth = getTextAreaWidth(action.text, action.scriptItemType, action.endMargin, maxWidth);
+
+            return {
+                ...state,
+                scriptItemTextWidths: { ...state.scriptItemTextWidths, [action.id]: newTextWidth }
             }
 
         default: return state;

@@ -26,10 +26,12 @@ import { curtainText } from '../scripts/curtain';
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
 import { getTextAreaWidth } from '../scripts/layout';
+import { getScriptItemPlaceholder } from '../scripts/scriptItem'
 
 //constants
 import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN, ACT } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
+import { DEFAULT_END_MARGIN } from '../scripts/layout';
 
 //css
 import s from '../ScriptItem.module.scss';
@@ -40,11 +42,8 @@ function ScriptItemText(props) {
     //utils
     const dispatch = useDispatch()
 
-    const defaultEndMargin = 100;
-
     //Props
     const { scriptItem,
-        placeholder = "...",
         toggleMedia,
         previousCurtainOpen = null,
         previousFocusId = null,
@@ -60,29 +59,21 @@ function ScriptItemText(props) {
 
     //Redux
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
-    const showSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
-    const showComments = useSelector(state => state.scriptEditor.showComments)
-    const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
-    log(logType,'storedTextWidth',storedTextWidth)
+    const textWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) //used to control when to re-render for text width.
+    const textWidthPx = `${textWidth}px`
+    // const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
+    //log(logType,'storedTextWidth',storedTextWidth)
     //Internal state
     const [tempTextValue, setTempTextValue] = useState(null)
     const [isFocused, setIsFocused] = useState(false);
     const [isBeingDeleted, setIsBeingDeleted] = useState(false)
-    const [endMargin, setEndMargin] = useState(defaultEndMargin)
+    const [endMargin, setEndMargin] = useState(DEFAULT_END_MARGIN)
 
 
-    let finalPlaceholder;
-    switch (type) {
-        case SCENE: finalPlaceholder = 'enter title for scene'; break;
-        case SYNOPSIS: finalPlaceholder = 'enter brief synopsis for scene'; break;
-        case INITIAL_STAGING: finalPlaceholder = 'enter initial staging for scene'; break;
-        case INITIAL_CURTAIN: finalPlaceholder = 'enter initial curtain for scene'; break;
-        default: finalPlaceholder = placeholder;
-    }
+    const finalPlaceholder = getScriptItemPlaceholder(scriptItem.type)
 
     useEffect(() => {
-    //    log(logType, 'props', { props })
-
+        //    log(logType, 'props', { props })
         //makes the textarea the focus when created unless during an undo or if the item has already been updated on the server (entered by someone else in which case you don't want it to be your focus)
         const textInputRef = document.getElementById(`script-item-text-${id}`).querySelector('textarea')
         if (textInputRef && undoNotInProgress && scriptItem.updatedOnServer === null) {
@@ -95,14 +86,16 @@ function ScriptItemText(props) {
         setTempTextValue(null)
     }, [scriptItem.text])
 
-
     const finalText = getFinalText(scriptItem, tempTextValue, previousCurtainOpen)
-    const finalWidth = getTextAreaWidth(finalText, finalPlaceholder, scriptItem.type, endMargin, showSceneSelector, showComments)
-    const finalWidthPx = `${finalWidth}px`
-    if (finalWidth !== storedTextWidth) {
-        log(logType, 'finalWidthPx !== storedTextWidth', {id: scriptItem.id, finalWidth, storedTextWidth })
-        dispatch(updateScriptItemTextWidth( scriptItem.id, finalWidth ))
-    }
+
+
+    useEffect(() => {
+        if (CURTAIN_TYPES.includes(scriptItem.type)) {
+            dispatch(updateScriptItemTextWidth(finalText))
+        }
+    }, [previousCurtainOpen])
+
+
 
 
     //Event Handlers
@@ -112,8 +105,8 @@ function ScriptItemText(props) {
         setEndMargin(100)
         let newTempTextValue = e.target.value || ''
         newTempTextValue = addBrackets(scriptItem.type, newTempTextValue)
-
         setTempTextValue(newTempTextValue)
+        dispatch(updateScriptItemTextWidth(scriptItem.id, newTempTextValue, scriptItem.type, endMargin))
     }
 
     const handlePaste = (e) => {
@@ -122,6 +115,7 @@ function ScriptItemText(props) {
         const pastedText = clipboardData.getData('text');
         setEndMargin(100)
         setTempTextValue(pastedText)
+        dispatch(updateScriptItemTextWidth(scriptItem.id, pastedText, scriptItem.type, endMargin))
     }
 
     const handleControlsClick = (e, action) => {
@@ -307,7 +301,7 @@ function ScriptItemText(props) {
 
         if (isBeingDeleted !== true) {
             log(logType, 'handleBlur: ', { scriptItemText: scriptItem.text, eventTextValue: e.target.value })
-            setEndMargin(defaultEndMargin)
+            setEndMargin(DEFAULT_END_MARGIN)
             setIsFocused(false)
             let targetText = e.target.value || ''
             targetText = removeBrackets(scriptItem.type, targetText)
@@ -337,7 +331,7 @@ function ScriptItemText(props) {
                 onBlur={(e) => handleBlur(e)}
                 onFocus={() => handleFocus()}
                 onKeyDown={(e) => handleKeyDown(e, scriptItem)}
-                style={{ width: finalWidthPx }}
+                style={{ width: textWidthPx }}
                 onPaste={(e) => handlePaste(e)}
             //rows={getTextAreaRows().length}
             >

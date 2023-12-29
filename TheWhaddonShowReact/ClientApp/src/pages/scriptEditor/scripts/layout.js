@@ -1,4 +1,7 @@
 ﻿import { isScreen, isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper'
+import { getScriptItemPlaceholder } from './scriptItem';
+
+export const DEFAULT_END_MARGIN = 100;
 
 export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
 
@@ -34,9 +37,10 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
 
 
 
-export const getTextAreaWidth = (finalText, finalPlaceholder, type, endMargin, showSceneSelector, showComments) => {
+export const getTextAreaWidth = (finalText, type, _endMargin, maxTextAreaWidth) => {
 
-    const maxTextAreaWidth = getMaxScriptItemTextWidth(showSceneSelector, showComments)
+    const finalPlaceholder = getScriptItemPlaceholder(type)
+    const endMargin = _endMargin || DEFAULT_END_MARGIN
 
     const context = getContext(type)
 

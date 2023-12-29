@@ -36,8 +36,8 @@ export const SCRIPT_ITEM = {type: NONE,location: 'Component:ScriptItem' }
 export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptItemControls' }
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 
-export const SCRIPT = { type: NONE, location: 'Component:Script' }
-export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
+export const SCRIPT = { type: DEBUG, location: 'Component:Script' }
+export const SCRIPT_VIEWER = { type: DEBUG, location: 'Component:ScriptViewer' }
 
 export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 

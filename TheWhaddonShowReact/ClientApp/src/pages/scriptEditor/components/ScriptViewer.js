@@ -1,5 +1,5 @@
 ﻿//React and REdux
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { updateMaxScriptItemTextWidth } from '../../../actions/scriptEditor';
@@ -11,7 +11,7 @@ import ScriptViewerHeader from './ScriptViewerHeader';
 import { Progress } from 'reactstrap';
 //utitilites
 import { log, SCRIPT_VIEWER as logType } from '../../../logging';
-import { getShowBools, getMaxScriptItemTextWidth } from '../scripts/layout';
+import { getShowBools } from '../scripts/layout';
 //Constants
 
 import s from '../Script.module.scss'
@@ -38,37 +38,28 @@ function ScriptViewer(props) {
 
     useEffect(() => {
         log(logType, 'useEffect[]:', { scriptBodyPreviouslyLoaded, showSceneSelector, showComments, show, showOrder, scenesToLoad })
-        const maxWidth = getMaxScriptItemTextWidth(showSceneSelector, showComments)
-        log(logType, 'useEffect[]: new maxScriptItemWidth', maxWidth)
-        dispatch(updateMaxScriptItemTextWidth(maxWidth))
+        dispatch(updateMaxScriptItemTextWidth())
 
         const debouncedResize = () => {
             log(logType, 'debouncedResize')
-            _.debounce(handleScriptBodyResize, 500)
+           // _.debounce(updateMaxScriptItemTextWidth, 1000)
         }
-        const scriptBody = document.getElementById('script-body')
 
        // window.addEventListener('resize', debouncedResize)
-        window.addEventListener('resize', handleScriptBodyResize)
+        window.addEventListener('resize', debouncedResize)
 
         return () => {
           // window.removeEventListener('resize', debouncedResize)
-            window.addEventListener('resize', handleScriptBodyResize)
-            dispatch(updateMaxScriptItemTextWidth(null))
+            window.addEventListener('resize', debouncedResize)
+            dispatch(updateMaxScriptItemTextWidth())
         }
 
     }, [])
 
     useEffect(() => {
         log(logType, 'useEffect[showComments]', { showComments })
-        handleScriptBodyResize()
+        dispatch(updateMaxScriptItemTextWidth())
     }, [showComments])
-
-    const handleScriptBodyResize = () => {
-        log(logType, 'handleScriptViewerResize')
-        const newMaxTextWidth = getMaxScriptItemTextWidth(showSceneSelector, showComments)
-        dispatch(updateMaxScriptItemTextWidth(newMaxTextWidth))
-    }
 
 
     //const handleSceneLoaded = (idx) => {

@@ -226,18 +226,19 @@ export function updateInitialSyncProgress(progress) {
     }
 }
 
-export function updateScriptItemTextWidth(id, width) {
+export function updateScriptItemTextWidth(id, text, scriptItemType, endMargin) {
     return {
         type: UPDATE_SCRIPT_ITEM_TEXT_WIDTH,
         id,
-        width,
+        text,
+        scriptItemType,
+endMargin,
     }
 }
 
-export function updateMaxScriptItemTextWidth(maxWidth) {
+export function updateMaxScriptItemTextWidth() {
 
     return {
         type: UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
-        maxWidth
     }
 }

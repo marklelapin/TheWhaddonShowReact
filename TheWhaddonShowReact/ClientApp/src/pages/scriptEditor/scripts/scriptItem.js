@@ -327,3 +327,15 @@ export const getOrderedSceneScriptItems = (sceneOrder, currentScriptItems) => {
     return copy(sceneOrder.map(item => currentScriptItems[item.id]))
 
 }
+
+export const getScriptItemPlaceholder = (type) => {
+    let finalPlaceholder;
+    switch (type) {
+        case SCENE: finalPlaceholder = 'enter title for scene'; break;
+        case SYNOPSIS: finalPlaceholder = 'enter brief synopsis for scene'; break;
+        case INITIAL_STAGING: finalPlaceholder = 'enter initial staging for scene'; break;
+        case INITIAL_CURTAIN: finalPlaceholder = 'enter initial curtain for scene'; break;
+        default: finalPlaceholder = '...';
+    }
+    return finalPlaceholder
+}
