@@ -256,7 +256,10 @@ export function ScriptEditorProcessing() {
 
             if (currentScriptItemUpdates.length > 0) {
                 dispatch(updateCurrentScriptItems(currentScriptItemUpdates))
-                if (Object.keys(currentScriptItems) === 0) dispatch(updateInitialSyncProgress(initialSyncProgress + 0.6))
+                if (Object.keys(currentScriptItems).length === 0) {
+                    log(logType,'updateInitialSyncProcess SCRIPTITEM', { initialSyncProgress })
+                    dispatch(updateInitialSyncProgress(initialSyncProgress + 0.7))
+                }
             }
             if (sceneOrderUpdates.length > 0) {
                 dispatch(updateSceneOrders(sceneOrderUpdates))
@@ -275,8 +278,11 @@ export function ScriptEditorProcessing() {
             const newPartPersons = newPartPersonsFromPartUpdates(partUpdates, currentPartPersons, storedPersons)
 
             dispatch(updateCurrentPartPersons(newPartPersons))
+            if (Object.keys(currentPartPersons).length === 0) {
+                log(logType,'updateInitialSyncProcess PART', { initialSyncProgress })
+                dispatch(updateInitialSyncProgress(initialSyncProgress + 0.3))
+            }
 
-            if (Object.keys(currentPartPersons) === 0) dispatch(updateInitialSyncProgress(initialSyncProgress + 0.2))
         }
 
         if (localServerTrigger.updates && localServerTrigger.type === PERSON) {
@@ -286,11 +292,8 @@ export function ScriptEditorProcessing() {
             const newPartPersons = newPartPersonsFromPersonUpdates(personUpdates, currentPartPersons)
 
             dispatch(updateCurrentPartPersons(newPartPersons))
-
-            if (Object.keys(currentPartPersons) === 0) dispatch(updateInitialSyncProgress(initialSyncProgress + 0.2))
         }
 
-        
     }, [localServerTrigger]) //eslint disable-line react-hooks/exhaustive-deps
 
 

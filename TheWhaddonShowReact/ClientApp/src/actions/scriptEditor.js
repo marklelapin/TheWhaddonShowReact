@@ -66,8 +66,6 @@ export const SWAP_PART = 'SWAP_PART';
 export const CLEAR_SCRIPT = 'CLEAR_SCRIPT';
 
 
-const debug = true;
-
 export function updateSearchParameters(searchParameters) {
     return {
         type: UPDATE_SEARCH_PARAMETERS,

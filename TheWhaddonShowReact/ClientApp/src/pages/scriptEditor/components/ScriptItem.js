@@ -50,14 +50,13 @@ const ScriptItem = memo((props) => {
     log(logType, 'props:', props)
 
     //Redux state
-    const showComments = useSelector(state => state.scriptEditor.showComments) || true
 
     const focus = useSelector(state => (state.scriptEditor.scriptItemInFocus[id])) || false
     const isUndoInProgress = useSelector(state => (state.scriptEditor.currentUndo[sceneId]))
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
 
-    log(logType, 'redux:', { showComments, focus, isUndoInProgress, scriptItem })
+    log(logType, 'redux:', {focus, isUndoInProgress, scriptItem })
 
     const { type, commentId, nextId } = scriptItem;
 
@@ -169,7 +168,7 @@ const ScriptItem = memo((props) => {
                 </div>
             }
 
-            {(commentId) && (showComments) &&
+            {(commentId) &&
                 <Comment id={commentId} />
             }
 

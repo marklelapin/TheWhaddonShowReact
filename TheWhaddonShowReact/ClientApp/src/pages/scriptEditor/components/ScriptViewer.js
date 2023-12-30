@@ -1,5 +1,5 @@
 ﻿//React and REdux
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { updateMaxScriptItemTextWidth } from '../../../actions/scriptEditor';
@@ -15,6 +15,7 @@ import { getShowBools } from '../scripts/layout';
 //Constants
 
 import s from '../Script.module.scss'
+import Script from '../Script';
 
 function ScriptViewer(props) {
 
@@ -35,37 +36,59 @@ function ScriptViewer(props) {
     const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
 
     //internal state
+    const [scriptBodyLoaded, setScriptBodyLoaded] = useState(false)
+   // const [isPostShowComments, setIsPostShowComments] = useState(false)
 
     useEffect(() => {
-        log(logType, 'useEffect[]:', { scriptBodyPreviouslyLoaded, showSceneSelector, showComments, show, showOrder, scenesToLoad })
-        dispatch(updateMaxScriptItemTextWidth())
-
-        const debouncedResize = () => {
-            log(logType, 'debouncedResize')
-           // _.debounce(updateMaxScriptItemTextWidth, 1000)
+        log(logType, 'useEffect[]:', { scriptBodyLoaded, showSceneSelector, showComments, show, showOrder, scenesToLoad })
+        const scriptBody = document.getElementById('script-body')
+        if (scriptBody) {
+            setScriptBodyLoaded(true)
+        } else {
+            setScriptBodyLoaded(false)
         }
 
-       // window.addEventListener('resize', debouncedResize)
-        window.addEventListener('resize', debouncedResize)
+        const handleResize = () => {
+            console.log('handleResize')
+            reCalculateTextWidths()
+        }
+
+
+        // window.addEventListener('resize', debouncedResize)
+        window.addEventListener('resize', handleResize)
 
         return () => {
-          // window.removeEventListener('resize', debouncedResize)
-            window.addEventListener('resize', debouncedResize)
+            // window.removeEventListener('resize', debouncedResize)
+            window.removeEventListener('resize', handleResize)
+           
             dispatch(updateMaxScriptItemTextWidth())
         }
 
     }, [])
 
-    useEffect(() => {
-        log(logType, 'useEffect[showComments]', { showComments })
+    const reCalculateTextWidths = _.debounce(() => {
+        log(logType, 'recalculateTextWidths')
         dispatch(updateMaxScriptItemTextWidth())
-    }, [showComments])
+    },1000)
 
 
-    //const handleSceneLoaded = (idx) => {
-    //    log(logType, 'sceneLoaded:', idx + 1)
-    //    onScenesLoaded()
-    //}
+    useEffect(() => {
+        log(logType, 'useEffect[showScriptViewer]', { showScriptViewer })
+        const scriptBody = document.getElementById('script-body')
+        if (scriptBody) {
+            setScriptBodyLoaded(true)
+        } else {
+            setScriptBodyLoaded(false)
+        }
+    }, [showScriptViewer])
+
+    useEffect(() => {
+        log(logType, 'useEffect[intitialSyncProgress,scriptBodyLoaded,showComments]', { scriptBodyLoaded, showOrder, scenesToLoad })
+        if (initialSyncProgress === 1 && scriptBodyLoaded === true) {
+            dispatch(updateMaxScriptItemTextWidth())
+        }
+    }, [initialSyncProgress, scriptBodyLoaded])
+
 
     if (scenesToLoad === 0) { //this allows a reset of scenesToLoad to occur.
         log(logType, 'updateState scenesToLoad', 0)
@@ -73,7 +96,7 @@ function ScriptViewer(props) {
         return null
     }
 
-    log(logType, 'render', { scriptBodyPreviouslyLoaded, showOrderLength: showOrder?.length, scenesToLoad })
+    log(logType, 'render', { scriptBodyPreviouslyLoaded, showOrderLength: showOrder?.length, scenesToLoad, initialSyncProgress })
 
     return (
         <>
@@ -83,7 +106,7 @@ function ScriptViewer(props) {
                 <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
                     <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']} ${s[viewStyle]}`}>
                         <p className={`${s['comments-title']}`}>Comments</p>
-                        {(scriptBodyPreviouslyLoaded && showOrder && showOrder.length > 0) &&
+                        {(scriptBodyLoaded && initialSyncProgress === 1 && showOrder && showOrder.length > 0) &&
                             showOrder.map((scene, idx) => {
 
                                 return ((idx < scenesToLoad) || scenesToLoad === null) &&
@@ -112,6 +135,8 @@ function ScriptViewer(props) {
             {(isPersonSelectorOpen) &&
                 <PersonSelector viewAs />
             }
+
+            
 
         </>
 

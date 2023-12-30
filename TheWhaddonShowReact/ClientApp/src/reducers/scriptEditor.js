@@ -62,6 +62,7 @@ export const initialState = {
     trigger: {},
     personSelectorConfig: null,
     scriptBodyPreviouslyLoaded: false,
+    maxScriptItemTextWidth: null,
     viewStyle: 'chat',
     readOnly: false,
     initialSyncProgress: 0,
@@ -249,21 +250,29 @@ export default function scriptEditorReducer(state = initialState, action) {
                     scriptBodyPreviouslyLoaded: false,
                 }
             }
+            if (state.currentScriptItems.length === 0) {
+                return {
+                    ...state,
+                    scriptBodyPreviouslyLoaded: false,
+                }
+            }
 
             let updatedScriptItemTextWidths = { ...state.scriptItemTextWidths }
 
             Object.keys(state.currentScriptItems).forEach(id => {
                 const scriptItem = state.currentScriptItems[id];
                 const textWidth = getTextAreaWidth(scriptItem.text, scriptItem.type, null, newMaxWidth);
-                
-                if (!state.scriptItemsTextWidths[id]) {
+
+                if (!state.scriptItemTextWidths[id]) {
                     updatedScriptItemTextWidths = { ...updatedScriptItemTextWidths, [id]: textWidth }
                 } else
                     if (state.scriptItemTextWidths[id] !== textWidth) {
                         updatedScriptItemTextWidths[id] = textWidth;
                     }
-                  
+
             })
+
+            console.log('updateMaxWidth complete')
 
             return {
                 ...state,

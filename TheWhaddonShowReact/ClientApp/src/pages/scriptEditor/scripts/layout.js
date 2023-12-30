@@ -14,12 +14,12 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
         showScriptViewer = !defaultShowSceneSelector
         showComments = false
     }
-    if ((isScreen('lg') || isScreen('md')) && defaultShowComments === true) {
+    if (isScreen('lg') && defaultShowComments === true) {
         showSceneSelector = defaultShowSceneSelector
         showScriptViewer = true
         showComments = !defaultShowSceneSelector
     }
-    if ((isScreen('lg') || isScreen('md')) && defaultShowComments === false) {
+    if (isScreen('lg') && defaultShowComments === false) {
         showSceneSelector = true
         showScriptViewer = true
         showComments = false

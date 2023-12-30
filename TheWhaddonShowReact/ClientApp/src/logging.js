@@ -22,7 +22,7 @@ export const PART_SELECTOR_DROPDOWN = {type: NONE, location: 'Component:PartSele
 
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
 
-export const SCENE = { type: NONE, location: 'Component:Scene' }
+export const SCENE = { type: DEBUG, location: 'Component:Scene' }
 export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }
@@ -36,7 +36,7 @@ export const SCRIPT_ITEM = {type: NONE,location: 'Component:ScriptItem' }
 export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptItemControls' }
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 
-export const SCRIPT = { type: DEBUG, location: 'Component:Script' }
+export const SCRIPT = { type: NONE, location: 'Component:Script' }
 export const SCRIPT_VIEWER = { type: DEBUG, location: 'Component:ScriptViewer' }
 
 export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
