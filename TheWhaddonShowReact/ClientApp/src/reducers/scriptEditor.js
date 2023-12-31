@@ -28,7 +28,7 @@ import {
 import { SCENE } from '../dataAccess/scriptItemTypes';
 
 import { log, SCRIPT_EDITOR_REDUCER as logType } from '../logging';
-
+import {SCRIPT_ITEM, PERSON, PART} from '../dataAccess/localServerModels';
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
 
@@ -61,11 +61,11 @@ export const initialState = {
     redoList: [],
     trigger: {},
     personSelectorConfig: null,
-    scriptBodyPreviouslyLoaded: false,
+    maxWidthExists: false,
     maxScriptItemTextWidth: null,
     viewStyle: 'chat',
     readOnly: false,
-    initialSyncProgress: 0,
+    initialSyncProgress: { part: 0, person: 0, scriptItem: 0 },
     scriptItemTextWidths: {},
 
 }
@@ -236,10 +236,26 @@ export default function scriptEditorReducer(state = initialState, action) {
                 sceneLoaded: action.id
             }
         case UPDATE_INITIAL_SYNC_PROGRESS:
-            return {
-                ...state,
-                initialSyncProgress: action.progress
-            }
+
+            switch (action.localServerType) {
+                case SCRIPT_ITEM:
+                    return {
+                        ...state,
+                        initialSyncProgress: { ...state.initialSyncProgress, scriptItem: 1 }
+                    }
+                case PERSON:
+                    return {
+                        ...state,
+                        initialSyncProgress: { ...state.initialSyncProgress, person: 1 }
+                    }
+                case PART:
+                    return {
+                        ...state,
+                        initialSyncProgress: { ...state.initialSyncProgress, part: 1 }
+                    }
+                default: return state;
+            }; break;
+
         case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
 
             const newMaxWidth = getMaxScriptItemTextWidth(state.showSceneSelector, state.showComments)
@@ -247,13 +263,13 @@ export default function scriptEditorReducer(state = initialState, action) {
             if (newMaxWidth === null) {
                 return {
                     ...state,
-                    scriptBodyPreviouslyLoaded: false,
+                    maxWidthExists: false,
                 }
             }
             if (state.currentScriptItems.length === 0) {
                 return {
                     ...state,
-                    scriptBodyPreviouslyLoaded: false,
+                    maxWidthExists: false,
                 }
             }
 
@@ -276,15 +292,19 @@ export default function scriptEditorReducer(state = initialState, action) {
 
             return {
                 ...state,
-                scriptBodyPreviouslyLoaded: true
+                maxWidthExists: true
                 , scriptItemTextWidths: updatedScriptItemTextWidths
                 , maxScriptItemTextWidth: newMaxWidth
             }
         case UPDATE_SCRIPT_ITEM_TEXT_WIDTH:
 
-            const maxWidth = state.maxScriptItemTextWidth
+            const maxWidth = getMaxScriptItemTextWidth(state.showSceneSelector, state.showComments)
 
-            const newTextWidth = getTextAreaWidth(action.text, action.scriptItemType, action.endMargin, maxWidth);
+            const text = action.text || state.currentScriptItems[action.id]?.text || null;
+            const type = action.scriptItemType || state.currentScriptItems[action.id]?.type || null;
+            const endMargin = action.endMargin || null;
+
+            const newTextWidth = getTextAreaWidth(text, type, endMargin, maxWidth);
 
             return {
                 ...state,

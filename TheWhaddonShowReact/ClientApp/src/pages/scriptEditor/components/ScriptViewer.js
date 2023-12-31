@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateMaxScriptItemTextWidth } from '../../../actions/scriptEditor';
+import { updateMaxScriptItemTextWidth, updateScriptItemTextWidth } from '../../../actions/scriptEditor';
 
 //Components
 import Scene from './Scene'
@@ -31,13 +31,15 @@ function ScriptViewer(props) {
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig) || null
     const isPersonSelectorOpen = (personSelectorConfig !== null)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-    const scriptBodyPreviouslyLoaded = useSelector(state => state.scriptEditor.scriptBodyPreviouslyLoaded)
     const { showSceneSelector, showScriptViewer, showComments } = getShowBools(defaultShowSceneSelector, defaultShowComments)
     const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
+    const initialSyncProgressTotal = initialSyncProgress.scriptItem * 70 + initialSyncProgress.person * 15 + initialSyncProgress.part * 15
+    const maxWidthExists = useSelector(state => state.scriptEditor.maxWidthExists)
 
     //internal state
     const [scriptBodyLoaded, setScriptBodyLoaded] = useState(false)
-   // const [isPostShowComments, setIsPostShowComments] = useState(false)
+
+    // const [isPostShowComments, setIsPostShowComments] = useState(false)
 
     useEffect(() => {
         log(logType, 'useEffect[]:', { scriptBodyLoaded, showSceneSelector, showComments, show, showOrder, scenesToLoad })
@@ -49,8 +51,8 @@ function ScriptViewer(props) {
         }
 
         const handleResize = () => {
-            console.log('handleResize')
-            reCalculateTextWidths()
+            log(logType, 'handleResize')
+            reCalculateTextWidthsInView()
         }
 
 
@@ -60,16 +62,23 @@ function ScriptViewer(props) {
         return () => {
             // window.removeEventListener('resize', debouncedResize)
             window.removeEventListener('resize', handleResize)
-           
             dispatch(updateMaxScriptItemTextWidth())
         }
 
     }, [])
 
-    const reCalculateTextWidths = _.debounce(() => {
-        log(logType, 'recalculateTextWidths')
-        dispatch(updateMaxScriptItemTextWidth())
-    },1000)
+    const reCalculateTextWidthsInView = _.debounce(() => {
+        if (scenesToLoad === null) {
+            log(logType, 'recalculateTextWidths')
+            document.querySelectorAll('.inView').forEach((el) => {
+
+                const scriptItemId = el.id.substring(23)
+                log(logType, 'id:', scriptItemId)
+                dispatch(updateScriptItemTextWidth(scriptItemId))
+            })
+        }
+    }, 500)
+
 
 
     useEffect(() => {
@@ -84,7 +93,8 @@ function ScriptViewer(props) {
 
     useEffect(() => {
         log(logType, 'useEffect[intitialSyncProgress,scriptBodyLoaded,showComments]', { scriptBodyLoaded, showOrder, scenesToLoad })
-        if (initialSyncProgress === 1 && scriptBodyLoaded === true) {
+
+        if (initialSyncProgressTotal === 100 && scriptBodyLoaded === true) {
             dispatch(updateMaxScriptItemTextWidth())
         }
     }, [initialSyncProgress, scriptBodyLoaded])
@@ -96,7 +106,9 @@ function ScriptViewer(props) {
         return null
     }
 
-    log(logType, 'render', { scriptBodyPreviouslyLoaded, showOrderLength: showOrder?.length, scenesToLoad, initialSyncProgress })
+    log(logType, 'render', { showOrderLength: showOrder?.length, scenesToLoad, initialSyncProgress, initialSyncProgressTotal, maxWidthExists })
+
+
 
     return (
         <>
@@ -106,7 +118,7 @@ function ScriptViewer(props) {
                 <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
                     <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']} ${s[viewStyle]}`}>
                         <p className={`${s['comments-title']}`}>Comments</p>
-                        {(scriptBodyLoaded && initialSyncProgress === 1 && showOrder && showOrder.length > 0) &&
+                        {(maxWidthExists && showOrder && showOrder.length > 0) &&
                             showOrder.map((scene, idx) => {
 
                                 return ((idx < scenesToLoad) || scenesToLoad === null) &&
@@ -123,7 +135,7 @@ function ScriptViewer(props) {
 
                             <div className={`${s['loading-message']}`}>
                                 <p className={`${s['loading-message-text']}`}>Loading script...</p>
-                                <Progress className="mb-sm" value={initialSyncProgress * 100} />
+                                <Progress className="mb-sm" value={initialSyncProgressTotal} />
                             </div>
 
                         }
@@ -136,7 +148,7 @@ function ScriptViewer(props) {
                 <PersonSelector viewAs />
             }
 
-            
+
 
         </>
 

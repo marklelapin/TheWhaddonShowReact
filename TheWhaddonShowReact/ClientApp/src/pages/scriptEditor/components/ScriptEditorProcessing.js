@@ -269,6 +269,8 @@ export function ScriptEditorProcessing() {
                     dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId, previousCurtainUpdate.previousCurtainOpen))
                 })
             }
+
+            if (initialSyncProgress.scriptItem === 0) dispatch(updateInitialSyncProgress(SCRIPT_ITEM))
         }
 
         if (localServerTrigger.updates && localServerTrigger.type === PART) {
@@ -278,10 +280,7 @@ export function ScriptEditorProcessing() {
             const newPartPersons = newPartPersonsFromPartUpdates(partUpdates, currentPartPersons, storedPersons)
 
             dispatch(updateCurrentPartPersons(newPartPersons))
-            if (Object.keys(currentPartPersons).length === 0) {
-                log(logType,'updateInitialSyncProcess PART', { initialSyncProgress })
-                dispatch(updateInitialSyncProgress(initialSyncProgress + 0.3))
-            }
+            if (initialSyncProgress.part === 0) dispatch(updateInitialSyncProgress(PART))
 
         }
 
@@ -292,6 +291,7 @@ export function ScriptEditorProcessing() {
             const newPartPersons = newPartPersonsFromPersonUpdates(personUpdates, currentPartPersons)
 
             dispatch(updateCurrentPartPersons(newPartPersons))
+            if (initialSyncProgress.person === 0) dispatch(updateInitialSyncProgress(PERSON))
         }
 
     }, [localServerTrigger]) //eslint disable-line react-hooks/exhaustive-deps

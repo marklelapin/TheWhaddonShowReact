@@ -35,6 +35,7 @@ import { DEFAULT_END_MARGIN } from '../scripts/layout';
 
 //css
 import s from '../ScriptItem.module.scss';
+import { ElementInViewObserver } from '../../../components/ElementInViewObserver/ElementInViewObserver';
 
 
 function ScriptItemText(props) {
@@ -68,9 +69,12 @@ function ScriptItemText(props) {
     const [isFocused, setIsFocused] = useState(false);
     const [isBeingDeleted, setIsBeingDeleted] = useState(false)
     const [endMargin, setEndMargin] = useState(DEFAULT_END_MARGIN)
-
+    const [inView, setInView] = useState(false)
 
     const finalPlaceholder = getScriptItemPlaceholder(scriptItem.type)
+
+    
+
 
     useEffect(() => {
         //    log(logType, 'props', { props })
@@ -91,10 +95,9 @@ function ScriptItemText(props) {
 
     useEffect(() => {
         if (CURTAIN_TYPES.includes(scriptItem.type)) {
-            dispatch(updateScriptItemTextWidth(finalText))
+            dispatch(updateScriptItemTextWidth(id, finalText, type,endMargin ))
         }
     }, [previousCurtainOpen])
-
 
 
 
@@ -106,7 +109,7 @@ function ScriptItemText(props) {
         let newTempTextValue = e.target.value || ''
         newTempTextValue = addBrackets(scriptItem.type, newTempTextValue)
         setTempTextValue(newTempTextValue)
-        dispatch(updateScriptItemTextWidth(scriptItem.id, newTempTextValue, scriptItem.type, endMargin))
+        dispatch(updateScriptItemTextWidth(id, newTempTextValue, type, endMargin))
     }
 
     const handlePaste = (e) => {
@@ -115,7 +118,7 @@ function ScriptItemText(props) {
         const pastedText = clipboardData.getData('text');
         setEndMargin(100)
         setTempTextValue(pastedText)
-        dispatch(updateScriptItemTextWidth(scriptItem.id, pastedText, scriptItem.type, endMargin))
+        dispatch(updateScriptItemTextWidth(id, pastedText, type, endMargin))
     }
 
     const handleControlsClick = (e, action) => {
@@ -290,6 +293,15 @@ function ScriptItemText(props) {
 
     }
 
+    const handleEnterView = () => {
+        document.getElementById(`script-item-text-input-${id}`).classList.add('inView')
+        dispatch(updateScriptItemTextWidth(scriptItem.id, finalText, scriptItem.type, endMargin))
+    }
+
+    const handleExitView = () => {
+        document.getElementById(`script-item-text-input-${id}`).classList.remove('inView')
+    }
+
     const handleFocus = () => {
         setIsFocused(true)
         dispatch(updateScriptItemInFocus(scriptItem.id, (scriptItem.type === SCENE) ? scriptItem.id : scriptItem.parentId)) //update global state of which item is focussed
@@ -320,22 +332,25 @@ function ScriptItemText(props) {
         <div id={`script-item-text-${id}`} className={s['script-item-text']}>
 
             <ScriptItemHeader scriptItem={scriptItem} />
+            <ElementInViewObserver onEnterView={handleEnterView} onExitView={handleExitView}>
+                <TextareaAutosize
+                    key={id}
+                    id={`script-item-text-input-${id}`}
+                    placeholder={finalPlaceholder}
+                    className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input ${isFocused ? s['focused'] : ''}`}
+                    value={finalText}
+                    onChange={(e) => handleTextChange(e)}
+                    onBlur={(e) => handleBlur(e)}
+                    onFocus={() => handleFocus()}
+                    onKeyDown={(e) => handleKeyDown(e, scriptItem)}
+                    style={{ width: textWidthPx }}
+                    onPaste={(e) => handlePaste(e)}
+                //rows={getTextAreaRows().length}
+                >
+                </TextareaAutosize>
 
-            <TextareaAutosize
-                key={id}
-                id={`script-item-text-input-${id}`}
-                placeholder={finalPlaceholder}
-                className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input ${isFocused ? s['focused'] : ''}`}
-                value={finalText}
-                onChange={(e) => handleTextChange(e)}
-                onBlur={(e) => handleBlur(e)}
-                onFocus={() => handleFocus()}
-                onKeyDown={(e) => handleKeyDown(e, scriptItem)}
-                style={{ width: textWidthPx }}
-                onPaste={(e) => handlePaste(e)}
-            //rows={getTextAreaRows().length}
-            >
-            </TextareaAutosize>
+            </ElementInViewObserver>
+
 
             {(focus) &&
                 <ScriptItemControls

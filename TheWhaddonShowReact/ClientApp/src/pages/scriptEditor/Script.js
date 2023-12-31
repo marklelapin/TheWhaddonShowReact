@@ -33,7 +33,7 @@ function Script() {
 
     const { showSceneSelector, showScriptViewer } = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
-    const [scenesToLoad, setScenesToLoad] = useState(3)
+    const [scenesToLoad, setScenesToLoad] = useState(null)
 
 
     useEffect(() => {

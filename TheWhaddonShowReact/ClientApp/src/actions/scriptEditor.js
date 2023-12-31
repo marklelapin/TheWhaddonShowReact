@@ -217,10 +217,10 @@ export function updateSceneLoaded(id) {
     }
 }
 
-export function updateInitialSyncProgress(progress) {
+export function updateInitialSyncProgress(localServerType) {
     return {
         type: UPDATE_INITIAL_SYNC_PROGRESS,
-        progress,
+        localServerType,
     }
 }
 

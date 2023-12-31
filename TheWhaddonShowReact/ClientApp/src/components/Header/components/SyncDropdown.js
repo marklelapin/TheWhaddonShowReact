@@ -36,7 +36,7 @@ function SyncDropdown(props) {
     const scriptItems = useSelector((store) => store.localServer.scriptItems.history);
     const persons = useSelector((store) => store.localServer.persons.history);
     const parts = useSelector((store) => store.localServer.parts.history);
-
+    
     const pauseSync = useSelector((store) => store.localServer.sync.pauseSync);
 
     const unsyncedScriptItemUpdates = scriptItems?.filter(item => item.updatedOnServer === null).length || 0
