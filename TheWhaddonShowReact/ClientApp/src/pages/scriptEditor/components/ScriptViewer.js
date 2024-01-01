@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateMaxScriptItemTextWidth, updateScriptItemTextWidth } from '../../../actions/scriptEditor';
+import { updateMaxScriptItemTextWidth, updateScriptItemTextWidth, updateShowBools } from '../../../actions/scriptEditor';
 
 //Components
 import Scene from './Scene'
@@ -20,7 +20,7 @@ import Script from '../Script';
 function ScriptViewer(props) {
 
     //props
-    const { show, scenesToLoad, setScenesToLoad, onSceneLoaded } = props;
+    const { show, scenesToLoad, setScenesToLoad } = props;
     const _ = require('lodash');
     //Redux 
     const dispatch = useDispatch();
@@ -31,7 +31,7 @@ function ScriptViewer(props) {
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig) || null
     const isPersonSelectorOpen = (personSelectorConfig !== null)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-    const { showSceneSelector, showScriptViewer, showComments } = getShowBools(defaultShowSceneSelector, defaultShowComments)
+    const showComments = useSelector(state => state.scriptEditor.showComments)
     const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
     const initialSyncProgressTotal = initialSyncProgress.scriptItem * 70 + initialSyncProgress.person * 15 + initialSyncProgress.part * 15
     const maxWidthExists = useSelector(state => state.scriptEditor.maxWidthExists)
@@ -41,8 +41,10 @@ function ScriptViewer(props) {
 
     // const [isPostShowComments, setIsPostShowComments] = useState(false)
 
+
+
     useEffect(() => {
-        log(logType, 'useEffect[]:', { scriptBodyLoaded, showSceneSelector, showComments, show, showOrder, scenesToLoad })
+        log(logType, 'useEffect[]:', { scriptBodyLoaded, show, showOrder, scenesToLoad })
         const scriptBody = document.getElementById('script-body')
         if (scriptBody) {
             setScriptBodyLoaded(true)
@@ -50,7 +52,10 @@ function ScriptViewer(props) {
             setScriptBodyLoaded(false)
         }
 
+        setShowBools()
+
         const handleResize = () => {
+            setShowBools()
             log(logType, 'handleResize')
             reCalculateTextWidthsInView()
         }
@@ -80,17 +85,6 @@ function ScriptViewer(props) {
     }, 500)
 
 
-
-    useEffect(() => {
-        log(logType, 'useEffect[showScriptViewer]', { showScriptViewer })
-        const scriptBody = document.getElementById('script-body')
-        if (scriptBody) {
-            setScriptBodyLoaded(true)
-        } else {
-            setScriptBodyLoaded(false)
-        }
-    }, [showScriptViewer])
-
     useEffect(() => {
         log(logType, 'useEffect[intitialSyncProgress,scriptBodyLoaded,showComments]', { scriptBodyLoaded, showOrder, scenesToLoad })
 
@@ -105,6 +99,12 @@ function ScriptViewer(props) {
         setScenesToLoad(1)
         return null
     }
+
+    const setShowBools = () => {
+        const showBools = getShowBools(defaultShowSceneSelector, defaultShowComments)
+        dispatch(updateShowBools(showBools))
+    }
+
 
     log(logType, 'render', { showOrderLength: showOrder?.length, scenesToLoad, initialSyncProgress, initialSyncProgressTotal, maxWidthExists })
 
@@ -126,7 +126,6 @@ function ScriptViewer(props) {
                                         id={scene.id}
                                         sceneNumber={scene.sceneNumber}
                                         zIndex={scene.zIndex}
-                                        onLoaded={onSceneLoaded}
                                     />
                             }
 

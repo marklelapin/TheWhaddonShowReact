@@ -1,4 +1,4 @@
-﻿import { isScreen, isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper'
+﻿import { isScreen, isScreenSmallerThan } from '../../../core/screenHelper'
 import { getScriptItemPlaceholder } from './scriptItem';
 
 export const DEFAULT_END_MARGIN = 100;
@@ -8,29 +8,44 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
     let showSceneSelector;
     let showScriptViewer;
     let showComments;
+    let showCommentControls;
+    let showSceneSelectorControls;
+    let modalSceneSelector;
 
     if (isScreenSmallerThan('md')) {
         showSceneSelector = defaultShowSceneSelector
-        showScriptViewer = !defaultShowSceneSelector
+        showScriptViewer = true
         showComments = false
+        showCommentControls = false;
+        showSceneSelectorControls = true;
+        modalSceneSelector = true;
     }
-    if (isScreen('lg') && defaultShowComments === true) {
+    if (isScreen('md')) {
         showSceneSelector = defaultShowSceneSelector
         showScriptViewer = true
-        showComments = !defaultShowSceneSelector
+        showComments = defaultShowComments;
+        showCommentControls = true;
+        showSceneSelectorControls = true;
+        modalSceneSelector = (defaultShowComments === true) ? true : false
     }
-    if (isScreen('lg') && defaultShowComments === false) {
-        showSceneSelector = true
+    if (isScreen('lg')) {
+        showSceneSelector = defaultShowSceneSelector
         showScriptViewer = true
-        showComments = false
+        showComments = defaultShowComments
+        showCommentControls = true;
+        showSceneSelectorControls = true;
+        modalSceneSelector = false;
     }
     if (isScreen('xl')) {
         showSceneSelector = true
         showScriptViewer = true
         showComments = defaultShowComments
+        showCommentControls = true;
+        showSceneSelectorControls = false;
+        modalSceneSelector = false;
     }
 
-    return { showSceneSelector, showScriptViewer, showComments }
+    return { showSceneSelector, showScriptViewer, showComments, showCommentControls,showSceneSelectorControls, modalSceneSelector }
 
 }
 
@@ -40,7 +55,7 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
 export const getTextAreaWidth = (finalText, type, _endMargin, maxTextAreaWidth) => {
 
     const finalPlaceholder = getScriptItemPlaceholder(type)
-    const endMargin = _endMargin || DEFAULT_END_MARGIN
+    const endMargin = (_endMargin !== null) ? _endMargin  : DEFAULT_END_MARGIN
 
     const context = getContext(type)
 

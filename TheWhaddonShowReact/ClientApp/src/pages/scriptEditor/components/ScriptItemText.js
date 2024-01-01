@@ -11,7 +11,8 @@ import {
     DELETE_NEXT_SCRIPT_ITEM,
     UNDO,
     REDO,
-    CONFIRM_UNDO
+    CONFIRM_UNDO,
+    updateMovementInProgress
 } from '../../../actions/scriptEditor';
 
 //Components
@@ -69,7 +70,6 @@ function ScriptItemText(props) {
     const [isFocused, setIsFocused] = useState(false);
     const [isBeingDeleted, setIsBeingDeleted] = useState(false)
     const [endMargin, setEndMargin] = useState(DEFAULT_END_MARGIN)
-    const [inView, setInView] = useState(false)
 
     const finalPlaceholder = getScriptItemPlaceholder(scriptItem.type)
 
@@ -305,6 +305,7 @@ function ScriptItemText(props) {
     const handleFocus = () => {
         setIsFocused(true)
         dispatch(updateScriptItemInFocus(scriptItem.id, (scriptItem.type === SCENE) ? scriptItem.id : scriptItem.parentId)) //update global state of which item is focussed
+        dispatch(updateMovementInProgress(false))
         toggleMedia(false)
     }
 

@@ -4,11 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import {
     CLEAR_SCRIPT,
-    toggleSceneSelector,
     trigger,
     updatePersonSelectorConfig,
-    updateShowComments,
-    updateViewStyle
+    updateViewStyle,
+    updateShowBools,
 } from '../../../actions/scriptEditor';
 
 //Components
@@ -19,6 +18,7 @@ import { Icon } from '../../../components/Icons/Icons';
 //utitilites
 import { isScreen,isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { log } from '../../../logging';
+import { getShowBools } from '../scripts/layout';
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 import s from '../Script.module.scss';
@@ -36,7 +36,8 @@ function ScriptViewer(props) {
     //props
 
     //Redux State
-    const showComments = useSelector(state => state.scriptEditor.showComments)
+    const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
+    const defaultShowSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
@@ -56,12 +57,18 @@ function ScriptViewer(props) {
         dispatch(updateViewStyle(type))
     }
 
-    const handleArrowLeft = () => {
-        dispatch(toggleSceneSelector())
+    const toggleShowComments = () => {
+        const newShowComments = !defaultShowComments
+        const newShowSceneSelector = (newShowComments === false) ? false : defaultShowSceneSelector
+        const showBools = getShowBools(newShowSceneSelector, newShowComments)
+        dispatch(updateShowBools(showBools))
     }
 
-    const toggleShowComments = () => {
-        dispatch(updateShowComments(!showComments))
+    const toggleSceneSelector = () => {
+        const newShowSceneSelector = !defaultShowSceneSelector
+        const newShowComments = (newShowSceneSelector === false) ? false : defaultShowComments
+        const showBools = getShowBools(newShowSceneSelector, newShowComments)
+        dispatch(updateShowBools(showBools))
     }
 
     const togglePersonSelector = () => {
@@ -74,15 +81,16 @@ function ScriptViewer(props) {
 
     }
 
-    const singleSection = isScreenSmallerThan('xl')
+    const { showSceneSelector, showScriptViewer, showComments, showCommentControls,showSceneSelectorControls} = getShowBools(defaultShowSceneSelector, defaultShowComments)
+
 
     return (
         
         <div id="script-viewer-header" className={`bg-light flex-full-width ${s['script-viewer-header']}`}>
 
-            <div className={`${s['left-controls']} justify-content-start align-items-center`}>
-                <Icon icon="arrow-left" onClick={() => handleArrowLeft()}></Icon>
-            </div>
+            {/*<div className={`${s['left-controls']} justify-content-start align-items-center`}>*/}
+            {/*    <Icon icon="arrow-left" onClick={() => handleArrowLeft()}></Icon>*/}
+            {/*</div>*/}
             <div className={`${s['center-controls']} justify-content-center`}>
                 <Nav className="bg-light" tabs>
                     <NavItem>
@@ -95,7 +103,7 @@ function ScriptViewer(props) {
                     </NavItem>
                     <NavItem>
                         <NavLink id="classic-mode"
-                            className={`${s['script-viewer-navlink']} ${singleSection ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? 'active' : ''}`}
+                            className={`${s['script-viewer-navlink']} ${isScreenSmallerThan('xl') ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? 'active' : ''}`}
                             onClick={() => handleNavLink(CLASSIC)}>
                             <span>Classic</span><Icon icon="classic-mode" />
                         </NavLink>
@@ -119,11 +127,16 @@ function ScriptViewer(props) {
             <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
             <div className={`${['right-controls']} justify-content-end align-items-center`}>
                
-                {showComments && !singleSection && <Icon id="script-viewer-comments" icon="comment" onClick={() => toggleShowComments()} toolTip="Hide comments"></Icon>}
-                {!showComments && !singleSection && <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>}
+                {showCommentControls && showComments && <Icon id="script-viewer-comments" icon="comment" onClick={() => toggleShowComments()} toolTip="Hide comments"></Icon>}
+
+                {showCommentControls && !showComments && <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>}
+
+                {showSceneSelectorControls && <Icon id="script-viewer-show-selector-modal" icon="search" onClick={() => toggleSceneSelector()} toolTip="Search Scenes"></Icon>}
+
                 <Icon id="script-viewer-print" icon="print" onClick={() => handlePrint()} toolTip="Print whole script"></Icon>
-                {!singleSection && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>
-                }
+
+                {isScreenSmallerThan('xl') && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>}
+               
             </div>
 
         </div>

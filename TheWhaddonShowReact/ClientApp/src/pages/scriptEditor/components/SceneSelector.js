@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateSearchParameters, toggleSceneSelector, trigger, MOVE_SCENE } from '../../../actions/scriptEditor';
+import { updateSearchParameters, toggleSceneSelector, trigger, MOVE_SCENE, updateMovementInProgress } from '../../../actions/scriptEditor';
 
 //Components
 import ScriptSearch from './ScriptSearch'
@@ -97,8 +97,8 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                moveFocusToId(id,END,true)
-                dispatch(toggleSceneSelector())
+                dispatch(updateMovementInProgress(true))
+                moveFocusToId(id, END, true)
                 break;
             default:
                 break;

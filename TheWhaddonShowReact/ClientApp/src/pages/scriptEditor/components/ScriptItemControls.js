@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 import {
-    updateShowComments,
+    setShowComments,
     trigger,
     ADD_COMMENT,
     UPDATE_TYPE,
@@ -78,7 +78,7 @@ function ScriptItemControls(props) {
     }
 
     const goToComment = () => {
-        dispatch(updateShowComments(true))
+        dispatch(setShowComments(true))
         moveFocusToId(scriptItem.commentid);
     }
 

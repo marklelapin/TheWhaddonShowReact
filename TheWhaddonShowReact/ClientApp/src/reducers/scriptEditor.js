@@ -2,7 +2,7 @@ import {
     CLEAR_SCRIPT_EDITOR_STATE,
     UPDATE_SEARCH_PARAMETERS,
     TOGGLE_SCENE_SELECTOR,
-    UPDATE_SHOW_COMMENTS,
+    SET_SHOW_COMMENTS,
     UPDATE_VIEW_AS_PART_PERSON,
     UPDATE_CURRENT_PART_PERSONS,
     UPDATE_CURRENT_SCRIPT_ITEMS,
@@ -23,12 +23,15 @@ import {
     UPDATE_INITIAL_SYNC_PROGRESS,
     UPDATE_SCRIPT_ITEM_TEXT_WIDTH,
     UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
+    SET_SHOW_SCENE_SELECTOR,
+    UPDATE_SHOW_BOOLS,
+    UPDATE_MOVEMENT_IN_PROGRESS
 } from '../actions/scriptEditor';
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
 
 import { log, SCRIPT_EDITOR_REDUCER as logType } from '../logging';
-import {SCRIPT_ITEM, PERSON, PART} from '../dataAccess/localServerModels';
+import { SCRIPT_ITEM, PERSON, PART } from '../dataAccess/localServerModels';
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
 
@@ -38,8 +41,6 @@ export const initialState = {
         characters: [],
         myScenes: false,
     },
-    showComments: true,
-    showSceneSelector: true,
     show: {
         id: '3c2277bd-b117-4d7d-ba4e-2b686b38883a',
         parentId: '3c2277bd-b117-4d7d-ba4e-2b686b38883a',
@@ -68,6 +69,14 @@ export const initialState = {
     initialSyncProgress: { part: 0, person: 0, scriptItem: 0 },
     scriptItemTextWidths: {},
 
+    showSceneSelector: false,
+    showScriptViewer: true,
+    showComments: true,
+    showCommentControls: true,
+    showSceneSelectorControls: false,
+    modalSceneSelector: false,
+
+    movementInProgress: false,
 }
 
 export default function scriptEditorReducer(state = initialState, action) {
@@ -84,7 +93,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 showSceneSelector: !state.showSceneSelector,
             };
-        case UPDATE_SHOW_COMMENTS:
+        case SET_SHOW_COMMENTS:
             return {
                 ...state,
                 showComments: action.showComments,
@@ -298,6 +307,10 @@ export default function scriptEditorReducer(state = initialState, action) {
             }
         case UPDATE_SCRIPT_ITEM_TEXT_WIDTH:
 
+            if (state.movementInProgress === true) {
+                return state;
+            }
+
             const maxWidth = getMaxScriptItemTextWidth(state.showSceneSelector, state.showComments)
 
             const text = action.text || state.currentScriptItems[action.id]?.text || null;
@@ -310,7 +323,27 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 scriptItemTextWidths: { ...state.scriptItemTextWidths, [action.id]: newTextWidth }
             }
+        case SET_SHOW_SCENE_SELECTOR:
+            return {
+                ...state,
+                showSceneSelector: action.showSceneSelector
+            }
+        case UPDATE_SHOW_BOOLS:
+            return {
+                ...state,
+                showSceneSelector: action.showBools.showSceneSelector,
+                showScriptViewer: action.showBools.showScriptViewer,
+                showComments: action.showBools.showComments,
+                showCommentControls: action.showBools.showCommentControls,
+                showSceneSelectorControls: action.showBools.showSceneSelectorControls,
+                modalSceneSelector: action.showBools.modalSceneSelector,
+            };
 
+        case UPDATE_MOVEMENT_IN_PROGRESS:
+            return {
+                ...state,
+                movementInProgress: action.movementInProgress
+            }
         default: return state;
     }
 }

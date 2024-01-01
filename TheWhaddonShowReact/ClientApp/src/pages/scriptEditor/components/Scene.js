@@ -27,7 +27,7 @@ const Scene = memo((props) => {
     const dispatch = useDispatch();
 
     //props
-    const { id, sceneNumber, zIndex, onLoaded } = props;
+    const { id, sceneNumber, zIndex} = props;
     log(logType, 'props:', props)
 
     //Redux state
@@ -121,7 +121,7 @@ const Scene = memo((props) => {
                                 curtainOpen={scriptItem.curtainOpen}
                                 alignRight={scriptItem.alignRight}
                                 previousFocusId={scriptItem.previousFocusId}
-                                nextFocusId={scriptItem.nextFocusId}
+                                nextFocusId={(idx === bodyOrder.length -1) ? scene.nextSceneId : scriptItem.nextFocusId}
                             />
                         )
                     })
