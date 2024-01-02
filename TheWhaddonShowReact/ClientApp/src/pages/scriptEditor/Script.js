@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
-import { setShow, updateShowBools } from '../../actions/scriptEditor';
+import { setShow, updateInitialSyncProgress, updateShowBools } from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
@@ -33,7 +33,7 @@ function Script() {
     const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) || []
     const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
 
-    const [scenesToLoad, setScenesToLoad] = useState(null)
+    const [scenesToLoad, setScenesToLoad] = useState(3)
 
 
     useEffect(() => {

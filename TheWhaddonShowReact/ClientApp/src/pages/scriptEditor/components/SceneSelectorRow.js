@@ -11,15 +11,17 @@ import { log } from '../../../logging';
 import { ACT, SCENE } from '../../../dataAccess/scriptItemTypes';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 
+import s from '../Script.module.scss'
+
 function SceneSelectorRow(props) {
 
     const debug = true;
 
-    const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false} = props;
+    const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false, isInFocus} = props;
 
     log(debug, 'SceneSelectorRow: scene', scene)
 
-
+    
 
 
 
@@ -39,7 +41,7 @@ function SceneSelectorRow(props) {
 
                     {(scene.type === ACT) && <h2 key={scene.id}>{scene.text}</h2>}
 
-                    {(scene.type === SCENE) && <h5>{(scene.sceneNumber) ? `${scene.sceneNumber}. ` : ``} {scene.text}</h5>}
+                    {(scene.type === SCENE) && <h5 className={`${isInFocus ? s['highlight'] : ''}`} >{(scene.sceneNumber) ? `${scene.sceneNumber}. ` : ``} {scene.text}</h5>}
 
                     {scene.tags.map((tag) => <Button key={`${scene.id}-${tag}`} size='xs'>tag</Button>)}
 

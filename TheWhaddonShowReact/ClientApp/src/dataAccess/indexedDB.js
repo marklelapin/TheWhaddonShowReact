@@ -1,18 +1,21 @@
-﻿
+﻿import {log, INDEXED_DB as logType} from '../logging.js'
 
-export const saveState = (state) => {
+export const saveState = async (state) => {
+    log(logType,'saveState')
     const serializedState = JSON.stringify(state);
-    saveStateToIndexedDB(serializedState)
+    await saveStateToIndexedDB(serializedState)
 }
 
-export const loadState = () => {
-    const serializedState = retrieveStateFromIndexedDB()
+export const loadState = async () => {
+log(logType,'loadState')
+    const serializedState = await retrieveStateFromIndexedDB()
     const state = JSON.parse(serializedState)
     return state;
 }
 
-export const clearState = () => {
-    const dbRequest = indexedDB.open('reduxDB', 1);
+export const clearState = async () => {
+log(logType,'clearState')
+    const dbRequest = await indexedDB.open('reduxDB', 1);
     dbRequest.onsuccess = (event) => {
         const db = event.target.result;
         const transaction = db.transaction(['reduxState'], 'readwrite');
@@ -23,25 +26,33 @@ export const clearState = () => {
 }
 
 // Retrieve Redux State from IndexedDB
-const retrieveStateFromIndexedDB = () => {
-
-    const db = openOrCreateReduxDB()
+const retrieveStateFromIndexedDB = async () => {
+    log(logType,'retrieveStateFromIndexedDB')
+    const db = await openOrCreateReduxDB()
     const transaction = db.transaction(['reduxState'], 'readonly');
     const objectStore = transaction.objectStore('reduxState');
 
-    const request = objectStore.get(1);
-    request.onsuccess = (event) => {
-        // Deserialize and dispatch the Redux state
-        const serializedState = event.target.result.state;
-        return serializedState;
-    };
+    return new Promise((resolve, reject) => {
+        const request = objectStore.get(1);
+        request.onsuccess = (event) => {
+            // Deserialize and resolve with the Redux state
+            const serializedState = event.target.result.state;
+            resolve(serializedState);
+        };
+
+        request.onerror = (event) => {
+            reject(new Error('Error retrieving Redux state from IndexedDB'));
+        };
+    });
 
 };
 
 
 // Save Redux State to IndexedDB
-const saveStateToIndexedDB = (serializedState) => {
-    const db = openOrCreateReduxDB()
+const saveStateToIndexedDB = async (serializedState) => {
+    log(logType,'saveStateToIndexedDB')
+    const db = await openOrCreateReduxDB()
+    log(logType, 'objectStoreNames:', db.objectStoreNames)
     const transaction = db.transaction(['reduxState'], 'readwrite');
     const objectStore = transaction.objectStore('reduxState');
 
@@ -49,19 +60,26 @@ const saveStateToIndexedDB = (serializedState) => {
     objectStore.put({ id: 1, state: serializedState });
 };
 
-const openOrCreateReduxDB = () => {
-    const dbRequest = indexedDB.open('reduxDB', 1);
-    dbRequest.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        if (!db.objectStoreNames.contains('reduxState')) {
-            db.createObjectStore('reduxState', { keyPath: 'id' });
-        }
-    };
-    dbRequest.onsuccess = (event) => {
-        const db = event.target.result;
-        return db;
-    }
-    dbRequest.onerror = (event) => {
-        throw new Error('Failed to open or create IndexedDB');
-    };
+const openOrCreateReduxDB = async () => {
+    log(logType, 'openOrCreateReduxDB')
+    return new Promise((resolve, reject) => {
+        const dbRequest = indexedDB.open('reduxDB', 1);
+
+        dbRequest.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('reduxState')) {
+                db.createObjectStore('reduxState', { keyPath: 'id' });
+            }
+        };
+        
+        dbRequest.onsuccess = (event) => {
+            const db = event.target.result;
+            resolve(db);
+        };
+
+        dbRequest.onerror = (event) => {
+            reject(new Error('Failed to open or create IndexedDB'));
+        };
+    });
+
 }

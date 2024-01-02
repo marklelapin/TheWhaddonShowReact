@@ -23,6 +23,7 @@ function SceneSelector(props) {
     const dispatch = useDispatch();
 
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
+    const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
 
     const [beingDragged, setBeingDragged] = useState(false)
@@ -130,7 +131,7 @@ function SceneSelector(props) {
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         beingDragged={beingDragged}
-
+                        isInFocus={scene.id === sceneInFocus.id}
                     />
 
 

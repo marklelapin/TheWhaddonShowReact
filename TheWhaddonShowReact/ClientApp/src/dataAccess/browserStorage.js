@@ -4,12 +4,12 @@ import { clearScriptEditorState } from '../actions/scriptEditor';
 
 import { loadState, saveState, clearState } from '../dataAccess/indexedDB'; //localStorage
 
-import { log, LOCAL_STORAGE as logType } from '../logging'
+import { log, BROWSER_STORAGE as logType } from '../logging'
 
 
 export const resetSyncId = '9967fe80-a9d0-4c18-a021-b45073d564a2'
 
-export const saveStateToBrowserStorage = (state) => {
+export const saveStateToBrowserStorage = async (state) => {
     try {
         const stateToPersist = getStateToPersist(state)
         saveState(stateToPersist)
@@ -20,16 +20,18 @@ export const saveStateToBrowserStorage = (state) => {
 }
 
 export const loadStateFromBrowserStorage = () => {
-    try {
-        const state = loadState()
-        if (state === null) return undefined;
-        checkBrowserState(state)
-        return state;
-    }
-    catch (err) {
-        log(logType, 'Failed to get state from browser Storage: ' + err);
-        return undefined;
-    }
+    (async () => {
+        try {
+            const state = await loadState()
+            if (state === null) return undefined;
+            checkBrowserState(state)
+            return state;
+        }
+        catch (err) {
+            log(logType, 'Failed to get state from browser Storage: ' + err);
+            return undefined;
+        }
+    })();
 }
 
 export const clearStateFromBrowserStorage = (dispatch) => {
@@ -39,7 +41,7 @@ export const clearStateFromBrowserStorage = (dispatch) => {
         dispatch(clearScriptEditorState())
     }
     catch (err) {
-        log(logType,'Failed to clear state from browser Storage: ' + err);
+        log(logType, 'Failed to clear state from browser Storage: ' + err);
     }
 }
 
@@ -92,7 +94,7 @@ const latestLocalServerScriptItems = (state) => {
 
     const latestScriptItem = scriptItems.reduce((acc, item) => {
         if (new Date(item.created) > new Date(acc.created || 0)) {
-            return  item 
+            return item
         }
         return acc
     }, {})
@@ -103,12 +105,12 @@ const latestLocalServerScriptItems = (state) => {
 
 const latestScriptEditorScriptItems = (state) => {
 
-    
+
     const scriptItems = state.scriptEditor.currentScriptItems || {};
 
     const latestScriptItem = Object.values(scriptItems).reduce((acc, item) => {
         if (new Date(item.created) > new Date(acc.created || 0)) {
-            return  item 
+            return item
         }
         return acc
     }, {})
@@ -137,7 +139,7 @@ const latestScriptEditorParts = (state) => {
 
     const latestPart = Object.values(parts).reduce((acc, item) => {
         if (new Date(item.created) > new Date(acc.created || 0)) {
-            return item 
+            return item
         }
         return acc
     }, {})

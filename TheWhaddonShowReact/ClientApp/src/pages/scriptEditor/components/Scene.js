@@ -1,6 +1,6 @@
 ﻿//React and Redux
 import React, { memo } from 'react';
-import { useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { trigger, ADD_SCENE, updateSceneLoaded } from '../../../actions/scriptEditor'
@@ -44,7 +44,7 @@ const Scene = memo((props) => {
 
     const finalScriptItem = bodyOrder[bodyOrder.length - 1] || {}
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         log(logType,'useEffect[] dispatching updateSceneLoaded',id)
        dispatch(updateSceneLoaded(id))
     }, [])

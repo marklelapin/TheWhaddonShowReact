@@ -6,14 +6,17 @@ const NONE = 'NONE'
 export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdown' }
 
 export const AVATAR = { type: NONE, location: 'Component:Avatar' }
-
+export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
+export const CACHE_PROCESSING = { type: DEBUG, location: 'Component:CacheProcessing' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
+
+export const INDEXED_DB = { type: DEBUG, location: 'Script:indexedDB' }
+
 export const LOCAL_SERVER_UTILS = { type: NONE, location: 'Script:localServerUtils' }
 export const LOCAL_SERVER_SYNCING = { type: NONE, location: 'Component:LocalServerSyncing' }
 export const LOCAL_SERVER_REDUCER = { type: NONE, location: 'Reducer:localServer' }
 
 export const LOCAL_STORAGE = {type:NONE, location: 'Script:localStorage'}
-
 export const MEDIA_DISPLAY = { type: NONE, location: 'Component:MediaDisplay' }
 export const MEDIA_DROPZONE = { type: NONE, location: 'Component:MediaDropzone' }
 
@@ -22,7 +25,7 @@ export const PART_SELECTOR_DROPDOWN = {type: NONE, location: 'Component:PartSele
 
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
 
-export const SCENE = { type: DEBUG, location: 'Component:Scene' }
+export const SCENE = { type: NONE, location: 'Component:Scene' }
 export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }
@@ -37,7 +40,7 @@ export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptIte
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 
 export const SCRIPT = { type: NONE, location: 'Component:Script' }
-export const SCRIPT_VIEWER = { type: DEBUG, location: 'Component:ScriptViewer' }
+export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 
 export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 

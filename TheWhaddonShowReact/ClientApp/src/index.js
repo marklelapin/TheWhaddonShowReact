@@ -14,6 +14,7 @@ import createRootReducer from './reducers';
 
 import { doInit } from './actions/auth';
 import { createHashHistory } from 'history';
+import { loadState } from './dataAccess/indexedDB';
 
 const history = createHashHistory();
 

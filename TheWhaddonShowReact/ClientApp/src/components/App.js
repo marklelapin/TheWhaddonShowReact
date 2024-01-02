@@ -57,7 +57,7 @@ const currentUser = useSelector((state) => state.auth.currentUser)
         <>
             <LocalServerSyncing /> 
             <ScriptEditorProcessing />
-            <CacheProcessing />
+            
             <TextAreaContexts />
 
 
