@@ -17,7 +17,7 @@ export function CacheProcessing() {
     //Redux - localServer (handles syncing)
     const storedPersons = useSelector(state => state.localServer.persons.history)
 
-    const cachedAvatars = useSelector(state => state.cache.avatars)
+    const cachedAvatars = useSelector(state => state.cache[AVATARS])
 
     //internal State
     const [avatarsBeingProcessed, setAvatarsBeingProcessed] = useState([])
@@ -26,7 +26,7 @@ export function CacheProcessing() {
     useEffect(() => {
 
         const persons = getLatest(storedPersons)
-        const pictureRefs = persons.map(person => person.pictureRef).filter(pictureRef => pictureRef !== undefined || pictureRef !== null)
+        const pictureRefs = persons.map(person => person.pictureRef).filter(pictureRef => pictureRef !== undefined && pictureRef !== null)
         const unprocessedPictureRefs = pictureRefs.filter(pictureRef => !cachedAvatars[pictureRef])
 
         const unprocessedPictureRefsNotBeingProcessed = unprocessedPictureRefs.filter(pictureRef => !avatarsBeingProcessed.includes[pictureRef])

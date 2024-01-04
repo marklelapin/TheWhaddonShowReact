@@ -6,7 +6,7 @@ import Avatar from '../../../components/Avatar/Avatar.js';
 import UserDefault from '../../../images/sidebar/basil/UserDefault';
 
 import { impersonateUser, stopImpersonating, login, logout } from '../../../actions/user';
-import { updatePersonSelectorConfig, updateViewAsPartPerson } from '../../../actions/scriptEditor';
+import { setReadOnly, updatePersonSelectorConfig, updateViewAsPartPerson } from '../../../actions/scriptEditor';
 import { addUpdates } from '../../../actions/localServer';
 import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
 import PowerButton from '../../../images/sidebar/basil/PowerButton';
@@ -33,15 +33,18 @@ function AccountDropdown(props) {
     const doLogin = () => {
 
         const mark = persons.find(person => person.id === 'af60b927-7f73-4dfd-8343-206c1b30a03b')
+        const personToLogIn = mark
 
-        log(logType, 'login', { mark })
+        log(logType, 'login', { personToLogIn })
 
-        dispatch(login(mark))
+        dispatch(login(personToLogIn)) 
+        if (personToLogIn.isAdmin || personToLogIn.isWriter) dispatch(setReadOnly(false))
         dispatch(updateViewAsPartPerson(mark))
     }
 
     const doLogout = () => {
         dispatch(logout())
+        dispatch(setReadOnly())
         dispatch(updateViewAsPartPerson(null))
     }
 

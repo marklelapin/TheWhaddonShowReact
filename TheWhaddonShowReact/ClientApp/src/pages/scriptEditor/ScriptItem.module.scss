@@ -50,6 +50,7 @@
         position: relative;
         z-index: 3;
         width: auto;
+        height: 40px;
     }
 
     .dropzone {
@@ -458,6 +459,7 @@
     position: relative;
     z-index: 2;
     color: $text-color;
+    
 
     .part-selector-avatars {
         position: relative;

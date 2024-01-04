@@ -6,10 +6,11 @@ const NONE = 'NONE'
 export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdown' }
 
 export const AVATAR = { type: NONE, location: 'Component:Avatar' }
-export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
-export const CACHE_PROCESSING = { type: DEBUG, location: 'Component:CacheProcessing' }
-export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
+export const BROWSER_STORAGE = { type: DEBUG, location: 'Script:browserStorage' }
+export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
+export const COMMENT = { type: DEBUG, location: 'Component:COMMENT' }
 
+export const INDEX = { type: DEBUG, location: 'Component:INDEX' }
 export const INDEXED_DB = { type: DEBUG, location: 'Script:indexedDB' }
 
 export const LOCAL_SERVER_UTILS = { type: NONE, location: 'Script:localServerUtils' }
@@ -38,7 +39,7 @@ export const SCRIPT_EDITOR_UTILITY = { type: NONE, location: 'Script:utility' }
 export const SCRIPT_ITEM = {type: NONE,location: 'Component:ScriptItem' }
 export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptItemControls' }
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
-
+export const SCRIPT_ITEM_HEADER = { type: NONE, location: 'Component:ScriptItemHeader' }
 export const SCRIPT = { type: NONE, location: 'Component:Script' }
 export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 

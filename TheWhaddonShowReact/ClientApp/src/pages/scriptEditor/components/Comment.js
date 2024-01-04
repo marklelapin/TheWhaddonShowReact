@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useState } from 'react';
-import { useDispatch , useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 //Components
 import { Icon } from '../../../components/Icons/Icons';
@@ -29,31 +29,31 @@ function Comment(props) {
     const comment = useSelector(state => state.scriptEditor.currentScriptItems[id]) || [];
     const showComments = useSelector(state => state.scriptEditor.showComments);
     const scriptItem = { ...comment };
+    const readOnly = false //useSelector(state => state.scriptEditor.readOnly) || true
 
-    
 
     //internal state
     const [tempText, setTempText] = useState(null);
 
     const finalText = (tempText === null) ? scriptItem.text : tempText
 
-     log(logType, 'props', { id, comment,tempText, finalText})        
+    log(logType, 'props', { id, comment, tempText, finalText, readOnly })
 
     const handleTextChange = (e) => {
         setTempText(e.target.value || '')
     }
 
     const handleFocus = () => {
-        dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.parentId) )//update global state of which item is focussed
+        dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.parentId))//update global state of which item is focussed
     }
 
     const handleBlur = (e) => {
-        log(logType, 'handleBlur ', { tempText, eventTextValue : e.target.value })
+        log(logType, 'handleBlur ', { tempText, eventTextValue: e.target.value })
 
         if (scriptItem.text !== e.target.value) {
             dispatch(trigger(UPDATE_TEXT, { scriptItem, value: e.target.value }))
         }
-       // setTempText(null)
+        // setTempText(null)
     }
 
 
@@ -65,10 +65,8 @@ function Comment(props) {
         <div id={comment.id} key={comment.id} className={s['script-item-comment']}>
             <div className={s['comment-header']}>
                 <div className={s['created-by']}>Mark Carter</div>
-                    <Icon id={`delete-${comment.id}`} icon="trash" onClick={() => dispatch(trigger(DELETE_COMMENT, {scriptItem}))} toolTip="Delete comment"/>
+                    {!readOnly && <Icon id={`delete-${comment.id}`} icon="trash" onClick={() => dispatch(trigger(DELETE_COMMENT, { scriptItem }))} toolTip="Delete comment" />}
             </div>
-
-
 
             <TextareaAutosize
                 key={comment.id}
@@ -79,19 +77,21 @@ function Comment(props) {
                 onChange={(e) => handleTextChange(e)}
                 onBlur={(e) => handleBlur(e)}
                 onFocus={() => handleFocus()}
+                readOnly={readOnly}
             />
 
-                <div className={s['comment-header']}>
+            <div className={s['comment-header']}>
 
-                    <TagsInput key={comment.id}
-                        tags={comment.tags}
-                        tagOptions={tagOptions}
-                        onClickRemove={(tag) => dispatch(trigger(REMOVE_TAG, { scriptItem, tag }))}
-                        onClickAdd={(tag) => dispatch(trigger(ADD_TAG, { scriptItem, tag }))}
-                        strapColor='primary'
+                <TagsInput key={comment.id}
+                    tags={comment.tags}
+                    tagOptions={tagOptions}
+                    onClickRemove={(tag) => dispatch(trigger(REMOVE_TAG, { scriptItem, tag }))}
+                    onClickAdd={(tag) => dispatch(trigger(ADD_TAG, { scriptItem, tag }))}
+                    strapColor='primary'
+                    readOnly={readOnly}
 
-                    />
-                <Icon icon="play" onClick={() => moveFocusToId(comment.previousId,END)} />
+                />
+                    {!readOnly && <Icon icon="play" onClick={() => moveFocusToId(comment.previousId, END)} />}
             </div>
 
         </div>

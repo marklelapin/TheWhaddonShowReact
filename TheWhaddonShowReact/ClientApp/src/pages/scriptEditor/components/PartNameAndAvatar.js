@@ -18,13 +18,13 @@ function PartNameAndAvatar(props) {
         onAvatarClick,
         avatarToolTip,
         toolTipPlacement = 'top'
-        , onClick, onKeyDown, onBlur, onFocus, avatar, partName, personName, size = "md", selected = false } = props;
+        , onClick, onKeyDown, onBlur, onFocus, avatar, partName, personName, size = "md", selected = false, readOnly = false} = props;
 
     log(debug, 'PartNameAndAvatar Props', props)
 
     //Redux
     const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId])
-
+    
     const finalPartPerson = partPerson || partPersonFromId || {};
 
 
@@ -88,7 +88,8 @@ function PartNameAndAvatar(props) {
                             onChange={(e) => handleNameChange(e.target.value)}
                             onBlur={onBlur}
                             onFocus={onFocus}
-                            className={`${s['text-input']} text-input`}
+                        className={`${s['text-input']} text-input`}
+                            readOnly={readOnly}
                         />
 
                     }

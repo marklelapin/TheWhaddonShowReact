@@ -17,6 +17,7 @@
 
     .left-controls {
         flex: 0 0 20px;
+        align-items: center;
     }
 
     .center-controls {
@@ -24,8 +25,11 @@
         justify-self: center;
     }
 
-    .script-viewer-navlink.reduced-padding {
-        padding: 5px 3px !important;
+    .script-viewer-navlink {
+display: flex;
+align-items: center;
+            padding: 5px 3px !important;
+            
     }
 
     .view-as-control {

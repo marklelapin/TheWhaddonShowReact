@@ -16,6 +16,7 @@ import CurtainBackground from './CurtainBackground';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 //utilities
 import { log, SCRIPT_ITEM as logType } from '../../../logging';
+import { isScreenLargerThan } from '../../../core/screenHelper';
 //Constants
 import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
 //trigger types
@@ -44,7 +45,8 @@ const ScriptItem = memo((props) => {
         previousCurtainOpen = null,
         previousFocusId = null,
         nextFocusId = null,
-        zIndex
+        zIndex,
+        sceneNumber = null,
     } = props;
 
     log(logType, 'props:', props)
@@ -55,8 +57,8 @@ const ScriptItem = memo((props) => {
     const isUndoInProgress = useSelector(state => (state.scriptEditor.currentUndo[sceneId]))
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
-
-    log(logType, 'redux:', {focus, isUndoInProgress, scriptItem })
+    const readOnly = false //useSelector(state => state.scriptEditor.readOnly) || true
+    log(logType, 'redux:', { focus, isUndoInProgress, scriptItem, readOnly})
 
     const { type, commentId, nextId } = scriptItem;
 
@@ -116,7 +118,7 @@ const ScriptItem = memo((props) => {
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
     const handlePrint = () => {
-       alert("Sorry not yet implemented!")
+        alert("Sorry not yet implemented!")
     }
 
     log(logType, 'rendering:', { id })
@@ -132,7 +134,7 @@ const ScriptItem = memo((props) => {
 
                 <div id={partSelectorId} className={s['script-item-parts']}>
                     <PartSelector
-                        id={`part-selector-${scriptItem.id}` }
+                        id={`part-selector-${scriptItem.id}`}
                         key={id}
                         sceneId={sceneId}
                         allocatedPartIds={scriptItem.partIds}
@@ -144,7 +146,6 @@ const ScriptItem = memo((props) => {
 
             }
             <div className={`${s['script-item-text-area']} ${s[viewStyle]}`}>
-
                 <ScriptItemText
                     key={id}
                     scriptItem={scriptItem}
@@ -153,6 +154,7 @@ const ScriptItem = memo((props) => {
                     previousFocusId={previousFocusId}
                     nextFocusId={nextFocusId}
                     isUndoInProgress={isUndoInProgress}
+                    sceneNumber={sceneNumber}
                 />
 
             </div>
@@ -179,17 +181,18 @@ const ScriptItem = memo((props) => {
                     {isUndoInProgress &&
                         <Button id={confirmUndoId} key={confirmUndoId} size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>
                     }
-                    <Icon id={undoId} key={undoId} icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} toolTip="Undo"/>
-                    <Icon id={redoId}
-                        key={redoId}
-                        className={isUndoInProgress ? s['show-redo'] : s['hide-redo'] }
-                        icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />
-                    <Icon id={printSceneId} key={printSceneId}  icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>
-                    <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />
+                    {!readOnly && <Icon id={undoId} key={undoId} icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} toolTip="Undo" />}
+                    {!readOnly &&
+                        <Icon id={redoId}
+                            key={redoId}
+                            className={isUndoInProgress ? s['show-redo'] : s['hide-redo']}
+                            icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />}
+                    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>
+                    {!readOnly && <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />}
 
                 </div>
             }
-            {scriptItem && CURTAIN_TYPES.includes(type) &&
+            {scriptItem && CURTAIN_TYPES.includes(type) && !readOnly &&
                 <>
                     <div id={curtainCheckboxId} className={`${s['curtain-checkbox']} ${s[viewStyle.toLowerCase()]} ${s[viewStyle]} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']}`}>
                         <CheckBox key={scriptItem.id}
@@ -198,7 +201,7 @@ const ScriptItem = memo((props) => {
                             onChange={() => dispatch(trigger(TOGGLE_CURTAIN, { scriptItem }))}
                             toolTip="Toggle Curtain"
                             ios={true} />
-                </div>
+                    </div>
                     <QuickToolTip id={curtainCheckboxId} tip="Toggle Curtain" />
                 </>
 

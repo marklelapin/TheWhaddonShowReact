@@ -50,7 +50,8 @@ function ScriptItemText(props) {
         previousCurtainOpen = null,
         previousFocusId = null,
         nextFocusId = null,
-        isUndoInProgress = false
+        isUndoInProgress = false,
+        sceneNumber = null,
     } = props;
 
     const { id, type } = scriptItem
@@ -63,6 +64,7 @@ function ScriptItemText(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const textWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) //used to control when to re-render for text width.
     const textWidthPx = `${textWidth}px`
+    const readOnly = useSelector(state => state.scriptEditor.readOnly)
     // const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
     //log(logType,'storedTextWidth',storedTextWidth)
     //Internal state
@@ -294,18 +296,21 @@ function ScriptItemText(props) {
     }
 
     const handleEnterView = () => {
-        document.getElementById(`script-item-text-input-${id}`).classList.add('inView')
+       const el = document.getElementById(`script-item-text-input-${id}`)
+       if (el) el.classList.add('inView')
         dispatch(updateScriptItemTextWidth(scriptItem.id, finalText, scriptItem.type, endMargin))
     }
 
     const handleExitView = () => {
-        document.getElementById(`script-item-text-input-${id}`).classList.remove('inView')
+        const el = document.getElementById(`script-item-text-input-${id}`)
+        if (el) el.classList.remove('inView')
     }
 
     const handleFocus = () => {
         setIsFocused(true)
         dispatch(updateScriptItemInFocus(scriptItem.id, (scriptItem.type === SCENE) ? scriptItem.id : scriptItem.parentId)) //update global state of which item is focussed
         dispatch(updateMovementInProgress(false))
+        dispatch(updateScriptItemTextWidth(id,finalText,scriptItem.type,endMargin))
         toggleMedia(false)
     }
 
@@ -332,7 +337,7 @@ function ScriptItemText(props) {
     return (
         <div id={`script-item-text-${id}`} className={s['script-item-text']}>
 
-            <ScriptItemHeader scriptItem={scriptItem} />
+            <ScriptItemHeader scriptItem={scriptItem} sceneNumber={sceneNumber} />
             <ElementInViewObserver onEnterView={handleEnterView} onExitView={handleExitView}>
                 <TextareaAutosize
                     key={id}
@@ -346,6 +351,7 @@ function ScriptItemText(props) {
                     onKeyDown={(e) => handleKeyDown(e, scriptItem)}
                     style={{ width: textWidthPx }}
                     onPaste={(e) => handlePaste(e)}
+                    readOnly={readOnly}
                 //rows={getTextAreaRows().length}
                 >
                 </TextareaAutosize>
@@ -388,8 +394,8 @@ const changeBrackets = (type, text, addBrackets) => {
 
     switch (addBrackets) {
         case true:
-            if (output[0] !== '(') { output = `(${output}` }
-            if (output[output.length - 1] !== ')') { output = `${output})` }
+            output = output.replace(/[()]/g, '') //remove all brackets
+            output = `(${output})`  //add all brackets back in.
             return output;
         case false:
             if (output[0] === '(') { output = output.substring(1) }

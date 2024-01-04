@@ -55,6 +55,7 @@ function PartEditorRow(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
+    const readOnly = false // useSelector(state => state.scriptEditor.readOnly)
 
     //const scenePartIds = scene.partIds
 
@@ -78,7 +79,7 @@ function PartEditorRow(props) {
         }
     }, [])
 
-    
+
 
     const partWithTempName = () => {
         let partWithTempName = { ...partPerson }
@@ -256,7 +257,7 @@ function PartEditorRow(props) {
             <div key={partEditorRowId(partId, sceneId)} id={partEditorRowId(partId, sceneId)} className={`${s["part"]} ${s[viewStyle]}`} style={{ zIndex: zIndex }}>
 
                 <PartNameAndAvatar avatar={viewStyle === 'chat'} personName={viewStyle === 'classic'} partName
-                    id={'part-name-avatar-'+partEditorRowId(partId, sceneId)}
+                    id={'part-name-avatar-' + partEditorRowId(partId, sceneId)}
                     avatarInitials={partPerson.avatarInitials}
                     partPerson={partWithTempName()}
                     onAvatarClick={() => dispatch(updatePersonSelectorConfig({ sceneId, partId }))}
@@ -265,9 +266,10 @@ function PartEditorRow(props) {
                     onKeyDown={(e) => handleKeyDown(e)}
                     onBlur={(e) => handleBlur(e)}
                     onFocus={() => handleFocus()}
+                    readOnly={readOnly}
                 />
 
-                {(scriptItemInFocus) &&
+                {(scriptItemInFocus) && !readOnly &&
                     <div className={s['part-editor-controls']} >
                         <ScriptItemControls
                             part={partPerson}
@@ -285,15 +287,18 @@ function PartEditorRow(props) {
                         }
                     </div>
                 }
-                <div className={s['part-tags']}>
-                    <TagsInput
-                        strapColor="primary"
-                        tags={partPerson.tags}
-                        tagOptions={(focus) ? tagOptions : []}
-                        onClickAdd={(tag) => dispatch(trigger(ADD_PART_TAG, { partId, tag }))}
-                        onClickRemove={(tag) => dispatch(trigger(REMOVE_PART_TAG, { partId, tag }))} />
-                </div>
-
+                {!readOnly &&
+                    <div className={s['part-tags']}>
+                        <TagsInput
+                            strapColor="primary"
+                            tags={partPerson.tags}
+                            tagOptions={(focus) ? tagOptions : []}
+                            onClickAdd={(tag) => dispatch(trigger(ADD_PART_TAG, { partId, tag }))}
+                            onClickRemove={(tag) => dispatch(trigger(REMOVE_PART_TAG, { partId, tag }))}
+                            readOnly={readOnly}
+                        />
+                    </div>
+                }
 
             </div>
 

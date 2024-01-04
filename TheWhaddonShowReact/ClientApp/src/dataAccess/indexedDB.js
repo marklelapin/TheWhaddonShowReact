@@ -1,4 +1,5 @@
-﻿import {log, INDEXED_DB as logType} from '../logging.js'
+﻿
+import { log, INDEXED_DB as logType } from '../logging.js'
 
 export const saveState = async (state) => {
     log(logType,'saveState')
@@ -7,6 +8,8 @@ export const saveState = async (state) => {
 }
 
 export const loadState = async () => {
+
+    await setupPersistentIndexedDB()
 log(logType,'loadState')
     const serializedState = await retrieveStateFromIndexedDB()
     const state = JSON.parse(serializedState)
@@ -23,6 +26,31 @@ log(logType,'clearState')
         // Step 1: Use the delete method to remove the entry with key 1
         objectStore.delete(1);
     };
+}
+
+export const setupPersistentIndexedDB = async () => {
+
+    log(logType, 'setupPersistentIndexedDB', { persistExists: (navigator.storage.persist) ? true : false })
+
+    if (navigator.storage && navigator.storage.persist) {
+
+        navigator.storage.persist().then((granted) => {
+            if (granted) {
+                console.log("Storage will persist.");
+            } else {
+                console.log("Storage will not persist.");
+                alert("Refusing to persist storage means all unsynced changes will be lost on refresh. Please enable storage persistence for an optimal experience, to work offline and to avoid potential lose of data.")  
+            }
+        }).catch((error) => {
+            console.error("Error checking storage persistence:", error);
+            alert("Error checking storage persistence. Please enable storage persistence for an optimal experience, to work offline and to avoid potential lose of data.")
+        });
+    } else {
+        console.log("navigator.storage.persist() is not supported in this browser.");
+        // Handle the case where the browser doesn't support the method
+        alert("Because your browser does not support storage persistence , all unsynced changes will be lost on refresh. You will need to upgrade your browser for an optimal experience, to work offline and to avoid potential lose of data.")
+    }
+
 }
 
 // Retrieve Redux State from IndexedDB

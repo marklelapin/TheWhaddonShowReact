@@ -16,7 +16,8 @@ import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
 
 //utitilites
-import { isScreen,isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
+import { isScreen, isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
+import { setPauseSync } from '../../../actions/localServer'; 
 import { log } from '../../../logging';
 import { getShowBools } from '../scripts/layout';
 //css
@@ -38,6 +39,7 @@ function ScriptViewer(props) {
     //Redux State
     const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
     const defaultShowSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
+    const readOnly = false //useSelector(state => state.scriptEditor.readOnly)
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
@@ -126,16 +128,18 @@ function ScriptViewer(props) {
             </div>
             <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
             <div className={`${['right-controls']} justify-content-end align-items-center`}>
-               
+              
                 {showCommentControls && showComments && <Icon id="script-viewer-comments" icon="comment" onClick={() => toggleShowComments()} toolTip="Hide comments"></Icon>}
 
                 {showCommentControls && !showComments && <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>}
 
-                {showSceneSelectorControls && <Icon id="script-viewer-show-selector-modal" icon="search" onClick={() => toggleSceneSelector()} toolTip="Search Scenes"></Icon>}
+                {showSceneSelectorControls && <Icon id="script-viewer-show-selector-modal" icon="search" onClick={() => toggleSceneSelector()} toolTip="Search scenes"></Icon>}
 
                 <Icon id="script-viewer-print" icon="print" onClick={() => handlePrint()} toolTip="Print whole script"></Icon>
 
-                {isScreenSmallerThan('xl') && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>}
+                {isScreenLargerThan('lg') && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>}
+
+                {readOnly && <Icon id="script-viewer-refresh" icon="refresh" onClick={() => dispatch(setPauseSync(false))} toolTip="Refresh script"></Icon>}
                
             </div>
 

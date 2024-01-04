@@ -1,7 +1,7 @@
 ﻿//React and redux
 import React from 'react';
 import { useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
     setShowComments,
@@ -48,7 +48,7 @@ function ScriptItemControls(props) {
     log(logType, 'props', props)
 
     //Redux
-
+    const readOnly = false // useSelector(state => state.scriptEditor.readOnly) || true
     //Internal State
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -82,6 +82,7 @@ function ScriptItemControls(props) {
         moveFocusToId(scriptItem.commentid);
     }
 
+    if (readOnly) return null;
 
     return (
         /* <div className={s['script-item-controls']}>*/

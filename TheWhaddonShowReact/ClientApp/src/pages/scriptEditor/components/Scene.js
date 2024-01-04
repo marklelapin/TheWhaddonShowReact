@@ -27,7 +27,7 @@ const Scene = memo((props) => {
     const dispatch = useDispatch();
 
     //props
-    const { id, sceneNumber, zIndex} = props;
+    const { id, sceneNumber, zIndex } = props;
     log(logType, 'props:', props)
 
     //Redux state
@@ -45,8 +45,8 @@ const Scene = memo((props) => {
     const finalScriptItem = bodyOrder[bodyOrder.length - 1] || {}
 
     useEffect(() => {
-        log(logType,'useEffect[] dispatching updateSceneLoaded',id)
-       dispatch(updateSceneLoaded(id))
+        log(logType, 'useEffect[] dispatching updateSceneLoaded', id)
+        dispatch(updateSceneLoaded(id))
     }, [])
 
 
@@ -55,17 +55,16 @@ const Scene = memo((props) => {
         <>
             <div id={`scene-${scene.id}`} className={s[`scene-group`]} style={{ zIndex: zIndex }}>
                 <div className={s[`scene-header`]}>
-
                     {(scene) &&
                         <ScriptItem
                             id={scene.id}
                             key={scene.id}
                             sceneId={scene.id}
-                            sceneNumber={sceneNumber}
                             zIndex={scene.zIndex}
                             curtainOpen={previousCurtainOpen}
                             previousFocusId={scene.previousFocusId}
                             nextFocusId={scene.nextFocusId}
+                            sceneNumber={sceneNumber}
                         />
 
                     }
@@ -121,7 +120,7 @@ const Scene = memo((props) => {
                                 curtainOpen={scriptItem.curtainOpen}
                                 alignRight={scriptItem.alignRight}
                                 previousFocusId={scriptItem.previousFocusId}
-                                nextFocusId={(idx === bodyOrder.length -1) ? scene.nextSceneId : scriptItem.nextFocusId}
+                                nextFocusId={(idx === bodyOrder.length - 1) ? scene.nextSceneId : scriptItem.nextFocusId}
                             />
                         )
                     })

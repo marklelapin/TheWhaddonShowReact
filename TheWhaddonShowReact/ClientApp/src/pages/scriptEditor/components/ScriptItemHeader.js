@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Icon } from '../../../components/Icons/Icons'
 import PartSelectorDropdown from './PartSelectorDropdown';
 
-import { STAGING, INITIAL_STAGING, DIALOGUE, SOUND, LIGHTING, TYPES_WITH_HEADER, ACTION } from '../../../dataAccess/scriptItemTypes';
+import { STAGING, INITIAL_STAGING, DIALOGUE, SOUND, LIGHTING, TYPES_WITH_HEADER, SCENE } from '../../../dataAccess/scriptItemTypes';
 
 import { trigger, UPDATE_PART_IDS, CONFIRM_UNDO } from '../../../actions/scriptEditor';
 import { log, SCRIPT_ITEM_HEADER as logType } from '../../../logging';
@@ -12,9 +12,9 @@ import s from '../ScriptItem.module.scss';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 function ScriptItemHeader(props) {
 
-    const { scriptItem } = props;
+    const { scriptItem, sceneNumber } = props;
     const { type, partIds } = scriptItem;
-
+    log(logType, 'props:', props)
     const headerId = `script-item-header-${scriptItem.id}`
 
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
@@ -24,6 +24,7 @@ function ScriptItemHeader(props) {
     return (
 
         <div id={headerId} className={`${s['script-item-header']} ${s[viewStyle]}`}>
+            {(type === SCENE) && <span>Scene {sceneNumber}</span>} 
             {(type === STAGING) && <span>Staging</span>}
 
             {(type === INITIAL_STAGING) && <span>Initial Staging</span>}

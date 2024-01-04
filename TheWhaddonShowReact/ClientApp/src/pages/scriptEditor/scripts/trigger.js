@@ -88,7 +88,11 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     switch (triggerType) {
 
         case UPDATE_TEXT: scriptItemUpdates.push({ ...copy(scriptItem), text: value });
-            moveFocus = { id: scriptItem.nextId, position: END }
+            if (scriptItem.type === SCENE) {
+                doRefreshShowOrder = true;
+            } else {
+                moveFocus = { id: scriptItem.nextId, position: END }
+            }
             break;
         case UPDATE_PART_IDS: scriptItemUpdates.push({ ...copy(scriptItem), partIds: value });
             doRefreshAlignment = true;
@@ -248,7 +252,6 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             if (scriptItemUpdates.length > 0) {
                 sceneOrderUpdates.push(updateFocusOverrides(sceneOrder, scriptItemUpdates[0].partIds))
             }
-
 
             const previousFocusId = sceneOrder.find(item => item.type === SYNOPSIS).id
             const nextFocusId = sceneOrder.find(item => item.type === INITIAL_STAGING).id

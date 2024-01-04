@@ -344,6 +344,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 movementInProgress: action.movementInProgress
             }
+        
         default: return state;
     }
 }

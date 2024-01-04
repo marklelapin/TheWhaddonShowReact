@@ -12,6 +12,7 @@ export const resetSyncId = '9967fe80-a9d0-4c18-a021-b45073d564a2'
 export const saveStateToBrowserStorage = async (state) => {
     try {
         const stateToPersist = getStateToPersist(state)
+        log(logType,'browserStorage', { stateToPersistCopyId: stateToPersist.localServer.localCopyId })
         saveState(stateToPersist)
     }
     catch (err) {
@@ -19,9 +20,8 @@ export const saveStateToBrowserStorage = async (state) => {
     }
 }
 
-export const loadStateFromBrowserStorage = () => {
-    (async () => {
-        try {
+export const loadStateFromBrowserStorage = async () => {
+       try {
             const state = await loadState()
             if (state === null) return undefined;
             checkBrowserState(state)
@@ -30,8 +30,7 @@ export const loadStateFromBrowserStorage = () => {
         catch (err) {
             log(logType, 'Failed to get state from browser Storage: ' + err);
             return undefined;
-        }
-    })();
+    };
 }
 
 export const clearStateFromBrowserStorage = (dispatch) => {
@@ -39,6 +38,7 @@ export const clearStateFromBrowserStorage = (dispatch) => {
         clearState()
         dispatch(clearLocalServerState())
         dispatch(clearScriptEditorState())
+        window.location.reload();
     }
     catch (err) {
         log(logType, 'Failed to clear state from browser Storage: ' + err);
@@ -67,6 +67,7 @@ const getStateToPersist = (state) => {
 }
 
 const checkBrowserState = (state) => {
+    log(logType,'checkingBrowserState')
     const latestLocalItems = latestLocalServerScriptItems(state)
     const latestScriptItems = latestScriptEditorScriptItems(state)
     const latestLocalParts = latestLocalServerParts(state)
