@@ -1,7 +1,8 @@
 ﻿
 import { OPEN_CURTAIN, CLOSE_CURTAIN, INITIAL_CURTAIN, CURTAIN, CURTAIN_TYPES } from "../../../dataAccess/scriptItemTypes";
-import {mergeSceneOrder} from './sceneOrder'
-import { log } from '../../../logging'
+import { mergeSceneOrder } from './sceneOrder'
+import { log, TEST_CURTAIN } from '../../../logging'
+import { over } from "lodash";
 
 export function refreshCurtain(sceneOrder, newScriptItems = []) {
 
@@ -29,46 +30,30 @@ export function refreshCurtain(sceneOrder, newScriptItems = []) {
 
 
 
-export const newScriptItemsForToggleCurtain = (scriptItem, sceneOrder, previousCurtainOpen, overrideNewValue = null,) => {
+export const newScriptItemsForToggleCurtain = (scriptItem, overrideNewValue = null,) => {
 
-    let isCurrentlyOpen;
-    if (scriptItem.type === INITIAL_CURTAIN) {
-        isCurrentlyOpen = previousCurtainOpen[scriptItem.parentId]?.curtainOpen || false
+    const currentlyOpensCurtain = opensCurtain(scriptItem)
+    const currentlyClosesCurtain = closesCurtain(scriptItem)
+
+    const finalCurtainState = (overrideNewValue !==null) ? overrideNewValue : !opensCurtain(scriptItem)
+
+    if (currentlyClosesCurtain && finalCurtainState === false) {
+        return [];
     }
-    if (scriptItem.type === CURTAIN) {
-        isCurrentlyOpen = sceneOrder.find(item => item.id === scriptItem.id)?.curtainOpen || false
+
+    if (currentlyOpensCurtain && finalCurtainState === true) {
+        return []
     }
-        if (isCurrentlyOpen === overrideNewValue) return [] //the override value is the same as the current value so no change is required.
-
-
-
-    const currentlyOpensCurtain = (overrideNewValue) ? !overrideNewValue : opensCurtain(scriptItem)
-
-
 
     let newScriptItem = copy(scriptItem)
-    if (isCurrentlyOpen === false && currentlyOpensCurtain) {
-
+    if (finalCurtainState === false) {
         newScriptItem = changeToCloseCurtain(newScriptItem)
-        newScriptItem.text = 'Curtain remains closed.'
     }
 
-    if (isCurrentlyOpen && currentlyOpensCurtain === false) {
-
+    if (finalCurtainState === true) {
         newScriptItem = changeToOpenCurtain(newScriptItem)
-        newScriptItem.text = 'Curtain remains open.'
     }
 
-    if (isCurrentlyOpen === false && currentlyOpensCurtain === false) {
-        newScriptItem = changeToOpenCurtain(newScriptItem)
-        newScriptItem.text = 'Curtain opens.'
-    }
-
-    if (isCurrentlyOpen && currentlyOpensCurtain) {
-        newScriptItem = changeToCloseCurtain(newScriptItem)
-        newScriptItem.text = 'Curtain closes.'
-    }
- 
     return [newScriptItem];
 }
 
@@ -120,6 +105,19 @@ export const clearCurtainTags = (scriptItem) => {
     return newScriptItem;
 }
 
+
+export const curtainText = (scriptItem, previousCurtain = null) => {
+
+    let output = ''
+
+    if (previousCurtain === false && closesCurtain(scriptItem)) output = 'Curtain remains closed.';
+    if (previousCurtain === true && opensCurtain(scriptItem)) output = 'Curtain remains open.';
+    if (previousCurtain === false && opensCurtain(scriptItem)) output = 'Curtain opens.';
+    if (previousCurtain === true && closesCurtain(scriptItem)) output = 'Curtain closes.';
+    if (previousCurtain === null && opensCurtain(scriptItem)) output = 'Curtain opens.';
+    if (previousCurtain === null && closesCurtain(scriptItem)) output = 'Curtain closes.';
+    return output;
+}
 
 const copy = (object) => {
     return JSON.parse(JSON.stringify(object))

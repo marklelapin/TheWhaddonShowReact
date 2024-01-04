@@ -1,8 +1,7 @@
 ﻿
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
+import { SHOW,  SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { refreshCurtain } from "./curtain";
-import { initial, merge } from "lodash";
 
 import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../logging';
 
@@ -42,12 +41,29 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
         return []
     }
 
-
 }
 
 export const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
 
-    const mergedSceneOrder = getLatest([...currentSceneOrder, ...newScriptItems])
+    const preparedNewScriptItems = newScriptItems.map(item => { //adds current scene order calcs into newSCriptItems to preserver these before they are overwritten in later operations if required.
+        const currentSceneOrderItem = currentSceneOrder.find(currentItem => currentItem.id === item.id)
+        if (currentSceneOrderItem) {
+            return {
+                ...item,
+                curtainOpen: currentSceneOrderItem.curtainOpen,
+                zIndex: currentSceneOrderItem.zIndex,
+                nextFocusId: currentSceneOrderItem.nextFocusId,
+                previousFocusId: currentSceneOrderItem.previousFocusId,
+                alignRight: currentSceneOrderItem.alignRight
+
+            }
+        } else {
+            return item
+        }
+    })
+
+
+    const mergedSceneOrder = getLatest([...currentSceneOrder, ...preparedNewScriptItems])
 
     return mergedSceneOrder;
 }
@@ -119,12 +135,14 @@ export const sortSceneOrder = (head, unsortedSceneOrder) => {
 
         if (currentItem) {
             currentId = currentItem.nextId;
-            sortedLinkedList.push(currentItem);
+            sortedLinkedList.push(copy(currentItem));
 
         } else {
             currentId = null;
         }
     }
+
+    sortedLinkedList[sortedLinkedList.length - 1].nextId = null; //ensures last item in list has a nextId of null
 
     return sortedLinkedList;
 }
@@ -204,7 +222,7 @@ export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
     initialStaging.previousFocusId = partIds[partIds.length - 1]
     initialStaging.nextFocusId = initialStaging.nextId
 
-    finalScriptItem.nextFocusId = scene.nextSceneId
+    finalScriptItem.nextFocusId = scene.nextId
 
 
     const newSceneOrder = sceneOrder.map(item => {

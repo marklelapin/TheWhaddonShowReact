@@ -4,7 +4,7 @@ import TagButton from './TagButton';
 
 function TagsInput(props) {
 
-    let { tags = [], tagOptions, strapColor, onClickRemove, onClickAdd, id } = props
+    let { tags = [], tagOptions, strapColor, onClickRemove, onClickAdd, id, readOnly = false } = props
 
     /*try {*/
 
@@ -23,11 +23,10 @@ function TagsInput(props) {
             <div key={dropdownId()} className="tags-input" >
 
                 {tags.map((tag) => {
-                    return <TagButton key={`${dropdownId()}-${tag}`} tag={tag} strapColor={strapColor} onClickRemove={onClickRemove} onClickAdd={onClickAdd} />
+                    return <TagButton key={`${dropdownId()}-${tag}`} tag={tag} strapColor={strapColor} onClickRemove={onClickRemove} onClickAdd={onClickAdd} readOnly={readOnly} />
                 })}
 
-                {/*add 'add' button if there are any remaining tagOptions to add*/}
-                {(remainingTagOptions().length > 0) && (<TagButton tag={null} tagOptions={remainingTagOptions()} onClickAdd={onClickAdd} />)}
+                {(remainingTagOptions().length > 0) && !readOnly && (<TagButton tag={null} tagOptions={remainingTagOptions()} onClickAdd={onClickAdd} />)}
 
 
             </div>

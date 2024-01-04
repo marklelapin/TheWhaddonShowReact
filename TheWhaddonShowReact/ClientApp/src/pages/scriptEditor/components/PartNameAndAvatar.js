@@ -1,28 +1,39 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { getLatest, } from '../../../dataAccess/localServerUtils';
 import Avatar from '../../../components/Avatar/Avatar';
-import {  Input } from 'reactstrap';
-
-import { addPersonInfo } from '../scripts/part'
+import { Input, Tooltip} from 'reactstrap';
 
 import { log } from '../../../logging';
 import s from '../ScriptItem.module.scss';
+import QuickToolTip from '../../../components/Forms/QuickToolTip';
 
 function PartNameAndAvatar(props) {
 
     const debug = false;
 
-    const { partId = null, partPerson = null, onNameChange, onAvatarClick, onClick, onKeyDown, onBlur, onFocus, avatar, partName, size = "md" ,selected = false} = props;
+    const { id, partId = null,
+        partPerson = null,
+        onNameChange,
+        onAvatarClick,
+        avatarToolTip,
+        toolTipPlacement = 'top'
+        , onClick, onKeyDown, onBlur, onFocus, avatar, partName, personName, size = "md", selected = false, readOnly = false} = props;
 
     log(debug, 'PartNameAndAvatar Props', props)
 
     //Redux
     const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId])
-
+    
     const finalPartPerson = partPerson || partPersonFromId || {};
-  
+
+
+    //Tooltip
+
+    const partAvatarId = `part-avater-${id}`;
+    const personNameId = `person-name-${id}`;
+
+
 
     //EVENT HANDLERS
     const handleAvatarClick = (e) => {
@@ -48,10 +59,10 @@ function PartNameAndAvatar(props) {
 
     return (
 
-        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected)? s['selected'] : ''}` } onClick={onClick} >
+        <div className={`${s['part-avatar-name']} ${onClick ? 'clickable' : ''} ${(selected) ? s['selected'] : ''}`} onClick={onClick} >
 
             {(avatar) &&
-                <div className={s["part-avatar"]}>
+                <div id={partAvatarId} className={s["part-avatar"]}>
                     < Avatar
                         size={size}
                         avatarInitials={finalPartPerson.avatarInitials}
@@ -59,36 +70,55 @@ function PartNameAndAvatar(props) {
                         onClick={(e) => handleAvatarClick(e)} />
                 </div>
             }
+            {(avatar && avatarToolTip) &&
+                <QuickToolTip id={partAvatarId} tip={avatarToolTip} placement={toolTipPlacement} />
+            }
 
 
             {(partName) &&
                 <div className={s["part-name"]}>
                     {(onNameChange) &&
-                     
+
                         <Input
-                        type="text"
-                        key={finalPartPerson.id}
-                        placeholder="enter name"
-                        value={finalPartPerson.name || ''}
-                        onKeyDown={onKeyDown}
-                        onChange={(e) => handleNameChange(e.target.value)}
-                        onBlur={onBlur}
-                        onFocus={onFocus}
-                        className="text-input"
-                            />               
-               
+                            type="text"
+                            key={finalPartPerson.id}
+                            placeholder="enter name"
+                            value={finalPartPerson.name || ''}
+                            onKeyDown={onKeyDown}
+                            onChange={(e) => handleNameChange(e.target.value)}
+                            onBlur={onBlur}
+                            onFocus={onFocus}
+                        className={`${s['text-input']} text-input`}
+                            readOnly={readOnly}
+                        />
+
                     }
 
-                    {(!onNameChange) && 
-                       
+                    {(!onNameChange) &&
+
 
                         <p>{finalPartPerson.name}</p>
-                      
-                        }
-                    
+
+                    }
+
                 </div>
-            }            
-            
+            }
+            {(personName) &&
+                <>
+                <div id={personNameId} className={`${s["part-person-name"]} clickable`} onClick={(e) => handleAvatarClick(e)}>
+                    {(finalPartPerson.personName) &&
+                        ` played by ${finalPartPerson.personName}`
+                    }
+                    {(!finalPartPerson.personName) &&
+                        ' (unallocated)'    
+                    }
+                </div>
+                <QuickToolTip id={personNameId} tip={avatarToolTip} placement={toolTipPlacement} />
+
+                </>
+               
+                
+            }
         </div >
 
     )

@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import { useEffect, useState } from 'react';
+import {log, MEDIA_DISPLAY as logType} from '../../logging'
 
 function MediaDisplay(props) {
 
@@ -15,7 +16,7 @@ function MediaDisplay(props) {
     const [aspectRatio, setAspectRatio] = useState(null)
 
     useEffect(() => {
-
+        log(logType,'UseEffect[]')
         const getAspectRatio = async () => {
             const result = await calculateAspectRatio()
             setAspectRatio(result)
@@ -58,9 +59,6 @@ function MediaDisplay(props) {
             }
 
             mediaElement.src = objectURL
-
-
-
         });
     }
 
@@ -122,6 +120,7 @@ function MediaDisplay(props) {
                     title={title || youTubeUrl}
                     src={youTubeEmbedUrl}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    loading="lazy"
                 >
                 </iframe>
             </div>

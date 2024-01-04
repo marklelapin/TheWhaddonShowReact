@@ -3,7 +3,7 @@ import React from 'react';
 //Redux Hooks
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import isScreen from '../../../core/screenHelper';
+import { isScreen } from '../../../core/screenHelper';
 
 //Data Access / Local Server Model
 import { getLatest } from '../../../dataAccess/localServerUtils';

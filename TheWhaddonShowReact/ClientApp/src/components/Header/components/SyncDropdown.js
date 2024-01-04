@@ -8,7 +8,7 @@ import { Icon } from '../../../components/Icons/Icons';
 import Loader from '../../../components/Loader/Loader';
 
 //utils
-import { clearState } from '../../../dataAccess/localStorage'
+import { clearStateFromBrowserStorage } from '../../../dataAccess/browserStorage'
 import { setPauseSync } from '../../../actions/localServer';
 //Constants
 import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
@@ -36,7 +36,7 @@ function SyncDropdown(props) {
     const scriptItems = useSelector((store) => store.localServer.scriptItems.history);
     const persons = useSelector((store) => store.localServer.persons.history);
     const parts = useSelector((store) => store.localServer.parts.history);
-
+    
     const pauseSync = useSelector((store) => store.localServer.sync.pauseSync);
 
     const unsyncedScriptItemUpdates = scriptItems?.filter(item => item.updatedOnServer === null).length || 0
@@ -210,7 +210,7 @@ function SyncDropdown(props) {
 
 
     return (
-        <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown">
+        <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown" className={`${s['sync-dropdown']}`}>
             <DropdownToggle nav caret className={`${s.headerSvgFlipColor} text-center`} >
 
                 {syncText('Summary')}
@@ -223,7 +223,7 @@ function SyncDropdown(props) {
                 <DropdownItem divider />
                 <DropdownItem >Parts: {syncText(PART)}</DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem onClick={() => clearState(dispatch)}>Clear Local Storage</DropdownItem>
+                <DropdownItem onClick={() => clearStateFromBrowserStorage(dispatch)}>Clear Local Storage</DropdownItem>
                 <DropdownItem onClick={() => togglePauseSync()}>{pauseSync ? 'Resume Sync' : 'Pause Sync'}</DropdownItem> 
 
             </DropdownMenu>

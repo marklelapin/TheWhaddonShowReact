@@ -23,7 +23,7 @@ import { log, PART_EDITOR_ROW as logType } from '../../../logging'
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { DOWN, UP, START, END, ABOVE, BELOW } from '../scripts/utility';
 import { moveFocusToId, closestPosition } from '../scripts/utility';
-import {partEditorRowId } from '../scripts/part'
+import { partEditorRowId } from '../scripts/part'
 
 
 //styling
@@ -44,7 +44,7 @@ function PartEditorRow(props) {
         , previousFocusId
         , nextFocusId
         , scenePartIds
-        ,zIndex
+        , zIndex
     } = props;
 
 
@@ -54,6 +54,9 @@ function PartEditorRow(props) {
     const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
+    const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
+    const readOnly = false // useSelector(state => state.scriptEditor.readOnly)
+
     //const scenePartIds = scene.partIds
 
 
@@ -62,17 +65,20 @@ function PartEditorRow(props) {
     const [tempName, setTempName] = useState(null);
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
+
+
     useEffect(() => {
         log(logType, 'useEffect[] props', props)
         if (isFirst) { //flags if when this is created it is the only part. in that case it selects the scene title
-            moveFocusToId(sceneId, START)
-        } else { //makes the textarea the focus when created
-            const textInputRef = document.getElementById(partEditorRowId(partId,sceneId))?.querySelector('input')
+            //moveFocusToId(sceneId, START)
+        } else if (partPerson?.updatedOnServer === null) { //makes the textarea the focus when created unless it has come from the server.
+            const textInputRef = document.getElementById(partEditorRowId(partId, sceneId))?.querySelector('input')
             if (textInputRef) {
                 textInputRef.focus();
             }
         }
     }, [])
+
 
 
     const partWithTempName = () => {
@@ -101,7 +107,7 @@ function PartEditorRow(props) {
         const nextPart = scenePartIds[currentPartIndex + 1]
         const previousPart = scenePartIds[currentPartIndex - 1]
         log(logType, 'moveFocus', { partPerson, currentPartIndex, nextPart, previousPart, scenePartIds, sceneId })
-        log(logType, 'partEditorRowId',partEditorRowId(nextPart,sceneId))
+        log(logType, 'partEditorRowId', partEditorRowId(nextPart, sceneId))
 
         let moveToId;
 
@@ -109,7 +115,7 @@ function PartEditorRow(props) {
         if (direction === UP && !previousPart) moveToId = previousFocusId
         if (direction === DOWN && nextPart) moveToId = partEditorRowId(nextPart, sceneId)
         if (direction === DOWN && !nextPart) moveToId = nextFocusId
-            
+
         moveFocusToId(moveToId, position || END); return
     }
 
@@ -230,7 +236,6 @@ function PartEditorRow(props) {
     }
 
     const handleFocus = () => {
-        //dispatch(trigger(CONFIRM_UNDO))
         dispatch(updateScriptItemInFocus(partId, sceneId)) //update global state of which item is focussed
     }
 
@@ -249,19 +254,22 @@ function PartEditorRow(props) {
 
         partPerson && (
 
-            <div key={partEditorRowId(partId,sceneId)} id={partEditorRowId(partId,sceneId)} className={s["part"]} style={{ zIndex: zIndex }}>
+            <div key={partEditorRowId(partId, sceneId)} id={partEditorRowId(partId, sceneId)} className={`${s["part"]} ${s[viewStyle]}`} style={{ zIndex: zIndex }}>
 
-                <PartNameAndAvatar avatar partName
+                <PartNameAndAvatar avatar={viewStyle === 'chat'} personName={viewStyle === 'classic'} partName
+                    id={'part-name-avatar-' + partEditorRowId(partId, sceneId)}
                     avatarInitials={partPerson.avatarInitials}
                     partPerson={partWithTempName()}
                     onAvatarClick={() => dispatch(updatePersonSelectorConfig({ sceneId, partId }))}
+                    avatarToolTip={partPerson.personId ? "Re-allocate part" : "Allocate part"}
                     onNameChange={(text) => handleNameChange(text)}
                     onKeyDown={(e) => handleKeyDown(e)}
                     onBlur={(e) => handleBlur(e)}
                     onFocus={() => handleFocus()}
+                    readOnly={readOnly}
                 />
 
-                {(scriptItemInFocus) &&
+                {(scriptItemInFocus) && !readOnly &&
                     <div className={s['part-editor-controls']} >
                         <ScriptItemControls
                             part={partPerson}
@@ -279,15 +287,18 @@ function PartEditorRow(props) {
                         }
                     </div>
                 }
-                <div className={s['part-tags']}>
-                    <TagsInput
-                        strapColor="primary"
-                        tags={partPerson.tags}
-                        tagOptions={(focus) ? tagOptions : []}
-                        onClickAdd={(tag) => dispatch(trigger(ADD_PART_TAG, { partId, tag }))}
-                        onClickRemove={(tag) => dispatch(trigger(REMOVE_PART_TAG, { partId, tag }))} />
-                </div>
-
+                {!readOnly &&
+                    <div className={s['part-tags']}>
+                        <TagsInput
+                            strapColor="primary"
+                            tags={partPerson.tags}
+                            tagOptions={(focus) ? tagOptions : []}
+                            onClickAdd={(tag) => dispatch(trigger(ADD_PART_TAG, { partId, tag }))}
+                            onClickRemove={(tag) => dispatch(trigger(REMOVE_PART_TAG, { partId, tag }))}
+                            readOnly={readOnly}
+                        />
+                    </div>
+                }
 
             </div>
 

@@ -1,2 +1,10 @@
 @import '../../styles/app';
 
+
+
+.icon {
+    font-size: 18px !important;
+    @media only screen and (max-width: breakpoint-max(sm)) {
+        font-size: 26px !important;
+    }
+}

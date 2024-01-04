@@ -313,17 +313,17 @@ export function getLatest(history, includeInActive = false, includeSamples = fal
 
 
 
-export function prepareUpdate(updates, adjustment) {
-    return prepareUpdates(updates, adjustment)
+export function prepareUpdate(updates, overrideCreatedDate) {
+    return prepareUpdates(updates, overrideCreatedDate)
 }
 
-export function prepareUpdates(updates, adjustment = 1) {
+export function prepareUpdates(updates, overrideCreatedDate) {
 
     const outputArray = (!Array.isArray(updates)) ? [updates] : updates
 
     const cleanedOutputArray = outputArray.filter((update) => update.id !== null && update.id !== undefined);
 
-    const createdDate = localServerDateNow(adjustment)
+    const createdDate = localServerDateNow(overrideCreatedDate)
 
     const preparedUpdates = cleanedOutputArray.map((update) => {
         delete update.new
@@ -335,15 +335,13 @@ export function prepareUpdates(updates, adjustment = 1) {
 }
 
 
-export function localServerDateNow(adjustment = null) {
+export function localServerDateNow(overrideCreatedDate = null) {
 
     const moment = require("moment");
 
-    const createdDate = moment()
+    const createdDate = overrideCreatedDate ? moment(overrideCreatedDate) : moment()
 
-    const adjustedDate = createdDate.add(adjustment, 'ms')
-
-    const formattedDate = adjustedDate.format("YYYY-MM-DDTHH:mm:ss.SSS")
+    const formattedDate = createdDate.format("YYYY-MM-DDTHH:mm:ss.SSS")
 
     return formattedDate
 }

@@ -1,29 +1,32 @@
 ﻿//React & Redux
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateSearchParameters, toggleSceneSelector, trigger, MOVE_SCENE } from '../../../actions/scriptEditor';
+import { updateSearchParameters, toggleSceneSelector, trigger, MOVE_SCENE, updateMovementInProgress } from '../../../actions/scriptEditor';
 
 //Components
 import ScriptSearch from './ScriptSearch'
 import SceneSelectorRow from './SceneSelectorRow'
 
 //Utils
-import { ACT } from '../../../dataAccess/scriptItemTypes'
+
 import { log } from '../../../logging';
-import { moveFocusToId } from '../scripts/utility'
+import { moveFocusToId, END } from '../scripts/utility'
 
 
 
 function SceneSelector(props) {
     const debug = true;
 
-    const { show } = props;
+    const { show, scenesToLoad } = props;
 
     const dispatch = useDispatch();
 
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
+    const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
+
+    const [beingDragged, setBeingDragged] = useState(false)
 
     const handleSearchParameterChange = (type, value) => {
         let newSearchParameters = { ...searchParameters }
@@ -64,6 +67,7 @@ function SceneSelector(props) {
 
     const handleDragStart = (e) => {
         e.dataTransfer.setData("text/plain", `sceneId:${e.currentTarget.dataset.sceneid}`)
+        setBeingDragged(true)
     }
     const handleDragOver = (e) => {
         e.preventDefault()
@@ -78,7 +82,7 @@ function SceneSelector(props) {
     }
     const handleDrop = (e) => {
         e.preventDefault()
-
+        setBeingDragged(false)
         const newPreviousId = e.currentTarget.dataset.sceneid
 
         const sceneId = e.dataTransfer.getData("text/plain").substring(8)
@@ -94,8 +98,8 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                moveFocusToId(id)
-                dispatch(toggleSceneSelector())
+                dispatch(updateMovementInProgress(true))
+                moveFocusToId(id, END, true)
                 break;
             default:
                 break;
@@ -114,9 +118,11 @@ function SceneSelector(props) {
             <h2>Scenes</h2>
             <div className="full-height-overflow">
 
-                {filteredScenes().map(scene => {
+                {filteredScenes().map((scene,idx) => {
+                    
+                    return (idx < scenesToLoad || scenesToLoad === null) &&
 
-                    return <SceneSelectorRow
+                    <SceneSelectorRow
                         key={scene.id}
                         scene={scene}
                         onClick={(action, id) => handleClick(action, id)}
@@ -124,7 +130,8 @@ function SceneSelector(props) {
                         onDrop={handleDrop}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
-
+                        beingDragged={beingDragged}
+                        isInFocus={scene.id === sceneInFocus.id}
                     />
 
 

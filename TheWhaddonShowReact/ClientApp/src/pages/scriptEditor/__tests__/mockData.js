@@ -6,6 +6,9 @@ export  const createdDate = new Date('2023-12-01T00:00:00.000')
 export const laterCreatedDate = new Date('2023-12-01T00:01:00.000')
 export const muchLaterCreatedDate = new Date('2023-12-01T00:02:00.000')
 export const earlierCreatedDate = new Date('2023-11-30T00:00:00.000')
+export const muchEarlierCreatedDate = new Date('2023-11-29T00:00:00.000')
+export const muchMuchEarlierCreatedDate = new Date('2023-11-28T00:00:00.000')
+
 //Mock Persons
 export const personA = Object.freeze({ id: 'peA', created: createdDate, firstName: 'Albert', lastName: 'A', pictureRef: 'pictures/peA', isActive: true, updatedOnServer: null })
 export const personB = Object.freeze({ id: 'peB', created: createdDate, firstName: 'Bob', lastName: 'B', pictureRef: 'pictures/peB', isActive: true, updatedOnServer: null })
@@ -17,9 +20,9 @@ export const scene1 = Object.freeze({ id: 's1', created: createdDate, type: SCEN
 export const scene2 = Object.freeze({ id: 's2', created: createdDate, type: SCENE, text: 'Scene 2', nextId: 's3', previousId: 's1', partIds: ['p4', 'p5', 'p6'], isActive: true, updatedOnServer: null, parentId: 'show' })
 export const scene3 = Object.freeze({ id: 's3', created: createdDate, type: SCENE, text: 'Scene 3', nextId: 's4', previousId: 's2', partIds: ['p4', 'p5', 'p13'], isActive: true, updatedOnServer: null, parentId: 'show' })
 export const scene4 = Object.freeze({ id: 's4', created: createdDate, type: SCENE, text: 'Scene 4', nextId: 's5', previousId: 's3', partIds: ['p4'], isActive: true, updatedOnServer: null, parentId: 'show' })
-export const scene5 = Object.freeze({ id: 's5', created: createdDate, type: SCENE, text: 'Scene 5', nextId: 'a2', previousId: 's4', partIds: ['p4'], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene5 = Object.freeze({ id: 's5', created: createdDate, type: SCENE, text: 'Scene 5', nextId: 'a2', previousId: 's4', partIds: ['p4','p1'], isActive: true, updatedOnServer: null, parentId: 'show' })
 export const act2 = Object.freeze({ id: 'a2', created: createdDate, text: 'Act 2', nextId: 's6', previousId: 's5', partIds: [], isActive: true, updatedOnServer: null, parentId: 'show' })
-export const scene6 = Object.freeze({ id: 's6', created: createdDate, type: SCENE, text: 'Scene 6', nextId: 's7', previousId: 'a2', partIds: ['p1', 'p4'], isActive: true, updatedOnServer: null, parentId: 'show' })
+export const scene6 = Object.freeze({ id: 's6', created: muchMuchEarlierCreatedDate, type: SCENE, text: 'Scene 6', nextId: 's7', previousId: 'a2', partIds: ['p7', 'p8'], isActive: true, updatedOnServer: null, parentId: 'show' })
 export const scene7 = Object.freeze({ id: 's7', created: createdDate, type: SCENE, text: 'Scene 7', nextId: null, previousId: 's6', partIds: ['p7', 'p8', 'p9'], isActive: true, updatedOnServer: null, parentId: 'show' })
 
 
@@ -105,6 +108,20 @@ export const initialCurtain7 = Object.freeze({ id: 'si7ic', created: createdDate
 export const dialogue71 = Object.freeze({ id: 'si71', created: createdDate, type: DIALOGUE, text: 'Dialogue 7:1', nextId: 'si72', previousId: 'si7ic', partIds: ['p7'], parentId: 's7', isActive: true, updatedOnServer: null })
 export const dialogue72 = Object.freeze({ id: 'si72', created: createdDate, type: DIALOGUE, text: 'Dialogue 7:2', nextId: 'si73', previousId: 'si71', partIds: ['p8'], parentId: 's7', isActive: true, updatedOnServer: null })
 export const dialogue73 = Object.freeze({ id: 'si73', created: createdDate, type: DIALOGUE, text: 'Dialogue 7:3', nextId: null, previousId: 'si72', partIds: ['p9'], parentId: 's7', isActive: true, updatedOnServer: null })
+
+
+
+//used for undo testing
+
+export const synopsis6 = Object.freeze({ id: 'si6s', created: muchMuchEarlierCreatedDate, type: SYNOPSIS, text: 'Synopsis 6', nextId: 'si6is', previousId: 's6', partIds: [], parentId: 's6', isActive: true, updatedOnServer: null })
+export const initialStaging6 = Object.freeze({ id: 'si6is', created: muchMuchEarlierCreatedDate, type: INITIAL_STAGING, text: 'Initial Stage 6', nextId: 'si6ic', previousId: 'si6s', partIds: [], parentId: 's6', isActive: true, updatedOnServer: null })
+export const initialCurtain6 = Object.freeze({ id: 'si6ic', created: muchMuchEarlierCreatedDate, type: INITIAL_CURTAIN, text: 'Initial Curtain 6', nextId: 'si61', previousId: 'si6is', partIds: [], parentId: 's6', isActive: true, updatedOnServer: null })
+export const dialogue61 = Object.freeze({ id: 'si61', created: muchEarlierCreatedDate, type: DIALOGUE, text: 'Dialogue 6:1', nextId: 'si62', previousId: 'si6ic', partIds: ['p7'], parentId: 's6', isActive: true, updatedOnServer: null })
+export const dialogue62 = Object.freeze({ id: 'si62', created: earlierCreatedDate, type: DIALOGUE, text: 'Dialogue 6:2', nextId: 'si63', previousId: 'si61', partIds: ['p8'], parentId: 's6', isActive: true, updatedOnServer: null })
+export const dialogue63 = Object.freeze({ id: 'si63', created: createdDate, type: DIALOGUE, text: 'Dialogue 6:3', nextId: null, previousId: 'si62', partIds: ['p7'], parentId: 's6', isActive: true, updatedOnServer: null })
+
+
+
 
 
 

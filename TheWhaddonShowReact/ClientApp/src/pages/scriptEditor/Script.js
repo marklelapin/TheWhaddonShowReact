@@ -4,94 +4,82 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
-import {setShow} from '../../actions/scriptEditor';
+import { setShow, updateInitialSyncProgress, updateShowBools } from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
 import ScriptViewer from './components/ScriptViewer';
 import ShowSelector from './components/ShowSelector';
+import { Modal } from 'reactstrap';
 
 //Utils
-import { log } from '../../logging.js';
+import { log, SCRIPT as logType } from '../../logging.js';
 import isScreen from '../../core/screenHelper';
-
+import { getShowBools } from './scripts/layout';
 
 function Script() {
 
     //constants
-    const debug = true;
     const dispatch = useDispatch();
 
     //Redux State
     const showSceneSelector = useSelector((state) => state.scriptEditor.showSceneSelector)
+    const showComments = useSelector((state) => state.scriptEditor.showComments)
+    const modalSceneSelector = useSelector((state) => state.scriptEditor.modalSceneSelector)
+
     const show = useSelector((state) => state.scriptEditor.show)
-    //Internal State
-    const [isLargerScreen, setIsLargerScreen] = useState(null)
+    
 
+    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) || []
+    const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
 
-    //UseEffect Hooks
-    useEffect(() => {
-        window.addEventListener('resize', handleScriptScreenResize);
-
-        return () => { window.removeEventListener('resize', handleScriptScreenResize); }
-    }, []);
+    const [scenesToLoad, setScenesToLoad] = useState(3)
 
 
     useEffect(() => {
-        handleScriptScreenResize()
-    }, [])
+        log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder.length })
+        if (showOrder.length === 0) {
+            //do nothing
+        }
+        if (showOrder.length > 0 && scenesToLoad !== null && scenesToLoad < showOrder.length) {
+            setScenesToLoad(scenesToLoad + 1)
+        }
+        if (showOrder.length > 0 && scenesToLoad !== null && scenesToLoad >= showOrder.length) {
+            setScenesToLoad(null)
+        }
+        //if (showOrder.length > 0 && scenesToLoad === null) {
+        //    dispatch(updateInitialProgress)
+        //}
+        //else do nothing
+    }, [sceneLoaded, scenesToLoad, showOrder])
 
 
-    //eventHandlers
-    const handleScriptScreenResize = () => {
-        //console.log(`hadnle resize static: ${sidebarStatic} opened: ${sidebarOpened}`)
-        if (isSmallerScreen()) {
-            setIsLargerScreen(false)
-
-        } else
-            setIsLargerScreen(true)
+    const toggleSceneSelector = () => {
+        const showBools = getShowBools(!showSceneSelector, showComments)
+        dispatch(updateShowBools(showBools))
     }
 
-    const isSmallerScreen = () => {
-
-        return (isScreen('xs') || isScreen('sm') || isScreen('md') || isScreen('lg'))
-
-    }
-
-
-
-    log(debug, 'Script: show', show)
+    log(logType, 'Script: show', { scenesToLoad, show })
     //-----------------------------------------------------------------------
     return (
-
         <div id="script-page" className="flex-full-height">
-
-            {(isLargerScreen) && !show &&
-                <div className="page-top">
-                    <h1 className="page-title">Script - <span className="fw-semi-bold">{(show) ? show.text : 'Editor'}</span></h1>
-                </div>
-            }
-
             {show &&
                 <div id="script-page-content" className="page-content flex-full-width">
-                    {(showSceneSelector || isLargerScreen) &&
-                            <SceneSelector show={show} />
+                    {(showSceneSelector && !modalSceneSelector) &&
+                        <SceneSelector show={show} scenesToLoad={scenesToLoad} />
                     }
-
-                    {(!showSceneSelector || isLargerScreen) &&   
-                            <ScriptViewer show={show} />
-                    }
-
+                    <ScriptViewer show={show}
+                        scenesToLoad={scenesToLoad}
+                        setScenesToLoad={(value) => setScenesToLoad(value)}
+                    />
                 </div>
             }
-
             {!show &&
-       
-                <ShowSelector onClick={(show) => dispatch(setShow(show))} />            
-   
+                <ShowSelector onClick={(show) => dispatch(setShow(show))} />
             }
-
-
+            <Modal isOpen={showSceneSelector && modalSceneSelector} toggle={() => toggleSceneSelector()}>
+                <SceneSelector show={show} scenesToLoad={scenesToLoad} />
+            </Modal>
         </div>
     )
 

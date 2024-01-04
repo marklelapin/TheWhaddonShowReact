@@ -17,7 +17,7 @@ import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils';
 
 
 //utils
-import { log } from '../../logging';
+import { log, MEDIA_DROPZONE as logType} from '../../logging';
 
 //constants
 import { MEDIA } from '../../dataAccess/storageContainerNames';
@@ -26,8 +26,6 @@ import { MEDIA } from '../../dataAccess/storageContainerNames';
 import s from './Uploaders.module.scss';
 
 function MediaDropzone(props) {
-
-    const debug = true;
 
     const {
         singleFile = false
@@ -42,22 +40,21 @@ function MediaDropzone(props) {
     } = props;
 
 
-
-    log(debug, 'MediaDropzone existingMediaURLs', existingMediaURLs)
-
     const [newMediaFiles, setNewMediaFiles] = useState([]);
     const [mediaFiles, setMediaFiles] = useState([]);
     const [youTubeUrl, setYouTubeUrl] = useState('');
 
     useEffect(() => {
-        getMediaFiles()
+        log(logType, 'useEffect[]')
+        refreshMediaFiles()
     }, [])
 
     useEffect(() => {
-        getMediaFiles()
-    }, [existingMediaURLs, newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
+        log(logType, 'useEffect[existingMediaURLS,newMediaFiles]', {existingMediaURLs,newMediaFiles})
+        refreshMediaFiles()
+    }, [existingMediaURLs,newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
 
-    const getMediaFiles = async () => {
+    const refreshMediaFiles = async () => {
 
         const youTubeURLs = existingMediaURLs.filter(url => url.includes('youtube.com')) || []
         const fileURLs = existingMediaURLs.filter(url => !youTubeURLs.includes(url)) || []
@@ -65,8 +62,8 @@ function MediaDropzone(props) {
         const existingFiles = await fetchFiles(MEDIA, fileURLs) || []
 
         const newFiles = [...youTubeURLs, ...existingFiles, ...newMediaFiles]
-        setMediaFiles(newFiles)
-        log(debug, 'MediaDropzone newFiles', newFiles)
+        if (newFiles && newFiles.length > 0) { setMediaFiles(newFiles) }
+        log(logType, 'refreshMediaFiles setMediaFiles:', newFiles)
     }
 
     const handleDrop = (selectedFiles) => {
@@ -180,7 +177,7 @@ function MediaDropzone(props) {
         ? 'drag or click to add more media...'
         : 'This dropzone accepts images, audio files, video files or youTube urls. Try dropping some here, or click to select files to upload.'
 
-    log(debug, 'MediaDropzone media', mediaFiles)
+    log(logType, 'mediaFiles', mediaFiles)
 
     return (
 

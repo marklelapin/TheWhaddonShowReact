@@ -1,28 +1,65 @@
 @import '../../styles/app';
 
+
+.classic {
+    .avatar {
+        display: none;
+    }
+}
+
+
 //General ScriptItem Styles
 .script-item {
-    padding: 10px 50px 10px 50px;
+    padding: 10px 50px 0px 50px;
     display: flex;
     flex-direction: column;
-    background-color: $gray-inverse;
     position: relative;
+    color: black;
 
-    overflow: hidden;
 
+    &.classic {
+        align-items: center;
+    }
+
+    &.chat {
+        color: white;
+        background-color: $gray-inverse;
+    }
 
     .text-input {
         text-align: start;
+        color: black;
     }
+
+    &.curtain-open.chat {
+        color: white;
+
+        .text-input {
+            color: white;
+        }
+    }
+
+    &.curtain-closed.chat {
+        ::placeholder {
+            color: $gray-900;
+        }
+    }
+
 
     .script-item-parts {
         position: relative;
         z-index: 3;
         width: auto;
+        height: 40px;
     }
 
     .dropzone {
         z-index: 2;
+        background-color: transparent;
+
+        &.classic {
+            display: none;
+        }
     }
     /*Layout*/
     .script-item-text-area {
@@ -32,6 +69,10 @@
         justify-content: center;
         max-width: 100%;
         z-index: 2;
+
+        &.classic {
+            justify-content: start;
+        }
 
         .script-item-text {
             display: flex;
@@ -43,7 +84,18 @@
 
             .script-item-header {
                 position: relative;
-                z-index: 4;
+                z-index: 5;
+                font-weight: $font-weight-bold;
+
+                &.classic {
+                    font-size: $h6-font-size;
+                    text-align: center;
+                    align-self: center;
+                }
+
+                .type-dropdown {
+                    z-index: 1;
+                }
             }
 
             &.align-right {
@@ -57,9 +109,40 @@
             .text-input {
                 position: relative;
                 z-index: 4;
+                background-color: transparent;
+
+                .bracketed-text::before {
+                    content: '( ';
+                }
+
+                .bracketed-text::after {
+                    content: ' )';
+                }
+
+                &.classic {
+                    font-size: $h5-font-size;
+                    text-align: center;
+                    align-self: center;
+                }
+            }
+
+            .open-bracket {
+                position: absolute;
+                top: 7px;
+                left: 20px;
+            }
+
+            .close-bracket {
+                position: absolute;
+                bottom: 7px;
+                right: 20px;
             }
         }
     }
+}
+
+.final-script-item {
+    padding-bottom: 10px;
 }
 
 .stage-curtain {
@@ -91,22 +174,13 @@
 }
 
 .curtain-open {
-    color: white;
-
-    &.scene {
-        color: black;
+    &.chat {
+        color: white;
     }
 
-    &.synopsis {
-        color: black;
-    }
-
-    &.initialstaging {
-        color: black;
-    }
 }
 
-.curtain-closed {
+.curtain-closed.chat {
     color: black;
 }
 
@@ -130,7 +204,7 @@
 
 .header-controls.header-exists {
     top: 0px;
-    right: -55px;
+    right: -52px;
 }
 
 .align-right {
@@ -148,6 +222,7 @@
     display: flex;
     flex-direction: row;
 }
+
 
 .header-left-controls {
     flex: 1;
@@ -178,19 +253,23 @@
 
 
 .part-editor {
-    padding: 0px 50px 0px 50px;
+    padding: 0px 50px 10px 50px;
     background-color: $gray-inverse;
     display: flex;
     flex-direction: column;
     position: relative;
     z-index: 3;
+    font-weight: $font-weight-bold;
 
+    &.classic {
+        background-color: white;
+    }
 
     p {
         z-index: 2;
-        background-color: white;
         margin: 0;
         padding-left: 20px;
+        padding-top: 0px;
     }
 
     .part {
@@ -198,10 +277,26 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: 0px 0px 10px 20px;
+        justify-content: space-between;
+        padding: 0px 0px 4px 20px;
         position: relative;
         z-index: 2;
-        background-color: white;
+
+        .text-input {
+            background-color: transparent;
+            border: 0px;
+            color: black;
+            font-weight: $font-weight-bold;
+        }
+
+        .part-avatar-name {
+            font-weight: $font-weight-base;
+        }
+
+        ::placeholder {
+            color: black;
+        }
+
 
 
         .part-editor-controls {
@@ -210,7 +305,15 @@
         }
     }
 
+    &.chat.curtain-open {
+        color: white;
 
+        .part {
+            .text-input {
+                color: white;
+            }
+        }
+    }
 
     .part-avatar-name {
         flex: 1;
@@ -224,6 +327,7 @@
     text-align: start;
 }
 
+
 .part-tags {
     flex: 1;
     text-align: start;
@@ -231,23 +335,43 @@
     z-index: 2;
 }
 
+.classic {
+
+    .part-avatar-name {
+        flex: auto;
+        justify-content: start;
+
+        .text-input {
+            font-weight: $font-weight-bold;
+        }
+    }
+
+    .part-tags {
+        flex: 1;
+    }
+
+    .part-person-name {
+        flex: unset;
+        padding-left: 10px;
+    }
+}
+
+
 /*PART AVATAR NAME*/
 .part-avatar-name {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: start;
+    align-items: center;
+}
+
+.part-person-name {
+    flex: auto;
+    text-align: start;
     align-items: center;
 }
 
 .part-avatar {
-}
-
-.part-name {
-    flex: 1;
-    text-align: start;
-    display: flex;
-    align-self: stretch;
-    align-items: center;
 }
 
 
@@ -265,12 +389,16 @@
     display: flex;
     flex-direction: column;
     text-align: justify;
+    padding: 2px;
 
+    @include dropdown-box();
 
     .comment-header {
         display: flex;
         flex-direction: row;
         color: black;
+        padding-left: 5px;
+        font-weight: $font-weight-bold;
 
         .created-by {
             flex: 1;
@@ -279,8 +407,12 @@
 
     .text-input {
         text-align: justify;
-        font-size: $font-size-base;
-        font-weight: $font-weight-base;
+        font-size: $font-size-base !important;
+        font-weight: $font-weight-base !important;
+        border-width: 0px;
+        padding: 0px 5px 0px 5px !important;
+        border-width: 0px !important;
+        color: black;
     }
 
     .comment-footer {
@@ -307,6 +439,13 @@
 }
 
 .script-comments {
+
+    .text-input {
+        font-size: $font-size-base !important;
+        font-weight: $font-weight-base !important;
+        color: black;
+    }
+
     &.show-comments {
         flex: 0 0 310px;
     }
@@ -320,6 +459,7 @@
     position: relative;
     z-index: 2;
     color: $text-color;
+    
 
     .part-selector-avatars {
         position: relative;
@@ -380,6 +520,13 @@
     }
 }
 
+.classic {
+    .part-selector-dropdown {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
 .align-right {
     .part-selector-dropdown {
         right: 0;
@@ -424,15 +571,14 @@
 
 //Type Specific ScriptItem Styles
 .show {
-
-    textarea {
+    .text-input {
         font-size: $h2-font-size;
         text-align: center;
     }
 }
 
 .act {
-    textarea {
+    .text-input {
         font-size: $h2-font-size;
         text-align: center;
     }
@@ -448,18 +594,15 @@
     }
 
     .script-item-text-area {
-        background-color: white;
         text-align: center;
     }
 
     .dropzone {
-        background-color: white;
     }
 
     .text-input {
         font-size: $h5-font-size;
         font-weight: $font-weight-bold;
-        background-color: white;
         padding-top: 0px;
         padding-bottom: 0px;
         text-align: center;
@@ -470,11 +613,27 @@
         top: 10px;
         right: 0px;
         z-index: 5;
+
+        .hide-redo {
+            color: transparent;
+        }
     }
+    /*&.curtain-open {
+        .script-item-controls{
+            color: black;
+        }
+
+        .text-input {
+            color: white;
+        }
+        .scene-controls {
+            color: white;
+        }
+    }*/
 
     .bottom-right-controls {
         bottom: 0px;
-        right: -15px;
+        right: -17px;
     }
 
     .header-controls {
@@ -486,16 +645,15 @@
     color: black;
 }
 
+
 .synopsis {
     padding-top: 0px;
     padding-bottom: 0px;
 
     .script-item-text-area {
-        background-color: white;
     }
 
     .dropzone {
-        background-color: white;
         padding-top: 0px;
         padding-bottom: 0px;
     }
@@ -508,13 +666,13 @@
 
     .bottom-right-controls {
         bottom: 0px;
-        right: -15px;
+        right: -17px;
     }
 
     .header-controls {
         top: unset;
         bottom: 0px;
-        right: -50px;
+        right: -57px;
         margin: 0px;
 
         .header-right-controls {
@@ -527,11 +685,9 @@
     padding-top: 0px;
 
     .script-item-text-area {
-        background-color: white
     }
 
     .dropzone {
-        background-color: white;
     }
 
     .text-input {
@@ -557,7 +713,6 @@
     .text-input {
         font-weight: $font-weight-bold;
         text-align: center;
-        background-color: transparent !important;
     }
 
     .curtain-checkbox {
@@ -566,52 +721,78 @@
         max-height: 20px;
 
         i {
-            background-color: $gray-inverse;
+            background-color: $danger;
             height: 20px;
-            color: blue;
         }
 
         ::before {
             height: 20px;
             width: 20px;
         }
+
+        &.classic.curtain-open {
+            i {
+                background-color: $gray-inverse;
+            }
+        }
     }
 
-    &.curtain-open * {
-        color: white !important;
-    }
+   /* &.curtain-open.chat * {
+        color: white;
+
+        .type-dropdown {
+            color: black;
+        }
+    }*/
 
     &.curtain-closed * {
+    }
+
+    .header-controls {
+        top: unset;
+        bottom: 0px;
+        right: -105px;
+        margin: 0px;
+
+        .header-right-controls {
+            padding-left: 0px;
+        }
     }
 }
 
 
 .dialogue {
 
-    &.script-item {
+    .script-item-text-area {
+        justify-content: flex-start;
+    }
+
+    &.script-item.chat {
         padding-left: 10px;
-        padding-right: 70px;
+        padding-right: 20px;
         flex-direction: row;
 
         &.align-right {
-            padding-left: 70px;
+            padding-left: 20px;
             padding-right: 10px;
         }
     }
 
-    .script-item-text-area {
-        justify-content: flex-start;
-    }
+
 
     .script-item-text {
         align-items: flex-start;
 
         .text-input {
-            border-radius: 0px 20px 20px 20px;
+            border-color: $gray-700;
+            color: black !important;
+            border-radius: 0px 20px 20px 20px !important;
             padding: 10px 15px;
             font-size: 16px;
             width: 100%;
             z-index: 2;
+            background-color: white;
+            overflow: hidden !important;
         }
     }
 
@@ -625,8 +806,8 @@
 
         .script-item-text {
             .text-input {
-                border-radius: 20px 0px 20px 20px;
-                background-color: yellowgreen;
+                border-radius: 20px 0px 20px 20px !important;
+                background-color: yellowgreen !important;
             }
         }
     }
@@ -634,5 +815,54 @@
     .script-item-header {
         font-size: $small-font-size;
         align-self: start;
+    }
+
+    &.highlight {
+        .script-item-header {
+            background-color: $highlight;
+        }
+    }
+
+    &.classic {
+        .text-input {
+            border-radius: 0px 0px 0px 0px !important;
+            padding: 5px 10px;
+            text-align: center;
+        }
+    }
+
+    &.chat.curtain-closed {
+        .text-input {
+            @include dropdown-box();
+            border-color: $gray-700;
+        }
+    }
+
+    &.chat.curtain-open {
+        .text-input {
+            @include dropdown-box();
+            border-color: black;
+        }
+    }
+}
+
+.action,
+.sound,
+.lighting,
+.staging {
+
+    .text-input {
+        //font-weight: $font-weight-bold;
+        text-align: center;
+        background-color: transparent !important;
+        color: black;
+    }
+
+
+
+    &.curtain-open.chat {
+        .text-input {
+            color: white;
+        }
     }
 }

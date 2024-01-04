@@ -50,6 +50,15 @@
     @media (min-width: breakpoint-min(sm)) {
         user-select: auto !important;
     }
+
+    &.no-side-padding {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    &.reduced-top-padding {
+        padding-top: ($content-padding - 20px);
+    }
 }
 
 .contentFooter {

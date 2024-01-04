@@ -3,7 +3,8 @@ export const CHANGE_SIDEBAR_COLOR = 'CHANGE_SIDEBAR_COLOR';
 export const CHANGE_NAVBAR_COLOR = 'CHANGE_NAVBAR_COLOR';
 export const NAVBAR_TYPE_TOGGLE = 'NAVBAR_TYPE_TOGGLE';
 export const SIDEBAR_TYPE_TOGGLE = 'SIDEBAR_TYPE_TOGGLE';
-
+export const UPDATE_SCREEN_SIZE = 'UPDATE_SCREEN_SIZE';
+export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH'
 export function changeTheme(payload) {
   return {
     type: CHANGE_THEME,
@@ -37,5 +38,12 @@ export function sidebarTypeToggle(value) {
     type: SIDEBAR_TYPE_TOGGLE,
     payload: value
   }
+}
+
+export function updateScreenSize(screenSize) {
+    return {
+        type: UPDATE_SCREEN_SIZE,
+        screenSize
+    };
 }
 

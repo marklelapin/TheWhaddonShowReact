@@ -83,7 +83,7 @@ export function newScriptItemsForDelete(scriptItemToDelete, currentScriptItems, 
 
     if (HEADER_TYPES.includes(scriptItemToDelete.type) && confirmSceneDelete === false) {
         alert('You cannot delete a header item')
-        return;
+        return [];
     }
 
     let deleteScriptItem = copy(scriptItemToDelete)
@@ -182,39 +182,38 @@ export function newScriptItemsForMoveScene(scene, newPreviousId, currentScriptIt
     let newPreviousScene = copy(currentScriptItems[newPreviousId])
     let newNextScene = (newPreviousScene.nextId) ? copy(currentScriptItems[newPreviousScene.nextId]) : null
 
-    if (oldPreviousScene.id === newNextScene.id) {
+    if (oldPreviousScene.id === newNextScene?.id) {
 
-        oldPreviousScene.nextId = movingScene.nextId
-        oldPreviousScene.previousId = movingScene.id
+        oldPreviousScene.nextId = copy(movingScene.nextId)
+        oldPreviousScene.previousId = copy(movingScene.id)
 
-        if (oldNextScene) { oldNextScene.previousId = oldPreviousScene.id }
+        if (oldNextScene) { oldNextScene.previousId = copy(oldPreviousScene.id) }
 
-        newPreviousScene.nextId = movingScene.id
+        newPreviousScene.nextId = copy(movingScene.id)
 
         newNextScene = null // as same as oldPreviousScene
 
-        movingScene.previousId = newPreviousScene.id
-        movingScene.nextId = oldPreviousScene.id
-    } else if (oldNextScene.id === newPreviousScene.id) {
+        movingScene.previousId = copy(newPreviousScene.id)
+        movingScene.nextId = copy(oldPreviousScene.id)
+    } else if (oldNextScene?.id === copy(newPreviousScene.id)) {
 
-        oldPreviousScene.nextId = oldNextScene.id
-        newPreviousScene.previousId = oldPreviousScene.id
+        oldPreviousScene.nextId = copy(oldNextScene.id)
+        newPreviousScene.previousId = copy(oldPreviousScene.id)
 
+        newPreviousScene.nextId = copy(movingScene.id)
+        movingScene.previousId = copy(newPreviousScene.id)
+        movingScene.nextId = copy(oldNextScene.nextId)
+
+        if (newNextScene) { newNextScene.previousId = copy(movingScene.id) }
         oldNextScene = null //as same as newPreviousScene
-
-        newPreviousScene.nextId = movingScene.id
-        movingScene.previousId = newPreviousScene.id
-
-        if (newNextScene) { newNextScene.previousId = movingScene.id }
-
     } else {
-        oldPreviousScene.nextId = movingScene.nextId
-        if (oldNextScene) { oldNextScene.previousId = movingScene.previousId }
+        oldPreviousScene.nextId = copy(movingScene.nextId)
+        if (oldNextScene) { oldNextScene.previousId = copy(movingScene.previousId) }
 
-        newPreviousScene.nextId = movingScene.id
-        if (newNextScene) { newNextScene.previousId = movingScene.id }
+        newPreviousScene.nextId = copy(movingScene.id)
+        if (newNextScene) { newNextScene.previousId = copy(movingScene.id) }
 
-        movingScene.previousId = newPreviousScene.id
+        movingScene.previousId = copy(newPreviousScene.id)
         movingScene.nextId = newNextScene?.id || null
     }
 
@@ -273,7 +272,7 @@ export const newUpdatesForSwapPart = (oldPartId, newPartId, currentSceneScriptIt
 
     if (scene.partIds.includes(newPartId)) {
         alert('The part is already associated with this scene')
-        return;
+        return { newPartUpdates, newScriptItemUpdates };
     }
 
     newScriptItemUpdates = currentSceneScriptItemsArray.map(item => {
@@ -327,4 +326,16 @@ export const getOrderedSceneScriptItems = (sceneOrder, currentScriptItems) => {
 
     return copy(sceneOrder.map(item => currentScriptItems[item.id]))
 
+}
+
+export const getScriptItemPlaceholder = (type) => {
+    let finalPlaceholder;
+    switch (type) {
+        case SCENE: finalPlaceholder = 'enter title for scene'; break;
+        case SYNOPSIS: finalPlaceholder = 'enter brief synopsis for scene'; break;
+        case INITIAL_STAGING: finalPlaceholder = 'enter initial staging for scene'; break;
+        case INITIAL_CURTAIN: finalPlaceholder = 'enter initial curtain for scene'; break;
+        default: finalPlaceholder = '...';
+    }
+    return finalPlaceholder
 }

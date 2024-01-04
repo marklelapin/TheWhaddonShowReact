@@ -88,7 +88,11 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     switch (triggerType) {
 
         case UPDATE_TEXT: scriptItemUpdates.push({ ...copy(scriptItem), text: value });
-            moveFocus = { id: scriptItem.nextId, position: END }
+            if (scriptItem.type === SCENE) {
+                doRefreshShowOrder = true;
+            } else {
+                moveFocus = { id: scriptItem.nextId, position: END }
+            }
             break;
         case UPDATE_PART_IDS: scriptItemUpdates.push({ ...copy(scriptItem), partIds: value });
             doRefreshAlignment = true;
@@ -109,10 +113,11 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
         case UPDATE_ATTACHMENTS: scriptItemUpdates.push({ ...copy(scriptItem), attachments: value });
             moveFocus = { id: scriptItem.id, position: END }
             break;
-        case UPDATE_TYPE: let newTypeUpdate = { ...copy(scriptItem), type: value };
+        case UPDATE_TYPE:
+            let newTypeUpdate = { ...copy(scriptItem), type: value };
             if (CURTAIN_TYPES.includes(value)) { //its going to a curtain type
 
-                newTypeUpdate = newScriptItemsForToggleCurtain(newTypeUpdate, sceneOrder, previousCurtainOpen, true) //set it to open curtain.
+                newTypeUpdate = newScriptItemsForToggleCurtain(newTypeUpdate, true) //set it to open curtain.
                 scriptItemUpdates = newTypeUpdate
                 doRefreshCurtain = true;
             } else if (CURTAIN_TYPES.includes(scriptItem.type)) { //i.e. its coming from a curtain type
@@ -128,7 +133,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             moveFocus = { id: scriptItem.id, position: END }
             break;
         case TOGGLE_CURTAIN:
-            scriptItemUpdates = newScriptItemsForToggleCurtain(scriptItem, sceneOrder, previousCurtainOpen);
+            scriptItemUpdates = newScriptItemsForToggleCurtain(scriptItem);
             doRefreshCurtain = true;
             moveFocus = { id: scriptItem.id, position: END }
             break;
@@ -248,7 +253,6 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
                 sceneOrderUpdates.push(updateFocusOverrides(sceneOrder, scriptItemUpdates[0].partIds))
             }
 
-
             const previousFocusId = sceneOrder.find(item => item.type === SYNOPSIS).id
             const nextFocusId = sceneOrder.find(item => item.type === INITIAL_STAGING).id
 
@@ -276,22 +280,25 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     }
 
 
-    if (partUpdates.length > 0) {
+
+
+    const now = new Date()
+
+    const preparedScriptItemUpdates = prepareUpdates(scriptItemUpdates, now) || []
+    const preparedPartUpdates = prepareUpdates(partUpdates, now) || []
+    if (preparedPartUpdates.length > 0) {
         const persons = getLatest(storedPersons)
-        partPersonUpdates = partUpdates.map(partUpdate => {
+        partPersonUpdates = preparedPartUpdates.map(partUpdate => {
             const person = persons.find(person => person.id === partUpdate.personId)
             const partPerson = addPersonInfo(partUpdate, person)
             return partPerson
         })
     }
 
-    const preparedScriptItemUpdates = prepareUpdates(scriptItemUpdates) || []
-    const preparedPartUpdates = prepareUpdates(partUpdates) || []
-
     log(logType, 'getTriggerUpdates preparedScriptItemUpdates', preparedScriptItemUpdates)
     log(logType, 'getTriggerUpdates preparedPartUpates', preparedPartUpdates)
     //SceneOrderUpdates
-    let newSceneOrder = (sceneOrderOverride.length > 0) ? sceneOrderOverride : sceneOrder ;
+    let newSceneOrder = (sceneOrderOverride.length > 0) ? sceneOrderOverride : sceneOrder;
 
     if (doRefreshSceneOrder) {
         newSceneOrder = refreshSceneOrder(newSceneOrder, preparedScriptItemUpdates, viewAsPartPerson, currentPartPersons) //adds updates into sceneOrder and reorders.
@@ -313,7 +320,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     if (doRefreshAlignment) {
 
         if (triggerType === ALLOCATE_PERSON_TO_PART) {
-            const sceneOrdersAffected = Object.values(sceneOrders).filter(sceneOrder => sceneOrder[0].partIds.includes(partId))
+            const sceneOrdersAffected = Object.values(sceneOrders).filter(sceneOrder => sceneOrder[0]?.partIds.includes(partId))
 
             sceneOrdersAffected.forEach(sceneOrder => {
                 const newCurrentPartPersons = { ...copy(currentPartPersons), [partId]: { ...copy(part), personId } }

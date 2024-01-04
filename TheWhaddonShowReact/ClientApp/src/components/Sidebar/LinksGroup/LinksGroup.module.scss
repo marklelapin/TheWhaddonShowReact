@@ -9,14 +9,17 @@
 
   a {
     display: block;
-    color: var(--sidebar-color);
+    color: $gray-300; //var(--sidebar-color);
     transition: all .35s ease;
     text-decoration: none;
     cursor: pointer;
 
     &:hover {
       text-decoration: none;
-      color: inherit;
+      color: $gray-900; //inherit;
+      .icon{
+          color:black;
+      }
     }
   }
 
@@ -50,7 +53,7 @@
     justify-content: center;
     align-items: center;
     transition: all .35s ease;
-    color: var(--sidebar-color);
+    color: $gray-100; //var(--sidebar-color);
     background-color: transparent;
     position: absolute;
     top: 3px;
@@ -90,7 +93,7 @@
   }
   
   a.headerLinkActive {
-    color: var(--sidebar-item-active-color);
+    color: white; //var(--sidebar-item-active-color);
     font-weight: $font-weight-bold;
     white-space: nowrap;
     
@@ -106,7 +109,7 @@
       justify-content: center;
       transform: rotate(360deg);
       align-items: center;
-      color: var(--sidebar-bg-color);
+      color: white; //var(--sidebar-bg-color);
       i {
         color: var(--sidebar-bg-color);
       }

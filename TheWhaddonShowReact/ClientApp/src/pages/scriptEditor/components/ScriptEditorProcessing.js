@@ -14,6 +14,8 @@ import {
     updateCurrentScriptItems,
     clearScriptEditorState,
     updateViewAsPartPerson,
+    setReadOnly,
+    updateInitialSyncProgress,
     UNDO, REDO, CONFIRM_UNDO, CLEAR_SCRIPT, UPDATE_VIEW_AS_PART_PERSON
 
 } from '../../../actions/scriptEditor';
@@ -36,6 +38,7 @@ import { moveFocusToId, END } from '../scripts/utility';
 
 //constants
 import { SCRIPT_ITEM, PART, PERSON } from '../../../dataAccess/localServerModels'
+import { isScreenSmallerThan } from '../../../core/screenHelper';
 
 export function ScriptEditorProcessing() {
 
@@ -71,9 +74,14 @@ export function ScriptEditorProcessing() {
 
 
     //undo process
-    const isUndoInProgress = useSelector(state => state.scriptEditor.isUndoInProgress) || {}
-    const undoSceneId = Object.keys(isUndoInProgress)[0] || null
+    const currentUndo = useSelector(state => state.scriptEditor.currentUndo) || {}
+    const undoSceneId = Object.keys(currentUndo)[0] || null
     const redoList = useSelector(state => state.scriptEditor.redoList)
+
+    const readOnly = false //useSelector(state => state.scriptEditor.readOnly)
+    const screenSize = useSelector(state => state.layout.screenSize)
+    const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
+
 
     useEffect(() => {
         let currentFocus = null;
@@ -85,7 +93,7 @@ export function ScriptEditorProcessing() {
 
         if (currentFocus && currentFocus.sceneId !== sceneInFocus?.id) {
 
-            const newSceneInFocus = currentScriptItems[scriptItemInFocus.parentId]
+            const newSceneInFocus = currentScriptItems[currentFocus.sceneId]
 
             dispatch(updateSceneInFocus(newSceneInFocus))
         }
@@ -118,7 +126,7 @@ export function ScriptEditorProcessing() {
 
     useEffect(() => {
 
-        log(logType, 'UseEffect :', {scriptEditorTrigger,undoSceneId})
+        log(logType, 'UseEffect :', { scriptEditorTrigger, undoSceneId })
         if (!scriptEditorTrigger || Object.keys(scriptEditorTrigger).length === 0) return
 
         const { triggerType } = scriptEditorTrigger;
@@ -141,42 +149,56 @@ export function ScriptEditorProcessing() {
 
         //Undo processing
         //---------------------------------------------------------------------------------
-        if ([UNDO, REDO, CONFIRM_UNDO].includes(triggerType)) {
+        if ([UNDO, REDO, CONFIRM_UNDO].includes(triggerType) || undoSceneId) {  //|| undoSceneId combinedd with finalTriggerType allows for confirm undo if another action is triggered and undo not yet confirmed.
             const sceneId = scriptEditorTrigger.sceneId || undoSceneId
             const sceneOrder = sceneOrders[sceneId]
 
-            const undoUpdates = getUndoUpdates(triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons, viewAsPartPerson) || {}
+            const finalTriggerType = [UNDO, REDO, CONFIRM_UNDO].includes(triggerType) ? triggerType : CONFIRM_UNDO
+
+            const undoUpdates = getUndoUpdates(finalTriggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, sceneId, currentPartPersons, storedParts, viewAsPartPerson) || {}
 
             const { currentScriptItemUpdates = [],
+                currentPartPersonUpdates = [],
                 redoListUpdates = [],
                 redoCreated = null,
                 scriptItemUpdates = [],
                 sceneOrderUpdates = [],
+                partUpdates = [],
                 doResetUndo = false
             } = undoUpdates
 
+            log(logType, 'getUndoUpdates', { undoUpdates, sceneOrderUpdates: undoUpdates.sceneOrderUpdates })
 
-            if (currentScriptItemUpdates) {
+            if (currentScriptItemUpdates.length > 0) {
                 log(logType, 'dispatch updateCurrentScriptItems', currentScriptItemUpdates)
                 dispatch(updateCurrentScriptItems(currentScriptItemUpdates));
             }
-            if (sceneOrderUpdates) {
+            if (currentPartPersonUpdates.length > 0) {
+                dispatch(updateCurrentPartPersons(currentPartPersonUpdates))
+            }
+            if (sceneOrderUpdates.length > 0) {
+                log(logType, 'dispatch updateSceneOrders', sceneOrderUpdates)
                 dispatch(updateSceneOrders(sceneOrderUpdates));
             }
-            if (redoListUpdates) {
+            if (redoListUpdates.length > 0) {
+                log(logType, 'dispatch addItemsToRedoList', redoListUpdates)
                 dispatch(addItemsToRedoList(sceneId, redoListUpdates));
             }
             if (redoCreated) {
                 dispatch(removeItemsFromRedoList(redoCreated))
             }
-            if (scriptItemUpdates) {
+            if (scriptItemUpdates.length > 0) {
                 dispatch(addUpdates(scriptItemUpdates, SCRIPT_ITEM))
+            }
+            if (partUpdates.length > 0) {
+                dispatch(addUpdates(partUpdates, PART))
             }
             if (doResetUndo) {
                 dispatch(resetUndo())
             }
 
-            return;
+            if ([REDO, UNDO, CONFIRM_UNDO].includes(triggerType)) return; //if undo or redo then return as no further processing required.)
+            //else continue to remaining processing having confirmed undo.
         }
 
         //Remaining Processing = scriptItem and part updates
@@ -197,7 +219,7 @@ export function ScriptEditorProcessing() {
             dispatch(addUpdates(scriptItemUpdates, SCRIPT_ITEM)) //localServer
         }
         if (partUpdates.length > 0) {
-            log(logType,'partUpdates dispatch')
+            log(logType, 'partUpdates dispatch')
             dispatch(addUpdates(partUpdates, PART)) //localServer
             dispatch(updateCurrentPartPersons(partPersonUpdates))
         }
@@ -210,6 +232,7 @@ export function ScriptEditorProcessing() {
             })
         }
 
+
         //Moves Focus
         if (moveFocus) {
             moveFocusToId(moveFocus.id, moveFocus.position)
@@ -221,7 +244,9 @@ export function ScriptEditorProcessing() {
 
     //Refresh trigger used to update scriptEditorScenes with additional partPerson info.
     useEffect(() => {
+
         log(logType, 'localServerTrigger', { type: localServerTrigger.type, updates: localServerTrigger.updates?.length })
+
 
         if (localServerTrigger.updates && localServerTrigger.type === SCRIPT_ITEM) {
 
@@ -231,6 +256,10 @@ export function ScriptEditorProcessing() {
 
             if (currentScriptItemUpdates.length > 0) {
                 dispatch(updateCurrentScriptItems(currentScriptItemUpdates))
+                if (Object.keys(currentScriptItems).length === 0) {
+                    log(logType,'updateInitialSyncProcess SCRIPTITEM', { initialSyncProgress })
+                    dispatch(updateInitialSyncProgress(initialSyncProgress + 0.7))
+                }
             }
             if (sceneOrderUpdates.length > 0) {
                 dispatch(updateSceneOrders(sceneOrderUpdates))
@@ -240,6 +269,8 @@ export function ScriptEditorProcessing() {
                     dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId, previousCurtainUpdate.previousCurtainOpen))
                 })
             }
+
+            if (initialSyncProgress.scriptItem === 0) dispatch(updateInitialSyncProgress(SCRIPT_ITEM))
         }
 
         if (localServerTrigger.updates && localServerTrigger.type === PART) {
@@ -249,6 +280,8 @@ export function ScriptEditorProcessing() {
             const newPartPersons = newPartPersonsFromPartUpdates(partUpdates, currentPartPersons, storedPersons)
 
             dispatch(updateCurrentPartPersons(newPartPersons))
+            if (initialSyncProgress.part === 0) dispatch(updateInitialSyncProgress(PART))
+
         }
 
         if (localServerTrigger.updates && localServerTrigger.type === PERSON) {
@@ -258,12 +291,28 @@ export function ScriptEditorProcessing() {
             const newPartPersons = newPartPersonsFromPersonUpdates(personUpdates, currentPartPersons)
 
             dispatch(updateCurrentPartPersons(newPartPersons))
+            if (initialSyncProgress.person === 0) dispatch(updateInitialSyncProgress(PERSON))
         }
 
     }, [localServerTrigger]) //eslint disable-line react-hooks/exhaustive-deps
+
+
+    useEffect(() => {
+        if (isScreenSmallerThan('md')) {
+            dispatch(setReadOnly(true))
+        }
+    }, [screenSize])
+
+
 
 
     return (null)
 }
 
 export default ScriptEditorProcessing;
+
+
+
+const copy = (obj) => {
+    return JSON.parse(JSON.stringify(obj))
+}   

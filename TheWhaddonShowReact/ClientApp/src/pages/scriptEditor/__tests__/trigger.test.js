@@ -233,7 +233,7 @@ it.each([
     }
 
     if (type === CURTAIN) {
-        expect(scriptItemUpdates).toEqual([{ ...copy(dialogue14), created: anyValue, type: CURTAIN, tags: [OPEN_CURTAIN], text: 'Curtain opens.' }])
+        expect(scriptItemUpdates).toEqual([{ ...copy(dialogue14), created: anyValue, type: CURTAIN, tags: [OPEN_CURTAIN]}])
         expect(sceneOrderUpdates.length).toBeGreaterThan(0)
         expect(previousCurtainUpdates).toEqual([{ sceneId: scene2.id, previousCurtainOpen: true }])
         expect(moveFocus).toEqual({ "id": "si14", "position": "end" })
@@ -271,7 +271,7 @@ it(TOGGLE_CURTAIN, (scriptItem = dialogue13) => {
 
     expect(partUpdates).toEqual([])
     expect(partPersonUpdates).toEqual([])
-    expect(scriptItemUpdates).toEqual([{ ...dialogue13, created: anyValue, tags: [OPEN_CURTAIN], text: 'Curtain opens.' }])
+    expect(scriptItemUpdates).toEqual([{ ...dialogue13, created: anyValue, tags: [OPEN_CURTAIN] }])
     expect(sceneOrderUpdates.length).toEqual(1)
     expect(previousCurtainUpdates).toEqual([{ sceneId: scene2.id, previousCurtainOpen: true }])
     expect(showComments).toEqual(null)

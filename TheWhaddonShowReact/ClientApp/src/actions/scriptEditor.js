@@ -4,7 +4,8 @@ import { log } from '../logging'
 
 export const UPDATE_SEARCH_PARAMETERS = 'UPDATE_SEARCH_PARAMETERS';
 export const TOGGLE_SCENE_SELECTOR = 'TOGGLE_SCENE_SELECTOR';
-export const UPDATE_SHOW_COMMENTS = 'SET_SHOW_COMMENTS';
+export const SET_SHOW_COMMENTS = 'SET_SHOW_COMMENTS';
+export const UPDATE_SHOW_BOOLS = 'UPDATE_SHOW_BOOLS';
 export const UPDATE_VIEW_AS_PART_PERSON = 'UPDATE_VIEW_AS_PERSON';
 
 export const UPDATE_CURRENT_PART_PERSONS = 'UPDATE_PART_PERSONS';
@@ -12,9 +13,12 @@ export const UPDATE_CURRENT_SCRIPT_ITEMS = 'UPDATE_CURRENT_SCRIPT_ITEMS';
 export const UPDATE_SCENE_ORDERS = 'UPDATE_SCENE_ORDERS';
 export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
 export const UPDATE_PERSON_SELECTOR_CONFIG = 'UPDATE_PERSON_SELECTOR_CONFIG';
+export const UPDATE_MOVEMENT_IN_PROGRESS = 'UPDATE_MOVEMENT_IN_PROGRESS';
 
 
 export const UPDATE_SCRIPT_ITEM_IN_FOCUS = 'CHANGE_SCRIPT_ITEM_IN_FOCUS';
+export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH';
+export const UPDATE_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_SCRIPT_ITEM_TEXT_WIDTH';
 export const UPDATE_SCENE_IN_FOCUS = 'CHANGE_SCENE_IN_FOCUS';
 
 export const CLEAR_IMPORT_UPDATES = 'CLEAR_IMPORT_UPDATES';
@@ -24,6 +28,13 @@ export const SET_SHOW = 'SET_SHOW';
 export const ADD_ITEMS_TO_REDO_LIST = 'ADD_ITEMS_TO_REDO_LIST';
 export const REMOVE_ITEMS_FROM_REDO_LIST = 'REMOVE_ITEMS_FROM_REDO_LIST';
 export const RESET_UNDO = 'RESET_UNDO';
+
+
+export const UPDATE_VIEW_STYLE = 'UPDATE_VIEW_STYLE';
+export const SET_READ_ONLY = 'SET_READ_ONLY';
+export const UPDATE_SCENE_LOADED = 'UPDATE_SCENE_LOADED';
+export const UPDATE_INITIAL_SYNC_PROGRESS = 'INITIAL_SYNC_PROGRESS';
+export const SET_SHOW_SCENE_SELECTOR = 'SET_SHOW_SCENE_SELECTOR';
 
 export const TRIGGER = 'TRIGGER';
 
@@ -58,8 +69,6 @@ export const SWAP_PART = 'SWAP_PART';
 export const CLEAR_SCRIPT = 'CLEAR_SCRIPT';
 
 
-const debug = true;
-
 export function updateSearchParameters(searchParameters) {
     return {
         type: UPDATE_SEARCH_PARAMETERS,
@@ -74,9 +83,9 @@ export function toggleSceneSelector() {
     };
 }
 
-export function updateShowComments(showComments) {
+export function setShowComments(showComments) {
     return {
-        type: UPDATE_SHOW_COMMENTS,
+        type: SET_SHOW_COMMENTS,
         showComments,
     }
 }
@@ -185,5 +194,74 @@ export function updatePersonSelectorConfig(config) {
     return {
         type: UPDATE_PERSON_SELECTOR_CONFIG,
         config,
+    }
+}
+
+
+
+export function updateViewStyle(viewStyle) {
+    return {
+        type: UPDATE_VIEW_STYLE,
+        viewStyle,
+    }
+}
+
+export function setReadOnly(readOnly) {
+    return {
+        type: SET_READ_ONLY,
+        readOnly,
+    }
+}
+
+export function updateSceneLoaded(id) {
+    return {
+        type: UPDATE_SCENE_LOADED,
+        id,
+    }
+}
+
+export function updateInitialSyncProgress(localServerType) {
+    return {
+        type: UPDATE_INITIAL_SYNC_PROGRESS,
+        localServerType,
+    }
+}
+
+export function updateScriptItemTextWidth(id, text, scriptItemType, endMargin) {
+    return {
+        type: UPDATE_SCRIPT_ITEM_TEXT_WIDTH,
+        id,
+        text,
+        scriptItemType,
+endMargin,
+    }
+}
+
+export function updateMaxScriptItemTextWidth() {
+
+    return {
+        type: UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
+    }
+}
+
+
+export function setShowSceneSelector(showSceneSelector) {
+    return {
+        type: SET_SHOW_SCENE_SELECTOR,
+        showSceneSelector,
+    }
+}
+
+export function updateShowBools(showBools) {
+    return {
+        type: UPDATE_SHOW_BOOLS,
+        showBools,
+    }
+}
+
+export function updateMovementInProgress(movementInProgress) {
+    return {
+        type: UPDATE_MOVEMENT_IN_PROGRESS,
+        movementInProgress,
     }
 }
