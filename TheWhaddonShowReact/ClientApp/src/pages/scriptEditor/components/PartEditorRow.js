@@ -24,7 +24,7 @@ import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { DOWN, UP, START, END, ABOVE, BELOW } from '../scripts/utility';
 import { moveFocusToId, closestPosition } from '../scripts/utility';
 import { partEditorRowId } from '../scripts/part'
-
+import { finalReadOnly } from '../scripts/layout';
 
 //styling
 import s from '../ScriptItem.module.scss'
@@ -55,7 +55,8 @@ function PartEditorRow(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-    const readOnly = false // useSelector(state => state.scriptEditor.readOnly)
+    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const readOnly = finalReadOnly(_readOnly)
 
     //const scenePartIds = scene.partIds
 
@@ -235,6 +236,10 @@ function PartEditorRow(props) {
         }
     }
 
+    const togglePersonSelector = () => {
+        if (!readOnly) { dispatch(updatePersonSelectorConfig({ sceneId, partId })) }
+    }
+
     const handleFocus = () => {
         dispatch(updateScriptItemInFocus(partId, sceneId)) //update global state of which item is focussed
     }
@@ -260,7 +265,7 @@ function PartEditorRow(props) {
                     id={'part-name-avatar-' + partEditorRowId(partId, sceneId)}
                     avatarInitials={partPerson.avatarInitials}
                     partPerson={partWithTempName()}
-                    onAvatarClick={() => dispatch(updatePersonSelectorConfig({ sceneId, partId }))}
+                    onAvatarClick={() => togglePersonSelector()}
                     avatarToolTip={partPerson.personId ? "Re-allocate part" : "Allocate part"}
                     onNameChange={(text) => handleNameChange(text)}
                     onKeyDown={(e) => handleKeyDown(e)}

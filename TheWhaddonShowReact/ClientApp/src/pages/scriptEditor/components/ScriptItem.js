@@ -16,7 +16,8 @@ import CurtainBackground from './CurtainBackground';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 //utilities
 import { log, SCRIPT_ITEM as logType } from '../../../logging';
-import { isScreenLargerThan } from '../../../core/screenHelper';
+import { finalReadOnly } from '../scripts/layout';
+
 //Constants
 import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
 //trigger types
@@ -57,7 +58,8 @@ const ScriptItem = memo((props) => {
     const isUndoInProgress = useSelector(state => (state.scriptEditor.currentUndo[sceneId]))
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
-    const readOnly = false //useSelector(state => state.scriptEditor.readOnly) || true
+    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const readOnly = finalReadOnly(_readOnly)
     log(logType, 'redux:', { focus, isUndoInProgress, scriptItem, readOnly})
 
     const { type, commentId, nextId } = scriptItem;
@@ -166,6 +168,7 @@ const ScriptItem = memo((props) => {
                         removeMedia={(media) => handleMedia('remove', media)}
                         showControls={(showMedia && focus)}
                         autoLoad={true}
+                        readOnly={readOnly}
                     />
                 </div>
             }

@@ -65,7 +65,7 @@ export const initialState = {
     maxWidthExists: false,
     maxScriptItemTextWidth: null,
     viewStyle: 'chat',
-    readOnly: false,
+    readOnly: true,
     initialSyncProgress: { part: 0, person: 0, scriptItem: 0 },
     scriptItemTextWidths: {},
 

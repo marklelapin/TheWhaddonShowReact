@@ -49,7 +49,9 @@ export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {
 
 }
 
-
+export const finalReadOnly = (_readOnly) => {
+    return (isScreenSmallerThan('md')===true) ? true : _readOnly
+}
 
 
 export const getTextAreaWidth = (finalText, type, _endMargin, maxTextAreaWidth) => {

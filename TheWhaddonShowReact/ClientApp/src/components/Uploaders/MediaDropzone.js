@@ -17,7 +17,7 @@ import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils';
 
 
 //utils
-import { log, MEDIA_DROPZONE as logType} from '../../logging';
+import { log, MEDIA_DROPZONE as logType } from '../../logging';
 
 //constants
 import { MEDIA } from '../../dataAccess/storageContainerNames';
@@ -37,6 +37,7 @@ function MediaDropzone(props) {
         , autoLoad = false
         , width = null
         , height = 100
+        , readOnly = false
     } = props;
 
 
@@ -50,9 +51,9 @@ function MediaDropzone(props) {
     }, [])
 
     useEffect(() => {
-        log(logType, 'useEffect[existingMediaURLS,newMediaFiles]', {existingMediaURLs,newMediaFiles})
+        log(logType, 'useEffect[existingMediaURLS,newMediaFiles]', { existingMediaURLs, newMediaFiles })
         refreshMediaFiles()
-    }, [existingMediaURLs,newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
+    }, [existingMediaURLs, newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
 
     const refreshMediaFiles = async () => {
 
@@ -202,32 +203,35 @@ function MediaDropzone(props) {
                                         width={width}
                                         height={height}
                                     />
-                                    <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} />
+                                    {!readOnly && <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} toolTip="Delete" />}
                                 </div>
 
                             </div>
 
                         ))}
                     </div>
-                    <div className={s['controls']}>
-                        <p>{dropZoneText}</p>
-                        <div className={s['youtube-input']}>
-                            <Input
-                                type="text"
-                                label="youTubeUrl"
-                                name="youTubeUrl"
-                                id="youTubeUrl"
-                                placeholder="or enter YouTube URL"
-                                value={youTubeUrl}
-                                onChange={(e) => handleYouTubeInputChange(e)}
-                                onClick={(e) => e.stopPropagation()}
-                            />
-                            <Button onClick={(e) => handleClick(e, 'submitYouTube', youTubeUrl)}
-                                color="primary"
-                                disabled={youTubeUrl.length === 0}
-                            >Submit</Button>
+                    {!readOnly &&
+                        <div className={s['controls']}>
+                            <p>{dropZoneText}</p>
+                            <div className={s['youtube-input']}>
+                                <Input
+                                    type="text"
+                                    label="youTubeUrl"
+                                    name="youTubeUrl"
+                                    id="youTubeUrl"
+                                    placeholder="or enter YouTube URL"
+                                    value={youTubeUrl}
+                                    onChange={(e) => handleYouTubeInputChange(e)}
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                                <Button onClick={(e) => handleClick(e, 'submitYouTube', youTubeUrl)}
+                                    color="primary"
+                                    disabled={youTubeUrl.length === 0}
+                                >Submit</Button>
+                            </div>
+
                         </div>
-                    </div>
+                    }
                 </>
 
 

@@ -18,16 +18,15 @@ import { Icon } from '../../../components/Icons/Icons';
 //utitilites
 import { isScreen, isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { setPauseSync } from '../../../actions/localServer'; 
-import { log } from '../../../logging';
-import { getShowBools } from '../scripts/layout';
+import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../logging';
+import { getShowBools, finalReadOnly } from '../scripts/layout';
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 import s from '../Script.module.scss';
 
 
 function ScriptViewer(props) {
-    const debug = false;
-
+ 
     //utils
     const _ = require('lodash');
     const dispatch = useDispatch();
@@ -39,13 +38,14 @@ function ScriptViewer(props) {
     //Redux State
     const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
     const defaultShowSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
-    const readOnly = false //useSelector(state => state.scriptEditor.readOnly)
+    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const readOnly = finalReadOnly(_readOnly)
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
 
-    log(debug, 'Component:ScriptViewerHeader sceneInFocus', sceneInFocus)
+    log(logType, 'props', { sceneInFocus, viewStyle, readOnly })
 
     //Event Handlers
     const handlePrint = () => {
@@ -137,7 +137,7 @@ function ScriptViewer(props) {
 
                 <Icon id="script-viewer-print" icon="print" onClick={() => handlePrint()} toolTip="Print whole script"></Icon>
 
-                {isScreenLargerThan('lg') && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>}
+                {!readOnly && isScreenLargerThan('lg') && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>}
 
                 {readOnly && <Icon id="script-viewer-refresh" icon="refresh" onClick={() => dispatch(setPauseSync(false))} toolTip="Refresh script"></Icon>}
                

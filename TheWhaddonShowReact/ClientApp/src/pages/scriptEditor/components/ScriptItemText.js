@@ -26,7 +26,7 @@ import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
 import { curtainText } from '../scripts/curtain';
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
-import { getTextAreaWidth } from '../scripts/layout';
+import { finalReadOnly } from '../scripts/layout';
 import { getScriptItemPlaceholder } from '../scripts/scriptItem'
 
 //constants
@@ -64,7 +64,8 @@ function ScriptItemText(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const textWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) //used to control when to re-render for text width.
     const textWidthPx = `${textWidth}px`
-    const readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const readOnly = finalReadOnly(_readOnly)
     // const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
     //log(logType,'storedTextWidth',storedTextWidth)
     //Internal state
@@ -299,6 +300,7 @@ function ScriptItemText(props) {
        const el = document.getElementById(`script-item-text-input-${id}`)
        if (el) el.classList.add('inView')
         dispatch(updateScriptItemTextWidth(scriptItem.id, finalText, scriptItem.type, endMargin))
+        if (type === SCENE) dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.id))
     }
 
     const handleExitView = () => {

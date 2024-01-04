@@ -12,7 +12,7 @@ import PartSelectorDropdown from './PartSelectorDropdown';
 //styles
 import s from '../ScriptItem.module.scss';
 //Utilities
-
+import { finalReadOnly } from '../scripts/layout';
 import { log } from '../../../logging'
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 
@@ -30,7 +30,8 @@ function PartSelector(props) {
     //Redux
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const scenePartIds = scene?.partIds || []
-
+    const _readOnly = useSelector(state => state.scriptEditor.readOnly) || true
+    const readOnly = finalReadOnly(_readOnly)
     //Internal State
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
@@ -45,8 +46,9 @@ function PartSelector(props) {
 
     const toggleDropdown = (e) => {
         e.stopPropagation();
-        setOpenPartSelector(!openPartSelector)
-
+        if (!readOnly) {
+            setOpenPartSelector(!openPartSelector)
+        }
     }
 
     return (
@@ -55,19 +57,19 @@ function PartSelector(props) {
 
                 {partsArray.filter(part => part.allocated === true).map(part => {
                     return (
-                        
-                            <div className={s['avatar']} key={`${id}-${part.id}`}>
-                                <Avatar  onClick={(e) => toggleDropdown(e)} size={size} key={part.id} partId={part.id} avatar />
-                            </div>
-                           
-                       
+
+                        <div className={s['avatar']} key={`${id}-${part.id}`}>
+                            <Avatar onClick={(e) => toggleDropdown(e)} size={size} key={part.id} partId={part.id} avatar />
+                        </div>
+
+
 
                     )
                 })}
                 {(partsArray.some(part => part.allocated === true)) === false &&
                     <div className={s['avatar']} key={`${id}-0`}>
                         < Avatar onClick={(e) => toggleDropdown(e)} person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
-                       
+
                     </div>
                 }
 

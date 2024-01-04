@@ -78,7 +78,6 @@ export function ScriptEditorProcessing() {
     const undoSceneId = Object.keys(currentUndo)[0] || null
     const redoList = useSelector(state => state.scriptEditor.redoList)
 
-    const readOnly = false //useSelector(state => state.scriptEditor.readOnly)
     const screenSize = useSelector(state => state.layout.screenSize)
     const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
 

@@ -1,5 +1,5 @@
 import {
-    LOGIN, LOGOUT, IMPERSONATE_USER, STOP_IMPERSONATING
+    LOGIN, LOGOUT, UPDATE_CURRENT_USER
 } from '../actions/user';
 
 const defaultState = {
@@ -22,15 +22,10 @@ export default function userReducer(state = defaultState, action) {
                 authenticatedUser: null,
                 currentUser: null
             }
-        case IMPERSONATE_USER:
+        case UPDATE_CURRENT_USER:
             return {
                 ...state,
                 currentUser: action.person
-            }
-        case STOP_IMPERSONATING:
-            return {
-                ...state,
-                currentUser: state.authenticatedUser
             }
         default:
             return state;

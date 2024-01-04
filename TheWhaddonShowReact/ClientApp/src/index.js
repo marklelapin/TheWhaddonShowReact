@@ -38,7 +38,7 @@ const initApp = async () => {
 
     const preloadedState = await loadStateFromBrowserStorage();
 
-    log(logType, 'preloadedState exisits:', { copyId: preloadedState.localServer.localCopyId })
+    log(logType, 'preloadedState exisits:', { copyId: preloadedState?.localServer.localCopyId })
 
      store = createStore(
         createRootReducer(history),

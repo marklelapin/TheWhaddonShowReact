@@ -12,7 +12,7 @@ export const loadState = async () => {
     await setupPersistentIndexedDB()
 log(logType,'loadState')
     const serializedState = await retrieveStateFromIndexedDB()
-    const state = JSON.parse(serializedState)
+    const state = (serializedState === null) ? null : JSON.parse(serializedState)
     return state;
 }
 
@@ -64,7 +64,7 @@ const retrieveStateFromIndexedDB = async () => {
         const request = objectStore.get(1);
         request.onsuccess = (event) => {
             // Deserialize and resolve with the Redux state
-            const serializedState = event.target.result.state;
+            const serializedState = event.target.result?.state || null;
             resolve(serializedState);
         };
 

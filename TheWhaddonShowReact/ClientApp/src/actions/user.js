@@ -1,8 +1,7 @@
 ﻿//global actions
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT'; 
-export const IMPERSONATE_USER = 'UPDATE_IMPERSONATE_USER';
-export const STOP_IMPERSONATING = 'STOP_IMPERSONATING';
+export const UPDATE_CURRENT_USER = 'UPDATE_CURRENT_USER';
 
 export function login(person) {
     return {
@@ -17,15 +16,9 @@ export function logout() {
     }
 }
 
-export function impersonateUser(person) {
+export function updateCurrentUser(person) {
     return {
-        type: IMPERSONATE_USER,
+        type: UPDATE_CURRENT_USER,
         person
-    }
-}
-
-export function stopImpersonating() {
-    return {
-        type: STOP_IMPERSONATING,
     }
 }

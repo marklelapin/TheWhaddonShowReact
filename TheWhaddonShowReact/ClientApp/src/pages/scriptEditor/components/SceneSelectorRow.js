@@ -1,7 +1,7 @@
 ﻿
 //React and REdux
 import React from 'react';
-
+import { useSelector } from 'react-redux';
 //Components
 import { Button } from 'reactstrap';
 
@@ -10,6 +10,7 @@ import { log } from '../../../logging';
 
 import { ACT, SCENE } from '../../../dataAccess/scriptItemTypes';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
+import { finalReadOnly } from '../scripts/layout';
 
 import s from '../Script.module.scss'
 
@@ -22,8 +23,9 @@ function SceneSelectorRow(props) {
     log(debug, 'SceneSelectorRow: scene', scene)
 
     
-
-
+    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const readOnly = finalReadOnly(_readOnly)
+    
 
     return (
         <>
@@ -34,7 +36,7 @@ function SceneSelectorRow(props) {
                 onDrop={onDrop}
                 onDragOver={onDragOver}
                 onDragLeave={onDragLeave}
-                draggable={true}
+                draggable={!readOnly}
             >
 
                 <div className="information" onClick={() => onClick('goto', scene.id)}>
@@ -48,7 +50,7 @@ function SceneSelectorRow(props) {
                 </div>
 
             </div>
-            {scene.type === SCENE && beingDragged === false && <QuickToolTip id={`scene-selector-row-${scene.id}`} tip={`Click to GoTo / Drag to Move`} />}
+            {scene.type === SCENE && beingDragged === false && <QuickToolTip id={`scene-selector-row-${scene.id}`} tip={(readOnly) ? 'Click to GoTo' : 'Click to GoTo / Drag to Move'} />}
         </>
 
 

@@ -25,7 +25,7 @@ import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 
 //utils
 import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../logging';
-
+import { finalReadOnly } from '../scripts/layout';
 import { moveFocusToId } from '../scripts/utility';
 
 import s from '../ScriptItem.module.scss';
@@ -48,7 +48,8 @@ function ScriptItemControls(props) {
     log(logType, 'props', props)
 
     //Redux
-    const readOnly = false // useSelector(state => state.scriptEditor.readOnly) || true
+    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const readOnly = finalReadOnly(_readOnly)
     //Internal State
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
