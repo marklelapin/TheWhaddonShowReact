@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router';
-import { HashRouter } from 'react-router-dom';
+import { HashRouter, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { ConnectedRouter } from 'connected-react-router';
 
@@ -11,7 +11,7 @@ import LocalServerSyncing from '../dataAccess/LocalServerSyncing';
 import ScriptEditorProcessing from '../pages/scriptEditor/components/ScriptEditorProcessing';
 
 //Components
-import LayoutComponent from '../components/Layout';
+import { Layout } from '../components/Layout';
 //import Login from '../pages/auth/login';
 //import Verify from '../pages/auth/verify';
 //import Register from '../pages/auth/register';
@@ -22,8 +22,7 @@ import TextAreaContexts from '../dataAccess/TextAreaContexts';
 
 //Utils
 import { getHistory } from '../index.js';
-import { ByPassRoute, AdminRoute, UserRoute, AuthRoute } from './RouteComponents';
-
+import { ByPassRoute, UserRoute, AuthRoute } from './RouteComponents';
 /* eslint-disable */
 import ErrorPage from '../pages/error';
 /* eslint-enable */
@@ -33,18 +32,12 @@ import '../styles/theme.scss';
 
  
 
-
-
-
-
-
-
-
 const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
 
 function App() {
 
-const currentUser = useSelector((state) => state.auth.currentUser)
+    const authorisedUser = useSelector((state) => state.user.authorizedUser)
+
     const loadingInit = useSelector((state) => state.auth.loadingInit)
 
     const dispatch = useDispatch();
@@ -60,7 +53,6 @@ const currentUser = useSelector((state) => state.auth.currentUser)
             <CacheProcessing />
             <TextAreaContexts />
 
-
             <ToastContainer
                 autoClose={5000}
                 hideProgressBar
@@ -72,9 +64,14 @@ const currentUser = useSelector((state) => state.auth.currentUser)
                         <Route path="/" exact render={() => <Redirect to="/app/main" />} />
                         <Route path="/app" exact render={() => <Redirect to="/app/main" />} />
 
-                        <ByPassRoute path="/app" dispatch={dispatch} component={LayoutComponent} />
-                        <ByPassRoute path="/admin" dispatch={dispatch} component={LayoutComponent} />"
-                        <ByPassRoute path="/api" dispatch={dispatch} component={LayoutComponent} />
+                        <ByPassRoute path="/app/main" dispatch={dispatch} component={Layout} />
+                        <UserRoute path="/app/script" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser} />
+                        <UserRoute path="/app/casting" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser}  />
+                        <UserRoute path="/app/gallery" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser}  />
+                        <UserRoute path="/app/admin" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser} />
+                        <UserRoute path="/app/api" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser} />
+
+                        <AuthRoute path="/login" dispatch={dispatch} component={Layout} />
                         {/*<UserRoute path="/app" dispatch={dispatch} component={LayoutComponent} />*/}
                         {/*<UserRoute path="/apiMonitor" dispatch={dispatch} component={LayoutComponent} /> */}
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import {useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 //import { Progress, Alert } from 'reactstrap';
@@ -30,11 +30,12 @@ import wslogo from '../../images/whaddon-show-logo-reversed.png'
 import wstitle from '../../images/the-whaddon-show.png'
 
 import CaretPin from './LinksGroup/CaretPin';
+import { userAccessToComponent } from '../../dataAccess/userAccess';
 
 function Sidebar() {
 
     //Setup state internal to component
-    const [enteredViaMouse, setEnteredViaMouse] = React.useState(false); 
+    const [enteredViaMouse, setEnteredViaMouse] = React.useState(false);
 
     //Access state from Redux store
     const sidebarOpened = useSelector(store => store.navigation.sidebarOpened);
@@ -45,6 +46,8 @@ function Sidebar() {
     const navbarColor = useSelector(store => store.layout.navbarColor);
     const sidebarColor = useSelector(store => store.layout.sidebarColor);
 
+    const authorisedUser = useSelector(store => store.user.authorisedUser)
+    const currentUser = useSelector((state) => state.user.currentUser)
 
 
     const dispatch = useDispatch();
@@ -52,7 +55,7 @@ function Sidebar() {
     //get Location
     const location = useLocation();
 
-    
+
     useEffect(() => {
         window.addEventListener('resize', handleResize);
 
@@ -131,7 +134,7 @@ function Sidebar() {
                 <CaretPin isPinned={sidebarStatic} onClick={toggleStaticSidebar}></CaretPin>
 
                 <header className={s.logo}>
-                    <a href="https://demo.flatlogic.com/sing-app-react/">
+                    <a href="/app/main">
                         <img src={wslogo} height="60" alt="The Whaddon Show Logo of a cartoon cowboy playing the guitar" />
 
                         <img src={wstitle} height="40" alt="The Whaddon Show" />
@@ -149,139 +152,149 @@ function Sidebar() {
                         iconName="flaticon-home"
                         labelColor="info"
                     />
-                    <LinksGroup
-                        onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={activeItem}
-                        header="Script"
-                        isHeader
+                    {authorisedUser &&
+                        <LinksGroup
+                            onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}
+                            activeItem={activeItem}
+                            header="Script"
+                            isHeader
 
-                        iconElement={<Document />}
-                        iconName="flaticon-document"
-                        link="/app/script"
-                        index=""
-                  
-                    />
-                    <LinksGroup
-                        onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={activeItem}
-                        header="Planning"
-                        isHeader
-                        iconName="flaticon-home"
-                        iconElement={<Home />}
-                        link="/app/planning"
-                        index="planning"
-                        childrenLinks={[
-                            {
-                                header: 'Cast', link: '/app/planning/cast',
-                            },
-                            {
-                                header: 'Props', link: '/app/planning/props',
-                            },
-                            {
-                                header: 'Costumes', link: '/app/planning/costumes',
-                            },
-                        ]}
-                    />
-                    <LinksGroup
-                        onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={activeItem}
-                        header="Rehearsal"
-                        isHeader
-                        iconName="flaticon-calendar"
-                        iconElement={<Calendar />}
-                        link="/app/rehearsal"
-                        index="rehearsal"
-                        childrenLinks={[
-                            {
-                                header: 'Planner', link: '/app/rehearsal/planner',
-                            },
-                            {
-                                header: 'Calendar', link: '/app/rehearsal/calendar',
-                            },
+                            iconElement={<Document />}
+                            iconName="flaticon-document"
+                            link="/app/script"
+                            index=""
+                        />}
+                    {authorisedUser &&
+                        <LinksGroup
+                            onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}
+                            activeItem={activeItem}
+                            header="Casting"
+                            isHeader
+                            iconName="flaticon-home"
+                            iconElement={<Home />}
+                            link="/app/casting"
+                        //index="planning"
+                        />
+                    }
 
-                        ]}
-                    />
-                    <LinksGroup
-                        onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}
-                        activeItem={activeItem}
-                        header="Show"
-                        isHeader
-                        iconName="flaticon-person"
-                        iconElement={<Person />}
-                        link="/app/show"
-                        index=""
-                        childrenLinks={[
-                            {
-                                header: 'Website', link: '/app/show/website',
-                            },
-                            {
-                                header: 'Tickets', link: '/app/show/tickets',
-                            },
-                            {
-                                header: 'Programme', link: '/app/show/programme',
-                            },
-                        ]}
-                    />
-                    <LinksGroup
-                        header="Gallery"
-                        link="/app/gallery"
-                        isHeader
-                        iconElement={<Layout />}
-                        label=""
-                        iconName="flaticon-layout"
-                        labelColor="info"
-                    />
 
-                    <h5 className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
+                    {/*<LinksGroup*/}
+                    {/*    onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}*/}
+                    {/*    activeItem={activeItem}*/}
+                    {/*    header="Show"*/}
+                    {/*    isHeader*/}
+                    {/*    iconName="flaticon-person"*/}
+                    {/*    iconElement={<Person />}*/}
+                    {/*    link="/app/show"*/}
+                    {/*    index=""*/}
+                    {/*    childrenLinks={[*/}
+                    {/*        {*/}
+                    {/*            header: 'Website', link: '/app/show/website',*/}
+                    {/*        },*/}
+                    {/*        {*/}
+                    {/*            header: 'Tickets', link: '/app/show/tickets',*/}
+                    {/*        },*/}
+                    {/*        {*/}
+                    {/*            header: 'Programme', link: '/app/show/programme',*/}
+                    {/*        },*/}
+                    {/*    ]}*/}
+                    {/*/>*/}
+                    {authorisedUser &&
+                        <LinksGroup
+                            header="Gallery"
+                            link="/app/gallery"
+                            isHeader
+                            iconElement={<Layout />}
+                            label=""
+                            iconName="flaticon-layout"
+                            labelColor="info"
+                        />
+                    }
 
-                    <LinksGroup
-                        header="Users"
-                        link="/admin/users"
-                        isHeader
-                        iconElement={<User />}
-                        iconName="flaticon-user"
-                        label=""
-                        labelColor="info"
-                    />
-                    <LinksGroup
-                        header="Settings"
-                        link="/admin/settings"
-                        isHeader
-                        iconElement={<Settings />}
-                        label=""
-                        iconName="flaticon-settings"
-                        labelColor="info"
-                    />
+                    {(userAccessToComponent(currentUser, 'Users') || userAccessToComponent(currentUser, 'Api')) &&
+                        <>
+                            <h5 className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
+                            {userAccessToComponent(currentUser, 'Users') &&
 
-                    <h5 className={[s.navTitle, s.groupTitle].join(' ')}>API</h5>
+                                <LinksGroup
+                                    header="Users"
+                                    link="/admin/users"
+                                    isHeader
+                                    iconElement={<User />}
+                                    iconName="flaticon-user"
+                                    label=""
+                                    labelColor="info"
+                                />
+                            }
+                            {userAccessToComponent(currentUser, 'Api') &&
 
-                    <LinksGroup
-                        header="Documentation"
-                        link="/apiMonitor/documentation"
-                        isHeader
-                        iconElement={<Stack />}
-                        iconName="flaticon-stack"
-                        label=""
-                        labelColor="info"
-                    />
-                    <LinksGroup
-                        header="Monitor"
-                        link="/apiMonitor/dashboard"
-                        isHeader
-                        iconElement={<Settings />}
-                        label=""
-                        iconName="flaticon-settings"
-                        labelColor="info"
-                    />
-                    <LinksGroup
-                        header="Test Results"
-                        link="/apiMonitor/testResults"
-                        isHeader
-                        iconElement={<List />}
-                        label=""
-                        iconName="flaticon-list"
-                        labelColor="info"
-                    />
+                                <LinksGroup
+                                    onActiveSidebarItemChange={activeItem => dispatch(changeActiveSidebarItem(activeItem))}
+                                    activeItem={activeItem}
+                                    header="API"
+                                    isHeader
+                                    iconName="flaticon-person"
+                                    iconElement={<Person />}
+                                    link="/app"
+                                    index=""
+                                    childrenLinks={[
+                                        {
+                                            header: 'Documentation', link: '/app/api/documentation',
+                                        },
+                                        {
+                                            header: 'Monitor', link: '/app/api/monitor',
+                                        },
+                                        {
+                                            header: 'TestResults', link: '/app/api/testresults',
+                                        },
+                                    ]}
+                                />
+
+                            }
+                        </>
+                    }
+
+
+                    {/*<LinksGroup*/}
+                    {/*    header="Settings"*/}
+                    {/*    link="/admin/settings"*/}
+                    {/*    isHeader*/}
+                    {/*    iconElement={<Settings />}*/}
+                    {/*    label=""*/}
+                    {/*    iconName="flaticon-settings"*/}
+                    {/*    labelColor="info"*/}
+                    {/*/>*/}
+
+                    {/*<h5 className={[s.navTitle, s.groupTitle].join(' ')}>API</h5>*/}
+
+
+                    {/*<LinksGroup*/}
+                    {/*    header="Documentation"*/}
+                    {/*    link="/apiMonitor/documentation"*/}
+                    {/*    isHeader*/}
+                    {/*    iconElement={<Stack />}*/}
+                    {/*    iconName="flaticon-stack"*/}
+                    {/*    label=""*/}
+                    {/*    labelColor="info"*/}
+                    {/*/>*/}
+                    {/*<LinksGroup*/}
+                    {/*    header="Monitor"*/}
+                    {/*    link="/apiMonitor/dashboard"*/}
+                    {/*    isHeader*/}
+                    {/*    iconElement={<Settings />}*/}
+                    {/*    label=""*/}
+                    {/*    iconName="flaticon-settings"*/}
+                    {/*    labelColor="info"*/}
+                    {/*/>*/}
+                    {/*<LinksGroup*/}
+                    {/*    header="Test Results"*/}
+                    {/*    link="/apiMonitor/testResults"*/}
+                    {/*    isHeader*/}
+                    {/*    iconElement={<List />}*/}
+                    {/*    label=""*/}
+                    {/*    iconName="flaticon-list"*/}
+                    {/*    labelColor="info"*/}
+                    {/*/>*/}
                 </ul>
             </nav >
         </div>
@@ -295,6 +308,6 @@ export default withRouter(Sidebar);
 
 export function isSmallerScreen() {
 
-   return (isScreen('xs') || isScreen('sm'))
+    return (isScreen('xs') || isScreen('sm'))
 
 }

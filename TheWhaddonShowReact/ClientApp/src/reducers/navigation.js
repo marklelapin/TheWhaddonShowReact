@@ -8,7 +8,7 @@ import {
 } from '../actions/navigation';
 
 const initialState = {
-    sidebarOpened: JSON.parse(localStorage.getItem('staticSidebar')) ?? false,
+    sidebarOpened: JSON.parse(localStorage.getItem('staticSidebar')) ?? true,
     sidebarStatic: JSON.parse(localStorage.getItem('staticSidebar')) ?? false,
     activeItem: null,
 };
