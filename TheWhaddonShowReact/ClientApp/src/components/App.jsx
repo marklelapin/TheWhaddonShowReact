@@ -10,6 +10,10 @@ import { ConnectedRouter } from 'connected-react-router';
 import LocalServerSyncing from '../dataAccess/LocalServerSyncing';
 import ScriptEditorProcessing from '../pages/scriptEditor/components/ScriptEditorProcessing';
 
+//Azure
+import { MsalProvider, useMsal } from '@azure/msal-react';
+import { EventType } from '@azure/msal-browser';
+import { b2cPolicies, protextedResources } from '../../authConfig.js'
 //Components
 import { Layout } from '../components/Layout';
 //import Login from '../pages/auth/login';
@@ -23,6 +27,7 @@ import TextAreaContexts from '../dataAccess/TextAreaContexts';
 //Utils
 import { getHistory } from '../index.js';
 import { ByPassRoute, UserRoute, AuthRoute } from './RouteComponents';
+import {log, APP as logType } from '../logging.js'
 /* eslint-disable */
 import ErrorPage from '../pages/error';
 /* eslint-enable */
@@ -30,25 +35,29 @@ import ErrorPage from '../pages/error';
 // Styles
 import '../styles/theme.scss';
 
- 
+
 
 const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
 
-function App() {
+function App(props) {
 
-    const authorisedUser = useSelector((state) => state.user.authorizedUser)
+    log(logType,'props',props)
+
+
+    const { instance } = props
 
     const loadingInit = useSelector((state) => state.auth.loadingInit)
 
     const dispatch = useDispatch();
-  
+
     if (loadingInit) { //this.props.loadingInit this.props.dispatch in {} below
         return <div />;
     }
 
     return (
-        <>
-            <LocalServerSyncing /> 
+
+        <MsalProvider instance={instance}>
+            <LocalServerSyncing />
             <ScriptEditorProcessing />
             <CacheProcessing />
             <TextAreaContexts />
@@ -61,17 +70,15 @@ function App() {
             <ConnectedRouter history={getHistory()}>
                 <HashRouter>
                     <Switch>
-                        <Route path="/" exact render={() => <Redirect to="/app/main" />} />
-                        <Route path="/app" exact render={() => <Redirect to="/app/main" />} />
+                        {/*<Route path="/" exact render={() => <Redirect to="/app/main" />} />*/}
+                        {/*<Route path="/app" exact render={() => <Redirect to="/app/main" />} />*/}
 
-                        <ByPassRoute path="/app/main" dispatch={dispatch} component={Layout} />
-                        <UserRoute path="/app/script" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser} />
-                        <UserRoute path="/app/casting" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser}  />
-                        <UserRoute path="/app/gallery" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser}  />
-                        <UserRoute path="/app/admin" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser} />
-                        <UserRoute path="/app/api" dispatch={dispatch} component={Layout} authorisedUser={authorisedUser} />
-
-                        <AuthRoute path="/login" dispatch={dispatch} component={Layout} />
+                        <Route path="/app/main" dispatch={dispatch} component={Layout} />
+                        <UserRoute path="/app/script" dispatch={dispatch} component={Layout} />
+                        <UserRoute path="/app/casting" dispatch={dispatch} component={Layout} />
+                        <UserRoute path="/app/gallery" dispatch={dispatch} component={Layout} />
+                        <UserRoute path="/app/admin" dispatch={dispatch} component={Layout} />
+                        <UserRoute path="/app/api" dispatch={dispatch} component={Layout} />
                         {/*<UserRoute path="/app" dispatch={dispatch} component={LayoutComponent} />*/}
                         {/*<UserRoute path="/apiMonitor" dispatch={dispatch} component={LayoutComponent} /> */}
 
@@ -79,7 +86,7 @@ function App() {
                         {/*    component={LayoutComponent} />*/}
                         {/*<Route path="/documentation" exact*/}
                         {/*    render={() => <Redirect to="/documentation/getting-started/overview" />} />*/}
-                       
+
                         {/*<AuthRoute path="/register" exact component={Register} />*/}
                         {/*<AuthRoute path="/login" exact component={Login} />*/}
                         {/*<AuthRoute path="/verify-email" exact component={Verify} />*/}
@@ -90,11 +97,8 @@ function App() {
                     </Switch>
                 </HashRouter>
             </ConnectedRouter>
-        
-        
-        </>
 
-        
+        </MsalProvider>
 
     );
 

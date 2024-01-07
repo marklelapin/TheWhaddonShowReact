@@ -1,0 +1,35 @@
+@import '../../styles/app';
+
+.login-page{
+    height:100%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.welcom-block{
+    display: flex;
+}
+
+.login-image {
+    display: flex;
+    justify-content: center;
+    overflow:hidden;
+    padding-bottom: 40px;
+    img{
+       
+    }
+}
+
+.login{
+    padding: 20px;
+
+    button {
+        padding: 5px;
+        margin: 5px;
+        width: 130px;
+    }
+}
+

@@ -13,20 +13,23 @@ import Home from '../../pages/home/Home';
 import Users from '../../pages/user/Users';
 import Script from '../../pages/scriptEditor/Script';
 import { SidebarTypes } from '../../reducers/layout';
-import Header from '../Header';
+import Header from '../Header/Header';
 import Sidebar from '../Sidebar';
+import Login  from '../Login/Login';
 import UnderConstruction from '../../pages/underConstruction/UnderConstruction';
 //import Helper from '../Helper';
 import { openSidebar, closeSidebar } from '../../actions/navigation';
 import s from './Layout.module.scss';
-import BreadcrumbHistory from '../BreadcrumbHistory';
 import ApiTestResults from '../../pages/apiMonitor/TestResults';
 import { userAccessToComponent } from '../../dataAccess/userAccess';
 
+import {log, LAYOUT as logType } from '../../logging.js'
 
 
 
 export const Layout = (props) => {
+
+    log(logType, 'props', props)
 
     const location = useLocation();
     const dispatch = useDispatch();
@@ -49,6 +52,7 @@ export const Layout = (props) => {
             }
         }
     }
+
 
     const accessToScript = userAccessToComponent(currentUser, 'Script')
     const accessToCasting = userAccessToComponent(currentUser, 'Casting')
@@ -107,6 +111,7 @@ export const Layout = (props) => {
                     </main>
                 </Hammer>
             </div>
+            <Login />
         </div>
     );
 }

@@ -1,9 +1,18 @@
+//React/Redux
 import React from 'react';
 import { createRoot } from "react-dom/client";
 import { routerMiddleware } from 'connected-react-router';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux'
 import ReduxThunk from 'redux-thunk'
+
+//Azure Authentication
+import { PublicClientApplication, EventType } from "@azure/msal-browser";
+import { BrowserRouter } from 'react-router-dom';
+import { msalConfig } from './authConfig.js'
+
+//Utilities
+
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
 import throttle from 'lodash/throttle';
@@ -21,6 +30,27 @@ import { log, INDEX as logType } from './logging';
 
 const history = createHashHistory();
 const _ = require('lodash');
+
+
+//Azure AdB2c
+const msalInstance = new PublicClientApplication(msalConfig)
+//sets up default account
+//if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
+//    msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0])
+//}
+
+msalInstance.addEventCallback((event) => {
+    if (
+        (event.eventType === EventType.LOGIN_SUCCESS ||
+            event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS ||
+            event.eventType === EventType.SSO_SILENT_SUCCESS) &&
+        event.payload.account
+    ) {
+        msalInstance.setActiveAccount(event.payload.account);
+    }
+});
+
+
 export function getHistory() {
     return history;
 }
@@ -30,6 +60,7 @@ let store;
 const initApp = async () => {
 
     axios.defaults.baseURL = config.baseURLApi;
+
     axios.defaults.headers.common['Content-Type'] = "application/json";
     const token = localStorage.getItem('token');
     if (token) {
@@ -61,7 +92,7 @@ const initApp = async () => {
     const root = createRoot(container);
     root.render(
         <Provider store={store}>
-            <App />
+            <App instance={msalInstance} />
         </Provider>
     );
     // If you want your app to work offline and load faster, you can change

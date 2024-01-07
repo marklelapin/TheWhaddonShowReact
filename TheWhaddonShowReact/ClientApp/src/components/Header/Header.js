@@ -3,6 +3,14 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { withRouter } from 'react-router';
+
+//Azure
+//import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
+//import { InteractionStatus } from "@azure/msal-browser";
+//import { loginRequest, b2cPolicies } from '../authConfig';
+
+
+//Components
 import {
     Navbar,
     Nav
@@ -17,11 +25,18 @@ import SettingsDropdown from './components/SettingsDropdown';
 import SidebarToggle from './components/SidebarToggle';
 import SyncDropdown from './components/SyncDropdown';
 import AccountDropdown from './components/AccountDropdown';
+
+//Utils
 import {screenSize } from '../../core/screenHelper';
+
+//css
 import s from './Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
 
 
 function Header(props) {
+
+    //const { instance, inProgress } = useMsal();
+    //const activeAccount = (instance) ? instance.getActiveAccount() : null;
 
     //State relating to internal component
     const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -34,7 +49,8 @@ function Header(props) {
     const navbarType = useSelector(store => store.layout.navbarType);
     const navbarColor = useSelector(store => store.layout.navbarColor);
     const openUsersList = 100 //useSelector(store => store.auth.openUsersList); //TODO add on who's logged in list.
-    const currentUser = useSelector(store => store.auth.currentUser);
+
+    const currentUser = useSelector(store => store.user.currentUser);
     const storedScreenSize = useSelector(store => store.layout.screenSize);
     const dispatch = useDispatch();
     const hideHeader = useSelector(store => store.layout.hideHeader);
