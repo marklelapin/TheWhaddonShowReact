@@ -1,5 +1,4 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { withRouter } from 'react-router';
 
 import { UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
 import { loginRequest } from '../../authConfig';
@@ -84,4 +83,4 @@ function Login () {
 
 }
 
-export default withRouter(Login)
+export default Login

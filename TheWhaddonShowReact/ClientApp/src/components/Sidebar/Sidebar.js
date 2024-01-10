@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 //import { Progress, Alert } from 'reactstrap';
-import { withRouter, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import s from './Sidebar.module.scss';
 import LinksGroup from './LinksGroup/LinksGroup';
@@ -60,7 +60,7 @@ function Sidebar() {
         window.addEventListener('resize', handleResize);
 
         return () => { window.removeEventListener('resize', handleResize); }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 
     const handleResize = () => {
@@ -302,7 +302,7 @@ function Sidebar() {
 
 }
 
-export default withRouter(Sidebar);
+export default Sidebar;
 
 
 

@@ -1,4 +1,4 @@
-﻿import { isScreen, isScreenSmallerThan } from '../../../core/screenHelper'
+import { isScreen, isScreenSmallerThan } from '../../../core/screenHelper'
 import { getScriptItemPlaceholder } from './scriptItem';
 
 export const DEFAULT_END_MARGIN = 100;

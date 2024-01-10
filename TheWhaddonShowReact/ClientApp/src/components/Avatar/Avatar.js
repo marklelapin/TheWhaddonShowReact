@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { uploadFiles } from '../../dataAccess/fileUtils.js';
 
 //Constants
-import { fetchFiles } from '../../dataAccess/fileUtils';
 import { addToCache } from '../../actions/cache';
 import { AVATARS } from '../../dataAccess/storageContainerNames';
 
@@ -135,33 +134,6 @@ export function Avatar(props) {
 
 export default Avatar
 
-
-
-const createAvatarObjectURL = async (pictureRef, dispatch) => {
-    log(logType, 'createAvatarObjectURL', { pictureRef })
-
-    let imageObjectURL = null
-
-    const file = await fetchFile(pictureRef)
-    if (file) {
-        imageObjectURL = await createObjectURL(file)
-    }
-    dispatch(addToCache(AVATARS, pictureRef, imageObjectURL))
-
-    return imageObjectURL
-}
-
-const fetchFile = async (pictureRef) => {
-
-    try {
-        let files = []
-        files = await fetchFiles(AVATARS, pictureRef)
-        return files[0]
-    }
-    catch (error) {
-        console.log('Failed to fetch pictureRef :' + pictureRef + '. error: ' + error.message)
-    }
-}
 
 const createObjectURL = async (file) => {
     try {

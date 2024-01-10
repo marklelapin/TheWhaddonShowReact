@@ -15,7 +15,7 @@ import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels
 import { log, SYNC_DROPDOWN as logType } from '../../../logging';
 
 //css
-import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
+import s from '../Header.module.scss'; 
 
 function SyncDropdown(props) {
 

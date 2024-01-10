@@ -1,4 +1,4 @@
-﻿
+
 import { clearLocalServerState } from '../actions/localServer';
 import { clearScriptEditorState } from '../actions/scriptEditor';
 

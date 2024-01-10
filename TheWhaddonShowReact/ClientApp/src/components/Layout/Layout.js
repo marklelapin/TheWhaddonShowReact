@@ -1,9 +1,8 @@
 //react/Redux
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Switch, Route, withRouter, Redirect } from 'react-router';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import { useLocation } from 'react-router-dom';
+import {  Route, useLocation } from 'react-router-dom';
 
 
 //Components

@@ -1,7 +1,3 @@
-import { log } from '../logging'
-
-/* eslint-disable import/prefer-default-export */
-
 export const UPDATE_SEARCH_PARAMETERS = 'UPDATE_SEARCH_PARAMETERS';
 export const TOGGLE_SCENE_SELECTOR = 'TOGGLE_SCENE_SELECTOR';
 export const SET_SHOW_COMMENTS = 'SET_SHOW_COMMENTS';

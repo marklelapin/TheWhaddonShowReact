@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 //Components
 import { Icon } from '../../../components/Icons/Icons';
 import TagsInput from '../../../components/Forms/TagsInput';
-import TextareaAutosize from 'react-autosize-textarea';
+import TextareaAutosize from 'react-textarea-autosize';
 
 //utils
 import { updateScriptItemInFocus, trigger, DELETE_COMMENT, UPDATE_TEXT, ADD_TAG, REMOVE_TAG } from '../../../actions/scriptEditor';

@@ -1,4 +1,4 @@
-﻿import { refreshSceneOrder } from './sceneOrder'
+import { refreshSceneOrder } from './sceneOrder'
 
 import { UNDO, REDO, CONFIRM_UNDO } from '../../../actions/scriptEditor'
 import { SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels'

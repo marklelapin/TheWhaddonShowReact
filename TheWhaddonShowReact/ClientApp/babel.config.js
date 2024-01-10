@@ -3,7 +3,8 @@ module.exports = {
     "react-app"
   ],
   "plugins": [
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-optional-chaining"
+      ["@babel/plugin-transform-class-properties", { "loose": true }],
+      "@babel/plugin-transform-optional-chaining",
+      ["@babel/plugin-transform-private-property-in-object", { "loose": true }],
   ]
 };

@@ -16,7 +16,7 @@ import {
 } from '../../../actions/scriptEditor';
 
 //Components
-import TextareaAutosize from 'react-autosize-textarea';
+import TextareaAutosize from 'react-textarea-autosize';
 import ScriptItemControls, { CONFIRM } from './ScriptItemControls';
 import ScriptItemHeader from './ScriptItemHeader';
 import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
@@ -87,7 +87,7 @@ function ScriptItemText(props) {
             textInputRef.focus();
         }
 
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         setTempTextValue(null)
@@ -100,7 +100,7 @@ function ScriptItemText(props) {
         if (CURTAIN_TYPES.includes(scriptItem.type)) {
             dispatch(updateScriptItemTextWidth(id, finalText, type,endMargin ))
         }
-    }, [previousCurtainOpen])
+    }, [previousCurtainOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

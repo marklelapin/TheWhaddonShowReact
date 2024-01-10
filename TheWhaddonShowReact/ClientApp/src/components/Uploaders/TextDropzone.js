@@ -4,7 +4,7 @@ import React from 'react';
 
 //Components
 import Dropzone from 'react-dropzone'
-import TextareaAutosize from 'react-autosize-textarea';
+import TextareaAutosize from 'react-textarea-autosize';
 
 
 //utils

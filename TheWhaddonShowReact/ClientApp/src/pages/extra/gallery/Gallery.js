@@ -4,7 +4,7 @@ import {
   ButtonGroup,
 } from 'reactstrap';
 
-import Lightbox from 'react-images';
+//import Lightbox from 'react-images'; //react-images not compatiatble with react18
 import ImageDropzone from '../../../components/Uploaders/ImageDropzone';
 
 import s from './Gallery.module.scss';
@@ -269,19 +269,19 @@ class Gallery extends React.Component {
             );
           })}
         </div>
-        <Lightbox
-          currentImage={this.state.currentImage}
-          images={this.state.children}
-          isOpen={this.state.lightboxIsOpen}
-          onClickPrev={this.gotoPrevious}
-          onClickNext={this.gotoNext}
-          onClose={this.closeLightbox}
-          onClickImage={this.handleClickImage}
-          onClickThumbnail={this.gotoImage}
-          backdropClosesModal
-          enableKeyboardInput
-          theme={this.state.theme}
-        />
+        {/*<Lightbox*/}
+        {/*  currentImage={this.state.currentImage}*/}
+        {/*  images={this.state.children}*/}
+        {/*  isOpen={this.state.lightboxIsOpen}*/}
+        {/*  onClickPrev={this.gotoPrevious}*/}
+        {/*  onClickNext={this.gotoNext}*/}
+        {/*  onClose={this.closeLightbox}*/}
+        {/*  onClickImage={this.handleClickImage}*/}
+        {/*  onClickThumbnail={this.gotoImage}*/}
+        {/*  backdropClosesModal*/}
+        {/*  enableKeyboardInput*/}
+        {/*  theme={this.state.theme}*/}
+        {/*/>*/}
       </div>);
   }
 

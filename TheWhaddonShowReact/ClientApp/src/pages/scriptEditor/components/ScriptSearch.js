@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import TagsInput from '../../../components/Forms/TagsInput';
 import { Button } from 'reactstrap';
 //Components
@@ -7,7 +7,7 @@ function ScriptSearch(props) {
 
     const { tags = [], onChange} = props;
 
-    const tagOptions = ['Guy To Do','Mark to Do','Heather to Do']
+    const tagOptions = ['Guy To Do','Mark B to Do','Mark C to Do','Heather to Do']
 
 
 
@@ -31,11 +31,11 @@ function ScriptSearch(props) {
             <Button
                 size='xs'
                 onClick={() => onChange('myScenes', false)}
-            >'All'</Button>
+            >All</Button>
             <Button
                 size='xs'
                 onClick={() => onChange('myScenes', true)}
-            >'Just Mine'</Button>
+            >Just Mine</Button>
 
         </div>
 

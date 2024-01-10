@@ -1,9 +1,9 @@
-﻿import React, { useState } from 'react';
-import { FormGroup, Input, Label, Tooltip } from 'reactstrap';
+import React from 'react';
+import { FormGroup, Input, Label} from 'reactstrap';
 
 
 function CheckBox(props) {
-    const { strapColor, label, id, checked = false, onChange, ios = false } = props
+    const {  label, id, checked = false, onChange, ios = false } = props
 
     const checkboxKey = () => {
         return `checkbox-${id}`

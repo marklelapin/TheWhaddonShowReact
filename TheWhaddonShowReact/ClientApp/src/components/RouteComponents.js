@@ -1,7 +1,7 @@
 //import Login from '../pages/auth/login';
 
 import React, { useLocation } from 'react';
-import { Redirect, Route } from 'react-router';
+import { Route } from 'react-router-dom';
 import { login } from '../actions/user';
 import {useMsal } from '@azure/msal-react'
 

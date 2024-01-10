@@ -48,12 +48,12 @@ function MediaDropzone(props) {
     useEffect(() => {
         log(logType, 'useEffect[]')
         refreshMediaFiles()
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         log(logType, 'useEffect[existingMediaURLS,newMediaFiles]', { existingMediaURLs, newMediaFiles })
         refreshMediaFiles()
-    }, [existingMediaURLs, newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
+    }, [existingMediaURLs, newMediaFiles]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const refreshMediaFiles = async () => {
 

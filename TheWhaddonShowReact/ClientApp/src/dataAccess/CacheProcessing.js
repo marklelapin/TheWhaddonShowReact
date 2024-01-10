@@ -1,4 +1,4 @@
-﻿//React and Redux
+//React and Redux
 import { useEffect, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -73,7 +73,7 @@ export function CacheProcessing() {
 
     cacheAvatarURLs()
 
-}, [storedPersons]) //es-lint disable-line react-hooks/exhaustive-deps
+}, [storedPersons]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

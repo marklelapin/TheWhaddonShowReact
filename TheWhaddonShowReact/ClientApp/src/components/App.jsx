@@ -1,10 +1,8 @@
 //REact and REdux
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Switch, Route, Redirect } from 'react-router';
-import { HashRouter, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { ConnectedRouter } from 'connected-react-router';
 
 //dataAccess Components
 import LocalServerSyncing from '../dataAccess/LocalServerSyncing';
@@ -13,7 +11,7 @@ import ScriptEditorProcessing from '../pages/scriptEditor/components/ScriptEdito
 //Azure
 import { MsalProvider, useMsal } from '@azure/msal-react';
 import { EventType } from '@azure/msal-browser';
-import { b2cPolicies, protextedResources } from '../../authConfig.js'
+import { b2cPolicies, protextedResources } from '../authConfig.js'
 //Components
 import { Layout } from '../components/Layout';
 //import Login from '../pages/auth/login';
@@ -67,9 +65,9 @@ function App(props) {
                 hideProgressBar
                 closeButton={<CloseButton />}
             />
-            <ConnectedRouter history={getHistory()}>
-                <HashRouter>
-                    <Switch>
+            <BrowserRouter>
+                <Routes>
+                  
                         {/*<Route path="/" exact render={() => <Redirect to="/app/main" />} />*/}
                         {/*<Route path="/app" exact render={() => <Redirect to="/app/main" />} />*/}
 
@@ -94,9 +92,8 @@ function App(props) {
                         {/*<AuthRoute path="/forgot" exact component={Forgot} />*/}
                         <Route path="/error" exact component={ErrorPage} />
                         <Redirect from="*" to="/app/main" />
-                    </Switch>
-                </HashRouter>
-            </ConnectedRouter>
+                </Routes>
+            </BrowserRouter>
 
         </MsalProvider>
 

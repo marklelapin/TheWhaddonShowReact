@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateSearchParameters, toggleSceneSelector, trigger, MOVE_SCENE, updateMovementInProgress } from '../../../actions/scriptEditor';
+import { updateSearchParameters, trigger, MOVE_SCENE, updateMovementInProgress } from '../../../actions/scriptEditor';
 
 //Components
 import ScriptSearch from './ScriptSearch'
@@ -51,9 +51,9 @@ function SceneSelector(props) {
 
     const filteredScenes = () => {
 
-        const searchTags = searchParameters.tags
-        const searchCharacters = searchParameters.characters
-        const myScenes = searchParameters.myScenes
+        //const searchTags = searchParameters.tags
+        //const searchCharacters = searchParameters.characters
+        //const myScenes = searchParameters.myScenes
 
         //TODO filtering exercise
 

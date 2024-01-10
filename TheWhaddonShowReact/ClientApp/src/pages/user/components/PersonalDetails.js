@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import InputText from '../../../components/Forms/InputText';
 import Avatar from '../../../components/Avatar/Avatar';
 

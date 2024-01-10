@@ -1,4 +1,4 @@
-﻿
+
 
 export const categorisePersons = (persons, tags = []) => {
 
@@ -50,13 +50,3 @@ export const addFriendlyName = (persons) => {
     return personsWithFriendlyName
 }
 
-
-
-const hasDuplicates = (persons) => {
-
-
-
-
-
-
-}

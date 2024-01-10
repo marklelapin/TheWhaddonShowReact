@@ -1,5 +1,4 @@
-﻿import React from 'react';
-import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import React from 'react';
 import TagButton from './TagButton';
 
 function TagsInput(props) {

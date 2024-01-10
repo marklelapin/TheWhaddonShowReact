@@ -16,7 +16,7 @@ import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
 
 //utitilites
-import { isScreen, isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
+import {  isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { setPauseSync } from '../../../actions/localServer'; 
 import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../logging';
 import { getShowBools, finalReadOnly } from '../scripts/layout';
@@ -83,7 +83,7 @@ function ScriptViewer(props) {
 
     }
 
-    const { showSceneSelector, showScriptViewer, showComments, showCommentControls,showSceneSelectorControls} = getShowBools(defaultShowSceneSelector, defaultShowComments)
+    const { showComments, showCommentControls,showSceneSelectorControls} = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
 
     return (

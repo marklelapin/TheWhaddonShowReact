@@ -162,7 +162,7 @@
   a#{$parent},
   button#{$parent} {
     :hover, :focus {
-      background-color: shade-color($color, 10) !important;
+      background-color: shade-color($color, 10%) !important;
     }
   }
   //@include deprecate("The `bg-variant` mixin", "v4.4.0", "v5", $ignore-warning);

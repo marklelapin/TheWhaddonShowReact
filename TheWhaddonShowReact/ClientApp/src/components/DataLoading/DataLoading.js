@@ -1,41 +1,37 @@
-﻿import React from 'react';
+import React from 'react';
 import Loader from '../../components/Loader'
 
-export default class DataLoading extends React.Component {
+ const DataLoading = (props) => {
 
-    static defaultProps = {
-        loadingText: 'Loading...',
-        errorText: 'Error loading data.',
-        spinnerSize: 0,
-        isLoading: true,
-        isError: false,
-    }
+    const { loadingText = 'Loading...',
+        errorText = 'Error loading data.',
+        isLoading = true,
+        isError = false,
+        children,
+        spinnerSize = 0 } = props;
 
-   render() {
 
-        const { loadingText, errorText, isLoading, isError, children, spinnerSize } = this.props;
+    if (isLoading && !isError) {
 
-        if (isLoading && !isError) {
-
-            if (spinnerSize === 0) {
-                return <span>{loadingText}</span>
-            }
-
-            return (
-                <>
-                    < span > {loadingText}</span >
-                    <Loader size={spinnerSize} />
-                </>
-
-            )
-
+        if (spinnerSize === 0) {
+            return <span>{loadingText}</span>
         }
 
-        if (isError) {
-            return <span>{errorText}</span>
-        }
+        return (
+            <>
+                < span > {loadingText}</span >
+                <Loader size={spinnerSize} />
+            </>
 
-        return <>{ children }</>
+        )
+
     }
-    
+
+    if (isError) {
+        return <span>{errorText}</span>
+    }
+
+    return <>{children}</>
 }
+    
+export default DataLoading;

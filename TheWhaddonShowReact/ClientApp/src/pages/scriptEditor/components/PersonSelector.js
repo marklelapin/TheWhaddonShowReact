@@ -1,4 +1,4 @@
-﻿//React and Redux
+//React and Redux
 import React from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';

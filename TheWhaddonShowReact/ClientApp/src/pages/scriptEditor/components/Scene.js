@@ -22,6 +22,7 @@ import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess
 
 
 const Scene = memo((props) => {
+    Scene.displayName = 'Scene';
 
     //utility constants
     const dispatch = useDispatch();
@@ -47,7 +48,7 @@ const Scene = memo((props) => {
     useEffect(() => {
         log(logType, 'useEffect[] dispatching updateSceneLoaded', id)
         dispatch(updateSceneLoaded(id))
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
     log(logType, 'scene', scene)

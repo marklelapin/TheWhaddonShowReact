@@ -1,29 +1,28 @@
 //React/Redux
 import React from 'react';
 import { createRoot } from "react-dom/client";
-import { routerMiddleware } from 'connected-react-router';
+//import { routerMiddleware } from 'connected-react-router';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux'
 import ReduxThunk from 'redux-thunk'
 
 //Azure Authentication
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
-import { BrowserRouter } from 'react-router-dom';
+//import { BrowserRouter } from 'react-router-dom';
 import { msalConfig } from './authConfig.js'
 
 //Utilities
 
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
-import throttle from 'lodash/throttle';
+
 import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from './dataAccess/browserStorage';
-import { setupPersistentIndexedDB } from './dataAccess/indexedDB';
+
 
 import App from './components/App';
 import config from './config';
 import createRootReducer from './reducers';
 
-import { doInit } from './actions/auth';
 import { createHashHistory } from 'history';
 
 import { log, INDEX as logType } from './logging';

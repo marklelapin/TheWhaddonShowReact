@@ -1,10 +1,10 @@
-﻿import React from 'react';
+import React from 'react';
 import CheckBox from '../../../components/Forms/CheckBox';
 import {Button } from 'reactstrap';
  
 function Update(props) {
 
-    const { user, type, userChanged, onChange, className ,onClickUpdate, onClickCancel, isNew} = props
+    const { user, type, userChanged, onChange, className ,onClickUpdate, isNew} = props
 
 
     /*  const {userChanged,newUser } = props*/

@@ -1,12 +1,4 @@
 import React from 'react';
-import {
-  Container,
-  Form,
-  FormGroup,
-  Input,
-  Button,
-} from 'reactstrap';
-import { Link } from 'react-router-dom';
 
 import underConstruction from '../../images/under-construction.png'; 
 import s from './UnderConstruction.module.scss';

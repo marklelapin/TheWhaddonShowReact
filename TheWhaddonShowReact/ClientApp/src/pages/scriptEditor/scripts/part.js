@@ -1,9 +1,8 @@
-﻿import { PartUpdate } from '../../../dataAccess/localServerModels'
+import { PartUpdate } from '../../../dataAccess/localServerModels'
 import { UP, DOWN, START, END, BELOW } from './utility.js'
-import { SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes'
+import { SCENE } from '../../../dataAccess/scriptItemTypes'
 import { getLatest } from '../../../dataAccess/localServerUtils'
-import { getOrderedSceneScriptItems } from './scriptItem'
-import { log } from '../../../logging'
+import { getOrderedSceneScriptItems } from './scriptItem';
 
 export const addPersonsInfo = (parts, persons) => {
 

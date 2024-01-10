@@ -263,7 +263,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                         initialSyncProgress: { ...state.initialSyncProgress, part: 1 }
                     }
                 default: return state;
-            }; break;
+            }; 
 
         case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
 

@@ -2,7 +2,7 @@
 
 import { Tooltip } from 'reactstrap';
 
-import s from './Icons.module.scss'; // eslint-disable-line css-modules/no-unused-class'
+import s from './Icons.module.scss'; 
 
 export function TickOrCross(value) {
 

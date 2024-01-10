@@ -237,7 +237,7 @@ export function ScriptEditorProcessing() {
             moveFocusToId(moveFocus.id, moveFocus.position)
         }
 
-    }, [scriptEditorTrigger])
+    }, [scriptEditorTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 
@@ -293,14 +293,14 @@ export function ScriptEditorProcessing() {
             if (initialSyncProgress.person === 0) dispatch(updateInitialSyncProgress(PERSON))
         }
 
-    }, [localServerTrigger]) //eslint disable-line react-hooks/exhaustive-deps
+    }, [localServerTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
     useEffect(() => {
         if (isScreenSmallerThan('md')) {
             dispatch(setReadOnly(true))
         }
-    }, [screenSize])
+    }, [screenSize]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

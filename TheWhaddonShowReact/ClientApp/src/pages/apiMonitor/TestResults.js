@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
     updateFromTo
     , toggleShowSuccess
@@ -23,164 +23,137 @@ import Widget from '../../components/Widget';
 
 import ResultsTable from './components/ResultsTable';
 
-class TestResults extends React.Component {
+const TestResults = (props) => {
 
-    constructor(props) {
+    const dateFrom = useSelector((state) => state.apiMonitor.dateFrom)
+    const dateTo = useSelector(state => state.apiMonitor.dateTo)
+    const search = useSelector(state => state.apiMonitor.search)
+    const showSuccess = useSelector(state => state.apiMonitor.showSuccess)
+    const showFailure = useSelector(state => state.apiMonitor.showFailure)
 
-        super(props)
 
-        this.state = {
-            datePickedFrom: this.props.dateFrom,
-            datePickedTo: this.props.dateTo,
-            showUpdateButton: false,
-        }
-
-    }
-
-    //DatePicker functions
-    handleDatePickedFromChange = (newDate) => {
-        this.setState({ datePickedFrom: newDate });
-        this.setState({ showUpdateButton: true })
-
-    };
-    handleDatePickedToChange = (newDate) => {
-        this.setState({ datePickedTo: newDate })
-        this.setState({ showUpdateButton: true })
-    };
-
-    //Update button functions
+    const [showUpdateButton, setShowUpdateButton] = useState(false)
 
     handleUpdateButtonClick = () => {
-        this.props.dispatch(updateFromTo({ dateFrom: this.state.datePickedFrom, dateTo: this.state.datePickedTo }))
+        this.props.dispatch(updateFromTo({ dateFrom: datePickedFrom, dateTo: datePickedTo }))
         this.props.dispatch(updateIsLoading(true))
         this.setState({ showUpdateButton: false })
     }
 
     //Show Success/Failure checkbox functions
     handleSuccessCheckClick = () => {
-        this.props.dispatch(toggleShowSuccess());
+        dispatch(toggleShowSuccess());
 
     }
     handleFailureCheckClick = () => {
-        this.props.dispatch(toggleShowFailure())
+        dispatch(toggleShowFailure())
     }
 
     //Search box functions
     handleSearchChange = (e) => {
-        this.props.dispatch(updateSearch({ search: e.target.value }))
+        dispatch(updateSearch({ search: e.target.value }))
     }
 
 
-    render() {
 
-        console.log(`datePickedFrom: ${this.state.datePickedFrom} datePickedTo: ${this.state.datePickedTo} search: ${this.props.search} showSuccess: ${this.props.showSuccess} showFailure: ${this.props.showFailure}`)
-        return (
+    console.log(`datePickedFrom: ${datePickedFrom} datePickedTo: ${datePickedTo} search: ${search} showSuccess: ${showSuccess} showFailure: ${showFailure}`)
+    return (
 
-            <div>
-                <h2 className="page-title">Api Monitor - <span className="fw-semi-bold">Test Results</span></h2>
+        <div>
+            <h2 className="page-title">Api Monitor - <span className="fw-semi-bold">Test Results</span></h2>
 
-                <>
-                    <Widget title={<h5>Change Dates or Filter Data...</h5>} collapse>
-                        <Row >
-                            <Col>
-                                <legend>Show tests between following dates..</legend>
-                                <Row>
-                                    <Col>
+            <>
+                <Widget title={<h5>Change Dates or Filter Data...</h5>} collapse>
+                    <Row >
+                        <Col>
+                            <legend>Show tests between following dates..</legend>
+                            <Row>
+                                <Col>
 
-                                        <Label for="fromdatetimepicker">From</Label>
-                                        <div className="datepicker" style={{ display: 'flex' }}>
-                                            <Datetime
-                                                value={this.state.datePickedFrom}
-                                                id="fromdatetimepicker"
-                                                //open={this.state.isDatePickerOpen}
-                                                viewMode="time"
-                                                timeFormat="HH:mm"
-                                                onChange={this.handleDatePickedFromChange}
-                                                inputProps={{ ref: (input) => { this.refDatePicker = input; } }}
-                                            />
-                                            <span className="input-group-text" onClick={() => { this.refDatePicker.focus(); }}>
-                                                <i className="glyphicon glyphicon-time" />
-                                            </span>
-                                        </div>
+                                    <Label for="fromdatetimepicker">From</Label>
+                                    <div className="datepicker" style={{ display: 'flex' }}>
+                                        <Datetime
+                                            value={datePickedFrom}
+                                            id="fromdatetimepicker"
+                                            //open={this.state.isDatePickerOpen}
+                                            viewMode="time"
+                                            timeFormat="HH:mm"
+                                            onChange={handleDatePickedFromChange}
+                                            inputProps={{ ref: (input) => { refDatePicker = input; } }}
+                                        />
+                                        <span className="input-group-text" onClick={() => { refDatePicker.focus(); }}>
+                                            <i className="glyphicon glyphicon-time" />
+                                        </span>
+                                    </div>
+                                </Col>
+                                <Col >
+                                    <Label for="todatetimepicker">To</Label>
+                                    <div className="datepicker" style={{ display: 'flex' }}>
+                                        <Datetime
+                                            value={datePickedTo}
+                                            id="todatetimepicker"
+                                            //open={this.state.isTimePickerOpen}
+                                            viewMode="time"
+                                            timeFormat="HH:mm"
+                                            onChange={handleDatePickedToChange}
+                                            inputProps={{ ref: (input) => { refTimePicker = input; } }}
+                                        />
+                                        <span className="input-group-text" onClick={() => { refTimePicker.focus() }} ><i className="glyphicon glyphicon-time" /></span>
+                                    </div>
+
+                                </Col>
+                            </Row>
+                            <Row>
+
+                                {(this.state.showUpdateButton &&
+                                    <Col className="text-center">
+                                        <Button color="primary" className="mr-xs" onClick={handleUpdateButtonClick}>Confirm New Dates</Button>
                                     </Col>
-                                    <Col >
-                                        <Label for="todatetimepicker">To</Label>
-                                        <div className="datepicker" style={{ display: 'flex' }}>
-                                            <Datetime
-                                                value={this.state.datePickedTo}
-                                                id="todatetimepicker"
-                                                //open={this.state.isTimePickerOpen}
-                                                viewMode="time"
-                                                timeFormat="HH:mm"
-                                                onChange={this.handleDatePickedToChange}
-                                                inputProps={{ ref: (input) => { this.refTimePicker = input; } }}
-                                            />
-                                            <span className="input-group-text" onClick={() => { this.refTimePicker.focus() }} ><i className="glyphicon glyphicon-time" /></span>
-                                        </div>
+                                )}
+                            </Row>
+                        </Col>
+                        <Col>
+                            <legend>Filter the table...</legend>
+                            <Row>
+                                <Col>
+                                    <Label for="search-field">Search</Label>
+                                    <Input type="text" id="search-field" value={search} placeholder="enter search text..." onChange={handleSearchChange}></Input>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <FormGroup className="checkbox abc-checkbox abc-checkbox-success" check >
+                                        <Input id="checkbox-success" type="checkbox" checked={showSuccess} onChange={handleSuccessCheckClick} />{' '}
+                                        <Label for="checkbox-success" check>
+                                            Successfull Tests
+                                        </Label>
+                                    </FormGroup>
+                                </Col>
+                                <Col>
+                                    <FormGroup className="checkbox abc-checkbox abc-checkbox-danger" check>
+                                        <Input id="checkbox-failure" type="checkbox" checked={showFailure} onChange={handleFailureCheckClick} />{' '}
+                                        <Label for="checkbox-failure" check>
+                                            Failed Tests
+                                        </Label>
+                                    </FormGroup>
+                                </Col>
+                            </Row>
+                        </Col>
 
-                                    </Col>
-                                </Row>
-                                <Row>
-
-                                    {(this.state.showUpdateButton &&
-                                        <Col className="text-center">
-                                            <Button color="primary" className="mr-xs" onClick={this.handleUpdateButtonClick}>Confirm New Dates</Button>
-                                        </Col>
-                                    )}
-                                </Row>
-                            </Col>
-                            <Col>
-                                <legend>Filter the table...</legend>
-                                <Row>
-                                    <Col>
-                                        <Label for="search-field">Search</Label>
-                                        <Input type="text" id="search-field" value={this.props.search} placeholder="enter search text..." onChange={this.handleSearchChange}></Input>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <FormGroup className="checkbox abc-checkbox abc-checkbox-success" check >
-                                            <Input id="checkbox-success" type="checkbox" checked={this.props.showSuccess} onChange={this.handleSuccessCheckClick} />{' '}
-                                            <Label for="checkbox-success" check>
-                                                Successfull Tests
-                                            </Label>
-                                        </FormGroup>
-                                    </Col>
-                                    <Col>
-                                        <FormGroup className="checkbox abc-checkbox abc-checkbox-danger" check>
-                                            <Input id="checkbox-failure" type="checkbox" checked={this.props.showFailure} onChange={this.handleFailureCheckClick} />{' '}
-                                            <Label for="checkbox-failure" check>
-                                                Failed Tests
-                                            </Label>
-                                        </FormGroup>
-                                    </Col>
-                                </Row>
-                            </Col>
-
-                        </Row>
+                    </Row>
 
 
-                    </Widget>
-                </>
+                </Widget>
+            </>
 
-                <ResultsTable />
+            <ResultsTable />
 
 
 
-            </div>
-        );
-    }
+        </div>
+    );
 
-}
-const mapStateToProps = (state) => {
-    return {
-        dateFrom: state.apiMonitor.dateFrom,
-        dateTo: state.apiMonitor.dateTo,
-        search: state.apiMonitor.search,
-        showSuccess: state.apiMonitor.showSuccess,
-        showFailure: state.apiMonitor.showFailure,
-    };
 }
 
 
-export default connect(mapStateToProps)(TestResults);
+export default TestResults;

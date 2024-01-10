@@ -1,6 +1,6 @@
-﻿import React from 'react';
+import React from 'react';
 import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 
 import PersonalDetails from './PersonalDetails';
@@ -15,7 +15,7 @@ import {
     ModalFooter,
 } from 'reactstrap';
 
-import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils'
+import { prepareUpdate } from '../../../dataAccess/localServerUtils'
 import '../../../index.css'
 
 import { addUpdates } from '../../../actions/localServer';
@@ -45,7 +45,7 @@ function User(props) {
 
     useEffect(() => {
         setUser(storedUser)
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (user === storedUser) {

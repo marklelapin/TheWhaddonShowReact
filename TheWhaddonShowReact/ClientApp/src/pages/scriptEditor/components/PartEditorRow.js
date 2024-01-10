@@ -78,7 +78,7 @@ function PartEditorRow(props) {
                 textInputRef.focus();
             }
         }
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

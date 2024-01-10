@@ -1,8 +1,6 @@
-﻿
-import { OPEN_CURTAIN, CLOSE_CURTAIN, INITIAL_CURTAIN, CURTAIN, CURTAIN_TYPES } from "../../../dataAccess/scriptItemTypes";
+
+import { OPEN_CURTAIN, CLOSE_CURTAIN, CURTAIN_TYPES } from "../../../dataAccess/scriptItemTypes";
 import { mergeSceneOrder } from './sceneOrder'
-import { log, TEST_CURTAIN } from '../../../logging'
-import { over } from "lodash";
 
 export function refreshCurtain(sceneOrder, newScriptItems = []) {
 

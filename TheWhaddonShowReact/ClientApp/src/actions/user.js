@@ -1,4 +1,4 @@
-﻿//global actions
+//global actions
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT'; 
 export const UPDATE_CURRENT_USER = 'UPDATE_CURRENT_USER';

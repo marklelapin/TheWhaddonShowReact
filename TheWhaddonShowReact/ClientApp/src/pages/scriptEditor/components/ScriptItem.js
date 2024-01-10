@@ -1,7 +1,7 @@
-﻿
+
 //React and Redux
 import React from 'react';
-import { memo, useState, useRef } from 'react';
+import { memo, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 //Components
 import Comment from './Comment';
@@ -9,7 +9,7 @@ import Comment from './Comment';
 import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 import { Icon } from '../../../components/Icons/Icons';
-import { Button, Tooltip } from 'reactstrap';
+import { Button } from 'reactstrap';
 import CheckBox from '../../../components/Forms/CheckBox';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
@@ -33,6 +33,8 @@ import s from '../ScriptItem.module.scss';
 
 
 const ScriptItem = memo((props) => {
+
+    ScriptItem.displayName = 'ScriptItem'
 
     //utility consts
     const dispatch = useDispatch();

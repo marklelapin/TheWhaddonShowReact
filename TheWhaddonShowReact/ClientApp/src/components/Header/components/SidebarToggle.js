@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { closeSidebar, openSidebar, toggleStaticSidebar } from '../../../actions/navigation';
 import { NavLink, UncontrolledTooltip } from 'reactstrap';
 import Menu from '../../../images/sidebar/basil/Menu';
-import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
+import s from '../Header.module.scss'; 
 import { isSmallerScreen } from '../../../components/Sidebar/Sidebar';
 export function SidebarToggle(props) {
 

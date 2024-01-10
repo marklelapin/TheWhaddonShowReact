@@ -51,7 +51,7 @@ function PartSelectorDropdown(props) {
         }
 
 
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
     const setupPartsArray = () => {

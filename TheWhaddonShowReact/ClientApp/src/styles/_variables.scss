@@ -66,7 +66,7 @@ $theme-colors: (
   danger: $red,
   dark: $gray-800,
   inverse: $gray-inverse,
-  gray: $gray-default,
+  "gray": $gray-default,
   light: $gray-100,
   default: #9083F7,
   gray-default: $gray-default,
@@ -254,3 +254,6 @@ $badge-focus-width:          .2rem !default;
 $script-comments-width: 310px !default;
 $script-body-max-width: 800px !default;
 $highlight: rgb(182, 255, 0);
+
+
+$input-bg: transparent;

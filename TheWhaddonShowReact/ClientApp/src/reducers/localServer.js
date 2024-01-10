@@ -24,7 +24,6 @@ import {
     , PART
     , LocalServerModel
 } from '../dataAccess/localServerModels';
-import {SCENE } from '../dataAccess/scriptItemTypes';
 import { v4 as uuidv4 } from 'uuid';
 
 import { log, LOCAL_SERVER_REDUCER as logType } from '../logging.js';

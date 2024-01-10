@@ -1,6 +1,6 @@
-﻿//React and redux
+//React and redux
 import React from 'react';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {

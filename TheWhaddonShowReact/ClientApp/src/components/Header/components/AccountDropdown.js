@@ -1,9 +1,8 @@
-﻿import React, { useState } from 'react';
+﻿import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
+import s from '../Header.module.scss'; 
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Badge } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar.js';
-import UserDefault from '../../../images/sidebar/basil/UserDefault';
 
 import { updateCurrentUser, login, logout } from '../../../actions/user';
 import { setReadOnly, updatePersonSelectorConfig, updateViewAsPartPerson } from '../../../actions/scriptEditor';

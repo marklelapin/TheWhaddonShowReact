@@ -75,11 +75,14 @@ checkBrowsers(paths.appPath, isInteractive)
       // We have not found a port.
       return;
     }
-    const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
+      const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
+     
     const appName = require(paths.appPackageJson).name;
-    const urls = prepareUrls(protocol, HOST, port);
+      const urls = prepareUrls(protocol, HOST, port);
+
     // Create a webpack compiler that is configured with custom messages.
-    const compiler = createCompiler(webpack, config, appName, urls, useYarn);
+      const compiler = createCompiler({ webpack, config, appName, urls, useYarn });
+
     // Load proxy config
     const proxySetting = require(paths.appPackageJson).proxy;
     const proxyConfig = prepareProxy(proxySetting, paths.appPublic);
@@ -88,18 +91,27 @@ checkBrowsers(paths.appPath, isInteractive)
       proxyConfig,
       urls.lanUrlForConfig
     );
-    const devServer = new WebpackDevServer(compiler, serverConfig);
+  
+      const devServer = new WebpackDevServer(serverConfig,compiler);
     // Launch WebpackDevServer.
-    devServer.listen(port, HOST, err => {
-      if (err) {
-        return console.log(err);
-      }
-      if (isInteractive) {
-        clearConsole();
-      }
-      console.log(chalk.cyan('Starting the development server...\n'));
-      openBrowser(urls.localUrlForBrowser);
-    });
+
+      (async () => {
+          await devServer.start();
+          console.log(`dev server listening on port ${port}`)
+          openBrowser(urls.localUrlForBrowser);
+      })();
+
+
+    //devServer.listen(port, HOST, err => {
+    //  if (err) {
+    //    return console.log(err);
+    //  }
+    //  if (isInteractive) {
+    //    clearConsole();
+    //  }
+    //  console.log(chalk.cyan('Starting the development server...\n'));
+    //  openBrowser(urls.localUrlForBrowser);
+    //});
 
     ['SIGINT', 'SIGTERM'].forEach(function(sig) {
       process.on(sig, function() {

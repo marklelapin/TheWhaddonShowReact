@@ -30,7 +30,7 @@ function Script() {
     const show = useSelector((state) => state.scriptEditor.show)
     
 
-    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) || []
+    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) 
     const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
 
     const [scenesToLoad, setScenesToLoad] = useState(3)
@@ -38,7 +38,7 @@ function Script() {
 
     useEffect(() => {
         log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder.length })
-        if (showOrder.length === 0) {
+        if (!showOrder || showOrder.length === 0) {
             //do nothing
         }
         if (showOrder.length > 0 && scenesToLoad !== null && scenesToLoad < showOrder.length) {

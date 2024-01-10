@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export function ElementInViewObserver({ children, onEnterView, onExitView }) {
     const targetRef = useRef(null);

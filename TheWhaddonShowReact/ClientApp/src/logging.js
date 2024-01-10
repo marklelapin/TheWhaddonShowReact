@@ -1,5 +1,5 @@
 const DEBUG = 'DEBUG'
-const PRODUCTION = 'PRODUCTION'
+//const PRODUCTION = 'PRODUCTION'
 const NONE = 'NONE'
 
 //logTypes

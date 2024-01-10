@@ -1,4 +1,4 @@
-﻿import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
+﻿import s from '../Header.module.scss'; 
 import Settings from '../../../images/sidebar/basil/Settings';
 
 import React from 'react';

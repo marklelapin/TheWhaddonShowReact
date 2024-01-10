@@ -18,13 +18,13 @@ function MediaDisplay(props) {
     useEffect(() => {
         log(logType,'UseEffect[]')
         const getAspectRatio = async () => {
-            const result = await calculateAspectRatio()
+            const result = await calculateAspectRatio() 
             setAspectRatio(result)
         }
 
         getAspectRatio()
 
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

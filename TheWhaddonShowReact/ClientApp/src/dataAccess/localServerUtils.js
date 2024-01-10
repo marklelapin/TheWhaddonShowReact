@@ -4,7 +4,7 @@
 import axios from 'axios';
 
 //React Hooks
-import { useState, useEffect } from 'react';
+import {  useEffect } from 'react';
 
 
 //LocalServerModels and types
@@ -66,7 +66,7 @@ export async function useSync() {
 
         runSync()
 
-    }, [persons.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-dep
+    }, [persons.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
 

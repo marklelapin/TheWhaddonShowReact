@@ -70,7 +70,7 @@ function ScriptViewer(props) {
             dispatch(updateMaxScriptItemTextWidth())
         }
 
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     const reCalculateTextWidthsInView = _.debounce(() => {
         if (scenesToLoad === null) {
@@ -91,7 +91,7 @@ function ScriptViewer(props) {
         if (initialSyncProgressTotal === 100 && scriptBodyLoaded === true) {
             dispatch(updateMaxScriptItemTextWidth())
         }
-    }, [initialSyncProgress, scriptBodyLoaded])
+    }, [initialSyncProgress, scriptBodyLoaded]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
     if (scenesToLoad === 0) { //this allows a reset of scenesToLoad to occur.

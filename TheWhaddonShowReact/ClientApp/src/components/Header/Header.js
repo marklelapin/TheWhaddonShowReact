@@ -2,8 +2,6 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { withRouter } from 'react-router';
-
 //Azure
 //import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
 //import { InteractionStatus } from "@azure/msal-browser";
@@ -30,7 +28,7 @@ import AccountDropdown from './components/AccountDropdown';
 import {screenSize } from '../../core/screenHelper';
 
 //css
-import s from './Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
+import s from './Header.module.scss'; 
 
 
 function Header(props) {
@@ -68,7 +66,7 @@ function Header(props) {
         window.addEventListener('resize', handleResize);
 
         return () => { window.removeEventListener('resize', handleResize); }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 
 
@@ -115,5 +113,5 @@ function Header(props) {
 
 }
 
-export default withRouter(Header);
+export default Header;
 
