@@ -9,9 +9,9 @@ import cache from './cache';
 import user from './user';
 //import { connectRouter } from 'connected-react-router';
 
-export default (history) =>
+export default () =>
     combineReducers({
-        router: connectRouter(history),
+        //router: connectRouter(history),
         alerts,
         apiMonitor,
         navigation,

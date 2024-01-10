@@ -28,6 +28,8 @@ import {log, LAYOUT as logType } from '../../logging.js'
 
 export const Layout = (props) => {
 
+    const { children } = props
+
     log(logType, 'props', props)
 
     const location = useLocation();
@@ -53,13 +55,6 @@ export const Layout = (props) => {
     }
 
 
-    const accessToScript = userAccessToComponent(currentUser, 'Script')
-    const accessToCasting = userAccessToComponent(currentUser, 'Casting')
-    const accessToGallery = userAccessToComponent(currentUser, 'Gallery')
-    const accessToUsers = userAccessToComponent(currentUser, 'Users')
-    const accessToApi = userAccessToComponent(currentUser, 'Api')
-
-
     return (
         <div
             className={[
@@ -82,26 +77,7 @@ export const Layout = (props) => {
                                 classNames="fade"
                                 timeout={200}
                             >
-                                <Switch>
-                                    <Route path="/app/main" exact component={Home} />
-                                    {accessToScript && <Route path="/app/script" exact component={Script} userAccess={accessToScript} />}
-                                    {accessToCasting && <Route path="/app/casting" exact component={UnderConstruction} userAccess={accessToCasting} />}
-                                    {accessToGallery && <Route path="/app/gallery" exact component={ExtraGallery} userAccess={accessToGallery} />}
-                                    {accessToUsers &&
-                                        <>
-                                            <Route path="app/admin" exact render={() => <Redirect to="/admin/users" />} />
-                                            <Route path="app/admin/users" exact component={Users} userAccess={accessToUsers} />
-                                        </>
-                                    }
-                                    {accessToApi &&
-                                        <>
-                                            <Route path="app/api/documentation" exact component={UnderConstruction} />
-                                            <Route path="app/api/dashboard" exact component={UnderConstruction} />
-                                            <Route path="app/api/testResults" exact component={ApiTestResults} />
-                                        </>
-                                    }
-
-                                </Switch>
+                                {children}
                             </CSSTransition>
                         </TransitionGroup>
                         <footer className={s.contentFooter}>

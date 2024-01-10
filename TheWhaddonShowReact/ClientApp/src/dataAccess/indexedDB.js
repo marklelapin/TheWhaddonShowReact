@@ -49,6 +49,7 @@ export const setupPersistentIndexedDB = async () => {
         console.log("navigator.storage.persist() is not supported in this browser.");
         // Handle the case where the browser doesn't support the method
         alert("Because your browser does not support storage persistence , all unsynced changes will be lost on refresh. You will need to upgrade your browser for an optimal experience, to work offline and to avoid potential lose of data.")
+        throw new Error("navigator.storage.persist() is not supported in this browser.");
     }
 
 }

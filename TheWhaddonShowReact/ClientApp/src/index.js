@@ -1,6 +1,7 @@
 //React/Redux
 import React from 'react';
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from 'react-router-dom';
 //import { routerMiddleware } from 'connected-react-router';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux'
@@ -50,9 +51,9 @@ msalInstance.addEventCallback((event) => {
 });
 
 
-export function getHistory() {
-    return history;
-}
+//export function getHistory() {
+//    return history;
+//}
 
 let store;
 
@@ -70,12 +71,11 @@ const initApp = async () => {
 
     log(logType, 'preloadedState exisits:', { copyId: preloadedState?.localServer.localCopyId })
 
-     store = createStore(
-        createRootReducer(history),
+    store = createStore(
+        createRootReducer(),
         preloadedState,
         compose(
             applyMiddleware(
-                routerMiddleware(history),
                 ReduxThunk
             ),
         )
@@ -90,9 +90,12 @@ const initApp = async () => {
     const container = document.getElementById("root");
     const root = createRoot(container);
     root.render(
-        <Provider store={store}>
-            <App instance={msalInstance} />
-        </Provider>
+        <BrowserRouter>
+            <Provider store={store}>
+                <App instance={msalInstance} />
+            </Provider>
+        </BrowserRouter>
+
     );
     // If you want your app to work offline and load faster, you can change
     // unregister() to register() below. Note this comes with some pitfalls.
