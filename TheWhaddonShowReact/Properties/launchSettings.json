@@ -20,12 +20,13 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50000",
+      "launchUrl": "http://localhost:50001",
       "environmentVariables": {
         "ASPNETCORE_URLS": "https://+:443;http://+:80",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       },
+      "httpPort": 50001,
       "publishAllPorts": false
     }
   },
@@ -33,8 +34,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:50302",
-      "sslPort": 44368
+      "applicationUrl": "http://localhost:62382/",
+      "sslPort": 44399
     }
   }
 }

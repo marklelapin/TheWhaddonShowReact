@@ -29,7 +29,7 @@ if (builder.Environment.IsDevelopment())
 	{
 		options.AddPolicy("AllowDevelopmentOrigin", builder =>
 	{
-		builder.WithOrigins("http://localhost:50000")
+		builder.WithOrigins("http://localhost:50001")
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();
