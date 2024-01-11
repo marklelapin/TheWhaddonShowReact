@@ -1,9 +1,9 @@
-import { refreshSceneOrder } from './sceneOrder.js'
+import { refreshSceneOrder } from './sceneOrder'
 
-import { UNDO, REDO, CONFIRM_UNDO } from '../../../actions/scriptEditor.js'
-import { SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels.js'
+import { UNDO, REDO, CONFIRM_UNDO } from '../../../actions/scriptEditor'
+import { SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels'
 
-import { log, SCRIPT_EDITOR_UNDO as logType } from '../../../logging.js'
+import {log, SCRIPT_EDITOR_UNDO as logType} from '../../../logging'
 
 export const getUndoUpdates = (triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons, storedParts, viewAsPartPerson) => {
 

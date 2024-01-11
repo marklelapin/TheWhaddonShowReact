@@ -8,8 +8,8 @@ import TextareaAutosize from 'react-textarea-autosize';
 
 
 //utils
-import { getFileTextContents } from '../../dataAccess/fileUtils.js';
-import { log } from '../../logging.js';
+import { getFileTextContents } from '../../dataAccess/fileUtils';
+import { log } from '../../logging';
 
 //css
 import s from './Uploaders.module.scss';

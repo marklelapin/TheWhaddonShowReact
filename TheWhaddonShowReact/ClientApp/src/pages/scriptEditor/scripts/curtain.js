@@ -1,6 +1,6 @@
 
-import { OPEN_CURTAIN, CLOSE_CURTAIN, CURTAIN_TYPES } from "../../../dataAccess/scriptItemTypes.js";
-import { mergeSceneOrder } from './sceneOrder.js'
+import { OPEN_CURTAIN, CLOSE_CURTAIN, CURTAIN_TYPES } from "../../../dataAccess/scriptItemTypes";
+import { mergeSceneOrder } from './sceneOrder'
 
 export function refreshCurtain(sceneOrder, newScriptItems = []) {
 

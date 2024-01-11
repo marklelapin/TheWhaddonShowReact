@@ -14,8 +14,8 @@
     CLEAR_LOCAL_SERVER_STATE
 } from '../actions/localServer';
 
-import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor.js';
-import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter.js';
+import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
+import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 
 import {
     //**LSMTypeInCode** */
@@ -23,12 +23,12 @@ import {
     , SCRIPT_ITEM
     , PART
     , LocalServerModel
-} from '../dataAccess/localServerModels.js';
+} from '../dataAccess/localServerModels';
 import { v4 as uuidv4 } from 'uuid';
 
 import { log, LOCAL_SERVER_REDUCER as logType } from '../logging.js';
 
-import { resetSyncId } from '../dataAccess/browserStorage.js';
+import {resetSyncId } from '../dataAccess/browserStorage';
 
 const defaultState = {
     localCopyId: uuidv4(),

@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useEffect, useState } from 'react';
-import { log, MEDIA_DISPLAY as logType } from '../../logging.js'
+import {log, MEDIA_DISPLAY as logType} from '../../logging'
 
 function MediaDisplay(props) {
 

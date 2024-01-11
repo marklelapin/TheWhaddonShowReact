@@ -21,24 +21,24 @@ import {
 } from '../../../actions/scriptEditor';
 
 //utils
-import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../logging.js';
+import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../logging';
 import { getTriggerUpdates } from '../scripts/trigger';
 import { getUndoUpdates } from '../scripts/undo';
 import { getScriptItemUpdatesLaterThanCurrent } from '../scripts/scriptItem';
 import { getSceneOrderUpdates, isSceneAffectedByViewAsPartPerson } from '../scripts/sceneOrder';
 import { newPartPersonsFromPartUpdates, newPartPersonsFromPersonUpdates } from '../scripts/part';
 
-import { addUpdates } from '../../../actions/localServer.js';
+import { addUpdates } from '../../../actions/localServer';
 
 import {
     alignRight,
-} from '../scripts/sceneOrder.js'
+} from '../scripts/sceneOrder'
 
 import { moveFocusToId, END } from '../scripts/utility';
 
 //constants
-import { SCRIPT_ITEM, PART, PERSON } from '../../../dataAccess/localServerModels.js'
-import { isScreenSmallerThan } from '../../../core/screenHelper.js';
+import { SCRIPT_ITEM, PART, PERSON } from '../../../dataAccess/localServerModels'
+import { isScreenSmallerThan } from '../../../core/screenHelper';
 
 export function ScriptEditorProcessing() {
 

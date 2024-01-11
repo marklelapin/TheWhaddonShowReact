@@ -6,9 +6,9 @@
     mockSceneOrders,
     mockPreviousCurtainOpen,
 } from './mockData'
-import { refreshCurtain, newScriptItemsForToggleCurtain } from '../scripts/curtain.js';
-import { OPEN_CURTAIN, CLOSE_CURTAIN } from '../../../dataAccess/scriptItemTypes.js';
-import { log, TEST } from '../../../logging.js'
+import { refreshCurtain, newScriptItemsForToggleCurtain } from '../scripts/curtain';
+import {  OPEN_CURTAIN, CLOSE_CURTAIN } from '../../../dataAccess/scriptItemTypes';
+import { log , TEST } from '../../../logging'
 
 
 it.each([

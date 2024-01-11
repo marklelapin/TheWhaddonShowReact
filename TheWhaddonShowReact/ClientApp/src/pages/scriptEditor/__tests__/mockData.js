@@ -1,6 +1,6 @@
 ﻿
-import { PERSON } from "../../../dataAccess/localServerModels.js";
-import { OPEN_CURTAIN, CLOSE_CURTAIN, SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, DIALOGUE, HEADER_TYPES, INITIAL_CURTAIN, CURTAIN, COMMENT } from "../../../dataAccess/scriptItemTypes.js";
+import { PERSON } from "../../../dataAccess/localServerModels";
+import { OPEN_CURTAIN, CLOSE_CURTAIN, SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, DIALOGUE, HEADER_TYPES, INITIAL_CURTAIN, CURTAIN, COMMENT } from "../../../dataAccess/scriptItemTypes";
 
 export  const createdDate = new Date('2023-12-01T00:00:00.000')
 export const laterCreatedDate = new Date('2023-12-01T00:01:00.000')

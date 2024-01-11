@@ -48,9 +48,9 @@ import {
 
 import { getTriggerUpdates } from '../scripts/trigger'
 
-import { CURTAIN, LIGHTING, SOUND, DIALOGUE, OPEN_CURTAIN, CLOSE_CURTAIN } from '../../../dataAccess/scriptItemTypes.js'
-import { START, END, ABOVE, BELOW, UP, DOWN } from '../scripts/utility.js'
-import { log } from '../../../logging.js'
+import { CURTAIN, LIGHTING, SOUND, DIALOGUE, OPEN_CURTAIN, CLOSE_CURTAIN } from '../../../dataAccess/scriptItemTypes'
+import { START, END, ABOVE, BELOW, UP, DOWN } from '../scripts/utility'
+import { log } from '../../../logging'
 
 const anyValue = expect.anything()
 

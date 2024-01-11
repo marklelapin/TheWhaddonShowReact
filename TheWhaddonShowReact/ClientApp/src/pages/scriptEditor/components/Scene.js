@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { trigger, ADD_SCENE, updateSceneLoaded } from '../../../actions/scriptEditor.js'
+import { trigger, ADD_SCENE, updateSceneLoaded } from '../../../actions/scriptEditor'
 
 //Components
 import ScriptItem from '../../../pages/scriptEditor/components/ScriptItem.js';
@@ -11,13 +11,13 @@ import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
-import { log, SCENE as logType } from '../../../logging.js'
-import { partEditorRowId } from '../scripts/part.js';
+import { log, SCENE as logType } from '../../../logging'
+import { partEditorRowId } from '../scripts/part';
 //styling
 import s from '../Script.module.scss'
 
 //Constants
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes.js';
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
 
 
 

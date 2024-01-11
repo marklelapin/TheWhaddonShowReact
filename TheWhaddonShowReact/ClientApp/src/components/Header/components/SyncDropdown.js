@@ -8,11 +8,11 @@ import { Icon } from '../../../components/Icons/Icons';
 import Loader from '../../../components/Loader/Loader';
 
 //utils
-import { clearStateFromBrowserStorage } from '../../../dataAccess/browserStorage.js'
-import { setPauseSync } from '../../../actions/localServer.js';
+import { clearStateFromBrowserStorage } from '../../../dataAccess/browserStorage'
+import { setPauseSync } from '../../../actions/localServer';
 //Constants
-import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels.js';
-import { log, SYNC_DROPDOWN as logType } from '../../../logging.js';
+import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
+import { log, SYNC_DROPDOWN as logType } from '../../../logging';
 
 //css
 import s from '../Header.module.scss'; 

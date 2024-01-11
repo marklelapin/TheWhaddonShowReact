@@ -1,4 +1,3 @@
-
 //React/Redux
 import React from 'react';
 import { createRoot } from "react-dom/client";
@@ -15,13 +14,13 @@ import { msalConfig } from './authConfig.js'
 
 //Utilities
 
-import * as serviceWorker from './serviceWorker.js';
+import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
 
-import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from './dataAccess/browserStorage.js';
+import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from './dataAccess/browserStorage';
 
 
-import App from './components/App.js';
+import App from './components/App';
 import config from './config';
 import createRootReducer from './reducers';
 

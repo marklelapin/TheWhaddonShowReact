@@ -6,11 +6,11 @@ import { useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
 
 //utils
-import { log } from '../../../logging.js';
+import { log } from '../../../logging';
 
-import { ACT, SCENE } from '../../../dataAccess/scriptItemTypes.js';
+import { ACT, SCENE } from '../../../dataAccess/scriptItemTypes';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
-import { finalReadOnly } from '../scripts/layout.js';
+import { finalReadOnly } from '../scripts/layout';
 
 import s from '../Script.module.scss'
 

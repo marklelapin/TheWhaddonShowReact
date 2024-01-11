@@ -1,9 +1,9 @@
 ﻿
-import { SHOW, SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes.js";
-import { getLatest } from '../../../dataAccess/localServerUtils.js';
-import { refreshCurtain } from "./curtain.js";
+import { SHOW,  SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
+import { getLatest } from '../../../dataAccess/localServerUtils';
+import { refreshCurtain } from "./curtain";
 
-import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../logging.js';
+import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../logging';
 
 const debug = true;
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.

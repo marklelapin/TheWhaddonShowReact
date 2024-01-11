@@ -14,10 +14,10 @@ import Avatar from '../../../components/Avatar/Avatar';
 import Widget from '../../../components/Widget';
 
 //utilities
-import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts.js';
-import { getLatest } from '../../../dataAccess/localServerUtils.js';
-import { moveFocusToId, END } from '../scripts/utility.js';
-import { log, PERSON_SELECTOR as logType } from '../../../logging.js';
+import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts';
+import { getLatest } from '../../../dataAccess/localServerUtils';
+import { moveFocusToId, END } from '../scripts/utility';
+import { log, PERSON_SELECTOR as logType } from '../../../logging';
 
 import s from '../Script.module.scss'
 

@@ -10,7 +10,7 @@ import SceneSelectorRow from './SceneSelectorRow'
 
 //Utils
 
-import { log } from '../../../logging.js';
+import { log } from '../../../logging';
 import { moveFocusToId, END } from '../scripts/utility'
 
 

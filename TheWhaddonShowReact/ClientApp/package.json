@@ -9,7 +9,6 @@
     "test": "node scripts/test.js --runInBand --verbose=false"
   },
   "proxy": "http://localhost:50001",
-  "type": "module",
   "browserslist": [
     ">0.2%",
     "not dead",

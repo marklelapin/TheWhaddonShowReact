@@ -19,20 +19,20 @@ import {
 import TextareaAutosize from 'react-textarea-autosize';
 import ScriptItemControls, { CONFIRM } from './ScriptItemControls';
 import ScriptItemHeader from './ScriptItemHeader';
-import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging.js';
+import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
 
 
 //Utilities
-import { curtainText } from '../scripts/curtain.js';
-import { updateScriptItemInFocus } from '../../../actions/scriptEditor.js';
-import { moveFocusFromScriptItem } from '../scripts/utility.js';
-import { finalReadOnly } from '../scripts/layout.js';
-import { getScriptItemPlaceholder } from '../scripts/scriptItem.js'
+import { curtainText } from '../scripts/curtain';
+import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
+import { moveFocusFromScriptItem } from '../scripts/utility';
+import { finalReadOnly } from '../scripts/layout';
+import { getScriptItemPlaceholder } from '../scripts/scriptItem'
 
 //constants
-import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN, ACT } from '../../../dataAccess/scriptItemTypes.js';
-import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility.js';
-import { DEFAULT_END_MARGIN } from '../scripts/layout.js';
+import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN, ACT } from '../../../dataAccess/scriptItemTypes';
+import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
+import { DEFAULT_END_MARGIN } from '../scripts/layout';
 
 //css
 import s from '../ScriptItem.module.scss';

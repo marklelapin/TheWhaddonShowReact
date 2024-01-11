@@ -9,12 +9,12 @@ import { FormGroup, Input, Button } from 'reactstrap';
 
 //utils
 
-import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels.js';
-import { prepareUpdates, getLatest } from '../../../dataAccess/localServerUtils.js';
-import { newScriptItemsForCreateShow } from '../scripts/scriptItem.js';
-import { addUpdates } from '../../../actions/localServer.js';
+import { SCRIPT_ITEM } from '../../../dataAccess/localServerModels';
+import { prepareUpdates, getLatest } from '../../../dataAccess/localServerUtils';
+import { newScriptItemsForCreateShow } from '../scripts/scriptItem';
+import {addUpdates } from '../../../actions/localServer';
 //constants
-import { SHOW } from '../../../dataAccess/scriptItemTypes.js'
+import { SHOW } from '../../../dataAccess/scriptItemTypes'
 
 function ShowSelector(props) {
 

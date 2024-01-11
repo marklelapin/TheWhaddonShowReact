@@ -19,12 +19,12 @@ import ScriptItemControls, { TOGGLE_PART_SELECTOR, CONFIRM } from './ScriptItemC
 import PartSelectorDropdown from './PartSelectorDropdown';
 
 //Utilities
-import { log, PART_EDITOR_ROW as logType } from '../../../logging.js'
-import { updateScriptItemInFocus } from '../../../actions/scriptEditor.js';
-import { DOWN, UP, START, END, ABOVE, BELOW } from '../scripts/utility.js';
-import { moveFocusToId, closestPosition } from '../scripts/utility.js';
-import { partEditorRowId } from '../scripts/part.js'
-import { finalReadOnly } from '../scripts/layout.js';
+import { log, PART_EDITOR_ROW as logType } from '../../../logging'
+import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
+import { DOWN, UP, START, END, ABOVE, BELOW } from '../scripts/utility';
+import { moveFocusToId, closestPosition } from '../scripts/utility';
+import { partEditorRowId } from '../scripts/part'
+import { finalReadOnly } from '../scripts/layout';
 
 //styling
 import s from '../ScriptItem.module.scss'

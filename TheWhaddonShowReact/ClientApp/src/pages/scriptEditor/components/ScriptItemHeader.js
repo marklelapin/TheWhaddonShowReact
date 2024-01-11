@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PartSelectorDropdown from './PartSelectorDropdown';
 
-import { STAGING, INITIAL_STAGING, DIALOGUE, SOUND, LIGHTING, TYPES_WITH_HEADER, SCENE } from '../../../dataAccess/scriptItemTypes.js';
+import { STAGING, INITIAL_STAGING, DIALOGUE, SOUND, LIGHTING, TYPES_WITH_HEADER, SCENE } from '../../../dataAccess/scriptItemTypes';
 
-import { trigger, UPDATE_PART_IDS } from '../../../actions/scriptEditor.js';
-import { log, SCRIPT_ITEM_HEADER as logType } from '../../../logging.js';
+import { trigger, UPDATE_PART_IDS } from '../../../actions/scriptEditor';
+import { log, SCRIPT_ITEM_HEADER as logType } from '../../../logging';
 
 import s from '../ScriptItem.module.scss';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';

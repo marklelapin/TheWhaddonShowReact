@@ -30,7 +30,7 @@ import wslogo from '../../images/whaddon-show-logo-reversed.png'
 import wstitle from '../../images/the-whaddon-show.png'
 
 import CaretPin from './LinksGroup/CaretPin';
-import { userAccessToComponent } from '../../dataAccess/userAccess.js';
+import { userAccessToComponent } from '../../dataAccess/userAccess';
 
 function Sidebar() {
 

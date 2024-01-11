@@ -16,14 +16,13 @@ import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
 
 //utitilites
-import { isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper.js';
-import { setPauseSync } from '../../../actions/localServer.js'; 
-import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../logging.js';
-import { getShowBools, finalReadOnly } from '../scripts/layout.js';
+import {  isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
+import { setPauseSync } from '../../../actions/localServer'; 
+import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../logging';
+import { getShowBools, finalReadOnly } from '../scripts/layout';
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 import s from '../Script.module.scss';
-
 
 
 function ScriptViewer(props) {
