@@ -65,11 +65,11 @@ import {
 
 } from '../scripts/scriptItem';
 
-import { SHOW, ACT, SCENE, STAGING, DIALOGUE, SYNOPSIS, INITIAL_CURTAIN, INITIAL_STAGING, COMMENT } from '../../../dataAccess/scriptItemTypes';
+import { SHOW, ACT, SCENE, STAGING, DIALOGUE, SYNOPSIS, INITIAL_CURTAIN, INITIAL_STAGING, COMMENT } from '../../../dataAccess/scriptItemTypes.js';
 
-import { ABOVE, BELOW } from '../scripts/utility'
+import { ABOVE, BELOW } from '../scripts/utility.js'
 
-import { log, TEST } from '../../../logging';
+import { log, TEST } from '../../../logging.js';
 
 
 it('newScriptItemsForCreateShow', () => {

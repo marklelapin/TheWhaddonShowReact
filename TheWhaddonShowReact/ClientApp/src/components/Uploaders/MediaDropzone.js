@@ -13,14 +13,14 @@ import MediaDisplay from './MediaDisplay';
 import { Icon } from '../../components/Icons/Icons';
 
 //data access
-import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils';
+import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils.js';
 
 
 //utils
-import { log, MEDIA_DROPZONE as logType } from '../../logging';
+import { log, MEDIA_DROPZONE as logType } from '../../logging.js';
 
 //constants
-import { MEDIA } from '../../dataAccess/storageContainerNames';
+import { MEDIA } from '../../dataAccess/storageContainerNames.js';
 
 //css
 import s from './Uploaders.module.scss';

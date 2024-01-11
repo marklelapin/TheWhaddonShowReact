@@ -7,10 +7,10 @@ import { uploadFiles } from '../../dataAccess/fileUtils.js';
 
 //Constants
 import { addToCache } from '../../actions/cache';
-import { AVATARS } from '../../dataAccess/storageContainerNames';
+import { AVATARS } from '../../dataAccess/storageContainerNames.js';
 
 //utils
-import { log, AVATAR as logType } from '../../logging';
+import { log, AVATAR as logType } from '../../logging.js';
 
 import s from './Avatar.module.scss';
 

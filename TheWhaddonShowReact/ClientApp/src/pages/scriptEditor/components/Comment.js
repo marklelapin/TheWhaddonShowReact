@@ -13,7 +13,7 @@ import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
 import { finalReadOnly } from '../scripts/layout';
 
-import { log, COMMENT as logType } from '../../../logging';
+import { log, COMMENT as logType } from '../../../logging.js';
 //css
 import s from '../ScriptItem.module.scss';
 

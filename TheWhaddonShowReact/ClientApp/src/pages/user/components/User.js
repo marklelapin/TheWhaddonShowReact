@@ -15,12 +15,12 @@ import {
     ModalFooter,
 } from 'reactstrap';
 
-import { prepareUpdate } from '../../../dataAccess/localServerUtils'
+import { prepareUpdate } from '../../../dataAccess/localServerUtils.js'
 import '../../../index.css'
 
-import { addUpdates } from '../../../actions/localServer';
-import { PERSON } from '../../../dataAccess/localServerModels';
-import { log } from '../../../logging'
+import { addUpdates } from '../../../actions/localServer.js';
+import { PERSON } from '../../../dataAccess/localServerModels.js';
+import { log } from '../../../logging.js'
 export const headers = 'headers'
 export const row = 'row'
 export const modal = 'modal'

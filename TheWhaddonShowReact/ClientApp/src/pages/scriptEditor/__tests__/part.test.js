@@ -43,7 +43,7 @@ import {
     newPartPersonsFromPartUpdates
 } from '../scripts/part'
 
-import { log } from '../../../logging'
+import { log } from '../../../logging.js'
 
 it.each([
     [1, BELOW, part5, 'changedText', scene2], //p5 = middle partID

@@ -3,18 +3,18 @@ import React from 'react';
 //Redux Hooks
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { isScreen } from '../../../core/screenHelper';
+import { isScreen } from '../../../core/screenHelper.js';
 
 //Data Access / Local Server Model
-import { getLatest } from '../../../dataAccess/localServerUtils';
+import { getLatest } from '../../../dataAccess/localServerUtils.js';
 //Components
-import DataLoading from '../../../components/DataLoading/DataLoading';
+import DataLoading from '../../../components/DataLoading/DataLoading.js';
 
 import { headers, row } from './User';
 import { Table, Button } from 'reactstrap';
 import User from './User';
-import { PersonUpdate } from '../../../dataAccess/localServerModels';
-import { log } from '../../../logging';
+import { PersonUpdate } from '../../../dataAccess/localServerModels.js';
+import { log } from '../../../logging.js';
 
 
 export function UsersTable() {

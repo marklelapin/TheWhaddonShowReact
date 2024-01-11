@@ -1,8 +1,8 @@
 ﻿import axios from 'axios';
 
 import { IMPORT_GUID } from '../ScriptImporter';
-import { ScriptItemUpdate } from '../../../dataAccess/localServerModels';
-import { ACTION } from '../../../dataAccess/scriptItemTypes';
+import { ScriptItemUpdate } from '../../../dataAccess/localServerModels.js';
+import { ACTION } from '../../../dataAccess/scriptItemTypes.js';
 
 
 

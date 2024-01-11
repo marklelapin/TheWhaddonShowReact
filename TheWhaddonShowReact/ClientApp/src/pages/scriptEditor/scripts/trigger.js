@@ -38,12 +38,12 @@ import {
     updateFocusOverrides,
 } from '../scripts/sceneOrder'
 
-import { getLatest, prepareUpdates } from '../../../dataAccess/localServerUtils'
+import { getLatest, prepareUpdates } from '../../../dataAccess/localServerUtils.js'
 
-import { SCENE, CURTAIN_TYPES, DIALOGUE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
-import { END, UP, START } from './utility';
+import { SCENE, CURTAIN_TYPES, DIALOGUE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes.js';
+import { END, UP, START } from './utility.js';
 
-import { log, SCRIPT_EDITOR_TRIGGER as logType } from '../../../logging'
+import { log, SCRIPT_EDITOR_TRIGGER as logType } from '../../../logging.js'
 
 export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, previousCurtainOpen, show, viewAsPartPerson = null) => {
 

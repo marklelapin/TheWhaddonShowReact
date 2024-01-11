@@ -20,13 +20,13 @@ import { Icon } from '../../../components/Icons/Icons'
 
 
 //Constants
-import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from '../../../dataAccess/scriptItemTypes';
-import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN, CURTAIN } from '../../../dataAccess/scriptItemTypes.js';
+import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes.js';
 
 //utils
-import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../logging';
-import { finalReadOnly } from '../scripts/layout';
-import { moveFocusToId } from '../scripts/utility';
+import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../logging.js';
+import { finalReadOnly } from '../scripts/layout.js';
+import { moveFocusToId } from '../scripts/utility.js';
 
 import s from '../ScriptItem.module.scss';
 

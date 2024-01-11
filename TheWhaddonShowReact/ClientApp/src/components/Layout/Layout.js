@@ -20,7 +20,7 @@ import UnderConstruction from '../../pages/underConstruction/UnderConstruction';
 import { openSidebar, closeSidebar } from '../../actions/navigation';
 import s from './Layout.module.scss';
 import ApiTestResults from '../../pages/apiMonitor/TestResults';
-import { userAccessToComponent } from '../../dataAccess/userAccess';
+import { userAccessToComponent } from '../../dataAccess/userAccess.js';
 
 import {log, LAYOUT as logType } from '../../logging.js'
 

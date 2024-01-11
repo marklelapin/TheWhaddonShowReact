@@ -19,7 +19,7 @@ import { log, SCRIPT_ITEM as logType } from '../../../logging';
 import { finalReadOnly } from '../scripts/layout';
 
 //Constants
-import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
+import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes.js';
 //trigger types
 import {
     trigger,

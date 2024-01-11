@@ -28,13 +28,12 @@ import {
     UPDATE_MOVEMENT_IN_PROGRESS
 } from '../actions/scriptEditor';
 
-import { SCENE } from '../dataAccess/scriptItemTypes';
+import { SCENE } from '../dataAccess/scriptItemTypes.js';
 
-import { log, SCRIPT_EDITOR_REDUCER as logType } from '../logging';
-import { SCRIPT_ITEM, PERSON, PART } from '../dataAccess/localServerModels';
+import { log, SCRIPT_EDITOR_REDUCER as logType } from '../logging.js';
+import { SCRIPT_ITEM, PERSON, PART } from '../dataAccess/localServerModels.js';
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
-import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
-
+import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout.js';
 export const initialState = {
     searchParameters: {
         tags: [],

@@ -2,7 +2,7 @@ import {
   ADD_TO_CACHE
 } from '../actions/cache';
 
-import { AVATARS } from '../dataAccess/storageContainerNames';
+import { AVATARS } from '../dataAccess/storageContainerNames.js';
 
 const defaultState = {
     [AVATARS]: {},

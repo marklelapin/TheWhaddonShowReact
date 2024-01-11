@@ -5,18 +5,18 @@ import { Routes, Route, createBrowserRouter } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 
 //dataAccess Components
-import LocalServerSyncing from '../dataAccess/LocalServerSyncing';
-import ScriptEditorProcessing from '../pages/scriptEditor/components/ScriptEditorProcessing';
+import LocalServerSyncing from '../dataAccess/LocalServerSyncing.js';
+import ScriptEditorProcessing from '../pages/scriptEditor/components/ScriptEditorProcessing.js';
 
 //Azure
 import { MsalProvider, useMsal } from '@azure/msal-react';
 import { EventType } from '@azure/msal-browser';
 import { b2cPolicies, protextedResources } from '../authConfig.js'
 //Components
-import { Layout } from '../components/Layout';
-import Routing  from './Routing';
-import CacheProcessing from '../dataAccess/CacheProcessing';
-import TextAreaContexts from '../dataAccess/TextAreaContexts';
+import { Layout } from '../components/Layout.js';
+import Routing from './Routing.js';
+import CacheProcessing from '../dataAccess/CacheProcessing.js';
+import TextAreaContexts from '../dataAccess/TextAreaContexts.js';
 
 //Utils
 import { log, APP as logType } from '../logging.js';

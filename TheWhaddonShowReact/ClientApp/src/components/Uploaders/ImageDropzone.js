@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { useState, useCallback } from 'react';
-import { uploadFiles } from '../../dataAccess/fileUtils';
+import { uploadFiles } from '../../dataAccess/fileUtils.js';
 
 import {
     FormGroup,

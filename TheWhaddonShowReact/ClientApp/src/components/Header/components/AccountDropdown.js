@@ -7,12 +7,12 @@ import Avatar from '../../../components/Avatar/Avatar.js';
 import { updateCurrentUser, login, logout } from '../../../actions/user';
 import { setReadOnly, updatePersonSelectorConfig, updateViewAsPartPerson } from '../../../actions/scriptEditor';
 import { addUpdates } from '../../../actions/localServer';
-import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
+import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils.js';
 import PowerButton from '../../../images/sidebar/basil/PowerButton';
 import { Icon } from '../../../components/Icons/Icons';
-import { PERSON } from '../../../dataAccess/localServerModels';
+import { PERSON } from '../../../dataAccess/localServerModels.js';
 import PersonSelector from '../../../pages/scriptEditor/components/PersonSelector';
-import { log, ACCOUNT_DROPDOWN as logType } from '../../../logging';
+import { log, ACCOUNT_DROPDOWN as logType } from '../../../logging.js';
 
 function AccountDropdown(props) {
 
