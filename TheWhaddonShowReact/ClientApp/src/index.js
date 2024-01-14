@@ -26,7 +26,14 @@ import createRootReducer from './reducers';
 
 import { createHashHistory } from 'history';
 
+
 import { log, INDEX as logType } from './logging';
+// Styles
+import './styles/theme.scss';
+//import './styles.css' 
+//assert { type: 'css' };
+//document.adoptedStyleSheets = [sheet];
+//shadowRoot.adoptedStyleSheets = [sheet];
 
 const history = createHashHistory();
 const _ = require('lodash');
@@ -59,13 +66,13 @@ let store;
 
 const initApp = async () => {
 
-    axios.defaults.baseURL = config.baseURLApi;
+    //axios.defaults.baseURL = config.baseURLApi;
 
-    axios.defaults.headers.common['Content-Type'] = "application/json";
-    const token = localStorage.getItem('token');
-    if (token) {
-        axios.defaults.headers.common['Authorization'] = "Bearer " + token;
-    }
+    //axios.defaults.headers.common['Content-Type'] = "application/json";
+    //const token = localStorage.getItem('token');
+    //if (token) {
+    //    axios.defaults.headers.common['Authorization'] = "Bearer " + token;
+    //}
 
     const preloadedState = await loadStateFromBrowserStorage();
 
@@ -85,7 +92,6 @@ const initApp = async () => {
         _.debounce(() => saveStateToBrowserStorage(store.getState()), 5000)
     )
 
-    store.dispatch(doInit());
 
     const container = document.getElementById("root");
     const root = createRoot(container);

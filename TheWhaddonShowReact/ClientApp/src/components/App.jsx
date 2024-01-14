@@ -1,7 +1,6 @@
 //REact and REdux
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Routes, Route, createBrowserRouter } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 
 //dataAccess Components
@@ -24,11 +23,7 @@ import { log, APP as logType } from '../logging.js';
 // Styles
 import '../styles/theme.scss';
 
-const router = createBrowserRouter([
-    { path: "*", Component: Root },
-]);
 
-const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
 
 function App(props) {
 
@@ -37,13 +32,15 @@ function App(props) {
 
     const { instance } = props
 
-    const loadingInit = useSelector((state) => state.auth.loadingInit)
+    //const loadingInit = useSelector((state) => state.auth.loadingInit)
 
     const dispatch = useDispatch();
 
-    if (loadingInit) { //this.props.loadingInit this.props.dispatch in {} below
-        return <div />;
-    }
+    //const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
+
+    //if (loadingInit) { //this.props.loadingInit this.props.dispatch in {} below
+    //    return <div />;
+    //}
 
     return (
 
@@ -55,11 +52,11 @@ function App(props) {
             <CacheProcessing />
             <TextAreaContexts />
 
-            <ToastContainer
-                autoClose={5000}
-                hideProgressBar
-                closeButton={<CloseButton />}
-            />
+            {/*<ToastContainer*/}
+            {/*    autoClose={5000}*/}
+            {/*    hideProgressBar*/}
+            {/*    closeButton={<CloseButton />}*/}
+            {/*/>*/}
 
                 <MSALErrorHandling >
                     <Routing/>
@@ -160,7 +157,7 @@ const MSALErrorHandling = ({ children }) => {
         // eslint-disable-next-line
     }, [instance]);
 
-    return { children };
+    return children ;
 }
 
 

@@ -9,10 +9,13 @@ const paths = require('./paths');
 const fs = require('fs');
 
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
-const host = process.env.HOST || '0.0.0.0';
+//const host = process.env.HOST || '0.0.0.0';
 
 
-module.exports = function (proxy, allowedHost) {
+module.exports = function (host, port, proxy) {
+    // console.log('host in createConfig', {host})
+    console.log('creatConfig', { host, port, proxy })
+
     return {
         // WebpackDevServer 2.4.3 introduced a security fix that prevents remote
         // websites from potentially accessing local content through DNS rebinding:
@@ -31,9 +34,9 @@ module.exports = function (proxy, allowedHost) {
         // specified the `proxy` setting. Finally, we let you override it if you
         // really know what you're doing with a special environment variable.
         //disableHostCheck:
-        //    !proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',   //No longer an option in Webpack 5 - allowedHosts: 'all' instead
+        //    !proxy || process.env.DANGEROUSLY_DISABLE_HOST_CHECK === 'true',   //No longer an option in Webpack 5 - allowedHosts: 'auto' instead
         // Enable gzip compression of generated files.
-        allowedHosts: 'all',
+        allowedHosts: 'auto',
         compress: true,
         // Enable hot reloading server. It will provide /sockjs-node/ endpoint
         // for the WebpackDevServer client so it can learn when the files were
@@ -63,8 +66,14 @@ module.exports = function (proxy, allowedHost) {
             publicPath: config.output.publicPath,
         },
         // Enable HTTPS if the HTTPS environment variable is set to 'true'
-        https: protocol === 'https',
-        host,
+        server: {
+            type: 'https',
+            options: {
+                key: paths.localHostKey,
+                cert: paths.localHostCert,
+               }
+        },
+        host: "localhost",
         //overlay: false,
         historyApiFallback: {
             // Paths with dots should still use the history fallback.
@@ -76,7 +85,12 @@ module.exports = function (proxy, allowedHost) {
             overlay: true,
             //webSocketURL: allowedHost,
         },
-        proxy,
+        open: true,
+        port,
+        proxy: {
+            '/api': `http://localhost:${proxy}`
+        },
+
         setupMiddlewares: (middlewares, devServer) => {
 
             if (!devServer) {

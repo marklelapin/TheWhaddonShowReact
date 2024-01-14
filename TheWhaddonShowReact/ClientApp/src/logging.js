@@ -3,9 +3,9 @@ const DEBUG = 'DEBUG'
 const NONE = 'NONE'
 
 //logTypes
-export const ACCOUNT_DROPDOWN = { type: DEBUG, location: 'Component:AccountDropdown' }
+export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdown' }
 
-export const APP = {type: DEBUG, location: 'Component: App'}
+export const APP = {type: NONE, location: 'Component: App'}
 
 export const AVATAR = { type: NONE, location: 'Component:Avatar' }
 export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }

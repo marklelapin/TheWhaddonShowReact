@@ -1,6 +1,42 @@
 ﻿import React, { useState } from 'react';
 
 import { Tooltip } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+    faCloud,
+    faPlus,
+    faCheck,
+    faTimes,
+    faExclamation,
+    faRotateLeft,
+    faRotateRight,
+    faBars,
+    faArrowLeft,
+    faComments,
+    faAlignCenter,
+    faEdit,
+    faComment,
+    faPrint,
+    faFileAudio,
+    faFileVideo,
+    faPlay,
+    faPaperclip,
+    faLink,
+    faCircleO,
+    faCircle,
+    faSearch,
+    faTags,
+    faTrash,
+    faArrowsV,
+    faVolumeUp,
+    faLightbulb,
+    faMale,
+    faChild,
+    faHome,
+    faFileLines,
+    faPersonMilitaryToPerson,
+    faPanorama
+} from '@fortawesome/free-solid-svg-icons' 
 
 import s from './Icons.module.scss'; 
 
@@ -36,39 +72,43 @@ export function Icon(props) {
 
 
     const dictionary = {
-        "sync": "fa fa-cloud",
-        "add": "fa fa-plus",
-        "tick": "fa fa-check",
-        "cross": "fa fa-times",
-        "remove": "fa fa-times",
-        "warning": "fa fa-exclamation",
-        "undo": "fa fa-history",
-        "redo": "fa fa-history reverse-icon",
-        "menu": "fa fa-navicon",
-        "arrow-left": "fa fa-arrow-left",
-        "chat-mode": "fa fa-comments-o",
-        "classic-mode": "fa fa-align-center",
-        "edit": "fa fa-edit",
-        "comment-o": "fa fa-comment-o",
-        "comment": "fa fa-comment",
-        "print": "fa fa-print",
-        "audio-file": "fa fa-file-audio-o",
-        "video-file": "fa fa-file-video-o",
-        "play": "fa fa-play",
-        "attach": "fa fa-paperclip",
-        "attachment": "fa fa-paperclip",
-        "link": "fa fa-link",
-        "circle-o": "fa fa-circle-o",
-        "circle": "fa fa-circle",
-        "search": "fa fa-search",
-        "tags": "fa fa-tags",
-        "trash": "fa fa-trash-o",
-        "move-up-down": "fa fa-arrows-v",
-        "arrows-v": "fa fa-arrows-v",
-        "sound": "fa fa-volume-up",
-        "lightbulb": "fa fa-lightbulb-o",
-        "man": "fa fa-male",
-        "child": "fa fa-child",
+        "sync": faCloud,
+        "add": faPlus,
+        "tick": faCheck,
+        "cross": faTimes,
+        "remove": faTimes,
+        "warning": faExclamation,
+        "undo": faRotateLeft,
+        "redo": faRotateRight,
+        "menu": faBars,
+        "arrow-left": faArrowLeft,
+        "chat-mode": faComments,
+        "classic-mode": faAlignCenter,
+        "edit": faEdit,
+        "comment-o": faComment,
+        "comment": faComment,
+        "print": faPrint,
+        "audio-file": faFileAudio,
+        "video-file": faFileVideo,
+        "play": faPlay,
+        "attach": faPaperclip,
+        "attachment": faPaperclip,
+        "link":faLink,
+        "circle-o": faCircle,
+        "circle": faCircle,
+        "search": faSearch,
+        "tags": faTags,
+        "trash": faTrash,
+        "move-up-down": faArrowsV,
+        "arrows-v": faArrowsV,
+        "sound": faVolumeUp,
+        "lightbulb": faLightbulb,
+        "man": faMale,
+        "child": faChild,
+        "home": faHome,
+        "script": faFileLines,
+"gallery": faPanorama,
+"casting": faPersonMilitaryToPerson,
     };
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {
@@ -82,17 +122,19 @@ export function Icon(props) {
         setToolTipOpen(toolTipOpen === id ? null : id)
     }
 
-
-
     if (id === null) {
-        return <i className={`m-1 ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
+        return <FontAwesomeIcon
+        icon={icon}
+            className={`m-1 ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
             style={style}
             onClick={onClick} />
     }
     if (id !== null) {
         return <>
-            <i id={id}
-                className={`m-1 ${icon}  ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
+            <FontAwesomeIcon
+                icon={icon}
+                id={id}
+                className={`m-1 ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
                 style={style}
                 onClick={onClick} />
 

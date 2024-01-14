@@ -1,22 +1,25 @@
 import React from 'react';
 import { UncontrolledTooltip } from 'reactstrap';
 import classnames from 'classnames';
+import {Icon} from '../../Icons/Icons';
+
 import s from './LinksGroup.module.scss';
 
 export function CaretPin(props) {
 
+
+    const { id, onClick, isPinned = false, isCollapsed =true} = props
+
     return (
-        <>
-        
-            <div className={classnames({ [s.headerLinkActive]: true }, { [s.collapsed]: props.isPinned }, "d-flex","caret-pin")}
-                                onClick={props.onClick}
+       
+
+            <div className={`${[s.headerLinkActive]} ${isPinned ? s.pinned : ''} ${isCollapsed ? s.collapsed : ''} d-flex caret-pin`}
+                onClick={onClick}
             >
-                <b id="caret-pin" className={['fa fa-angle-left', s.caret].join(' ')} />
-      </div>
-            <UncontrolledTooltip placement="bottom" target="caret-pin">
-                                Pin<br />sidebar<br />
-            </UncontrolledTooltip>
-        </>
+            <Icon icon="caret" id={id} className={s.caret} toolTip={'Pin Sidebar'} />
+            </div>
+         
+       
     )
 
 }

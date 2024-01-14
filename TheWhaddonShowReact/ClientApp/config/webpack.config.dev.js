@@ -7,6 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
 const getClientEnvironment = require('./env');
 const paths = require('./paths');
@@ -30,6 +31,8 @@ const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+
+
 
 
 // common function to get style loaders
@@ -89,9 +92,9 @@ module.exports = {
         // Note: instead of the default WebpackDevServer client, we use a custom one
         // to bring better experience for Create React App users. You can replace
         // the line below with these two lines if you prefer the stock client:
-        // require.resolve('webpack-dev-server/client') + '?/',
-        // require.resolve('webpack/hot/dev-server'),
-        require.resolve('react-dev-utils/webpackHotDevClient'),
+        require.resolve('webpack-dev-server/client') + '?/',
+        require.resolve('webpack/hot/dev-server'),
+        //require.resolve('react-dev-utils/webpackHotDevClient'),
         // Finally, this is your app's code:
         paths.appIndexJs,
         // We include the app code last so that if there is a runtime error during
@@ -143,7 +146,7 @@ module.exports = {
         // https://github.com/facebook/create-react-app/issues/290
         // `web` extension prefixes have been added for better support
         // for React Native Web.
-        extensions: ['.mjs', '.web.js', '.js', '.json', '.web.jsx', '.jsx'],
+        extensions: ['.mjs', '.web.js', '.js', '.json', '.web.jsx', '.jsx','.scss','.module.scss'],
         alias: {
             // Support React Native Web
             // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
@@ -298,7 +301,9 @@ module.exports = {
                     {
                         test: sassRegex,
                         exclude: sassModuleRegex,
-                        use: getStyleLoaders({ importLoaders: 2 }, 'sass-loader'),
+                        use: getStyleLoaders({
+                            importLoaders: 2,
+                        }, 'sass-loader'),
                     },
                     // Adds support for CSS Modules, but using SASS
                     // using the extension .module.scss or .module.sass
@@ -308,8 +313,8 @@ module.exports = {
                             {
                                 importLoaders: 2,
                                 modules: {
-                                    getLocalIdent: getCSSModuleLocalIdent,
-                                }
+                                    getLocalIdent: getCSSModuleLocalIdent
+                                },
                             },
                             'sass-loader'
                         ),
@@ -363,6 +368,12 @@ module.exports = {
         new CaseSensitivePathsPlugin(),
         new ESLintPlugin({
             extensions: ['js', 'jsx', 'ts', 'tsx'],
+        }),
+        new MiniCssExtractPlugin({
+            // Options similar to the same options in webpackOptions.output
+            // both options are optional
+            filename: 'static/css/[name].[contenthash:8].css',
+            chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
         }),
         // Moment.js is an extremely popular library that bundles large locale files
         // by default due to how Webpack interprets its code. This is a practical

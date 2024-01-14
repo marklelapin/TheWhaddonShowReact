@@ -1,46 +1,27 @@
 ﻿import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { closeSidebar, openSidebar, toggleStaticSidebar } from '../../../actions/navigation';
-import { NavLink, UncontrolledTooltip } from 'reactstrap';
-import Menu from '../../../images/sidebar/basil/Menu';
+import { openStaticSidebar } from '../../../actions/navigation';
+import { NavLink } from 'reactstrap';
+import {Icon} from '../../../components/Icons/Icons';
 import s from '../Header.module.scss'; 
-import { isSmallerScreen } from '../../../components/Sidebar/Sidebar';
 export function SidebarToggle(props) {
 
 
-    const sidebarOpened = useSelector(store => store.navigation.sidebarOpened);
     const sidebarStatic = useSelector(store => store.navigation.sidebarStatic);
 
     const dispatch = useDispatch();
 
-    const toggleSidebarOpenClose = () => {
-        //console.log(`toggle sidebar static: ${sidebarStatic} opened: ${sidebarOpened}`)
-        if (sidebarOpened && isSmallerScreen()) {
-            dispatch(closeSidebar())
-
-        } else if (sidebarOpened && sidebarStatic) { //and not smaller screen
-            dispatch(toggleStaticSidebar())
-            dispatch(closeSidebar())
-        } else if (sidebarOpened) { //and not smaller screen and not static
-            dispatch(closeSidebar())
-        } else {
-            dispatch(openSidebar())
-        }
-            
-    }
 
 
     return (
 
         <>
-            <NavLink className={`${s.toggleSidebar}`} id="toggleSidebar" onClick={toggleSidebarOpenClose}>
-                <span className={s.headerSvgFlipColor}>
-                    <Menu />
-                </span>
-            </NavLink>
-            <UncontrolledTooltip placement="bottom" target="toggleSidebar">
-                {sidebarOpened ? 'Close' : 'Open'} <br /> sidebar
-            </UncontrolledTooltip>
+            {!sidebarStatic &&
+                <NavLink className={`${s.toggleSidebar}`} id="toggleSidebar" onClick={()=>dispatch(openStaticSidebar())}>
+                    <span className={s.headerSvgFlipColor}>
+                        <Icon icon="menu" id="header-toggle-sidebar" className={s.headerSvgFlipColor} toolTip="Pin Sidebar Open" toolTipPlacement="right"/>
+                    </span>
+                </NavLink>}
         </>
 
 

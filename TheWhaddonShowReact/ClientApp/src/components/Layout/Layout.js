@@ -30,8 +30,6 @@ export const Layout = (props) => {
 
     const { children } = props
 
-    log(logType, 'props', props)
-
     const location = useLocation();
     const dispatch = useDispatch();
 
@@ -43,11 +41,11 @@ export const Layout = (props) => {
     const handleSwipe = (e) => {
         if ('ontouchstart' in window) {
             if (e.direction === 4) {
-                this.props.dispatch(openSidebar());
+                dispatch(openSidebar());
                 return;
             }
 
-            if (e.direction === 2 && this.props.sidebarOpened) {
+            if (e.direction === 2 && sidebarOpened) {
                 dispatch(closeSidebar());
                 return;
             }
@@ -59,7 +57,7 @@ export const Layout = (props) => {
         <div
             className={[
                 s.root,
-                sidebarStatic ? `${s.sidebarStatic}` : '',
+                sidebarStatic ? s.sidebarStatic : '',
                 !sidebarOpened ? s.sidebarClose : '',
                 'sing-dashboard',
                 `dashboard-${(localStorage.getItem("sidebarType") === SidebarTypes.TRANSPARENT) ? "light" : localStorage.getItem("dashboardTheme")}`,
@@ -77,7 +75,7 @@ export const Layout = (props) => {
                                 classNames="fade"
                                 timeout={200}
                             >
-                                {children}
+                                {()=>children}
                             </CSSTransition>
                         </TransitionGroup>
                         <footer className={s.contentFooter}>

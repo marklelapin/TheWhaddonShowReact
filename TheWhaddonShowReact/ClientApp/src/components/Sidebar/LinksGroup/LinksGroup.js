@@ -9,19 +9,20 @@ import s from './LinksGroup.module.scss';
 
 const LinksGroup = (props) => {
     const {
+        header = null,
+        subHeader = null,
         link = '',
-        childrenLinks = null,
+        iconElement = null,
         className = '',
-        isHeader = false,
         deep = 0,
         activeItem = '',
         label = '',
-        exact = true
+        parent = null,
+        badge = null
     } = props;
 
+    const { childrenLinks = null, ...propsWithoutChildren } = props;
 
-
-    const sidebarColor = useSelector(state => state.layout.sidebarColor);
 
     const [headerLinkWasClicked, setHeaderLinkWasClicked] = useState(true);
 
@@ -39,87 +40,79 @@ const LinksGroup = (props) => {
 
 
     if (!childrenLinks) {
-        if (isHeader) {
+        if (header) {
             return (
                 <li className={classnames('link-wrapper', s.headerLink, className)}>
                     <NavLink
                         to={link}
-                        activeClassName={s.headerLinkActive}
-                        exact={exact}
-                        target={target}
+                        className={({ isActive }) => isActive ? s.headerLinkActive : ''}
                     >
                         <span className={classnames('icon', s.icon)}>
-                            {iconElement ? iconElement : <i className={`fi ${iconName}`} />}
-                        </span>
+                            {iconElement}
+                        </span> 
                         {header} {label && <sup className={`${s.headerLabel} ${s.headerUpdate}`}>{label}</sup>}
                         {badge && <Badge className={s.badge} pill color={"danger"}>9</Badge>}
+                        {parent && <b className={['fa fa-angle-left', s.caret].join(' ')} />}
                     </NavLink>
                 </li>
             );
         }
-        return (
-            <li>
-                <NavLink
-                    to={link}
-                    activeClassName={s.headerLinkActive}
-                    style={{ paddingLeft: `${26 + (10 * (deep - 1))}px` }}
-                    onClick={(e) => {
-                        // able to go to link is not available(for Demo)
-                        if (link.includes('menu')) {
-                            e.preventDefault();
-                        }
-                    }}
-                    exact={exact}
-                >
-                    {header} {label && <sup className={s.headerLabel}>{label}</sup>}
-                </NavLink>
-            </li>
-        );
+        if (subHeader) {
+            return (
+                <li>
+                    <NavLink
+                        to={link}
+                        className={({ isActive }) => isActive ? s.headerLinkActive : ''}
+                        style={{ paddingLeft: `${26 + (10 * (deep - 1))}px` }}
+                    >
+
+                        <span className={classnames('icon', s.icon)}>
+                            {iconElement}
+                        </span> 
+                        {subHeader} {label && <sup className={s.headerLabel}>{label}</sup>}
+                    </NavLink>
+                </li>
+            );
+        }
+        return (<li>Error: No Header or Sub Header!!!</li>)
+
     }
-
+    //childrenLinks exist
     return (
-        <Route
-            path={link}//eslint-disable-next-line
-            children={(params) => {
-                const { match } = params;
-                
-                return (
-                    <li className={classnames('link-wrapper', { [s.headerLink]: isHeader }, className)}>
-                        <a className={classnames({ [s.headerLinkActive]: match }, { [s.collapsed]: isOpen }, "d-flex")}
-                            style={{ paddingLeft: `${deep == 0 ? 50 : 26 + 10 * (deep - 1)}px` }}
-                            onClick={() => togglePanelCollapse(link)}
-                        >
-                            {isHeader ?
-                                <span className={classnames('icon', s.icon)}>
-                                    {iconElement ? iconElement : <i className={`fi ${iconName}`} />}
-                                </span> : null
-                            }
-                            {header} {label && <sup className={`${s.headerLabel} ${s.headerNode}`}>{label}</sup>}
-                            <b className={['fa fa-angle-left', s.caret].join(' ')} />
-                        </a>
+        <li className={`link-wrapper', ${{[s.headerLink]: isHeader }}`}>
 
-                        <Collapse className={s.panel} isOpen={isOpen}>
-                            <ul>
-                                {childrenLinks &&
-                                    childrenLinks.map((child, ind) =>
-                                        <LinksGroup
-                                            onActiveSidebarItemChange={onActiveSidebarItemChange}
-                                            activeItem={activeItem}
-                                            header={child.header}
-                                            link={child.link}
-                                            index={child.index}
-                                            childrenLinks={child.childrenLinks}
-                                            deep={deep + 1}
-                                            key={ind}
-                                        />,
-                                    )}
-                            </ul>
-                        </Collapse>
-                    </li>
-                );
-            }}
-        />
-    );
+                <a className={classnames({ [s.headerLinkActive]: match }, { [s.collapsed]: isOpen }, "d-flex")}
+                    style={{ paddingLeft: `${deep == 0 ? 50 : 26 + 10 * (deep - 1)}px` }}
+                    onClick={() => togglePanelCollapse(link)}
+                >
+                <LinksGroup {...propsWithoutChildren} parent={true}></LinksGroup>
+
+                    {isHeader ?
+                        <span className={classnames('icon', s.icon)}>
+                        {iconElement}
+                        </span> : null
+                    }
+                    {header} {label && <sup className={`${s.headerLabel} ${s.headerNode}`}>{label}</sup>}
+                </a>
+
+                <Collapse className={s.panel} isOpen={isOpen}>
+                    <ul>
+                        {childrenLinks &&
+                            childrenLinks.map((child, ind) =>
+                                <LinksGroup
+                                    header={child.header}
+                                    link={child.link}
+                                    childrenLinks={child.childrenLinks}
+                                    deep={deep + 1}
+                                    key={ind}
+                                />
+                            )}
+                    </ul>
+                </Collapse>
+            </li >
+      
+    )
+
 }
 
 export default LinksGroup; //withRouter removed.

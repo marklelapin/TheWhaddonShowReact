@@ -8,10 +8,7 @@
 @import 'variables';
 @import 'theme-variables';
 @import '../../node_modules/bootstrap/scss/bootstrap';
-//@import '../../node_modules/glyphicons-halflings/scss/glyphicons-halflings';
-@import '../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome';
-//@import '../../node_modules/font-awesome/scss/font-awesome';
-@import '../../node_modules/line-awesome/dist/line-awesome/css/line-awesome.css';
+
 @import '../fonts/flaticon/flaticon';
 //@import '../../node_modules/animate.css/animate';
 @import '../../node_modules/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox';
@@ -20,7 +17,7 @@
 //@import '../../node_modules/nvd3/build/nv.d3.css';
 //@import '../../node_modules/rickshaw/rickshaw.css';
 //@import '../../node_modules/react-table/react-table.css'; react table not compatible with react 18
-@import '../../node_modules/react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
+//@import '../../node_modules/react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 //@import '../../node_modules/react-sortable-tree/style.css';
 @import '../../node_modules/react-toastify/dist/ReactToastify.css';
 @import '../../node_modules/react-tagsinput/react-tagsinput.css';

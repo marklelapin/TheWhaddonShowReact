@@ -39,7 +39,7 @@ export const setupPersistentIndexedDB = async () => {
                 console.log("Storage will persist.");
             } else {
                 console.log("Storage will not persist.");
-                alert("Refusing to persist storage means all unsynced changes will be lost on refresh. Please enable storage persistence for an optimal experience, to work offline and to avoid potential lose of data.")  
+               // alert("Refusing to persist storage means all unsynced changes will be lost on refresh. Please enable storage persistence for an optimal experience, to work offline and to avoid potential lose of data.")  
             }
         }).catch((error) => {
             console.error("Error checking storage persistence:", error);

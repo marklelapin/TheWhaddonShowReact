@@ -16,10 +16,10 @@ import {
     DropdownItem,
 } from 'reactstrap';
 
-import {
-    BootstrapTable,
-    TableHeaderColumn,
-} from 'react-bootstrap-table';
+//import {
+//    BootstrapTable,
+//    TableHeaderColumn,
+//} from 'react-bootstrap-table';
 
 import s from '../TestResults.modules.scss';
 
@@ -212,37 +212,37 @@ const ResultsTable = (props) => {
     return (
         <DataLoading isLoading={isLoading} error={error !== null} errorText={`Error on loading: ${error}`} labelText="Loading...">
 
-            <BootstrapTable
-                data={filteredData(data)}
-                version="4"
-                pagination
-                options={options}
-                hover
-                bordered={false}
-                tableContainerClass={`table-striped table-hover table-responsive ${s.bootstrapTable}`}
-            >
-                <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="key" isKey hidden>
-                    <span className="fs-sm" >Id</span>
-                </TableHeaderColumn>
-                <TableHeaderColumn className={`d-sm-table-cell ${s.columnHead}`} columnClassName="d-sm-table-cell align-middle text-wrap" dataField="title" dataSort>
-                    <span className="fs-sm">Title</span>
-                </TableHeaderColumn>
-                <TableHeaderColumn className={`width-100 ${s.columnHead} text-center`} columnClassName="width-100 text-center align-middle" dataField="dateTime" dataFormat={dateFormatter} dataSort sortFunc={dateSortFunc}>
-                    <span className="fs-sm">Date Time</span>
-                </TableHeaderColumn>
-                <TableHeaderColumn className={`width-100 ${s.columnHead} text-end`} columnClassName="width-100 align-middle text-end" dataField="success" dataFormat={TickOrCross}>
-                    <span className="fs-sm">Success?</span>
-                </TableHeaderColumn>
-                <TableHeaderColumn className={`width-150 ${s.columnHead}`} columnClassName="width-150 align-middle" dataField="timeToComplete" dataFormat={timeToCompleteFormatter} dataSort sortFunc={progressSortFunc}>
-                    <span className="fs-sm">Time to Complete</span>
-                </TableHeaderColumn>
-                <TableHeaderColumn className={`d-xs-table-cell ${s.columnHead}`} columnClassName="d-xs-table-cell align-middle text-wrap" dataField="failureMessage">
-                    <span className="fs-sm text-wrap">Failure Message</span>
-                </TableHeaderColumn>
-                <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle text-wrap" dataField="results" dataFormat={resultsFormatter}>
-                    <span className="fs-sm">Expected vs Actual</span>
-                </TableHeaderColumn>
-            </BootstrapTable>
+            {/*<BootstrapTable*/}
+            {/*    data={filteredData(data)}*/}
+            {/*    version="4"*/}
+            {/*    pagination*/}
+            {/*    options={options}*/}
+            {/*    hover*/}
+            {/*    bordered={false}*/}
+            {/*    tableContainerClass={`table-striped table-hover table-responsive ${s.bootstrapTable}`}*/}
+            {/*>*/}
+            {/*    <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="key" isKey hidden>*/}
+            {/*        <span className="fs-sm" >Id</span>*/}
+            {/*    </TableHeaderColumn>*/}
+            {/*    <TableHeaderColumn className={`d-sm-table-cell ${s.columnHead}`} columnClassName="d-sm-table-cell align-middle text-wrap" dataField="title" dataSort>*/}
+            {/*        <span className="fs-sm">Title</span>*/}
+            {/*    </TableHeaderColumn>*/}
+            {/*    <TableHeaderColumn className={`width-100 ${s.columnHead} text-center`} columnClassName="width-100 text-center align-middle" dataField="dateTime" dataFormat={dateFormatter} dataSort sortFunc={dateSortFunc}>*/}
+            {/*        <span className="fs-sm">Date Time</span>*/}
+            {/*    </TableHeaderColumn>*/}
+            {/*    <TableHeaderColumn className={`width-100 ${s.columnHead} text-end`} columnClassName="width-100 align-middle text-end" dataField="success" dataFormat={TickOrCross}>*/}
+            {/*        <span className="fs-sm">Success?</span>*/}
+            {/*    </TableHeaderColumn>*/}
+            {/*    <TableHeaderColumn className={`width-150 ${s.columnHead}`} columnClassName="width-150 align-middle" dataField="timeToComplete" dataFormat={timeToCompleteFormatter} dataSort sortFunc={progressSortFunc}>*/}
+            {/*        <span className="fs-sm">Time to Complete</span>*/}
+            {/*    </TableHeaderColumn>*/}
+            {/*    <TableHeaderColumn className={`d-xs-table-cell ${s.columnHead}`} columnClassName="d-xs-table-cell align-middle text-wrap" dataField="failureMessage">*/}
+            {/*        <span className="fs-sm text-wrap">Failure Message</span>*/}
+            {/*    </TableHeaderColumn>*/}
+            {/*    <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle text-wrap" dataField="results" dataFormat={resultsFormatter}>*/}
+            {/*        <span className="fs-sm">Expected vs Actual</span>*/}
+            {/*    </TableHeaderColumn>*/}
+            {/*</BootstrapTable>*/}
 
 
 
