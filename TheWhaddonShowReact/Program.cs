@@ -29,7 +29,7 @@ if (builder.Environment.IsDevelopment())
 	{
 		options.AddPolicy("AllowDevelopmentOrigin", builder =>
 	{
-		builder.WithOrigins("http://localhost:50001")
+		builder.WithOrigins("https://localhost:60001")
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();
@@ -101,7 +101,11 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 //Configuration for routing
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment() == false)
+{
+	app.UseHttpsRedirection();
+}
+
 
 app.UseCookiePolicy();
 
