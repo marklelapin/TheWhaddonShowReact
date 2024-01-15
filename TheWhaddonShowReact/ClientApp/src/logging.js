@@ -17,7 +17,7 @@ export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
 
 export const LAYOUT = {type: DEBUG,location: 'Component: Layout'}
 
-export const LOCAL_SERVER_UTILS = { type: NONE, location: 'Script:localServerUtils' }
+export const LOCAL_SERVER_UTILS = { type: DEBUG, location: 'Script:localServerUtils' }
 export const LOCAL_SERVER_SYNCING = { type: NONE, location: 'Component:LocalServerSyncing' }
 export const LOCAL_SERVER_REDUCER = { type: NONE, location: 'Reducer:localServer' }
 export const LOCAL_STORAGE = {type:NONE, location: 'Script:localStorage'}

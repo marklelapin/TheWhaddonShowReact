@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import {  Route, useLocation } from 'react-router-dom';
+import { Route, useLocation } from 'react-router-dom';
 
 
 //Components
@@ -14,7 +14,7 @@ import Script from '../../pages/scriptEditor/Script';
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar';
-import Login  from '../Login/Login';
+import Login from '../Login/Login';
 import UnderConstruction from '../../pages/underConstruction/UnderConstruction';
 //import Helper from '../Helper';
 import { openSidebar, closeSidebar } from '../../actions/navigation';
@@ -22,9 +22,15 @@ import s from './Layout.module.scss';
 import ApiTestResults from '../../pages/apiMonitor/TestResults';
 import { userAccessToComponent } from '../../dataAccess/userAccess';
 
-import {log, LAYOUT as logType } from '../../logging.js'
+import { log, LAYOUT as logType } from '../../logging.js'
 
-
+const SVGMask = (<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">
+    <defs>
+        <mask id="mask" x="0" y="0" width="100%" height="100%">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+        </mask>
+    </defs>
+</svg>)
 
 export const Layout = (props) => {
 
@@ -75,7 +81,7 @@ export const Layout = (props) => {
                                 classNames="fade"
                                 timeout={200}
                             >
-                                {()=>children}
+                                {() => children}
                             </CSSTransition>
                         </TransitionGroup>
                         <footer className={s.contentFooter}>

@@ -10,15 +10,17 @@ import TheWhaddonShowHomeWide from '../../images/TheWhaddonShowHomeWide.png'
 import TheWhaddonShowHomeThin from '../../images/TheWhaddonShowHomeThin.png'
 import { isScreenSmallerThan } from '../../core/screenHelper'
 
-import {log, LOGIN as logType } from '../../logging.js'
+import { log, LOGIN as logType } from '../../logging.js'
 import s from './Login.module.scss'
-function Login () {
+function Login() {
 
-    log(logType,'props')
+    log(logType, 'props')
 
     const { instance } = useMsal();
 
     const [smallScreen, setSmallScreen] = useState(null)
+
+    const [authenticated, setAuthenticated] = useState(false)
 
     useEffect(() => {
 
@@ -49,10 +51,13 @@ function Login () {
             .catch((error) => console.log(error));
     };
 
+
+
     return (
         <>
-            <UnauthenticatedTemplate>
-                <div className={`${s['login-page']}`}>
+                <div className={`${s['login-curtain']} ${authenticated ? s['open'] : s['closed']}`}>
+
+                {!authenticated && <UnauthenticatedTemplate>
                     <div className={`${s['welcome-block']}`}>
                         <h2>Welcome to the...</h2>
                         <div className={`${s['login-image']}`}>
@@ -66,17 +71,14 @@ function Login () {
 
                         <div className={`${s['login']}`}>
                             <h3>Please Login:</h3>
-                            <Button color='primary' onClick={handleLoginPopup}>Cast & Crew</Button>
+                            <Button color='primary' onClick={() => setAuthenticated(true)}>Cast & Crew</Button>
                             <Button color='primary' onClick={handleLoginPopup}>Demo Account</Button>
                         </div>
 
                     </div>
+                </UnauthenticatedTemplate>
+                }
                 </div>
-
-            </UnauthenticatedTemplate>
-            <div className={`${s['login-curtain']}`}>
-            hello
-            </div>
         </>
 
     )
