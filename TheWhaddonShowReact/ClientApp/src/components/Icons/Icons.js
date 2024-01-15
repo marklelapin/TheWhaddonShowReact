@@ -16,6 +16,7 @@ import {
     faAlignCenter,
     faEdit,
     faComment,
+    faCommentDots,
     faPrint,
     faFileAudio,
     faFileVideo,
@@ -35,7 +36,10 @@ import {
     faHome,
     faFileLines,
     faPersonMilitaryToPerson,
-    faPanorama
+    faPanorama,
+    faRotate,
+    faUser,
+    faUsers
 } from '@fortawesome/free-solid-svg-icons' 
 
 import s from './Icons.module.scss'; 
@@ -69,8 +73,6 @@ export function Icon(props) {
 
     const [toolTipOpen, setToolTipOpen] = useState(null);
 
-
-
     const dictionary = {
         "sync": faCloud,
         "add": faPlus,
@@ -85,7 +87,7 @@ export function Icon(props) {
         "chat-mode": faComments,
         "classic-mode": faAlignCenter,
         "edit": faEdit,
-        "comment-o": faComment,
+        "comment-o": faCommentDots,
         "comment": faComment,
         "print": faPrint,
         "audio-file": faFileAudio,
@@ -107,6 +109,9 @@ export function Icon(props) {
         "child": faChild,
         "home": faHome,
         "script": faFileLines,
+        "refresh": faRotate,
+        "user": faUser,
+        "users": faUsers,
 "gallery": faPanorama,
 "casting": faPersonMilitaryToPerson,
     };

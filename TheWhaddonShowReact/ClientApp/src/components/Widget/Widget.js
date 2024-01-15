@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useState} from 'react';
 import PropTypes from 'prop-types';
 import { UncontrolledTooltip } from 'reactstrap';
 import s from './Widget.module.scss';
@@ -44,6 +44,9 @@ const Widget = (props) => {
         options = {},
         fetchingData = false,
         widgetType = "",
+        updateWidgetData = () => { },
+        customBody,
+        ...attributes
     } = props;
 
 
@@ -82,12 +85,12 @@ const Widget = (props) => {
         setReLoading(false)
     };
 
-    closeWithModal = () => {
+    const closeWithModal = () => {
         toggleModal();
         handleClose();
     }
 
-    handleReload = () => {
+    const handleReload = () => {
         if (widgetType) {
             updateWidgetData(widgetType)
         }
@@ -104,7 +107,7 @@ const Widget = (props) => {
         }
     }
 
-    handleFullscreen = () => {
+    const handleFullscreen = () => {
         setFullScreened(!fullscreened);
     }
 

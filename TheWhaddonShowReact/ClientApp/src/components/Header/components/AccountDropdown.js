@@ -42,7 +42,6 @@ function AccountDropdown(props) {
 
     const doLogout = () => {
         dispatch(logout())
-        changeCurrentUser(null)
     }
 
 

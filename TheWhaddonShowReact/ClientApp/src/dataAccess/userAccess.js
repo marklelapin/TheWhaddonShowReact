@@ -2,8 +2,8 @@
 
 const READ = 'READ'
 const WRITE = 'WRITE'
-
-const DEMOID = '9bb95c7a-aa72-4e0c-b77d91f8f225e1e'
+export const MARKID = 'af60b927-7f73-4dfd-8343-206c1b30a03b'
+export const DEMOID = '9bb95c7a-aa72-4e0c-b77d91f8f225e1e'
 
 export const userAccessToComponent = (user = null, componentOrPage = null) => {
 

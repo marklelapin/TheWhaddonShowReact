@@ -39,6 +39,16 @@
     flex-direction: column;
 }
 
+.not-registered-block {
+    max-width: 600px;
+    padding: 30px;
+
+    h4 {
+        margin-bottom: 30px;
+    }
+}
+
+
 .login-image {
     display: flex;
     justify-content: center;
