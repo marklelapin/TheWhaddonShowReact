@@ -2,6 +2,7 @@ import {
     LOGIN, LOGOUT, UPDATE_CURRENT_USER
 } from '../actions/user';
 
+
 const defaultState = {
     authenticatedUser: null,
     currentUser: null,

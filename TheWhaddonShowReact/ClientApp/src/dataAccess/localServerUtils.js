@@ -21,7 +21,8 @@ import {
     clearConflicts,
     endSync,
     closePostBack,
-    clearHasPostedBack
+    clearHasPostedBack,
+    refreshSync
 } from '../actions/localServer';
 
 import { log, LOCAL_SERVER_UTILS as logType } from '../logging.js';
@@ -52,9 +53,9 @@ export async function useSync() {
 
         const runSync = async () => {
 
-            if (pauseSync === true) finishSync('Syncing paused.', PERSON)
+            if (pauseSync === true && !persons.sync.isRefreshing) finishSync(null, PERSON)
 
-            if (persons.sync.isSyncing) {
+            if (persons.sync.isSyncing || persons.sync.isRefreshing) {
 
                 const { error } = await sync(persons.history, PERSON)
 
@@ -66,7 +67,7 @@ export async function useSync() {
 
         runSync()
 
-    }, [persons.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [persons.sync.isSyncing, persons.sync.isRefreshing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
 
@@ -74,9 +75,9 @@ export async function useSync() {
 
         const runSync = async () => {
 
-            if (pauseSync === true) finishSync('Syncing paused.', SCRIPT_ITEM)
+            if (pauseSync === true && !scriptItems.sync.isRefreshing) finishSync(null, SCRIPT_ITEM)
 
-            if (scriptItems.sync.isSyncing) {
+            if (scriptItems.sync.isSyncing || scriptItems.sync.isRefreshing) {
 
                 const { error } = await sync(scriptItems.history, SCRIPT_ITEM)
 
@@ -88,7 +89,7 @@ export async function useSync() {
 
         runSync()
 
-    }, [scriptItems.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [scriptItems.sync.isSyncing, scriptItems.sync.isRefreshing]) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
 
@@ -96,9 +97,9 @@ export async function useSync() {
 
         const runSync = async () => {
 
-            if (pauseSync === true) finishSync('Syncing paused.', PART)
+            if (pauseSync === true && !parts.sync.isRefreshing) finishSync(null, PART)
 
-            if (parts.sync.isSyncing) {
+            if (parts.sync.isSyncing || parts.sync.isRefreshing) {
 
                 const { error } = await sync(parts.history, PART)
 
@@ -110,7 +111,7 @@ export async function useSync() {
 
         runSync()
 
-    }, [parts.sync.isSyncing]) // eslint-disable-line react-hooks/exhaustive-deps
+    }, [parts.sync.isSyncing,parts.sync.isRefreshing]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

@@ -82,10 +82,14 @@ const initApp = async () => {
         createRootReducer(),
         preloadedState,
         compose(
-            applyMiddleware(
-                ReduxThunk
-            ),
+          //  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
         )
+
+        //compose(
+        //    applyMiddleware(
+        //        ReduxThunk
+        //    ),
+        //)
     );
 
     store.subscribe(

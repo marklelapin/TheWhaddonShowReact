@@ -37,3 +37,8 @@ export const userAccessToComponent = (user = null, componentOrPage = null) => {
     }
 
 }
+
+export const getDefaultPauseSync = (person) => {
+    if (person?.isWriter === true) return false;
+    return true;
+}

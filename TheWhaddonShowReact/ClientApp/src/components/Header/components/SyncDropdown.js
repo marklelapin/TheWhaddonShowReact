@@ -9,18 +9,18 @@ import Loader from '../../../components/Loader/Loader';
 
 //utils
 import { clearStateFromBrowserStorage } from '../../../dataAccess/browserStorage'
-import { setPauseSync } from '../../../actions/localServer';
+import { setPauseSync, refreshSync } from '../../../actions/localServer';
 //Constants
 import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
 import { log, SYNC_DROPDOWN as logType } from '../../../logging';
 
 //css
-import s from '../Header.module.scss'; 
+import s from '../Header.module.scss';
 
 function SyncDropdown(props) {
 
     const debug = true
-    const dispatch = useDispatch(); 
+    const dispatch = useDispatch();
 
 
     //Set state relating to internal component
@@ -36,7 +36,7 @@ function SyncDropdown(props) {
     const scriptItems = useSelector((store) => store.localServer.scriptItems.history);
     const persons = useSelector((store) => store.localServer.persons.history);
     const parts = useSelector((store) => store.localServer.parts.history);
-    
+
     const pauseSync = useSelector((store) => store.localServer.sync.pauseSync);
 
     const unsyncedScriptItemUpdates = scriptItems?.filter(item => item.updatedOnServer === null).length || 0
@@ -75,11 +75,16 @@ function SyncDropdown(props) {
                 }
             }
 
+            if (item.isRefreshing === true) {
+                acc.isRefreshing = true;
+            }
+
             return acc;
         }, { //starting item for reduce
             isSyncing: false,
             error: null,
             lastSyncDate: null,
+            isRefreshing: false,
         });
 
         result.unsyncedUpdates = unsyncedPersonUpdates + unsyncedScriptItemUpdates + unsyncedPartUpdates
@@ -114,7 +119,7 @@ function SyncDropdown(props) {
         let textTimeSince;
 
         if (secondsPast < 15) {
-            textTimeSince = '';
+            textTimeSince = 'just synced';
         } else
             if (secondsPast < 3600) {
                 textTimeSince = ', last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago';
@@ -152,7 +157,7 @@ function SyncDropdown(props) {
                 target = { ...scriptItemsSync, unsyncedUpdates: unsyncedScriptItemUpdates, historyCount }; break;
             case PART:
                 historyCount = parts?.length || 0
-                target = { ...partsSync, unsyncedUpdates: unsyncedPartUpdates, historyCount}; break;
+                target = { ...partsSync, unsyncedUpdates: unsyncedPartUpdates, historyCount }; break;
             default: target = null;
         }
 
@@ -169,7 +174,7 @@ function SyncDropdown(props) {
 
         const { textTimeSince, secondsPast } = timeSince(target.lastSyncDate)
 
-        if (target.error !== null) {
+        if (!pauseSync && target.error !== null) {
             return (
                 <>
                     <Icon icon="cross" strapColor="danger" /> Syncing error...
@@ -183,10 +188,12 @@ function SyncDropdown(props) {
         return (
 
             <>
-                {target.isSyncing && <Loader size={16} />}
-                {target.isSyncing && target.historyCount === 0 && <>Syncing...</>}
 
-                {(target.unsyncedUpdates === 0 && target.historyCount > 0) && <><Icon icon="tick" strapColor="success" />Synced</>}
+
+                {(target.isSyncing || target.isRefreshing) && <Loader size={16} />}
+                {(target.isSyncing || target.isRefreshing) && target.historyCount === 0 && <>Syncing...</>}
+
+                {(!pauseSync && target.unsyncedUpdates === 0 && target.historyCount > 0) && <><Icon icon="tick" strapColor="success" />Synced</>}
 
                 {target.unsyncedUpdates > 0 &&
                     <>
@@ -195,13 +202,22 @@ function SyncDropdown(props) {
                             : <Icon icon="warning" strapColor="warning" />
                         }
 
-                        {target.unsyncedUpdates} unsynced updates 
-                        {textTimeSince}.
+                        {target.unsyncedUpdates} unsynced updates
                     </>
 
                 }
-
-                {!target.isSyncing && target.historyCount ===0 && <>Not synced!</>  }
+                {!target.isSyncing && target.historyCount === 0 && <>Not synced!</>}
+                {pauseSync && <>{textTimeSince}</>}
+                {pauseSync && target.isSyncing === false && target.isRefreshing === false &&
+                    <>
+                        <Icon icon="refresh"
+                            id="refresh-sync"
+                            toolTip="Refresh Script"
+                            onClick={() => dispatch(refreshSync())}
+                        />
+                    </>
+                }
+               
             </>
         )
 
@@ -212,7 +228,7 @@ function SyncDropdown(props) {
     return (
         <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown" className={`${s['sync-dropdown']}`}>
             <DropdownToggle nav className={`${s.headerSvgFlipColor} text-center`} >
-           
+
                 {syncText('Summary')}
 
             </DropdownToggle>
@@ -225,7 +241,7 @@ function SyncDropdown(props) {
                 <DropdownItem >Parts: {syncText(PART)}</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={() => clearStateFromBrowserStorage(dispatch)}>Clear Local Storage</DropdownItem>
-                <DropdownItem onClick={() => togglePauseSync()}>{pauseSync ? 'Resume Sync' : 'Pause Sync'}</DropdownItem> 
+                <DropdownItem onClick={() => togglePauseSync()}> {pauseSync ? 'Resume Sync' : 'Pause Sync'}<Icon icon="play" /></DropdownItem>
 
             </DropdownMenu>
         </Dropdown>

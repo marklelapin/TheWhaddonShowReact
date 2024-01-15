@@ -11,11 +11,14 @@
     CLOSE_POSTBACK,
     CLEAR_HAS_POSTED_BACK,
     SET_PAUSE_SYNC,
-    CLEAR_LOCAL_SERVER_STATE
+    CLEAR_LOCAL_SERVER_STATE,
+    REFRESH_SYNC
 } from '../actions/localServer';
 
 import { CLEAR_IMPORT_UPDATES } from '../actions/scriptEditor';
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
+
+import { LOGIN, LOGOUT, UPDATE_CURRENT_USER } from '../actions/user';
 
 import {
     //**LSMTypeInCode** */
@@ -28,7 +31,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { log, LOCAL_SERVER_REDUCER as logType } from '../logging.js';
 
-import {resetSyncId } from '../dataAccess/browserStorage';
+import { resetSyncId } from '../dataAccess/browserStorage';
+import { getDefaultPauseSync } from '../dataAccess/userAccess';
 
 const defaultState = {
     localCopyId: uuidv4(),
@@ -71,6 +75,7 @@ export default function localServerReducer(state = defaultState, action) {
             return Object.assign({}, state, {
                 sync: { ...state.sync, pauseSync: action.payload }
             });
+
         //Actions where a line needs to be added for each new LocalServerModel update type (e.g. persons, scriptItems, parts) **LSMTypeInCode**
         case RESET_LIST:
             switch (action.payloadType) {
@@ -272,6 +277,16 @@ export default function localServerReducer(state = defaultState, action) {
                 case PART: return { ...state, parts: { ...state.parts, sync: { ...state.parts.sync, isSyncing: true } } };
                 default: return state;
             };
+        case REFRESH_SYNC:
+            log(logType, `refresh syncing ${action.payloadType}`)
+            //**LSMTypeInCode** */
+            return {
+                ...state,
+                persons: { ...state.persons, sync: { ...state.persons.sync, isRefreshing: true } },
+                scriptItems: { ...state.scriptItems, sync: { ...state.scriptItems.sync, isRefreshing: true } },
+                parts: { ...state.parts, sync: { ...state.parts.sync, isRefreshing: true } }
+            }
+
         case END_SYNC:
             log(logType, `end syncing ${action.payloadType}`)
             let lastSyncDate = null
@@ -285,21 +300,33 @@ export default function localServerReducer(state = defaultState, action) {
                     return {
                         ...state, persons: {
                             ...state.persons, sync: {
-                                ...state.persons.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.persons.sync.lastSyncDate
+                                ...state.persons.sync,
+                                isSyncing: false,
+                                error: error,
+                                lastSyncDate: lastSyncDate || state.persons.sync.lastSyncDate,
+                                isRefreshing: false
                             }
                         }
                     };
                 case SCRIPT_ITEM: return {
                     ...state, scriptItems: {
                         ...state.scriptItems, sync: {
-                            ...state.scriptItems.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.scriptItems.sync.lastSyncDate
+                            ...state.scriptItems.sync,
+                            isSyncing: false,
+                            error: error,
+                            lastSyncDate: lastSyncDate || state.scriptItems.sync.lastSyncDate,
+                            isRefreshing: false
                         }
                     }
                 };
                 case PART: return {
                     ...state, parts: {
                         ...state.parts, sync: {
-                            ...state.parts.sync, isSyncing: false, error: error, lastSyncDate: lastSyncDate || state.parts.sync.lastSyncDate
+                            ...state.parts.sync,
+                            isSyncing: false,
+                            error: error,
+                            lastSyncDate: lastSyncDate || state.parts.sync.lastSyncDate,
+                            isRefreshing: false
                         }
                     }
                 }
@@ -317,6 +344,34 @@ export default function localServerReducer(state = defaultState, action) {
             return {
                 ...defaultState,
             }
+        case REFRESH_SYNC:
+            return {
+                ...state,
+                scriptItems: { ...state.scriptItems, sync: { ...state.scriptItems.sync, isSyncing: false } },
+            }
+
+        case LOGIN:
+
+            const { person } = action;
+            const pauseSync = getDefaultPauseSync(person)
+
+            return Object.assign({}, state, {
+                sync: { ...state.sync, pauseSync: pauseSync }
+            });
+        case LOGOUT:
+            return {
+                ...state,
+                sync: { ...state.sync, pauseSync: true }
+            }
+        case UPDATE_CURRENT_USER:
+            const currentUser  = action.person;
+            if (currentUser === null) return { ...state, sync: {...state.sync, pauseSync: getDefaultPauseSync(state.user.authorisedUser)}}
+
+            const currentPauseSync = getDefaultPauseSync(currentUser)
+    
+                return Object.assign({}, state, {
+                    sync: { ...state.sync, pauseSync: currentPauseSync }
+                });
         default:
             return state;
     }

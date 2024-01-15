@@ -42,7 +42,7 @@ export const SCRIPT_EDITOR_TRIGGER = { type: NONE, location: 'Script:trigger' }
 export const SCRIPT_EDITOR_UNDO = { type: NONE, location: 'Script:undo' }
 export const SCRIPT_EDITOR_UTILITY = { type: NONE, location: 'Script:utility' }
 
-export const SCRIPT_ITEM = {type: DEBUG,location: 'Component:ScriptItem' }
+export const SCRIPT_ITEM = {type: NONE,location: 'Component:ScriptItem' }
 export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptItemControls' }
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 export const SCRIPT_ITEM_HEADER = { type: NONE, location: 'Component:ScriptItemHeader' }
