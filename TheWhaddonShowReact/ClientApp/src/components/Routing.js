@@ -11,9 +11,6 @@ import ErrorPage from '../pages/error/ErrorPage';
 
 
 
-const readOrWriteAccess = (component) => {
-    const access = userAccessToComponent(currentUser, component)
-}
 
 const Routing = () => {
 
@@ -21,13 +18,14 @@ const Routing = () => {
 
     return (
         <Routes>
-            <Route path="/app/home" element={<Home/>} />
+            <Route path="/app/home" element={<Home />} />
+            <Route path="/app/loginlink" element={<Home />} />
             <Route path="/app/script" element={<Script/>} />
             <Route path="/app/casting" element={<UnderConstruction/>} />
             <Route path="/app/gallery" element={<UnderConstruction/>} />
-            <Route path="/app/admin" element={<Users/>} />
+            <Route path="/app/users" element={<Users/>} />
             <Route path="/app/api" element={<TestResults/>} />
-            <Route path="/error" element={<ErrorPage/>} />
+            <Route path="/error" element={<ErrorPage />} />
             <Route path="*" element={<Navigate to="/app/home" />} />
         </Routes>
     )

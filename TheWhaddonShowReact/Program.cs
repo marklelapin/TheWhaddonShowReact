@@ -5,6 +5,7 @@ using MyApiMonitorClassLibrary.Interfaces;
 using MyApiMonitorClassLibrary.Models;
 using MyClassLibrary.Configuration;
 using MyClassLibrary.DataAccessMethods;
+using MyClassLibrary.Email;
 using MyClassLibrary.Extensions;
 using MyClassLibrary.Interfaces;
 using MyClassLibrary.LocalServerMethods.Interfaces;
@@ -74,8 +75,11 @@ builder.Services.AddTransient<IOpenAIControllerService, OpenAIControllerService>
 // File uploading services
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+//Email services
+builder.Services.AddTransient<IEmailClient, HotmailClient>();
 //Configuration services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 
 
 

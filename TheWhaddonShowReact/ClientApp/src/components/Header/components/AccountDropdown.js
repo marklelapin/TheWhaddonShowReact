@@ -1,10 +1,11 @@
-﻿import React from 'react';
+﻿import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import s from '../Header.module.scss'; 
+import { useMsal } from '@azure/msal-react';
+import s from '../Header.module.scss';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Badge } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar.js';
 
-import { updateCurrentUser, login, logout } from '../../../actions/user';
+import { updateCurrentUser, login, logout} from '../../../actions/user';
 import { setReadOnly, updatePersonSelectorConfig, updateViewAsPartPerson } from '../../../actions/scriptEditor';
 import { addUpdates } from '../../../actions/localServer';
 import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
@@ -13,10 +14,12 @@ import { Icon } from '../../../components/Icons/Icons';
 import { PERSON } from '../../../dataAccess/localServerModels';
 import PersonSelector from '../../../pages/scriptEditor/components/PersonSelector';
 import { log, ACCOUNT_DROPDOWN as logType } from '../../../logging';
+import { signOutAllUsers } from '../../../dataAccess/userAccess'
 
 function AccountDropdown(props) {
 
     const dispatch = useDispatch();
+    const { instance } = useMsal();
 
     const { menuOpen, onClick } = props;
 
@@ -37,14 +40,15 @@ function AccountDropdown(props) {
         log(logType, 'login', { personToLogIn })
 
         dispatch(login(personToLogIn))
-        changeCurrentUser(personToLogIn)
     }
+
 
     const doLogout = () => {
         dispatch(logout())
+        signOutAllUsers(instance)
     }
 
-
+   
 
     const changeCurrentUser = (person) => {
         const readOnly = (person && (person.isAdmin || person.isWriter)) ? false : true

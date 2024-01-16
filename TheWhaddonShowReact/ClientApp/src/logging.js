@@ -17,12 +17,12 @@ export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
 
 export const LAYOUT = {type: DEBUG,location: 'Component: Layout'}
 
-export const LOCAL_SERVER_UTILS = { type: DEBUG, location: 'Script:localServerUtils' }
+export const LOCAL_SERVER_UTILS = { type: NONE, location: 'Script:localServerUtils' }
 export const LOCAL_SERVER_SYNCING = { type: NONE, location: 'Component:LocalServerSyncing' }
 export const LOCAL_SERVER_REDUCER = { type: NONE, location: 'Reducer:localServer' }
 export const LOCAL_STORAGE = {type:NONE, location: 'Script:localStorage'}
 
-export const LOGIN = { type: DEBUG, locaion: 'Component: Login' }
+export const LOGIN = { type: DEBUG, location: 'Component: Login' }
 
 export const MEDIA_DISPLAY = { type: NONE, location: 'Component:MediaDisplay' }
 export const MEDIA_DROPZONE = { type: NONE, location: 'Component:MediaDropzone' }
@@ -31,7 +31,7 @@ export const PART_EDITOR_ROW = {type: NONE, location: 'Component:PartEditorRow'}
 export const PART_SELECTOR_DROPDOWN = {type: NONE, location: 'Component:PartSelectorDropdown'}
 
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
-
+export const PERSONAL_DETAILS = { type: NONE, location: 'Component:PersonalDetails' }
 export const SCENE = { type: NONE, location: 'Component:Scene' }
 export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
 
@@ -54,6 +54,7 @@ export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 
 export const TEST = { type: NONE, location: 'Test: ' }
 export const TEST_CURTAIN = { type: NONE, location: 'Script:curtain' }
+export const USERS = { type: DEBUG, location: 'Component:Users' }
 
 export function log(logObject, message, object = null) {
 

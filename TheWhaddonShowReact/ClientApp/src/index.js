@@ -38,13 +38,9 @@ import './styles/theme.scss';
 const history = createHashHistory();
 const _ = require('lodash');
 
-
 //Azure AdB2c
 const msalInstance = new PublicClientApplication(msalConfig)
-//sets up default account
-//if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
-//    msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0])
-//}
+
 
 msalInstance.addEventCallback((event) => {
     if (
@@ -74,23 +70,26 @@ const initApp = async () => {
         axios.defaults.headers.common['Authorization'] = "Bearer " + token;
     }
 
-    const preloadedState = await loadStateFromBrowserStorage();
+    await msalInstance.initialize();
 
-    log(logType, 'preloadedState exisits:', { copyId: preloadedState?.localServer.localCopyId })
+    try {
+        const preloadedState = await loadStateFromBrowserStorage();
 
-    store = createStore(
-        createRootReducer(),
-        preloadedState,
-        compose(
-          //  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-        )
+        log(logType, 'preloadedState exisits:', { copyId: preloadedState?.localServer.localCopyId })
 
-        //compose(
-        //    applyMiddleware(
-        //        ReduxThunk
-        //    ),
-        //)
-    );
+        store = createStore(
+            createRootReducer(),
+            preloadedState,
+            compose(
+                //  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+            )
+        );
+    } catch (err) {
+        store = createStore(
+            createRootReducer(),
+        );
+
+    }
 
     store.subscribe(
         _.debounce(() => saveStateToBrowserStorage(store.getState()), 5000)

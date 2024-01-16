@@ -1,12 +1,18 @@
 const hostApi = process.env.NODE_ENV === "development" ? "http://localhost" : "https://thewhaddonshowapp.azurewebsites.net";
 const portApi = process.env.NODE_ENV === "development" ? 50001 : "";
 const baseURLApi = `${hostApi}${portApi ? `:${portApi}` : ``}/api`;
+
+const hostApp = process.env.NODE_ENV === "development" ? "https://localhost" : "https://thewhaddonshowapp.azurewebsites.net";
+const portApp = process.env.NODE_ENV === "development" ? 60001 : "";
+const baseURLApp = `${hostApp}${portApp ? `:${portApp}` : ``}/app`;
+
 const redirectUrl = process.env.NODE_ENV === "development" ? "http://localhost:3000/sing-app-react" : "https://thewhaddonshowapp.azurewebsites.net";
 
 export default {
     redirectUrl,
     hostApi,
     portApi,
+    baseURLApp,
     baseURLApi,
     remote: "https://thewhaddonshowapp.azurewebsites.net",
     isBackend: process.env.REACT_APP_BACKEND,

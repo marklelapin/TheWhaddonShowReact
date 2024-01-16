@@ -116,17 +116,17 @@ function Sidebar() {
                         link="/app/gallery"
                         iconElement={<Icon icon="gallery" />}
                     />
-                    {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, <ApiMonitor />)) &&
+                    {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, 'ApiMonitor')) &&
                         <h5 className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
                     }
-                    {userAccessToComponent(currentUser, <User />) &&
+                    {userAccessToComponent(currentUser, 'Users') &&
                         <LinksGroup
                             header="Users"
                             link="/app/users"
                             iconElement={<Icon icon="user" />}
                         />
                     }
-                    {userAccessToComponent(currentUser, <ApiMonitor />) &&
+                    {userAccessToComponent(currentUser, 'ApiMonitor') &&
 
                         <LinksGroup
                             header="API"

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
-
-
+import axios from 'axios';
+import config from '../../../config';
 import PersonalDetails from './PersonalDetails';
 import Roles from './Roles';
 import Update from './Update';
@@ -20,7 +20,7 @@ import '../../../index.css'
 
 import { addUpdates } from '../../../actions/localServer';
 import { PERSON } from '../../../dataAccess/localServerModels';
-import { log } from '../../../logging'
+import { log, USERS as logType } from '../../../logging'
 export const headers = 'headers'
 export const row = 'row'
 export const modal = 'modal'
@@ -61,12 +61,27 @@ function User(props) {
 
     //Event Handlers
 
-    const handleClickUpdate = () => {
+    const handleClickUpdate = async () => {
 
-        const userUpdate = prepareUpdate(user)
-
-        dispatch(addUpdates(userUpdate, PERSON))  //saves the user to the redux store where it will be synced separately.
+        const userUpdate = (user.isActive === false) ? {...user,msalLink: null } : user
+        const preparedUpdate = prepareUpdate(userUpdate)
+        dispatch(addUpdates(preparedUpdate, PERSON))  //saves the user to the redux store where it will be synced separately.
         setUserChanged(false)
+
+        const justMadeActive = (user.isActive === true && storedUser.isActive === false)  
+        if (justMadeActive && user.email) {
+            try {
+                const response = await sendLoginLink(user)
+                if (response.status === 200) {
+                    alert('Login link sent to ' + user.email)
+                } else {
+                    alert('Failed to send login link to ' + user.email + '. See console for more information.')
+                }
+            } catch (error) {
+                console.error("Error sending login link: " + error.message)
+            }
+            
+        }
         closeModal()
     }
 
@@ -228,3 +243,29 @@ function User(props) {
 
 }
 export default User;
+
+
+
+const sendLoginLink = async (person) => {
+
+    const firstName = person.firstName
+    const email = person.email
+    const id = person.id
+    const appUrl = config.baseURLApp
+
+    const data = { firstName, email, id,appUrl }
+    
+    const url = `email/loginlink`
+
+    try {
+
+        const response = await axios.post(url, data);
+
+        log(logType, 'post email/loginlink response: ', { dataSent: data, status: response.status })
+
+        return (response)
+    }
+    catch (error) {
+        console.error("Error posting loginlink: " + error.message)
+    }
+}

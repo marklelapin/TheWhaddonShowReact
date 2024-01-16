@@ -1,9 +1,9 @@
 
 
-const READ = 'READ'
-const WRITE = 'WRITE'
+export const READ = 'READ'
+export const WRITE = 'WRITE'
 export const MARKID = 'af60b927-7f73-4dfd-8343-206c1b30a03b'
-export const DEMOID = '9bb95c7a-aa72-4e0c-b77d91f8f225e1e'
+export const DEMOID = 'c44bd508-b26a-42a3-abdf-287d64cad080'
 
 export const userAccessToComponent = (user = null, componentOrPage = null) => {
 
@@ -14,7 +14,7 @@ export const userAccessToComponent = (user = null, componentOrPage = null) => {
         case 'Home':
             return READ;
         case 'Users':
-            return null;
+            return (user.id === DEMOID) ? READ : null;
         case 'Script':
             if (user.isWriter === true || user.id === DEMOID) return WRITE;
             return READ;
@@ -41,4 +41,29 @@ export const userAccessToComponent = (user = null, componentOrPage = null) => {
 export const getDefaultPauseSync = (person) => {
     if (person?.isWriter === true) return false;
     return true;
+}
+
+
+export const signOutAllUsers = async (instance) => {
+    const accounts = await instance.getAllAccounts();
+
+    if (accounts.length > 0) {
+        // Iterate through all accounts and sign out each one
+        accounts.forEach(async (account) => {
+            doMsalLogout(instance, account)
+        });
+    };
+
+};
+
+const doMsalLogout = async (instance, account) => {
+    try {
+        instance.logoutPopup({
+            account,
+            //mainWindowRedirectUri: '/app/home', // redirects the top level app after logout
+        })
+
+    } catch (popupLogoutError) {
+        instance.logoutRedirect();
+    }
 }

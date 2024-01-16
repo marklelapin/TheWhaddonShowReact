@@ -33,7 +33,7 @@ export function UsersTable() {
     const personsHistory = useSelector((state) => state.localServer.persons.history);
     log(debug, 'UsersTable personsHistory', personsHistory)
 
-    const persons = getLatest(personsHistory);
+    const persons = getLatest(personsHistory, true);
 
     log(debug, 'UsersTable persons', persons)
 

@@ -139,7 +139,7 @@ const MSALErrorHandling = ({ children }) => {
             if (event.eventType === EventType.LOGIN_FAILURE) {
                 // Check for forgot password error
                 // Learn more about AAD error codes at https://docs.microsoft.com/en-us/azure/active-directory/develop/reference-aadsts-error-codes
-                if (event.error && event.error.errorMessage.includes('AADB2C90118')) {
+                if (event.error.errorMessage && event.error.errorMessage.includes('AADB2C90118')) {
                     const resetPasswordRequest = {
                         authority: b2cPolicies.authorities.forgotPassword.authority,
                         scopes: [],

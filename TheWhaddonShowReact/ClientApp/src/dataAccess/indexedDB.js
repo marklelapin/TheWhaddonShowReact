@@ -2,22 +2,26 @@
 import { log, INDEXED_DB as logType } from '../logging.js'
 
 export const saveState = async (state) => {
-    log(logType,'saveState')
+    log(logType, 'saveState')
     const serializedState = JSON.stringify(state);
     await saveStateToIndexedDB(serializedState)
 }
 
 export const loadState = async () => {
+    try {
+        await setupPersistentIndexedDB()
+        log(logType, 'loadState')
+        const serializedState = await retrieveStateFromIndexedDB()
+        const state = (serializedState === null) ? null : JSON.parse(serializedState)
+        return state;
+    } catch (error) {
+        throw new Error('Error whilst getting state from IndexedDB: ' + error);
+    }
 
-    await setupPersistentIndexedDB()
-log(logType,'loadState')
-    const serializedState = await retrieveStateFromIndexedDB()
-    const state = (serializedState === null) ? null : JSON.parse(serializedState)
-    return state;
 }
 
 export const clearState = async () => {
-log(logType,'clearState')
+    log(logType, 'clearState')
     const dbRequest = await indexedDB.open('reduxDB', 1);
     dbRequest.onsuccess = (event) => {
         const db = event.target.result;
@@ -39,11 +43,12 @@ export const setupPersistentIndexedDB = async () => {
                 console.log("Storage will persist.");
             } else {
                 console.log("Storage will not persist.");
-               // alert("Refusing to persist storage means all unsynced changes will be lost on refresh. Please enable storage persistence for an optimal experience, to work offline and to avoid potential lose of data.")  
+                // alert("Refusing to persist storage means all unsynced changes will be lost on refresh. Please enable storage persistence for an optimal experience, to work offline and to avoid potential lose of data.")  
             }
         }).catch((error) => {
             console.error("Error checking storage persistence:", error);
             alert("Error checking storage persistence. Please enable storage persistence for an optimal experience, to work offline and to avoid potential lose of data.")
+            throw new Error("Error checking storage persistence:" + error);
         });
     } else {
         console.log("navigator.storage.persist() is not supported in this browser.");
@@ -52,11 +57,12 @@ export const setupPersistentIndexedDB = async () => {
         throw new Error("navigator.storage.persist() is not supported in this browser.");
     }
 
+
 }
 
 // Retrieve Redux State from IndexedDB
 const retrieveStateFromIndexedDB = async () => {
-    log(logType,'retrieveStateFromIndexedDB')
+    log(logType, 'retrieveStateFromIndexedDB')
     const db = await openOrCreateReduxDB()
     const transaction = db.transaction(['reduxState'], 'readonly');
     const objectStore = transaction.objectStore('reduxState');
@@ -79,7 +85,7 @@ const retrieveStateFromIndexedDB = async () => {
 
 // Save Redux State to IndexedDB
 const saveStateToIndexedDB = async (serializedState) => {
-    log(logType,'saveStateToIndexedDB')
+    log(logType, 'saveStateToIndexedDB')
     const db = await openOrCreateReduxDB()
     log(logType, 'objectStoreNames:', db.objectStoreNames)
     const transaction = db.transaction(['reduxState'], 'readwrite');
@@ -100,7 +106,7 @@ const openOrCreateReduxDB = async () => {
                 db.createObjectStore('reduxState', { keyPath: 'id' });
             }
         };
-        
+
         dbRequest.onsuccess = (event) => {
             const db = event.target.result;
             resolve(db);
