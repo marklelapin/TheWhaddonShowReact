@@ -13,7 +13,7 @@ import { EventType } from '@azure/msal-browser';
 import { b2cPolicies, protextedResources } from '../authConfig.js'
 //Components
 import { Layout } from '../components/Layout';
-import Routing  from './Routing';
+import Routing from './Routing';
 import CacheProcessing from '../dataAccess/CacheProcessing';
 import TextAreaContexts from '../dataAccess/TextAreaContexts';
 
@@ -45,23 +45,24 @@ function App(props) {
     return (
 
         <MsalProvider instance={instance}>
-            <Layout>
-            {/*Components performing background and preloading tasks*/}
             <LocalServerSyncing />
             <ScriptEditorProcessing />
             <CacheProcessing />
             <TextAreaContexts />
+            <Layout>
+                {/*Components performing background and preloading tasks*/}
 
-            {/*<ToastContainer*/}
-            {/*    autoClose={5000}*/}
-            {/*    hideProgressBar*/}
-            {/*    closeButton={<CloseButton />}*/}
-            {/*/>*/}
+
+                {/*<ToastContainer*/}
+                {/*    autoClose={5000}*/}
+                {/*    hideProgressBar*/}
+                {/*    closeButton={<CloseButton />}*/}
+                {/*/>*/}
 
                 <MSALErrorHandling >
-                    <Routing/>
+                    <Routing />
                 </MSALErrorHandling>
-                
+
             </Layout>
 
 
@@ -157,7 +158,7 @@ const MSALErrorHandling = ({ children }) => {
         // eslint-disable-next-line
     }, [instance]);
 
-    return children ;
+    return children;
 }
 
 

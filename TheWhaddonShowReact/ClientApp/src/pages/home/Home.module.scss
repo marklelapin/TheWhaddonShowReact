@@ -1,8 +1,7 @@
 @import '../../styles/app';
 
 .home-page{
-    height:100%;
-    display: flex;
+    display: block;
     align-content: center;
     justify-content: center;
     flex-direction: column;
@@ -14,9 +13,8 @@
 }
 
 .home-image {
-    display: flex;
+    display:block;
     justify-content: center;
-    overflow:hidden;
     padding-bottom: 40px;
     img{
        

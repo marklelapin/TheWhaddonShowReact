@@ -23,9 +23,8 @@ function SceneSelectorRow(props) {
     log(debug, 'SceneSelectorRow: scene', scene)
 
     
-    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
-    const readOnly = finalReadOnly(_readOnly)
-    
+    const isWriter = useSelector(state => state.user.currentUser?.isWriter)
+    const readOnly = !isWriter
 
     return (
         <>

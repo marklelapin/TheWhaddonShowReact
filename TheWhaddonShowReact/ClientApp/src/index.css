@@ -1,7 +1,11 @@
-﻿body {
-    max-height: 100vh;
-   overflow-y:hidden;
+﻿html {
+
 }
+
+body {
+
+}
+
 
 .draft-border {
     /*  border: 2px dashed red;*/
@@ -127,38 +131,15 @@
 }
 
 
-/*INDIVIDUAL STYLING OF SCRIPT ITEM TYPES*/
-
-
-
 
 /*basic layout css*/
-.page-content{
-    flex: 1;
-    display: flex;
-    flex-direction:column;
-    overflow: hidden;
-}
+
 
 .flex-full-height{
     flex: 1;
     display: flex;
     flex-direction:column;
     overflow: hidden;
-}
-
-.flex-full-width{
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
-    
-}
-
-.full-height-overflow{
-   flex:1;
-    height: 100%;
-    overflow: auto;
 }
 
 .table {
@@ -170,4 +151,10 @@
     top: 0px;
     background-color: inherit;
 z-index: 10;
+}
+
+@media print {
+    .flex-full-height {
+        overflow:visible !important;
+    }
 }

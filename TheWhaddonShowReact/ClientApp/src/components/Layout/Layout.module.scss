@@ -5,6 +5,11 @@
     position: relative;
     left: 0;
     transition: left $sidebar-transition-time ease-in-out;
+
+    @media print {
+        height: unset;
+        overflow-y: visible !important;
+    }
 }
 
 .wrap {
@@ -24,6 +29,27 @@
     }
 }
 
+@media print {
+
+
+
+    .wrap {
+        margin-left: 0 !important;
+        left: 0 !important;
+        height: unset;
+        display: block;
+        overflow-y: visible !important;
+
+        * {
+            overflow-y: visible !important;
+        }
+    }
+
+    .footer {
+        display: none !important;
+    }
+}
+
 .sidebarClose div.wrap {
     left: 0;
 }
@@ -32,6 +58,7 @@
     left: 0;
     margin-left: $sidebar-width-open;
 }
+
 
 .content {
     position: relative;
@@ -49,6 +76,11 @@
     // hammers disallows text selection, allowing it for large screens
     @media (min-width: breakpoint-min(sm)) {
         user-select: auto !important;
+    }
+
+    @media print {
+        display: block;
+        overflow-y: visible !important;
     }
 
     &.no-side-padding {

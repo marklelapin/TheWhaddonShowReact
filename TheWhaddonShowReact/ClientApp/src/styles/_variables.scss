@@ -16,9 +16,12 @@ $font-size-initial:       14px; // reset default browser value from 16px to 13px
 $font-size-base:          1rem !default;
 $font-size-lg:            1.25rem !default;
 $font-size-sm:            0.875rem !default;
+$font-size-xs:            0.75rem;
+$font-size-xxs:           0.65rem;
 $font-size-larger:        1.1rem;
 $font-size-mini:          0.9rem;
 $font-size-index:         0.7rem;
+
 
 $font-family-base: 'Poppins', sans-serif;
 
@@ -83,7 +86,7 @@ $link-color: $blue;
 $text-color: #0C2236 !default;
 
 $font-weight-bold: 700 !default;
-$font-weight-semi-bold: 600 !default;
+$font-weight-semi-bold: 500 !default;
 $font-weight-normal: 400 !default;
 $font-weight-thin: 300 !default;
 $font-weight-base: $font-weight-thin !default;

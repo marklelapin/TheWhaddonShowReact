@@ -1,0 +1,102 @@
+@import '../../styles/app';
+
+$sub-scene-margin: 10px;
+
+
+.container {
+    display: flex;
+    flex-direction: row; 
+    overflow: auto;
+
+    @media print {
+        *{
+            overflow: visible !important;
+            display: block !important;
+        }
+    
+
+    }
+
+    .castSection {
+        display: none;
+    }
+
+    .programmeSection {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+
+        .act {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 400px;
+
+           @media print{
+               page-break-before: always;
+               display:block !important;
+           }
+            .scene {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+
+                @media print {
+                    page-break-before: always;
+                    display: block !important;
+                }
+
+
+                .actHeader {
+                    //font-weight: $font-weight-bold;
+                }
+
+                .sceneHeader {
+                    font-weight: $font-weight-bolder;
+                }
+
+                .synopsis {
+                    font-size: $font-size-sm;
+                    font-style: italic;
+                    margin-left: $sub-scene-margin;
+                }
+
+                .sceneParts {
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    margin-left: $sub-scene-margin;
+
+                    .partAvatar {
+                        margin-right: 2px;
+                    }
+
+                    .part {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        margin-left: 10px;
+
+                        &:first-child {
+                            margin-left: 0px;
+                        }
+
+                        &:not(.allocated) {
+                            background-color: $gray-200;
+                        }
+
+
+
+                        .partName {
+                            font-size: $font-size-xs
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

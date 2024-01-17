@@ -41,7 +41,8 @@ import {
     faUser,
     faUsers,
     faCaretDown,
-    faArrowDownUpAcrossLine
+    faArrowDownUpAcrossLine,
+    faRectangleList
 } from '@fortawesome/free-solid-svg-icons' 
 
 import s from './Icons.module.scss'; 
@@ -116,6 +117,7 @@ export function Icon(props) {
         "users": faUsers,
         "caret": faCaretDown,
         "api": faArrowDownUpAcrossLine,
+        "summary": faRectangleList,
 "gallery": faPanorama,
 "casting": faPersonMilitaryToPerson,
     };

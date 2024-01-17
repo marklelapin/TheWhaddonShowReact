@@ -147,6 +147,9 @@
     border-bottom-right-radius: 0;
     overflow-y: scroll;
     height: 100%;
+    @media print {
+      overflow-y: visible !important;
+    }
 
     &::-webkit-scrollbar {
       width: 1em;

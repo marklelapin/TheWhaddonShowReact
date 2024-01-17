@@ -10,7 +10,7 @@ import LinksGroup from './LinksGroup/LinksGroup';
 import {
 
     closeStaticSidebar,
-   openSidebar,
+    openSidebar,
 } from '../../actions/navigation';
 import { isScreen } from '../../core/screenHelper';
 
@@ -78,13 +78,13 @@ function Sidebar() {
 
     return (
 
-        <div className={`${isSidebarOpen ? 'sidebarOpen' : s['sidebarClose'] } ${s['sidebarWrapper']}`}>
+        <div className={`${isSidebarOpen ? 'sidebarOpen' : s['sidebarClose']} ${s['sidebarWrapper']}`}>
 
             <nav
                 onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
                 className={s.root}
             >
-                {sidebarStatic && <Icon icon={'arrow-left'} onClick={()=>dispatch(closeStaticSidebar())} toolTip='Minimise Sidebar' className={s[`minimize-sidebar-button`]}></Icon>}
+                {sidebarStatic && <Icon icon={'arrow-left'} onClick={() => dispatch(closeStaticSidebar())} toolTip='Minimise Sidebar' className={s[`minimize-sidebar-button`]}></Icon>}
 
                 <header className={s.logo}>
                     <a href="/app/home">
@@ -105,6 +105,11 @@ function Sidebar() {
                         header="Script"
                         link="/app/script"
                         iconElement={<Icon icon='script' />}
+                    />
+                    <LinksGroup
+                        header="Script Summary"
+                        link="/app/scriptsummary"
+                        iconElement={<Icon icon='summary' />}
                     />
                     <LinksGroup
                         header="Casting"
@@ -151,6 +156,11 @@ function Sidebar() {
                 </ul>
 
             </nav >
+
+            <footer className={s.contentFooter}>
+                The Whaddon Show App by <a href="https://github.com/marklelapin" rel="nofollow noopener noreferrer" target="_blank">Mark Carter</a>
+            </footer>
+
         </div >
     );
 

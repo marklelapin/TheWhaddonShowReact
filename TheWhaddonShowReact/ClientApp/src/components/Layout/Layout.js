@@ -84,9 +84,7 @@ export const Layout = (props) => {
                                 {() => children}
                             </CSSTransition>
                         </TransitionGroup>
-                        <footer className={s.contentFooter}>
-                            The Whaddon Show App by <a href="https://github.com/marklelapin" rel="nofollow noopener noreferrer" target="_blank">Mark Carter</a>
-                        </footer>
+                        
                     </main>
                 </Hammer>
             </div>

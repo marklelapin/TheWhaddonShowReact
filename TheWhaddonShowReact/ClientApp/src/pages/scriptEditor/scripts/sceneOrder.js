@@ -1,5 +1,5 @@
 ﻿
-import { SHOW,  SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { refreshCurtain } from "./curtain";
 
@@ -237,24 +237,18 @@ export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
 }
 
 
-
-
 const addSceneNumbers = (sceneOrder) => {
 
-    let i = 1;
+    let sceneNumber = 0;
+    let act = 0;
     const numberedSceneOrder = sceneOrder.map(scene => {
-        if (scene.type === SCENE) {
-            const numberedScene = { ...scene, sceneNumber: i }
-            i++;
-            return numberedScene
-
-        } else {
-            return scene
+        switch (scene.type) {
+            case SHOW: return scene;
+            case ACT: act++; return { ...scene, act };
+            case SCENE: sceneNumber++; return {...scene, sceneNumber, act };
+            default: return scene;
         }
-
-
     })
-
     return numberedSceneOrder
 }
 
