@@ -66,6 +66,7 @@
     <Folder Include="ClientApp\build\" />
     <Folder Include="ClientApp\public\images\" />
     <Folder Include="ClientApp\src\dataAccess\__tests__\" />
+    <Folder Include="ClientApp\src\fonts\font-awesome\" />
     <Folder Include="ClientApp\src\pages\casting\" />
   </ItemGroup>
 

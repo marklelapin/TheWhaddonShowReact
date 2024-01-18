@@ -7,6 +7,12 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux'
 import ReduxThunk from 'redux-thunk'
 
+//Font awesome css (only way I could get this to work!)
+import '@fortawesome/fontawesome-free/js/fontawesome'
+import '@fortawesome/fontawesome-free/js/solid'
+import '@fortawesome/fontawesome-free/js/regular'
+import '@fortawesome/fontawesome-free/js/brands'
+
 //Azure Authentication
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
 //import { BrowserRouter } from 'react-router-dom';

@@ -16,13 +16,7 @@ import { openSidebar, closeSidebar } from '../../actions/navigation';
 import s from './Layout.module.scss';
 import { log, LAYOUT as logType } from '../../logging.js'
 
-const SVGMask = (<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">
-    <defs>
-        <mask id="mask" x="0" y="0" width="100%" height="100%">
-            <rect x="0" y="0" width="100%" height="100%" fill="white" />
-        </mask>
-    </defs>
-</svg>)
+
 
 export const Layout = (props) => {
 

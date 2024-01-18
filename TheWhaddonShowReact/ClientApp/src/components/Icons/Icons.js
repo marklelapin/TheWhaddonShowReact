@@ -1,53 +1,53 @@
 ﻿import React, { useState } from 'react';
 
 import { Tooltip } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    faCloud,
-    faPlus,
-    faCheck,
-    faTimes,
-    faExclamation,
-    faRotateLeft,
-    faRotateRight,
-    faBars,
-    faArrowLeft,
-    faComments,
-    faAlignCenter,
-    faEdit,
-    faComment,
-    faCommentDots,
-    faPrint,
-    faFileAudio,
-    faFileVideo,
-    faPlay,
-    faPaperclip,
-    faLink,
-    faCircleO,
-    faCircle,
-    faSearch,
-    faTags,
-    faTrash,
-    faArrowsV,
-    faVolumeUp,
-    faLightbulb,
-    faMale,
-    faChild,
-    faHome,
-    faFileLines,
-    faPersonMilitaryToPerson,
-    faPanorama,
-    faRotate,
-    faUser,
-    faUsers,
-    faCaretDown,
-    faArrowDownUpAcrossLine,
-    faRectangleList,
-    faPowerOff,
-    faGear,
-} from '@fortawesome/free-solid-svg-icons' 
+//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+//import {
+//    faCloud,
+//    faPlus,
+//    faCheck,
+//    faTimes,
+//    faExclamation,
+//    faRotateLeft,
+//    faRotateRight,
+//    faBars,
+//    faArrowLeft,
+//    faComments,
+//    faAlignCenter,
+//    faEdit,
+//    faComment,
+//    faCommentDots,
+//    faPrint,
+//    faFileAudio,
+//    faFileVideo,
+//    faPlay,
+//    faPaperclip,
+//    faLink,
+//    faCircleO,
+//    faCircle,
+//    faSearch,
+//    faTags,
+//    faTrash,
+//    faArrowsV,
+//    faVolumeUp,
+//    faLightbulb,
+//    faMale,
+//    faChild,
+//    faHome,
+//    faFileLines,
+//    faPersonMilitaryToPerson,
+//    faPanorama,
+//    faRotate,
+//    faUser,
+//    faUsers,
+//    faCaretDown,
+//    faArrowDownUpAcrossLine,
+//    faRectangleList,
+//    faPowerOff,
+//    faGear,
+//} from '@fortawesome/free-solid-svg-icons' 
 
-import s from './Icons.module.scss'; 
+import s from './Icons.module.scss';
 
 export function TickOrCross(value) {
 
@@ -71,7 +71,7 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top',className } = props
+    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className, iconStyle = 'solid' } = props
 
     let { icon } = props
     if (icon === null) { icon = props }
@@ -79,53 +79,53 @@ export function Icon(props) {
     const [toolTipOpen, setToolTipOpen] = useState(null);
 
     const dictionary = {
-        "sync": faCloud,
-        "add": faPlus,
-        "tick": faCheck,
-        "cross": faTimes,
-        "remove": faTimes,
-        "warning": faExclamation,
-        "undo": faRotateLeft,
-        "redo": faRotateRight,
-        "menu": faBars,
-        "arrow-left": faArrowLeft,
-        "chat-mode": faComments,
-        "classic-mode": faAlignCenter,
-        "edit": faEdit,
-        "comment-o": faCommentDots,
-        "comment": faComment,
-        "print": faPrint,
-        "audio-file": faFileAudio,
-        "video-file": faFileVideo,
-        "play": faPlay,
-        "attach": faPaperclip,
-        "attachment": faPaperclip,
-        "link":faLink,
-        "circle-o": faCircle,
-        "circle": faCircle,
-        "search": faSearch,
-        "tags": faTags,
-        "trash": faTrash,
-        "move-up-down": faArrowsV,
-        "arrows-v": faArrowsV,
-        "sound": faVolumeUp,
-        "lightbulb": faLightbulb,
-        "man": faMale,
-        "child": faChild,
-        "home": faHome,
-        "script": faFileLines,
-        "refresh": faRotate,
-        "user": faUser,
-        "users": faUsers,
-        "caret": faCaretDown,
-        "api": faArrowDownUpAcrossLine,
-        "summary": faRectangleList,
-        "power-off": faPowerOff,
-        "gear": faGear,
-
-"gallery": faPanorama,
-"casting": faPersonMilitaryToPerson,
+        "sync": 'fa-solid fa-cloud',
+        "add": 'fa-solid fa-plus',
+        "tick": 'fa-solid fa-check',
+        "cross": 'fa-solid fa-times',
+        "remove": 'fa-solid fa-times',
+        "warning": 'fa-solid fa-exclamation',
+        "undo": 'fa-solid fa-rotate-left',
+        "redo": 'fa-solid fa-rotate-right',
+        "menu": 'fa-solid fa-bars',
+        "arrow-left": 'fa-solid fa-arrow-left',
+        "chat-mode": 'fa-solid fa-comments',
+        "classic-mode": 'fa-solid fa-align-center',
+        "edit": 'fa-solid fa-edit',
+        "comment-o": 'fa-regular fa-comment',
+        "comment": 'fa-solid  fa-comment',
+        "print": 'fa-solid fa-print',
+        "audio-file": 'fa-solid fa-file-audio',
+        "video-file": 'fa-solid fa-file-video',
+        "play": 'fa-solid fa-regular fa-play',
+        "attach": 'fa-solid fa-paperclip',
+        "attachment": 'fa-solid fa-paperclip',
+        "link": 'fa-solid fa-link',
+        "circle-o": 'fa-regular fa-circle',
+        "circle": 'fa-solid fa-circle',
+        "search": 'fa-solid fa-search',
+        "tags": 'fa-solid fa-tags',
+        "trash": 'fa-solid fa-trash',
+        "move-up-down": 'fa-solid fa-arrows-v',
+        "arrows-v": 'fa-solid fa-arrows-v',
+        "sound": 'fa-solid fa-volume-up',
+        "lightbulb": 'fa-solid fa-lightbulb',
+        "man": 'fa-solid fa-male',
+        "child": 'fa-solid fa-child',
+        "home": 'fa-solid fa-house',
+        "script": 'fa-solid fa-file-lines',
+        "refresh": 'fa-solid fa-rotate',
+        "user": 'fa-solid fa-user',
+        "users": 'fa-solid fa-users',
+        "caret": 'fa-solid fa-caret-down',
+        "api": 'fa-solid fa-arrow-down-up-across-line',
+        "summary": 'fa-solid fa-rectangle-list',
+        "power-off": 'fa-solid fa-power-off',
+        "gear": 'fa-solid fa-gear',
+        "gallery": 'fa-solid fa-panorama',
+        "casting": 'fa-solid fa-person-military-to-person',
     };
+
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {
         icon = dictionary[icon.toLowerCase()];
@@ -139,18 +139,16 @@ export function Icon(props) {
     }
 
     if (id === null) {
-        return <FontAwesomeIcon
-        icon={icon}
-            className={`m-1 ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
+        return <i
+            className={`m-1 ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
             style={style}
             onClick={onClick} />
     }
     if (id !== null) {
         return <>
-            <FontAwesomeIcon
-                icon={icon}
+            <i
                 id={id}
-                className={`m-1 ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
+                className={`m-1  ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
                 style={style}
                 onClick={onClick} />
 

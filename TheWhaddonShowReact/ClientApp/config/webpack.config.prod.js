@@ -366,6 +366,11 @@ module.exports = {
                             'sass-loader'
                         ),
                     },
+                   
+                    {
+                        test: /\.(svg|ico|png|webp|jpg|gif|jpeg)$/
+                        , type: "asset/resource"
+                    },
                     // "file" loader makes sure assets end up in the `build` folder.
                     // When you `import` an asset, you get its filename.
                     // This loader doesn't use a "test" so it will catch all modules
@@ -457,7 +462,7 @@ module.exports = {
         new WorkboxWebpackPlugin.GenerateSW({
             clientsClaim: true,
             exclude: [/\.map$/, /asset-manifest\.json$/],
-/*            importWorkboxFrom: 'cdn',*/
+            /*            importWorkboxFrom: 'cdn',*/
             navigateFallback: publicUrl + '/index.html',
             navigateFallbackDenylist: [
                 // Exclude URLs starting with /_, as they're likely an API call
