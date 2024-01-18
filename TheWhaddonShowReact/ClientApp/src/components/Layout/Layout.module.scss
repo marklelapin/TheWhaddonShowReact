@@ -27,11 +27,10 @@
         margin-left: 0;
         left: $sidebar-width-open;
     }
+
 }
 
 @media print {
-
-
 
     .wrap {
         margin-left: 0 !important;
@@ -62,6 +61,7 @@
 
 .content {
     position: relative;
+    height:100%;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -81,6 +81,7 @@
     @media print {
         display: block;
         overflow-y: visible !important;
+        padding: 10px;
     }
 
     &.no-side-padding {

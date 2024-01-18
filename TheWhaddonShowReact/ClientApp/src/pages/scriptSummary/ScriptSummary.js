@@ -106,7 +106,7 @@ const ScriptSummary = (props) => {
 
     return (
         <>
-            <h1>Script Summary</h1><button onClick={window.print()}>Print this page</button>
+            <h1>Script Summary</h1>
             <div className={s.container}>
                 <div className={s.castSection}>
                 </div>

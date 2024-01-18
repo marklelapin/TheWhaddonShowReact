@@ -81,7 +81,11 @@ body {
     cursor: pointer;
 }
 
+.page-content{
 
+    overflow: auto;
+
+}
 
 
 #scene-selector {
