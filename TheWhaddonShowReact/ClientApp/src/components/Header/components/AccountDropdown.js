@@ -9,7 +9,6 @@ import { updateCurrentUser, login, logout} from '../../../actions/user';
 import { setReadOnly, updatePersonSelectorConfig, updateViewAsPartPerson } from '../../../actions/scriptEditor';
 import { addUpdates } from '../../../actions/localServer';
 import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
-import PowerButton from '../../../images/sidebar/basil/PowerButton';
 import { Icon } from '../../../components/Icons/Icons';
 import { PERSON } from '../../../dataAccess/localServerModels';
 import PersonSelector from '../../../pages/scriptEditor/components/PersonSelector';
@@ -132,7 +131,7 @@ function AccountDropdown(props) {
                                         <DropdownItem divider />
                                     </>
                                 }
-                                <DropdownItem onClick={doLogout}><span className={s.headerDropdownIcon}><PowerButton /></span> Log Out</DropdownItem>
+                                <DropdownItem onClick={doLogout}><Icon icon ="power-off"></Icon>Log Out</DropdownItem>
                             </DropdownMenu>
                         }
                     </Dropdown >

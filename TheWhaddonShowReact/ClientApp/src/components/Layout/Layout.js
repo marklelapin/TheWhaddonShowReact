@@ -2,26 +2,18 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import { Route, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 
 //Components
 import Hammer from 'rc-hammerjs';
-import ExtraGallery from '../../pages/extra/gallery';
-import Home from '../../pages/home/Home';
-import Users from '../../pages/user/Users';
-import Script from '../../pages/scriptEditor/Script';
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar';
 import Login from '../Login/Login';
-import UnderConstruction from '../../pages/underConstruction/UnderConstruction';
 //import Helper from '../Helper';
 import { openSidebar, closeSidebar } from '../../actions/navigation';
 import s from './Layout.module.scss';
-import ApiTestResults from '../../pages/apiMonitor/TestResults';
-
-
 import { log, LAYOUT as logType } from '../../logging.js'
 
 const SVGMask = (<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">

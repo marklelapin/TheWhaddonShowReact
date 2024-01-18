@@ -5,11 +5,12 @@ const webpack = require('webpack');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
+const ESLintPlugin = require('eslint-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCSSAssetsPlugin = require('css-minimizer-webpack-plugin');
+const CSSMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const safePostCssParser = require('postcss-safe-parser');
-const ManifestPlugin = require('webpack-manifest-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
@@ -132,28 +133,43 @@ module.exports = {
     optimization: {
         minimizer: [
             (compiler) => {
-                const TerserPlugin = require('terser-webpack-plugin');
                 new TerserPlugin({
                     terserOptions: {
                         compress: {},
                     }
                 }).apply(compiler);
             },
-            
-            new OptimizeCSSAssetsPlugin({
-                cssProcessorOptions: {
-                    parser: safePostCssParser,
-                    map: shouldUseSourceMap
-                        ? {
-                            // `inline: false` forces the sourcemap to be output into a
-                            // separate file
-                            inline: false,
-                            // `annotation: true` appends the sourceMappingURL to the end of
-                            // the css file, helping the browser find the sourcemap
-                            annotation: true,
-                        }
-                        : false,
-                },
+
+            new CSSMinimizerPlugin({
+                //minimizerOptions: {
+                //    processorOptions: {
+                //        parser: safePostCssParser,
+                //        map: shouldUseSourceMap
+                //            ? {
+                //                // `inline: false` forces the sourcemap to be output into a
+                //                // separate file
+                //                inline: false,
+                //                // `annotation: true` appends the sourceMappingURL to the end of
+                //                // the css file, helping the browser find the sourcemap
+                //                annotation: true,
+                //            }
+                //            : false,
+                //    }
+                //}
+
+                //cssProcessorOptions: {
+                //    parser: safePostCssParser,
+                //    map: shouldUseSourceMap
+                //        ? {
+                //            // `inline: false` forces the sourcemap to be output into a
+                //            // separate file
+                //            inline: false,
+                //            // `annotation: true` appends the sourceMappingURL to the end of
+                //            // the css file, helping the browser find the sourcemap
+                //            annotation: true,
+                //        }
+                //        : false,
+                //},
             }),
         ],
         // Automatically split vendor and commons
@@ -212,24 +228,6 @@ module.exports = {
         rules: [
             // Disable require.ensure as it's not a standard language feature.
             { parser: { requireEnsure: false } },
-
-            // First, run the linter.
-            // It's important to do this before Babel processes the JS.
-            {
-                test: /\.(js|mjs|jsx)$/,
-                enforce: 'pre',
-                use: [
-                    {
-                        options: {
-                            formatter: require.resolve('react-dev-utils/eslintFormatter'),
-                            eslintPath: require.resolve('eslint'),
-
-                        },
-                        loader: require.resolve('eslint-loader'),
-                    },
-                ],
-                include: paths.appSrc,
-            },
             {
                 // "oneOf" will traverse all following loaders until one will
                 // match the requirements. When no loader matches it will fall
@@ -310,7 +308,7 @@ module.exports = {
                     {
                         test: cssRegex,
                         exclude: cssModuleRegex,
-                        loader: getStyleLoaders({
+                        use: getStyleLoaders({
                             importLoaders: 1,
                             sourceMap: shouldUseSourceMap,
                         }),
@@ -324,7 +322,7 @@ module.exports = {
                     // using the extension .module.css
                     {
                         test: cssModuleRegex,
-                        loader: getStyleLoaders({
+                        use: getStyleLoaders({
                             importLoaders: 1,
                             sourceMap: shouldUseSourceMap,
                             modules: {
@@ -340,7 +338,7 @@ module.exports = {
                     {
                         test: sassRegex,
                         exclude: sassModuleRegex,
-                        loader: getStyleLoaders(
+                        use: getStyleLoaders(
                             {
                                 importLoaders: 2,
                                 sourceMap: shouldUseSourceMap,
@@ -357,7 +355,7 @@ module.exports = {
                     // using the extension .module.scss or .module.sass
                     {
                         test: sassModuleRegex,
-                        loader: getStyleLoaders(
+                        use: getStyleLoaders(
                             {
                                 importLoaders: 2,
                                 sourceMap: shouldUseSourceMap,
@@ -390,6 +388,14 @@ module.exports = {
         ],
     },
     plugins: [
+
+        new ESLintPlugin({
+            /*        enforce: 'pre',*/
+            /* include: paths.appSrc,*/
+            extensions: ['js', 'jsx', 'mjs', 'ts', 'tsx'],
+            formatter: require.resolve('react-dev-utils/eslintFormatter'),
+            /*eslintPath: require.resolve('eslint'),*/
+        }),
         // Generates an `index.html` file with the <script> injected.
         new HtmlWebpackPlugin({
             inject: true,
@@ -433,7 +439,7 @@ module.exports = {
         // Generate a manifest file which contains a mapping of all asset filenames
         // to their corresponding output file so that tools can pick it up without
         // having to parse `index.html`.
-        new ManifestPlugin({
+        new WebpackManifestPlugin({
             fileName: 'asset-manifest.json',
             publicPath: publicPath,
         }),
@@ -442,15 +448,18 @@ module.exports = {
         // solution that requires the user to opt into importing specific locales.
         // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
         // You can remove this if you don't use Moment.js:
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new webpack.IgnorePlugin({
+            resourceRegExp: /^\.\/locale$/,
+            contextRegExp: /moment$/,
+        }),
         // Generate a service worker script that will precache, and keep up to date,
         // the HTML & assets that are part of the Webpack build.
         new WorkboxWebpackPlugin.GenerateSW({
             clientsClaim: true,
             exclude: [/\.map$/, /asset-manifest\.json$/],
-            importWorkboxFrom: 'cdn',
+/*            importWorkboxFrom: 'cdn',*/
             navigateFallback: publicUrl + '/index.html',
-            navigateFallbackBlacklist: [
+            navigateFallbackDenylist: [
                 // Exclude URLs starting with /_, as they're likely an API call
                 new RegExp('^/_'),
                 // Exclude URLs containing a dot, as they're likely a resource in
@@ -461,13 +470,14 @@ module.exports = {
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
-    node: {
-        dgram: 'empty',
-        fs: 'empty',
-        net: 'empty',
-        tls: 'empty',
-        child_process: 'empty',
-    },
+    node: false,
+    //{
+    //    dgram: 'empty',
+    //    fs: 'empty',
+    //    net: 'empty',
+    //    tls: 'empty',
+    //    child_process: 'empty',
+    //},
     // Turn off performance processing because we utilize
     // our own hints via the FileSizeReporter
     performance: false,

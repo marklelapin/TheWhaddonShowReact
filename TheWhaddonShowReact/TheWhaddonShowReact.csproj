@@ -31,11 +31,19 @@
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Compile Remove="ClientApp\src\components\Users\**" />
+    <Compile Remove="ClientApp\src\images\NewFolder1\**" />
+    <Compile Remove="ClientApp\src\images\NewFolder\**" />
     <Content Remove="$(SpaRoot)**" />
     <Content Remove="ClientApp\src\components\Users\**" />
+    <Content Remove="ClientApp\src\images\NewFolder1\**" />
+    <Content Remove="ClientApp\src\images\NewFolder\**" />
     <EmbeddedResource Remove="ClientApp\src\components\Users\**" />
+    <EmbeddedResource Remove="ClientApp\src\images\NewFolder1\**" />
+    <EmbeddedResource Remove="ClientApp\src\images\NewFolder\**" />
     <None Remove="$(SpaRoot)**" />
     <None Remove="ClientApp\src\components\Users\**" />
+    <None Remove="ClientApp\src\images\NewFolder1\**" />
+    <None Remove="ClientApp\src\images\NewFolder\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
@@ -56,9 +64,8 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\build\" />
+    <Folder Include="ClientApp\public\images\" />
     <Folder Include="ClientApp\src\dataAccess\__tests__\" />
-    <Folder Include="ClientApp\src\images\NewFolder1\" />
-    <Folder Include="ClientApp\src\images\NewFolder\" />
     <Folder Include="ClientApp\src\pages\casting\" />
   </ItemGroup>
 
