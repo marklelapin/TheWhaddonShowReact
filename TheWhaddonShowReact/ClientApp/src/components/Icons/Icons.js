@@ -97,7 +97,7 @@ export function Icon(props) {
         "print": 'fa-solid fa-print',
         "audio-file": 'fa-solid fa-file-audio',
         "video-file": 'fa-solid fa-file-video',
-        "play": 'fa-solid fa-regular fa-play',
+        "play": 'fa-solid fa-play',
         "attach": 'fa-solid fa-paperclip',
         "attachment": 'fa-solid fa-paperclip',
         "link": 'fa-solid fa-link',

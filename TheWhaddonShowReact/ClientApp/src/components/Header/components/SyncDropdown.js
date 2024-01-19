@@ -232,18 +232,18 @@ function SyncDropdown(props) {
                 {syncText('Summary')}
 
             </DropdownToggle>
-            <DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>
+            {/*<DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>*/}
 
-                <DropdownItem >Persons: {syncText(PERSON)}</DropdownItem>
-                <DropdownItem divider />
-                <DropdownItem >ScriptItems: {syncText(SCRIPT_ITEM)}</DropdownItem>
-                <DropdownItem divider />
-                <DropdownItem >Parts: {syncText(PART)}</DropdownItem>
-                <DropdownItem divider />
-                <DropdownItem onClick={() => clearStateFromBrowserStorage(dispatch)}>Clear Local Storage</DropdownItem>
-                <DropdownItem onClick={() => togglePauseSync()}> {pauseSync ? 'Resume Sync' : 'Pause Sync'}<Icon icon="play" /></DropdownItem>
+            {/*    <DropdownItem >Persons: {syncText(PERSON)}</DropdownItem>*/}
+            {/*    <DropdownItem divider />*/}
+            {/*    <DropdownItem >ScriptItems: {syncText(SCRIPT_ITEM)}</DropdownItem>*/}
+            {/*    <DropdownItem divider />*/}
+            {/*    <DropdownItem >Parts: {syncText(PART)}</DropdownItem>*/}
+            {/*    <DropdownItem divider />*/}
+            {/*    <DropdownItem onClick={() => clearStateFromBrowserStorage(dispatch)}>Clear Local Storage</DropdownItem>*/}
+            {/*    <DropdownItem onClick={() => togglePauseSync()}> {pauseSync ? 'Resume Sync' : 'Pause Sync'}<Icon icon="play"/></DropdownItem>*/}
 
-            </DropdownMenu>
+            {/*</DropdownMenu>*/}
         </Dropdown>
     )
 }

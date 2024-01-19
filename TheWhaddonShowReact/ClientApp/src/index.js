@@ -7,11 +7,8 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux'
 import ReduxThunk from 'redux-thunk'
 
-//Font awesome css (only way I could get this to work!)
-import '@fortawesome/fontawesome-free/js/fontawesome'
-import '@fortawesome/fontawesome-free/js/solid'
-import '@fortawesome/fontawesome-free/js/regular'
-import '@fortawesome/fontawesome-free/js/brands'
+
+
 
 //Azure Authentication
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
@@ -24,7 +21,7 @@ import * as serviceWorker from './serviceWorker';
 import axios from 'axios';
 
 import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from './dataAccess/browserStorage';
-
+import { NO_INDEXED_DB } from './dataAccess/indexedDB'
 
 import App from './components/App';
 import config from './config';
@@ -34,6 +31,8 @@ import { createHashHistory } from 'history';
 
 
 import { log, INDEX as logType } from './logging';
+
+
 // Styles
 import './styles/theme.scss';
 //import './styles.css' 
@@ -78,24 +77,38 @@ const initApp = async () => {
 
     await msalInstance.initialize();
 
+    let preloadedState;
     try {
-        const preloadedState = await loadStateFromBrowserStorage();
+        preloadedState = await loadStateFromBrowserStorage();
+        if (preloadedState === NO_INDEXED_DB) {
+            log(logType, NO_INDEXED_DB)
+        } else {
+            log(logType, 'preloadedState exists:', { copyId: preloadedState?.localServer.localCopyId })
+        }
 
-        log(logType, 'preloadedState exisits:', { copyId: preloadedState?.localServer.localCopyId })
+    } catch (err) {
+        log(logType, 'preloadedState error:', err)
+        preloadedState === undefined;
+    }
 
+
+    let store;
+    if (preloadedState === undefined) {
+        store = createStore(
+            createRootReducer(),
+        );
+    }
+    else {
         store = createStore(
             createRootReducer(),
             preloadedState,
             compose(
                 //  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
             )
-        );
-    } catch (err) {
-        store = createStore(
-            createRootReducer(),
-        );
-
+        )
     }
+
+    log(logType, 'store created. localCopyID: ', store.getState().localServer.localCopyId)
 
     store.subscribe(
         _.debounce(() => saveStateToBrowserStorage(store.getState()), 5000)
@@ -107,7 +120,7 @@ const initApp = async () => {
     root.render(
         <BrowserRouter>
             <Provider store={store}>
-                <App instance={msalInstance} />
+                <App instance={msalInstance} preloadingError />
             </Provider>
         </BrowserRouter>
 

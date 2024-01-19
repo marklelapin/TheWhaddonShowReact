@@ -205,7 +205,7 @@ module.exports = {
                     // smaller than specified limit in bytes as data URLs to avoid requests.
                     // A missing `test` is equivalent to a match.
                     {
-                        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/,/\.svg$/],
+                        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
                         loader: require.resolve('url-loader'),
                         options: {
                             limit: true,
@@ -318,8 +318,17 @@ module.exports = {
                     },
                     //handle images etc.
                     {
-                        test: /\.(svg|ico|png|webp|jpg|gif|jpeg)$/,
+                        test: /\.(ico|png|webp|jpg|gif|jpeg)$/,
                         type: "asset/resource",
+                    },
+                    //This rule is here to include font awesome deps as separate font
+                    {
+                        test: /\.(svg|eot|woff|woff2|ttf)$/,
+                        type: 'asset/resource',
+                        generator: {
+                            //publicPath: '../fonts/',
+                            filename: 'compiled/fonts/[hash][ext][query]'
+                        }
                     },
                     // "file" loader at end to catch all other files.
                     {
@@ -327,7 +336,7 @@ module.exports = {
                         // its runtime that would otherwise be processed through "file" loader.
                         // Also exclude `html` and `json` extensions so they get processed
                         // by webpacks internal loaders.
-                        exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/,/\.bin$/],
+                        exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/, /\.bin$/],
                         loader: require.resolve('file-loader'),
                         options: {
                             name: 'static/media/[name].[hash:8].[ext]',

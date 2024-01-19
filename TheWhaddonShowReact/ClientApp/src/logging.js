@@ -12,8 +12,8 @@ export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
 export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 
-export const INDEX = { type: NONE, location: 'Component:INDEX' }
-export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
+export const INDEX = { type: DEBUG, location: 'Component:INDEX' }
+export const INDEXED_DB = { type: DEBUG, location: 'Script:indexedDB' }
 
 export const LAYOUT = {type: DEBUG,location: 'Component: Layout'}
 

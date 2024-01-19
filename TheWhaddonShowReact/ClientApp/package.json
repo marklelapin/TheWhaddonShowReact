@@ -55,7 +55,7 @@
     "@azure/msal-browser": "^3.6.0",
     "@azure/msal-common": "^14.5.0",
     "@azure/msal-react": "^2.0.8",
-    "@fortawesome/fontawesome-free": "6.5.1", 
+    "@fortawesome/fontawesome-free": "6.5.1",
     "awesome-bootstrap-checkbox": "git+https://github.com/flatlogic/awesome-bootstrap-checkbox.git#bump-to-bootstrap5",
     "axios": "^1.6.5",
     "bootstrap": "5.3.2",
