@@ -6,7 +6,7 @@ const hostApp = process.env.NODE_ENV === "development" ? "https://localhost" : "
 const portApp = process.env.NODE_ENV === "development" ? 60001 : "";
 const baseURLApp = `${hostApp}${portApp ? `:${portApp}` : ``}/app`;
 
-const redirectUrl = process.env.NODE_ENV === "development" ? "http://localhost:3000/sing-app-react" : "https://thewhaddonshowapp.azurewebsites.net";
+const redirectUrl = process.env.NODE_ENV === "development" ? "https://localhost:60001" : "https://thewhaddonshowapp.azurewebsites.net";
 
 export default {
     redirectUrl,

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build": "cross-env REACT_APP_BACKEND=true cross-env PUBLIC_URL='' node scripts/build.js",
     "start": "node scripts/start.js",
     "start:backend": "cross-env REACT_APP_BACKEND=true node scripts/start.js",
@@ -145,6 +146,7 @@
     "resolve": "^1.22.8",
     "sass": "^1.69.7",
     "sass-loader": "14.0.0",
+    "source-map-explorer": "2.5.3",
     "style-loader": "3.3.4",
     "terser-webpack-plugin": "5.3.10",
     "url-loader": "4.1.1",

@@ -41,6 +41,8 @@ const env = getClientEnvironment(publicUrl);
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const useSourceMap = isDevelopment ? false : process.env.GENERATE_SOURCEMAP !== 'false';
 
+console.log('isDevelopment', isDevelopment)
+console.log('useSourceMap', useSourceMap)
 
 ///Additional Configuration for PRODUCTION
 //---------------------------------------------------------------------------------------------
@@ -203,10 +205,10 @@ module.exports = {
                     // smaller than specified limit in bytes as data URLs to avoid requests.
                     // A missing `test` is equivalent to a match.
                     {
-                        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+                        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/,/\.svg$/],
                         loader: require.resolve('url-loader'),
                         options: {
-                            limit: 10000,
+                            limit: true,
                             name: 'static/media/[name].[ext]',
                         },
                     },
@@ -317,7 +319,7 @@ module.exports = {
                     //handle images etc.
                     {
                         test: /\.(svg|ico|png|webp|jpg|gif|jpeg)$/,
-                        type: "asset/inline",
+                        type: "asset/resource",
                     },
                     // "file" loader at end to catch all other files.
                     {
@@ -325,7 +327,7 @@ module.exports = {
                         // its runtime that would otherwise be processed through "file" loader.
                         // Also exclude `html` and `json` extensions so they get processed
                         // by webpacks internal loaders.
-                        exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/],
+                        exclude: [/\.(js|mjs|jsx)$/, /\.html$/, /\.json$/,/\.bin$/],
                         loader: require.resolve('file-loader'),
                         options: {
                             name: 'static/media/[name].[hash:8].[ext]',
@@ -358,6 +360,7 @@ module.exports = {
                 minifyJS: true,
                 minifyCSS: true,
                 minifyURLs: true,
+                minifySVG: false,
             },
         }),
 
