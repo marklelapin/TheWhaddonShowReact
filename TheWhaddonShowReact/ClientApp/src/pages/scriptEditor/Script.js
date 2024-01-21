@@ -78,7 +78,7 @@ function Script() {
                 <ShowSelector onClick={(show) => dispatch(setShow(show))} />
             }
             <Modal isOpen={showSceneSelector && modalSceneSelector} toggle={() => toggleSceneSelector()}>
-                <SceneSelector show={show} scenesToLoad={scenesToLoad} />
+                <SceneSelector show={show} scenesToLoad={scenesToLoad} isModal={true} />
             </Modal>
         </div>
     )

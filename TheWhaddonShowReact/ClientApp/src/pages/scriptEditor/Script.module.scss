@@ -9,7 +9,7 @@
 .script-viewer-header {
     text-align: end;
     align-items: center;
-    flex: 0 0 50px;
+    flex: 0 0 50px !important; //TODO: can get rid of important if flex-full-width is moved out of index.css to scss.  
 
     .left-controls {
         flex: 0 0 20px;
@@ -155,4 +155,23 @@ align-items: center;
 .person-selector {
     position: relative;
     z-index: 1000;
+}
+.sceneSelector {
+  flex: 0,0,310px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+   &.modal {
+        flex: 0,0,1;
+    }
+
+    .sceneSelectorRow {
+
+    }
+
+}
+
+.highlight {
+    background-color: $highlight;
 }

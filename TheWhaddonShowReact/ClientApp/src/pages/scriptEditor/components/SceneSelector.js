@@ -1,7 +1,7 @@
 ﻿//React & Redux
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import classnames from 'classnames';
 import { updateSearchParameters, trigger, MOVE_SCENE, updateMovementInProgress } from '../../../actions/scriptEditor';
 
 //Components
@@ -11,57 +11,43 @@ import SceneSelectorRow from './SceneSelectorRow'
 //Utils
 
 import { log } from '../../../logging';
-import { moveFocusToId, END } from '../scripts/utility'
-
+import { moveFocusToId, END } from '../scripts/utility';
+import { isViewAsPartPerson } from '../scripts/part';
+import { ACT } from '../../../dataAccess/scriptItemTypes'
+import s from '../Script.module.scss'
 
 
 function SceneSelector(props) {
-    const debug = true;
 
-    const { show, scenesToLoad } = props;
+    const { show, scenesToLoad, isModal = false } = props;
 
     const dispatch = useDispatch();
 
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
+    const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
+    const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
     const [beingDragged, setBeingDragged] = useState(false)
 
-    const handleSearchParameterChange = (type, value) => {
-        let newSearchParameters = { ...searchParameters }
+    const getFilteredShowOrder = () => {
 
-        switch (type) {
-            case 'addTag':
-                newSearchParameters.tags.push(value)
-                break;
-            case 'removeTag':
-                newSearchParameters.tags = newSearchParameters.tags.filter(tag => tag !== value)
-                break;
-            case 'myScenes':
-                newSearchParameters.myScenes = value
-                break;
-            default:
-                break;
-        }
+        let filteredScenes = showOrder.filter(scene => scene.type === ACT)
 
-        dispatch(updateSearchParameters(newSearchParameters))
-    }
+        if (searchParameters.text) filteredScenes = [...filteredScenes, showOrder?.filter(scene => scene.text.includes(searchParameters.text)) || scene.sceneNumber.includes(searchParameters.text)]
 
+        if (searchParameters.myScenes === true) filteredScenes = [...filteredScenes, showOrder?.filter(scene => isViewAsPartPerson(viewAsPartPerson,scene,currentPartPersons))]
 
-    const filteredScenes = () => {
+        if (searchParameters.tags && searchParameters.tags.length > 0) filteredScenes = [...filteredScenes, showOrder?.filter(scene => scene.tags.some(tag => searchParameters.tags.includes(tag)))]
 
-        //const searchTags = searchParameters.tags
-        //const searchCharacters = searchParameters.characters
-        //const myScenes = searchParameters.myScenes
-
-        //TODO filtering exercise
-
-        const filteredScenes = showOrder?.filter(scene => scene.isActive) || []
+        filteredScenes = filteredScenes.filter(scene => scene.isActive).map(scene => scene.id)
 
         return filteredScenes
 
     }
+    const filteredShowOrder = getFilteredShowOrder();
+
 
 
 
@@ -91,10 +77,6 @@ function SceneSelector(props) {
     }
 
 
-
-
-
-
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
@@ -107,22 +89,19 @@ function SceneSelector(props) {
     }
 
 
-
-    log(debug, 'SceneSelector Rendering: filteredScenes', filteredScenes())
-
     return (
-        <div id="scene-selector" className="flex-full-height">
+        <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
             <h2>Search</h2>
             <ScriptSearch onChange={(type, value) => handleSearchParameterChange(type, value)} />
 
             <h2>Scenes</h2>
             <div className="full-height-overflow">
 
-                {filteredScenes().map((scene,idx) => {
-                    
+                {showOrder.map((scene, idx) => {
+
                     return (idx < scenesToLoad || scenesToLoad === null) &&
 
-                    <SceneSelectorRow
+                        <SceneSelectorRow
                         key={scene.id}
                         scene={scene}
                         onClick={(action, id) => handleClick(action, id)}
@@ -132,7 +111,9 @@ function SceneSelector(props) {
                         onDragLeave={handleDragLeave}
                         beingDragged={beingDragged}
                         isInFocus={scene.id === sceneInFocus.id}
-                    />
+                        highlight={isViewAsPartPerson(viewAsPartPerson,scene,currentPartPersons)}
+
+                        />
 
 
                 })}

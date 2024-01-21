@@ -9,8 +9,6 @@ function ScriptSearch(props) {
 
     const tagOptions = ['Guy To Do','Mark B to Do','Mark C to Do','Heather to Do']
 
-
-
     return (
 
         <div className="script-search">

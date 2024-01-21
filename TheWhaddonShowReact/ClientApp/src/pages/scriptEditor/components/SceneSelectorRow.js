@@ -18,7 +18,7 @@ function SceneSelectorRow(props) {
 
     const debug = true;
 
-    const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false, isInFocus} = props;
+    const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false, isInFocus, highlight} = props;
 
     log(debug, 'SceneSelectorRow: scene', scene)
 
@@ -28,7 +28,7 @@ function SceneSelectorRow(props) {
 
     return (
         <>
-            <div className="scene-selector-row clickable"
+            <div className={classnames(s.sceneSelectorRow, 'clickable',(highlight ? s.highlight : null))}
                 id={`scene-selector-row-${scene.id}`}
                 data-sceneid={scene.id}
                 onDragStart={onDragStart}

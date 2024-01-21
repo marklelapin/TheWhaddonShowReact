@@ -212,3 +212,13 @@ const copy = (object) => {
     return JSON.parse(JSON.stringify(object))
 }
 
+export const isViewAsPartPerson = (viewAsPartPerson, scriptItem, currentPartPersons) => {
+
+    const partIds = scriptItem.partIds || []
+    const personIds = Object.values(currentPartPersons).filter(partPerson => partIds.includes(partPerson.id) && partPerson.personId).map(partPerson => partPerson.personId) || []
+    const ids = [...partIds, ...personIds]
+
+    const isViewAsPartPerson = (ids.includes(viewAsPartPerson.id) || ids.includes(viewAsPartPerson.personId))
+
+    return  isViewAsPartPerson
+}
