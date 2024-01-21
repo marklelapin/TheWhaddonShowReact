@@ -2,7 +2,6 @@
 import React from 'react';
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from 'react-router-dom';
-//import { routerMiddleware } from 'connected-react-router';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux'
 import ReduxThunk from 'redux-thunk'
@@ -12,25 +11,24 @@ import ReduxThunk from 'redux-thunk'
 
 //Azure Authentication
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
-//import { BrowserRouter } from 'react-router-dom';
 import { msalConfig } from './authConfig.js'
 
 //Utilities
 
-import * as serviceWorker from './serviceWorker';
+import * as serviceWorker from './serviceWorker.js';
 import axios from 'axios';
 
-import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from './dataAccess/browserStorage';
-import { NO_INDEXED_DB } from './dataAccess/indexedDB'
+import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from './dataAccess/browserStorage.js';
+import { NO_INDEXED_DB } from './dataAccess/indexedDB.js'
 
-import App from './components/App';
-import config from './config';
+import App from './components/App.jsx';
+import config from './config.js';
 import createRootReducer from './reducers';
 
 import { createHashHistory } from 'history';
 
 
-import { log, INDEX as logType } from './logging';
+import { log, INDEX as logType } from './logging.js';
 
 
 // Styles
@@ -40,14 +38,14 @@ import './styles/theme.scss';
 //document.adoptedStyleSheets = [sheet];
 //shadowRoot.adoptedStyleSheets = [sheet];
 
-const history = createHashHistory();
-const _ = require('lodash');
+//const history = createHashHistory();
+//const _ = require('lodash');
 
 //Azure AdB2c
-const msalInstance = new PublicClientApplication(msalConfig)
+const msalInstance = new PublicClientApplication(msalConfig) 
 
 
-msalInstance.addEventCallback((event) => {
+msalInstance.addEventCallback((event) => {  
     if (
         (event.eventType === EventType.LOGIN_SUCCESS ||
             event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS ||
@@ -58,10 +56,6 @@ msalInstance.addEventCallback((event) => {
     }
 });
 
-
-//export function getHistory() {
-//    return history;
-//}
 
 let store;
 
@@ -75,9 +69,10 @@ const initApp = async () => {
         axios.defaults.headers.common['Authorization'] = "Bearer " + token;
     }
 
-    await msalInstance.initialize();
+    await msalInstance.initialize(); //MSAL
 
-    let preloadedState;
+
+    let preloadedState = undefined;
     try {
         preloadedState = await loadStateFromBrowserStorage();
         if (preloadedState === NO_INDEXED_DB) {
@@ -92,10 +87,12 @@ const initApp = async () => {
     }
 
 
-    let store;
     if (preloadedState === undefined) {
         store = createStore(
             createRootReducer(),
+            compose(
+                window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+            )
         );
     }
     else {
@@ -103,7 +100,7 @@ const initApp = async () => {
             createRootReducer(),
             preloadedState,
             compose(
-                //  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+               window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
             )
         )
     }
@@ -123,12 +120,11 @@ const initApp = async () => {
                 <App instance={msalInstance} preloadingError />
             </Provider>
         </BrowserRouter>
-
     );
     // If you want your app to work offline and load faster, you can change
     // unregister() to register() below. Note this comes with some pitfalls.
     // Learn more about service workers: http://bit.ly/CRA-PWA
-    serviceWorker.unregister();
+   serviceWorker.unregister();
 
 
 }
