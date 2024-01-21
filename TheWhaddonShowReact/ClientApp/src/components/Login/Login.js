@@ -179,7 +179,7 @@ function Login() {
             <div className={`${s['login-curtain']} ${authenticatedUser ? s['open'] : s['closed']}`}>
                 <DataLoading isLoading={isLoading}
                     isError={isErrorSyncing}
-                    errorText='Error loading intitial user data. Needs internet access. Will keep retrying but if problem continues contact Mark (magcarter@hotmail.co.uk)'
+                    errorText={`Error loading intitial user data. Needs internet access. \n The app will keep retrying but if problem continues and you have internet access contact Mark (magcarter@hotmail.co.uk)`}
                     spinnerSize={50}>
 
                     {!fakeAuthenticated && !authenticatedUser &&

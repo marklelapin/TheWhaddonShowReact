@@ -15,11 +15,7 @@ export default {
     baseURLApp,
     baseURLApi,
     remote: "https://thewhaddonshowapp.azurewebsites.net",
-    isBackend: process.env.REACT_APP_BACKEND,
-    auth: {
-        email: 'admin@flatlogic.com',
-        password: 'password'
-    },
+  
     app: {
         sidebarColors: {
             first: '#3D3D3D',

@@ -1,6 +1,8 @@
 module.exports = {
   "presets": [
-    "react-app"
+        "react-app",
+        '@babel/preset-env',
+        '@babel/preset-react'
   ],
   "plugins": [
       ["@babel/plugin-transform-class-properties", { "loose": true }],

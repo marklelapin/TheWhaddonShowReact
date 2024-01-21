@@ -11,35 +11,35 @@ import ReduxThunk from 'redux-thunk'
 
 //Azure Authentication
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
-import { msalConfig } from './authConfig.js'
+import { msalConfig } from '../src/authConfig.js'
 
 //Utilities
 
-import * as serviceWorker from './serviceWorker.js';
+import * as serviceWorker from '../src/serviceWorker.js';
 import axios from 'axios';
 
-import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from './dataAccess/browserStorage.js';
-import { NO_INDEXED_DB } from './dataAccess/indexedDB.js'
+import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from '../src/dataAccess/browserStorage.js';
+import { NO_INDEXED_DB } from '../src/dataAccess/indexedDB.js'
 
-import App from './components/App.jsx';
-import config from './config.js';
-import createRootReducer from './reducers';
+import App from '../src/components/App.jsx';
+import config from '../src/config.js';
+import createRootReducer from '../src/reducers';
 
 import { createHashHistory } from 'history';
 
 
-import { log, INDEX as logType } from './logging.js';
+import { log, INDEX as logType } from '../src/logging.js';
 
 
 // Styles
-import './styles/theme.scss';
+import '../src/styles/theme.scss';
 //import './styles.css' 
 //assert { type: 'css' };
 //document.adoptedStyleSheets = [sheet];
 //shadowRoot.adoptedStyleSheets = [sheet];
 
 //const history = createHashHistory();
-//const _ = require('lodash');
+const _ = require('lodash');
 
 //Azure AdB2c
 const msalInstance = new PublicClientApplication(msalConfig) 
