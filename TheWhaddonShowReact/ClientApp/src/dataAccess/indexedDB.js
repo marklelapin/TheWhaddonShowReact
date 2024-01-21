@@ -1,5 +1,5 @@
 ﻿
-import { log, INDEXED_DB as logType } from '../logging.js'
+import { log, INDEXED_DB as logType } from '../dataAccess/logging.js'
 
 export const NO_INDEXED_DB = 'noIndexDB'
 

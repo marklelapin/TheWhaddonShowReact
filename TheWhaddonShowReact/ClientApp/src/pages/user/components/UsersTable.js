@@ -14,7 +14,7 @@ import { headers, row } from './User';
 import { Table, Button } from 'reactstrap';
 import User from './User';
 import { PersonUpdate } from '../../../dataAccess/localServerModels';
-import { log } from '../../../logging';
+import { log } from '../../../dataAccess/logging';
 
 
 export function UsersTable() {

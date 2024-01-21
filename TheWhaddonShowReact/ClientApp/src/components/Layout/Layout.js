@@ -14,7 +14,7 @@ import Login from '../Login/Login';
 //import Helper from '../Helper';
 import { openSidebar, closeSidebar } from '../../actions/navigation';
 import s from './Layout.module.scss';
-import { log, LAYOUT as logType } from '../../logging.js'
+import { log, LAYOUT as logType } from '../../dataAccess/logging.js'
 
 
 

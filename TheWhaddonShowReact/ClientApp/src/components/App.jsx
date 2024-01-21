@@ -18,7 +18,7 @@ import CacheProcessing from '../dataAccess/CacheProcessing';
 import TextAreaContexts from '../dataAccess/TextAreaContexts';
 
 //Utils
-import { log, APP as logType } from '../logging.js';
+import { log, APP as logType } from '../dataAccess/logging.js';
 
 // Styles
 import '../styles/theme.scss';

@@ -21,7 +21,7 @@ import {
 } from '../../../actions/scriptEditor';
 
 //utils
-import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../logging';
+import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../dataAccess/logging';
 import { getTriggerUpdates } from '../scripts/trigger';
 import { getUndoUpdates } from '../scripts/undo';
 import { getScriptItemUpdatesLaterThanCurrent } from '../scripts/scriptItem';

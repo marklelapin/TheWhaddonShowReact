@@ -8,7 +8,7 @@ import { fetchFiles } from './fileUtils';
 import { addToCache } from '../actions/cache';
 import { AVATARS } from '../dataAccess/storageContainerNames';
 
-import { log, CACHE_PROCESSING as logType } from '../logging';
+import { log, CACHE_PROCESSING as logType } from '../dataAccess/logging';
 
 export function CacheProcessing() {
 

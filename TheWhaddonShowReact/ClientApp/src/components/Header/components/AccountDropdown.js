@@ -12,7 +12,7 @@ import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
 import { Icon } from '../../../components/Icons/Icons';
 import { PERSON } from '../../../dataAccess/localServerModels';
 import PersonSelector from '../../../pages/scriptEditor/components/PersonSelector';
-import { log, ACCOUNT_DROPDOWN as logType } from '../../../logging';
+import { log, ACCOUNT_DROPDOWN as logType } from '../../../dataAccess/logging';
 import { signOutAllUsers } from '../../../dataAccess/userAccess'
 
 function AccountDropdown(props) {

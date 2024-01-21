@@ -3,6 +3,7 @@ import { UP, DOWN, START, END, BELOW } from './utility.js'
 import { SCENE } from '../../../dataAccess/scriptItemTypes'
 import { getLatest } from '../../../dataAccess/localServerUtils'
 import { getOrderedSceneScriptItems } from './scriptItem';
+import { log, PART as logType } from '../../../dataAccess/logging';
 
 export const addPersonsInfo = (parts, persons) => {
 
@@ -214,11 +215,15 @@ const copy = (object) => {
 
 export const isViewAsPartPerson = (viewAsPartPerson, scriptItem, currentPartPersons) => {
 
+    if (viewAsPartPerson = null || viewAsPartPerson === undefined || scriptItem === null || scriptItem === undefined || currentPartPersons === null || currentPartPersons === undefined) return false
+
     const partIds = scriptItem.partIds || []
     const personIds = Object.values(currentPartPersons).filter(partPerson => partIds.includes(partPerson.id) && partPerson.personId).map(partPerson => partPerson.personId) || []
     const ids = [...partIds, ...personIds]
 
     const isViewAsPartPerson = (ids.includes(viewAsPartPerson.id) || ids.includes(viewAsPartPerson.personId))
+
+    log(logType, 'isViewAsPartPerson', { viewAsPartPerson, scriptItem, isViewAsPartPerson })
 
     return  isViewAsPartPerson
 }

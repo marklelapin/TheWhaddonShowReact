@@ -12,10 +12,10 @@ export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
 export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 
-export const INDEX = { type: DEBUG, location: 'Component:INDEX' }
-export const INDEXED_DB = { type: DEBUG, location: 'Script:indexedDB' }
+export const INDEX = { type: NONE, location: 'Component:INDEX' }
+export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
 
-export const LAYOUT = {type: DEBUG,location: 'Component: Layout'}
+export const LAYOUT = {type: NONE,location: 'Component: Layout'}
 
 export const LOCAL_SERVER_UTILS = { type: NONE, location: 'Script:localServerUtils' }
 export const LOCAL_SERVER_SYNCING = { type: NONE, location: 'Component:LocalServerSyncing' }
@@ -27,13 +27,15 @@ export const LOGIN = { type: DEBUG, location: 'Component: Login' }
 export const MEDIA_DISPLAY = { type: NONE, location: 'Component:MediaDisplay' }
 export const MEDIA_DROPZONE = { type: NONE, location: 'Component:MediaDropzone' }
 
+export const PART = {type: DEBUG, location: 'Component:Part'}
 export const PART_EDITOR_ROW = {type: NONE, location: 'Component:PartEditorRow'}
 export const PART_SELECTOR_DROPDOWN = {type: NONE, location: 'Component:PartSelectorDropdown'}
 
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
 export const PERSONAL_DETAILS = { type: NONE, location: 'Component:PersonalDetails' }
 export const SCENE = { type: NONE, location: 'Component:Scene' }
-export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
+export const SCENE_SELECTOR = { type: DEBUG, location: 'Component:SceneSelector' }
+export const SCENE_SELECTOR_ROW = { type: DEBUG, location: 'Component:SceneSelectorRow' }
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }
 export const SCRIPT_EDITOR_REDUCER = { type: NONE, location: 'Reducer:scriptEditor' }
@@ -55,6 +57,7 @@ export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 export const TEST = { type: NONE, location: 'Test: ' }
 export const TEST_CURTAIN = { type: NONE, location: 'Script:curtain' }
 export const USERS = { type: DEBUG, location: 'Component:Users' }
+export const USER_ACCESS = { type: NONE, location: 'Script:userAccess' }
 
 export function log(logObject, message, object = null) {
 

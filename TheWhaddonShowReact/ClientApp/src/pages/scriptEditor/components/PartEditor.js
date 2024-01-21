@@ -9,7 +9,7 @@ import PartEditorRow from './PartEditorRow';
 import CurtainBackground from './CurtainBackground';
 //Utilities
 
-import { log } from '../../../logging'
+import { log } from '../../../dataAccess/logging'
 
 
 

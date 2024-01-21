@@ -18,7 +18,7 @@ import { Icon } from '../../../components/Icons/Icons';
 //utitilites
 import {  isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { setPauseSync } from '../../../actions/localServer'; 
-import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../logging';
+import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../dataAccess/logging';
 import { getShowBools, finalReadOnly } from '../scripts/layout';
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';

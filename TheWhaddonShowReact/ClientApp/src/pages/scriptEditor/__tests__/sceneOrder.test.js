@@ -47,7 +47,7 @@ import {
 
 } from './mockData'
 
-import { log } from '../../../logging';
+import { log } from '../../../dataAccess/logging';
 
 it.each([
     [1, [scene2, synopsis2, dialogue24, dialogue25, dialogue21, dialogue22, initialCurtain2, initialStaging2, dialogue23], [], part6, mockCurrentPartPersons],

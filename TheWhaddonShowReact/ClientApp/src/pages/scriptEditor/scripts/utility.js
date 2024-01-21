@@ -1,4 +1,4 @@
-import { log, SCRIPT_EDITOR_UTILITY as logType } from '../../../logging.js';
+import { log, SCRIPT_EDITOR_UTILITY as logType } from '../../../dataAccess/logging.js';
 import {ACT,SCENE} from '../../../dataAccess/scriptItemTypes.js'; 
 
 

@@ -13,7 +13,7 @@ import PartSelectorDropdown from './PartSelectorDropdown';
 import s from '../ScriptItem.module.scss';
 //Utilities
 import { finalReadOnly } from '../scripts/layout';
-import { log } from '../../../logging'
+import { log } from '../../../dataAccess/logging'
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 
 

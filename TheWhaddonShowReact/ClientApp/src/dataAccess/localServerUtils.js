@@ -25,7 +25,7 @@ import {
     refreshSync
 } from '../actions/localServer';
 
-import { log, LOCAL_SERVER_UTILS as logType } from '../logging.js';
+import { log, LOCAL_SERVER_UTILS as logType } from '../dataAccess/logging.js';
 
 
 export async function useSync() {

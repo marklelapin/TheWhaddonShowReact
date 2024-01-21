@@ -17,7 +17,7 @@ import Widget from '../../../components/Widget';
 import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts';
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { moveFocusToId, END } from '../scripts/utility';
-import { log, PERSON_SELECTOR as logType } from '../../../logging';
+import { log, PERSON_SELECTOR as logType } from '../../../dataAccess/logging';
 
 import s from '../Script.module.scss'
 

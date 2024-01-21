@@ -45,11 +45,6 @@ align-items: center;
 }
 
 
-.highlight {
-    font-weight: 600;
-}
-
-
 .script-viewer-main {
     position: relative;
     display: flex;
@@ -157,19 +152,21 @@ align-items: center;
     z-index: 1000;
 }
 .sceneSelector {
-  flex: 0,0,310px;
+    flex: 0,0,310px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 
-   &.modal {
+    .inFocus {
+        font-weight: 600;
+    }
+
+    &.modal {
         flex: 0,0,1;
     }
 
     .sceneSelectorRow {
-
     }
-
 }
 
 .highlight {

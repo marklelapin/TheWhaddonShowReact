@@ -12,7 +12,7 @@ import { clearStateFromBrowserStorage } from '../../../dataAccess/browserStorage
 import { setPauseSync, refreshSync } from '../../../actions/localServer';
 //Constants
 import { PERSON, SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels';
-import { log, SYNC_DROPDOWN as logType } from '../../../logging';
+import { log, SYNC_DROPDOWN as logType } from '../../../dataAccess/logging';
 
 //css
 import s from '../Header.module.scss';

@@ -13,7 +13,7 @@ import ShowSelector from './components/ShowSelector';
 import { Modal } from 'reactstrap';
 
 //Utils
-import { log, SCRIPT as logType } from '../../logging.js';
+import { log, SCRIPT as logType } from '../../dataAccess/logging.js';
 import isScreen from '../../core/screenHelper';
 import { getShowBools } from './scripts/layout';
 

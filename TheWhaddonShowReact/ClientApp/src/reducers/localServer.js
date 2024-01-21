@@ -29,7 +29,7 @@ import {
 } from '../dataAccess/localServerModels';
 import { v4 as uuidv4 } from 'uuid';
 
-import { log, LOCAL_SERVER_REDUCER as logType } from '../logging.js';
+import { log, LOCAL_SERVER_REDUCER as logType } from '../dataAccess/logging.js';
 
 import { resetSyncId } from '../dataAccess/browserStorage';
 import { getDefaultPauseSync } from '../dataAccess/userAccess';

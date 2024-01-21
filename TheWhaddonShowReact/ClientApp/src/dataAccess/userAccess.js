@@ -5,6 +5,8 @@ export const WRITE = 'WRITE'
 export const MARKID = 'af60b927-7f73-4dfd-8343-206c1b30a03b'
 export const DEMOID = 'c44bd508-b26a-42a3-abdf-287d64cad080'
 
+import { log, logType } from './logging.js' 
+
 export const userAccessToComponent = (user = null, componentOrPage = null) => {
 
     if (user === null || componentOrPage === null) return null;

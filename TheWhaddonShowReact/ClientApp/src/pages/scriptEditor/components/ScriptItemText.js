@@ -19,7 +19,7 @@ import {
 import TextareaAutosize from 'react-textarea-autosize';
 import ScriptItemControls, { CONFIRM } from './ScriptItemControls';
 import ScriptItemHeader from './ScriptItemHeader';
-import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
+import { log, SCRIPT_ITEM_TEXT as logType } from '../../../dataAccess/logging';
 
 
 //Utilities

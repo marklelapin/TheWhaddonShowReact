@@ -10,10 +10,10 @@ import SceneSelectorRow from './SceneSelectorRow'
 
 //Utils
 
-import { log } from '../../../logging';
+import { log, SCENE_SELECTOR as logType} from '../../../dataAccess/logging';
 import { moveFocusToId, END } from '../scripts/utility';
 import { isViewAsPartPerson } from '../scripts/part';
-import { ACT } from '../../../dataAccess/scriptItemTypes'
+import { ACT, SHOW } from '../../../dataAccess/scriptItemTypes'
 import s from '../Script.module.scss'
 
 
@@ -35,15 +35,21 @@ function SceneSelector(props) {
 
         let filteredScenes = showOrder.filter(scene => scene.type === ACT)
 
-        if (searchParameters.text) filteredScenes = [...filteredScenes, showOrder?.filter(scene => scene.text.includes(searchParameters.text)) || scene.sceneNumber.includes(searchParameters.text)]
+        if (searchParameters.characters?.length === 0 && searchParameters.myScenes !== true && searchParameters.tags?.length === 0) filteredScenes = showOrder.filter(scene=> scene.type !== SHOW);
+
+        if (searchParameters.characters?.length>0) filteredScenes = [...filteredScenes, showOrder?.filter(scene => scene.text.includes(searchParameters.text)) || scene.sceneNumber.includes(searchParameters.text)]
 
         if (searchParameters.myScenes === true) filteredScenes = [...filteredScenes, showOrder?.filter(scene => isViewAsPartPerson(viewAsPartPerson,scene,currentPartPersons))]
 
-        if (searchParameters.tags && searchParameters.tags.length > 0) filteredScenes = [...filteredScenes, showOrder?.filter(scene => scene.tags.some(tag => searchParameters.tags.includes(tag)))]
+        if (searchParameters.tags?.length > 0) filteredScenes = [...filteredScenes, showOrder?.filter(scene => scene.tags.some(tag => searchParameters.tags.includes(tag)))]
 
-        filteredScenes = filteredScenes.filter(scene => scene.isActive).map(scene => scene.id)
+        
 
-        return filteredScenes
+        const filteredSceneIds = Array.from(new Set(filteredScenes.map(scene => scene.id)))
+
+        const filteredShowOrder = showOrder.filter(scene => filteredSceneIds.includes(scene.id)).map(scene=> ({ ...scene, isViewAsPartPerson: isViewAsPartPerson(viewAsPartPerson,scene,currentPartPersons)}))
+
+        return filteredShowOrder
 
     }
     const filteredShowOrder = getFilteredShowOrder();
@@ -88,6 +94,7 @@ function SceneSelector(props) {
         }
     }
 
+    log(logType,'render props',{ filteredShowOrder })
 
     return (
         <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
@@ -97,7 +104,7 @@ function SceneSelector(props) {
             <h2>Scenes</h2>
             <div className="full-height-overflow">
 
-                {showOrder.map((scene, idx) => {
+                {filteredShowOrder.map((scene, idx) => {
 
                     return (idx < scenesToLoad || scenesToLoad === null) &&
 
@@ -111,7 +118,7 @@ function SceneSelector(props) {
                         onDragLeave={handleDragLeave}
                         beingDragged={beingDragged}
                         isInFocus={scene.id === sceneInFocus.id}
-                        highlight={isViewAsPartPerson(viewAsPartPerson,scene,currentPartPersons)}
+                        highlight={scene.isViewAsPartPerson}
 
                         />
 

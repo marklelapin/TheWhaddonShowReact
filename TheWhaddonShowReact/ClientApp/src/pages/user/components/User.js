@@ -20,7 +20,7 @@ import '../../../index.css'
 
 import { addUpdates } from '../../../actions/localServer';
 import { PERSON } from '../../../dataAccess/localServerModels';
-import { log, USERS as logType } from '../../../logging'
+import { log, USERS as logType } from '../../../dataAccess/logging'
 export const headers = 'headers'
 export const row = 'row'
 export const modal = 'modal'

@@ -16,7 +16,7 @@ import { isScreenSmallerThan } from '../../core/screenHelper';
 import { PERSON } from '../../dataAccess/localServerModels';
 import { getLatest, prepareUpdate } from '../../dataAccess/localServerUtils.js';
 import { login, logout } from '../../actions/user';
-import { log, LOGIN as logType } from '../../logging.js';
+import { log, LOGIN as logType } from '../../dataAccess/logging.js';
 
 //css
 import s from './Login.module.scss'
@@ -53,6 +53,8 @@ function Login() {
  
         handleHomeResize()
 
+        findAndLoginUser()
+
         window.addEventListener('resize', handleHomeResize)
 
         return () => window.removeEventListener('resize', handleHomeResize)
@@ -61,44 +63,43 @@ function Login() {
 
     useEffect(() => {
 
-        const findAndLoginUser = async () => {
-
-            instance.handleRedirectPromise().then(response => {
-
-                if (accounts.length > 0) {
-                    const signedInAccount = accounts[0]; // Assuming there is only one signed-in account
-                    const linkedUser = getLinkedUser()
-                    log(logType, 'useEffect[instance,account]', { signedInAccount, linkedUser })
-                    // Get the user's email from the account details
-                    const subject = signedInAccount.idTokenClaims.sub;// assuming only one email per account
-                    log(logType, 'Authentication successful', { subject, linkedUser  });
-
-                    if (!subject) { throw new Error('No subject found in account details') }
-
-
-                    log(logType, 'persons', { guy: persons.find(person => person.firstName === 'Guy') })
-                    let user;
-                    if (linkedUser) {
-                        user = linkedUser
-                        const personUpdate = prepareUpdate({ ...user, msalLink: subject })
-                        dispatch(addUpdates(personUpdate, PERSON))
-                    } else {
-                        user = persons.find(person => person.msalLink === subject)
-                    }
-
-                    if (!user) {
-                        throw new Error(`Failed to match subject with existing user.`)
-                    }
-                    log(logType, 'useEffect[instance,account]', { user })
-                    dispatch(login(user))
-                    navigate('/app/home', { replace: true })
-                }
-            }).catch(error => { log(logType, 'Authentication error: ' + error) })
-        }
-
         findAndLoginUser()
 
     }, [instance, accounts]) //eslint-disable-line react-hooks/exhaustive-deps
+
+
+    const findAndLoginUser = async () => {
+
+        instance.handleRedirectPromise().then(response => {
+
+            if (accounts.length > 0) {
+                const signedInAccount = accounts[0]; // Assuming there is only one signed-in account
+                const linkedUser = getLinkedUser()
+                log(logType, 'useEffect[instance,account]', { signedInAccount, linkedUser })
+                // Get the user's email from the account details
+                const subject = signedInAccount.idTokenClaims.sub;// assuming only one email per account
+                log(logType, 'Authentication successful', { subject, linkedUser });
+
+                if (!subject) { throw new Error('No subject found in account details') }
+
+                let user;
+                if (linkedUser) {
+                    user = linkedUser
+                    const personUpdate = prepareUpdate({ ...user, msalLink: subject })
+                    dispatch(addUpdates(personUpdate, PERSON))
+                } else {
+                    user = persons.find(person => person.msalLink === subject)
+                }
+
+                if (!user) {
+                    throw new Error(`Failed to match subject with existing user.`)
+                }
+                log(logType, 'useEffect[instance,account]', { user })
+                dispatch(login(user))
+                navigate('/app/home', { replace: true })
+            }
+        }).catch(error => { log(logType, 'Authentication error: ' + error) })
+    }
 
 
     const getLinkedUser = () => {
@@ -179,7 +180,7 @@ function Login() {
             <div className={`${s['login-curtain']} ${authenticatedUser ? s['open'] : s['closed']}`}>
                 <DataLoading isLoading={isLoading}
                     isError={isErrorSyncing}
-                    errorText={`Error loading intitial user data. Needs internet access. \n The app will keep retrying but if problem continues and you have internet access contact Mark (magcarter@hotmail.co.uk)`}
+                    errorText={`Error loading intitial user data. Needs internet access. The app will keep retrying but if problem continues and you have internet access contact Mark (magcarter@hotmail.co.uk)`}
                     spinnerSize={50}>
 
                     {!fakeAuthenticated && !authenticatedUser &&

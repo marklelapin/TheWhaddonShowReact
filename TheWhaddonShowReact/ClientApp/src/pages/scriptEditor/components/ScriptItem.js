@@ -15,7 +15,7 @@ import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 //utilities
-import { log, SCRIPT_ITEM as logType } from '../../../logging';
+import { log, SCRIPT_ITEM as logType } from '../../../dataAccess/logging';
 import { finalReadOnly } from '../scripts/layout';
 
 //Constants

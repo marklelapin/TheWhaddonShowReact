@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 //Components
 import { Button } from 'reactstrap';
-import { log, PART_SELECTOR_DROPDOWN as logType } from '../../../logging'
+import { log, PART_SELECTOR_DROPDOWN as logType } from '../../../dataAccess/logging'
 import PartNameAndAvatar from './PartNameAndAvatar';
 
 //styles

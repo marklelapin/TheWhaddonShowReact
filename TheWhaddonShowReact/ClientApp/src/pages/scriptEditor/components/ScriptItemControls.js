@@ -24,7 +24,7 @@ import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, DIALOGUE, ACTION,
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 
 //utils
-import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../logging';
+import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../dataAccess/logging';
 import { finalReadOnly } from '../scripts/layout';
 import { moveFocusToId } from '../scripts/utility';
 

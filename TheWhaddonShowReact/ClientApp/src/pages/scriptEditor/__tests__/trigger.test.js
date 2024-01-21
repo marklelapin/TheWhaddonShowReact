@@ -50,7 +50,7 @@ import { getTriggerUpdates } from '../scripts/trigger'
 
 import { CURTAIN, LIGHTING, SOUND, DIALOGUE, OPEN_CURTAIN, CLOSE_CURTAIN } from '../../../dataAccess/scriptItemTypes'
 import { START, END, ABOVE, BELOW, UP, DOWN } from '../scripts/utility'
-import { log } from '../../../logging'
+import { log } from '../../../dataAccess/logging'
 
 const anyValue = expect.anything()
 

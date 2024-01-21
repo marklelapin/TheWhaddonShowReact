@@ -4,7 +4,7 @@ import {userAccessToComponent, WRITE } from '../../../dataAccess/userAccess';
 import InputText from '../../../components/Forms/InputText';
 import Avatar from '../../../components/Avatar/Avatar';
 
-import { log, PERSONAL_DETAILS as logType } from '../../../logging';
+import { log, PERSONAL_DETAILS as logType } from '../../../dataAccess/logging';
 
 function PersonalDetails(props) {
 

@@ -3,7 +3,7 @@ import { refreshSceneOrder } from './sceneOrder'
 import { UNDO, REDO, CONFIRM_UNDO } from '../../../actions/scriptEditor'
 import { SCRIPT_ITEM, PART } from '../../../dataAccess/localServerModels'
 
-import {log, SCRIPT_EDITOR_UNDO as logType} from '../../../logging'
+import {log, SCRIPT_EDITOR_UNDO as logType} from '../../../dataAccess/logging'
 
 export const getUndoUpdates = (triggerType, sceneOrder, currentScriptItems, storedScriptItems, redoList, undoSceneId, currentPartPersons, storedParts, viewAsPartPerson) => {
 

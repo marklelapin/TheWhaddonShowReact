@@ -17,7 +17,7 @@ import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils';
 
 
 //utils
-import { log, MEDIA_DROPZONE as logType } from '../../logging';
+import { log, MEDIA_DROPZONE as logType } from '../../dataAccess/logging';
 
 //constants
 import { MEDIA } from '../../dataAccess/storageContainerNames';

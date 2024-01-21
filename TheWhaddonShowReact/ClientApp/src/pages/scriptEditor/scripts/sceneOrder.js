@@ -3,7 +3,7 @@ import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../d
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { refreshCurtain } from "./curtain";
 
-import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../logging';
+import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../dataAccess/logging';
 
 const debug = true;
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.

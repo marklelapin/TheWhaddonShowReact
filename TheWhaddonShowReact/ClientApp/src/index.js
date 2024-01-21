@@ -28,7 +28,7 @@ import createRootReducer from '../src/reducers';
 import { createHashHistory } from 'history';
 
 
-import { log, INDEX as logType } from '../src/logging.js';
+import { log, INDEX as logType } from '../src/dataAccess/logging.js';
 
 
 // Styles

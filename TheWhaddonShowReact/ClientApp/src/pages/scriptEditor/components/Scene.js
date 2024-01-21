@@ -11,7 +11,7 @@ import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
-import { log, SCENE as logType } from '../../../logging'
+import { log, SCENE as logType } from '../../../dataAccess/logging'
 import { partEditorRowId } from '../scripts/part';
 //styling
 import s from '../Script.module.scss'

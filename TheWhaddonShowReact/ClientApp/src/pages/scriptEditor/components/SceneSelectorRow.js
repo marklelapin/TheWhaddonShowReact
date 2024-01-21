@@ -6,8 +6,8 @@ import { useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
 
 //utils
-import { log } from '../../../logging';
-
+import { log, SCENE_SELECTOR_ROW as logType} from '../../../dataAccess/logging';
+import classnames from 'classnames';
 import { ACT, SCENE } from '../../../dataAccess/scriptItemTypes';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 import { finalReadOnly } from '../scripts/layout';
@@ -16,11 +16,11 @@ import s from '../Script.module.scss'
 
 function SceneSelectorRow(props) {
 
-    const debug = true;
+    
 
-    const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false, isInFocus, highlight} = props;
+    const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false, isInFocus, highlight = false} = props;
 
-    log(debug, 'SceneSelectorRow: scene', scene)
+    log(logType, 'props', {highlight})
 
     
     const isWriter = useSelector(state => state.user.currentUser?.isWriter)
@@ -28,7 +28,7 @@ function SceneSelectorRow(props) {
 
     return (
         <>
-            <div className={classnames(s.sceneSelectorRow, 'clickable',(highlight ? s.highlight : null))}
+            <div className={classnames(s.sceneSelectorRow, 'clickable',(highlight===true) ? s.highlight : null)}
                 id={`scene-selector-row-${scene.id}`}
                 data-sceneid={scene.id}
                 onDragStart={onDragStart}
@@ -42,7 +42,7 @@ function SceneSelectorRow(props) {
 
                     {(scene.type === ACT) && <h2 key={scene.id}>{scene.text}</h2>}
 
-                    {(scene.type === SCENE) && <h5 className={`${isInFocus ? s['highlight'] : ''}`} >{(scene.sceneNumber) ? `${scene.sceneNumber}. ` : ``} {scene.text}</h5>}
+                    {(scene.type === SCENE) && <h5 className={`${isInFocus ? s.inFocus : ''}`} >{(scene.sceneNumber) ? `${scene.sceneNumber}. ` : ``} {scene.text}</h5>}
 
                     {scene.tags.map((tag) => <Button key={`${scene.id}-${tag}`} size='xs'>tag</Button>)}
 

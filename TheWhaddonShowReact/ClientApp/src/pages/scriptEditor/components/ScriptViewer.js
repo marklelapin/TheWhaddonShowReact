@@ -10,7 +10,7 @@ import PersonSelector from './PersonSelector'
 import ScriptViewerHeader from './ScriptViewerHeader';
 import { Progress } from 'reactstrap';
 //utitilites
-import { log, SCRIPT_VIEWER as logType } from '../../../logging';
+import { log, SCRIPT_VIEWER as logType } from '../../../dataAccess/logging';
 import { getShowBools } from '../scripts/layout';
 //Constants
 

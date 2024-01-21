@@ -4,7 +4,7 @@ import { clearScriptEditorState } from '../actions/scriptEditor';
 
 import { loadState, saveState, clearState, NO_INDEXED_DB } from '../dataAccess/indexedDB'; //localStorage
 
-import { log, BROWSER_STORAGE as logType } from '../logging'
+import { log, BROWSER_STORAGE as logType } from '../dataAccess/logging'
 
 export const resetSyncId = '9967fe80-a9d0-4c18-a021-b45073d564a2'
 

@@ -10,7 +10,7 @@ import { addToCache } from '../../actions/cache';
 import { AVATARS } from '../../dataAccess/storageContainerNames';
 
 //utils
-import { log, AVATAR as logType } from '../../logging';
+import { log, AVATAR as logType } from '../../dataAccess/logging';
 
 import s from './Avatar.module.scss';
 
