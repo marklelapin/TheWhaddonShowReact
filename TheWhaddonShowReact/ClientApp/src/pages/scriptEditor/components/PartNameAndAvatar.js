@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import Avatar from '../../../components/Avatar/Avatar';
 import { Input, Tooltip} from 'reactstrap';
 
-import { log } from '../../../logging';
+import { log } from '../../../dataAccess/logging';
 import s from '../ScriptItem.module.scss';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 

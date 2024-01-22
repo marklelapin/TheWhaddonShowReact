@@ -1,12 +1,11 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Icon } from '../../../components/Icons/Icons'
 import PartSelectorDropdown from './PartSelectorDropdown';
 
 import { STAGING, INITIAL_STAGING, DIALOGUE, SOUND, LIGHTING, TYPES_WITH_HEADER, SCENE } from '../../../dataAccess/scriptItemTypes';
 
-import { trigger, UPDATE_PART_IDS, CONFIRM_UNDO } from '../../../actions/scriptEditor';
-import { log, SCRIPT_ITEM_HEADER as logType } from '../../../logging';
+import { trigger, UPDATE_PART_IDS } from '../../../actions/scriptEditor';
+import { log, SCRIPT_ITEM_HEADER as logType } from '../../../dataAccess/logging';
 
 import s from '../ScriptItem.module.scss';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
@@ -70,7 +69,7 @@ export default ScriptItemHeader;
 function HeaderPartName(props) {
     const dispatch = useDispatch();
 
-    const { partId = null, scriptItem, isEnd, viewStyle } = props;
+    const { partId = null, scriptItem, isEnd } = props;
 
     const partName = useSelector(state => state.scriptEditor.currentPartPersons[partId]?.name)
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[scriptItem.parentId])

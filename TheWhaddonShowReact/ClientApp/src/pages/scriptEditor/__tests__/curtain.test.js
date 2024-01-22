@@ -8,7 +8,7 @@
 } from './mockData'
 import { refreshCurtain, newScriptItemsForToggleCurtain } from '../scripts/curtain';
 import {  OPEN_CURTAIN, CLOSE_CURTAIN } from '../../../dataAccess/scriptItemTypes';
-import { log , TEST } from '../../../logging'
+import { log , TEST } from '../../../dataAccess/logging'
 
 
 it.each([

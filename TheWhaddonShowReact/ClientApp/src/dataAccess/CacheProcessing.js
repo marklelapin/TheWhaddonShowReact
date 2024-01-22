@@ -1,5 +1,5 @@
-﻿//React and Redux
-import { useEffect, useState} from 'react';
+//React and Redux
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 //utils
@@ -8,7 +8,7 @@ import { fetchFiles } from './fileUtils';
 import { addToCache } from '../actions/cache';
 import { AVATARS } from '../dataAccess/storageContainerNames';
 
-import { log, CACHE_PROCESSING as logType } from '../logging';
+import { log, CACHE_PROCESSING as logType } from '../dataAccess/logging';
 
 export function CacheProcessing() {
 
@@ -41,45 +41,48 @@ export function CacheProcessing() {
 
                 const imageObjectURL = await createObjectURL(file)
 
-                dispatch(addToCache(AVATARS, pictureRef, imageObjectURL))
+                if (imageObjectURL) {
+                    dispatch(addToCache(AVATARS, pictureRef, imageObjectURL))
+                }
+
             }
             setAvatarsBeingProcessed(avatarsBeingProcessed.filter(pictureRef => !unprocessedPictureRefsNotBeingProcessed.includes(pictureRef)))
         }
-    
+
 
         const fetchFile = async (pictureRef) => {
 
-        try {
-            let files = []
-            files = await fetchFiles(AVATARS, pictureRef)
-            return files[0]
-        }
-        catch (error) {
-            console.log('Failed to fetch pictureRef :' + pictureRef + '. error: ' + error.message)
-        }
-    }
-
-    const createObjectURL = async (file) => {
-        try {
-            const imageObjectURL = URL.createObjectURL(file)
-            return imageObjectURL
-        }
-        catch (error) {
-            throw new Error(`Error creating object URL for ${AVATARS} files: ` + error.message)
+            try {
+                let files = []
+                files = await fetchFiles(AVATARS, pictureRef)
+                return files[0]
+            }
+            catch (error) {
+                console.log('Failed to fetch pictureRef :' + pictureRef + '. error: ' + error.message)
+            }
         }
 
-    }
+        const createObjectURL = async (file) => {
+            try {
+                const imageObjectURL = URL.createObjectURL(file)
+                return imageObjectURL
+            }
+            catch (error) {
+                console.error(`Error creating object URL for ${AVATARS} files: ` + error.message)
+            }
+
+        }
 
 
-    cacheAvatarURLs()
+        cacheAvatarURLs()
 
-}, [storedPersons]) //es-lint disable-line react-hooks/exhaustive-deps
-
-
+    }, [storedPersons]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 
-return null
+
+
+    return null
 
 }
 

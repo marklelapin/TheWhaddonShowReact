@@ -21,7 +21,7 @@ import {
 } from '../../../actions/scriptEditor';
 
 //utils
-import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../logging';
+import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../dataAccess/logging';
 import { getTriggerUpdates } from '../scripts/trigger';
 import { getUndoUpdates } from '../scripts/undo';
 import { getScriptItemUpdatesLaterThanCurrent } from '../scripts/scriptItem';
@@ -57,6 +57,7 @@ export function ScriptEditorProcessing() {
     //scriptEditor (handles data for display)
     const show = useSelector(state => state.scriptEditor.show)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
+    const previousViewAsPartPerson = useSelector(state => state.scriptEditor.previousViewAsPartPerson)
     const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus)
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen)
@@ -78,7 +79,6 @@ export function ScriptEditorProcessing() {
     const undoSceneId = Object.keys(currentUndo)[0] || null
     const redoList = useSelector(state => state.scriptEditor.redoList)
 
-    const readOnly = false //useSelector(state => state.scriptEditor.readOnly)
     const screenSize = useSelector(state => state.layout.screenSize)
     const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
 
@@ -106,7 +106,7 @@ export function ScriptEditorProcessing() {
         const scenes = sceneOrders[show.id]
         if (scenes) {
             scenes.forEach(scene => {
-                const isAffected = isSceneAffectedByViewAsPartPerson(scene, viewAsPartPerson, currentPartPersons)
+                const isAffected = isSceneAffectedByViewAsPartPerson(scene, viewAsPartPerson, previousViewAsPartPerson, currentPartPersons)
                 if (isAffected) {
                     const newSceneOrder = alignRight(sceneOrders[scene.id], viewAsPartPerson, currentPartPersons)
                     if (newSceneOrder.length > 0) {
@@ -238,7 +238,7 @@ export function ScriptEditorProcessing() {
             moveFocusToId(moveFocus.id, moveFocus.position)
         }
 
-    }, [scriptEditorTrigger])
+    }, [scriptEditorTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 
@@ -294,14 +294,14 @@ export function ScriptEditorProcessing() {
             if (initialSyncProgress.person === 0) dispatch(updateInitialSyncProgress(PERSON))
         }
 
-    }, [localServerTrigger]) //eslint disable-line react-hooks/exhaustive-deps
+    }, [localServerTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
     useEffect(() => {
         if (isScreenSmallerThan('md')) {
             dispatch(setReadOnly(true))
         }
-    }, [screenSize])
+    }, [screenSize]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

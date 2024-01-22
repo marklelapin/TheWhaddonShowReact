@@ -47,7 +47,7 @@ import {
 
 } from './mockData'
 
-import { log } from '../../../logging';
+import { log } from '../../../dataAccess/logging';
 
 it.each([
     [1, [scene2, synopsis2, dialogue24, dialogue25, dialogue21, dialogue22, initialCurtain2, initialStaging2, dialogue23], [], part6, mockCurrentPartPersons],
@@ -292,17 +292,17 @@ it.each([
 
 
 it.each([
-    [scene1, part1, mockCurrentPartPersons, true],
-    [scene1, part2, mockCurrentPartPersons, true],
-    [scene1, part3, mockCurrentPartPersons, true],
-    [scene1, part4, mockCurrentPartPersons, false],
-    [scene1, personA, mockCurrentPartPersons, true],
-    [scene1, personB, mockCurrentPartPersons, false],
-    [scene1, personC, mockCurrentPartPersons, false],
-    [scene1, null, mockCurrentPartPersons, false]
-])('isSceneAffectedByViewAsPartPerson', (scene, viewAsPartPerson, currentPartPersons, expectedResult) => {
+    [scene1, part1,null, mockCurrentPartPersons, true],
+    [scene1, part2,null, mockCurrentPartPersons, true],
+    [scene1, part3, null, mockCurrentPartPersons, true],
+    [scene1, part4, null, mockCurrentPartPersons, false],
+    [scene1, personA, null, mockCurrentPartPersons, true],
+    [scene1, personB, null, mockCurrentPartPersons, false],
+    [scene1, personC, null, mockCurrentPartPersons, false],
+    [scene1, null, null, mockCurrentPartPersons, false]
+])('isSceneAffectedByViewAsPartPerson', (scene, viewAsPartPerson, previousViewAsPartPerson, currentPartPersons, expectedResult) => {
 
-    const actualResult = isSceneAffectedByViewAsPartPerson(scene, viewAsPartPerson, currentPartPersons)
+    const actualResult = isSceneAffectedByViewAsPartPerson(scene, viewAsPartPerson, previousViewAsPartPerson, currentPartPersons)
 
     expect(actualResult).toEqual(expectedResult)
 

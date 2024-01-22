@@ -69,7 +69,7 @@ import { SHOW, ACT, SCENE, STAGING, DIALOGUE, SYNOPSIS, INITIAL_CURTAIN, INITIAL
 
 import { ABOVE, BELOW } from '../scripts/utility'
 
-import { log, TEST } from '../../../logging';
+import { log, TEST } from '../../../dataAccess/logging';
 
 
 it('newScriptItemsForCreateShow', () => {

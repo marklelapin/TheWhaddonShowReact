@@ -10,12 +10,12 @@ import PersonSelector from './PersonSelector'
 import ScriptViewerHeader from './ScriptViewerHeader';
 import { Progress } from 'reactstrap';
 //utitilites
-import { log, SCRIPT_VIEWER as logType } from '../../../logging';
+import { log, SCRIPT_VIEWER as logType } from '../../../dataAccess/logging';
 import { getShowBools } from '../scripts/layout';
-//Constants
+//ConstantsdataAccess
 
 import s from '../Script.module.scss'
-import Script from '../Script';
+
 
 function ScriptViewer(props) {
 
@@ -70,7 +70,7 @@ function ScriptViewer(props) {
             dispatch(updateMaxScriptItemTextWidth())
         }
 
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     const reCalculateTextWidthsInView = _.debounce(() => {
         if (scenesToLoad === null) {
@@ -91,7 +91,7 @@ function ScriptViewer(props) {
         if (initialSyncProgressTotal === 100 && scriptBodyLoaded === true) {
             dispatch(updateMaxScriptItemTextWidth())
         }
-    }, [initialSyncProgress, scriptBodyLoaded])
+    }, [initialSyncProgress, scriptBodyLoaded]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
     if (scenesToLoad === 0) { //this allows a reset of scenesToLoad to occur.
@@ -112,10 +112,10 @@ function ScriptViewer(props) {
 
     return (
         <>
-            <div id="script-viewer" className="flex-full-height" style={{ zIndex: 1 }}>
+            <div id="script-viewer" className={s['script-viewer']} style={{ zIndex: 1 }}>
                 <ScriptViewerHeader />
 
-                <div id="script-viewer-main" className={`${s['script-viewer-main']} full-height-overflow`}>
+                <div id="script-viewer-main" className={`${s['script-viewer-main']}`}>
                     <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']} ${s[viewStyle]}`}>
                         <p className={`${s['comments-title']}`}>Comments</p>
                         {(maxWidthExists && showOrder && showOrder.length > 0) &&

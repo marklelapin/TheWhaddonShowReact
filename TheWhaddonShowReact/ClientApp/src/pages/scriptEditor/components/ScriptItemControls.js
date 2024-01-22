@@ -1,6 +1,6 @@
-﻿//React and redux
+//React and redux
 import React from 'react';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -24,11 +24,12 @@ import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, DIALOGUE, ACTION,
 import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 
 //utils
-import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../logging';
+import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../dataAccess/logging';
 
 import { moveFocusToId } from '../scripts/utility';
 
 import s from '../ScriptItem.module.scss';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 export const CONFIRM = 'CONFIRM';
 export const TOGGLE_PART_SELECTOR = 'TOGGLE_PART_SELECTOR';
@@ -48,7 +49,8 @@ function ScriptItemControls(props) {
     log(logType, 'props', props)
 
     //Redux
-    const readOnly = false // useSelector(state => state.scriptEditor.readOnly) || true
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     //Internal State
     const [dropdownOpen, setDropdownOpen] = useState(false);
 

@@ -1,0 +1,126 @@
+@import '../../styles/app';
+
+$sub-scene-margin: 10px;
+
+
+.container {
+    display: flex;
+    flex-direction: row;
+    overflow: auto;
+
+    @media print {
+        display: block;
+
+        * {
+            overflow: visible !important;
+        }
+    }
+
+    .castSection {
+        display: none;
+    }
+
+    .programmeSection {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .act {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 400px;
+
+            @media Print {
+                display: block;
+            }
+
+            .scene {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+
+                @media Print {
+                    page-break-inside: avoid;
+                    margin-bottom: 30px;
+                }
+
+                .actHeader {
+                    //font-weight: $font-weight-bold;
+                    @media print {
+                        font-size: 36px;
+                    }
+                }
+
+                .sceneHeader {
+                    font-weight: $font-weight-bolder;
+
+                    @media print {
+                        font-size: 36px;
+                    }
+                }
+
+                .synopsis {
+                    font-size: $font-size-sm;
+                    font-style: italic;
+                    margin-left: $sub-scene-margin;
+
+                    @media print {
+                        font-size: 32px;
+                    }
+                }
+
+                .sceneParts {
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    align-items: center;
+                    margin-left: $sub-scene-margin;
+
+                    .partAvatar {
+                        margin-right: 2px;
+
+                        @media print {
+                            * {
+                                font-size: 20px !important;
+                            }
+                            margin-right:5px;
+                            img {
+                                width: 25px;
+                                height: 25px;
+                                
+                            }
+                        }
+                    }
+
+                    .part {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        margin-left: 10px;
+
+                        &:first-child {
+                            margin-left: 0px;
+                        }
+
+                        &:not(.allocated) {
+                            background-color: $gray-200;
+                        }
+
+
+
+                        .partName {
+                            font-size: $font-size-xs;
+
+                            @media print {
+                                font-size: 24px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

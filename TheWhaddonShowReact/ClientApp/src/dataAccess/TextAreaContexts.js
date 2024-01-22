@@ -2,7 +2,7 @@
 import React from 'react';
 
 //components
-import TextareaAutosize from 'react-autosize-textarea';
+import TextareaAutosize from 'react-textarea-autosize';
 
 //utils
 import { SCRIPT_ITEM_TYPES } from '../dataAccess/scriptItemTypes'

@@ -5,6 +5,7 @@ using MyApiMonitorClassLibrary.Interfaces;
 using MyApiMonitorClassLibrary.Models;
 using MyClassLibrary.Configuration;
 using MyClassLibrary.DataAccessMethods;
+using MyClassLibrary.Email;
 using MyClassLibrary.Extensions;
 using MyClassLibrary.Interfaces;
 using MyClassLibrary.LocalServerMethods.Interfaces;
@@ -29,7 +30,7 @@ if (builder.Environment.IsDevelopment())
 	{
 		options.AddPolicy("AllowDevelopmentOrigin", builder =>
 	{
-		builder.WithOrigins("http://localhost:50000")
+		builder.WithOrigins("https://localhost:60001")
 			   .AllowAnyHeader()
 			   .AllowAnyMethod()
 			   .AllowCredentials();
@@ -74,8 +75,11 @@ builder.Services.AddTransient<IOpenAIControllerService, OpenAIControllerService>
 // File uploading services
 builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
+//Email services
+builder.Services.AddTransient<IEmailClient, HotmailClient>();
 //Configuration services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 
 
 
@@ -101,7 +105,11 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 //Configuration for routing
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment() == false)
+{
+	app.UseHttpsRedirection();
+}
+
 
 app.UseCookiePolicy();
 

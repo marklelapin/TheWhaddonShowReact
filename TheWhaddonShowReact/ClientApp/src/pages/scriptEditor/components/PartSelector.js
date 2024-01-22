@@ -1,9 +1,7 @@
 ﻿//React and Redux
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
-import { trigger, CONFIRM_UNDO } from '../../../actions/scriptEditor';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 //Components
 import Avatar from '../../../components/Avatar/Avatar';
@@ -12,8 +10,8 @@ import PartSelectorDropdown from './PartSelectorDropdown';
 //styles
 import s from '../ScriptItem.module.scss';
 //Utilities
-
-import { log } from '../../../logging'
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
+import { log } from '../../../dataAccess/logging'
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 
 
@@ -21,7 +19,6 @@ function PartSelector(props) {
 
 
     const debug = true;
-    const dispatch = useDispatch();
 
     log(debug, 'Component:PartSelector props', props)
     //Props
@@ -30,7 +27,8 @@ function PartSelector(props) {
     //Redux
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const scenePartIds = scene?.partIds || []
-
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     //Internal State
     const [openPartSelector, setOpenPartSelector] = useState(false);
 
@@ -45,8 +43,9 @@ function PartSelector(props) {
 
     const toggleDropdown = (e) => {
         e.stopPropagation();
-        setOpenPartSelector(!openPartSelector)
-
+        if (!readOnly) {
+            setOpenPartSelector(!openPartSelector)
+        }
     }
 
     return (
@@ -55,19 +54,19 @@ function PartSelector(props) {
 
                 {partsArray.filter(part => part.allocated === true).map(part => {
                     return (
-                        
-                            <div className={s['avatar']} key={`${id}-${part.id}`}>
-                                <Avatar  onClick={(e) => toggleDropdown(e)} size={size} key={part.id} partId={part.id} avatar />
-                            </div>
-                           
-                       
+
+                        <div className={s['avatar']} key={`${id}-${part.id}`}>
+                            <Avatar onClick={(e) => toggleDropdown(e)} size={size} key={part.id} partId={part.id} avatar />
+                        </div>
+
+
 
                     )
                 })}
                 {(partsArray.some(part => part.allocated === true)) === false &&
                     <div className={s['avatar']} key={`${id}-0`}>
                         < Avatar onClick={(e) => toggleDropdown(e)} person={{ id: 0, firstName: 'empty' }} size={size} avatarInitials="?" />
-                       
+
                     </div>
                 }
 

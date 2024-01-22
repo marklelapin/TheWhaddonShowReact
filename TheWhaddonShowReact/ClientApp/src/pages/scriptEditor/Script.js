@@ -13,10 +13,10 @@ import ShowSelector from './components/ShowSelector';
 import { Modal } from 'reactstrap';
 
 //Utils
-import { log, SCRIPT as logType } from '../../logging.js';
+import { log, SCRIPT as logType } from '../../dataAccess/logging.js';
 import isScreen from '../../core/screenHelper';
 import { getShowBools } from './scripts/layout';
-
+import s from './Script.module.scss';
 function Script() {
 
     //constants
@@ -30,7 +30,7 @@ function Script() {
     const show = useSelector((state) => state.scriptEditor.show)
     
 
-    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) || []
+    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) 
     const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
 
     const [scenesToLoad, setScenesToLoad] = useState(3)
@@ -38,7 +38,7 @@ function Script() {
 
     useEffect(() => {
         log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder.length })
-        if (showOrder.length === 0) {
+        if (!showOrder || showOrder.length === 0) {
             //do nothing
         }
         if (showOrder.length > 0 && scenesToLoad !== null && scenesToLoad < showOrder.length) {
@@ -62,9 +62,9 @@ function Script() {
     log(logType, 'Script: show', { scenesToLoad, show })
     //-----------------------------------------------------------------------
     return (
-        <div id="script-page" className="flex-full-height">
+        <div id="script-page" className={`${s['script-page']}`}>
             {show &&
-                <div id="script-page-content" className="page-content flex-full-width">
+                <div id="script-page-content" className={s['script-page-content']}>
                     {(showSceneSelector && !modalSceneSelector) &&
                         <SceneSelector show={show} scenesToLoad={scenesToLoad} />
                     }
@@ -78,7 +78,7 @@ function Script() {
                 <ShowSelector onClick={(show) => dispatch(setShow(show))} />
             }
             <Modal isOpen={showSceneSelector && modalSceneSelector} toggle={() => toggleSceneSelector()}>
-                <SceneSelector show={show} scenesToLoad={scenesToLoad} />
+                <SceneSelector show={show} scenesToLoad={scenesToLoad} isModal={true} />
             </Modal>
         </div>
     )

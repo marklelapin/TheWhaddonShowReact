@@ -11,7 +11,7 @@ import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
-import { log, SCENE as logType } from '../../../logging'
+import { log, SCENE as logType } from '../../../dataAccess/logging'
 import { partEditorRowId } from '../scripts/part';
 //styling
 import s from '../Script.module.scss'
@@ -22,6 +22,7 @@ import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess
 
 
 const Scene = memo((props) => {
+    Scene.displayName = 'Scene';
 
     //utility constants
     const dispatch = useDispatch();
@@ -47,7 +48,7 @@ const Scene = memo((props) => {
     useEffect(() => {
         log(logType, 'useEffect[] dispatching updateSceneLoaded', id)
         dispatch(updateSceneLoaded(id))
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
     log(logType, 'scene', scene)
@@ -119,6 +120,7 @@ const Scene = memo((props) => {
                                 previousCurtainOpen={bodyOrder[idx - 1]?.curtainOpen || previousCurtainOpen}
                                 curtainOpen={scriptItem.curtainOpen}
                                 alignRight={scriptItem.alignRight}
+                                isViewAsPartPerson={scriptItem.isViewAsPartPerson}
                                 previousFocusId={scriptItem.previousFocusId}
                                 nextFocusId={(idx === bodyOrder.length - 1) ? scene.nextSceneId : scriptItem.nextFocusId}
                             />

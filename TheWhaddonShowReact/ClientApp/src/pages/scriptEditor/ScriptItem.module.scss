@@ -71,7 +71,7 @@
         z-index: 2;
 
         &.classic {
-            justify-content: start;
+            justify-content: flex-start;
         }
 
         .script-item-text {
@@ -124,6 +124,11 @@
                     text-align: center;
                     align-self: center;
                 }
+
+                @media print {
+                    font-size: 12pt !important;
+                    width: 100% !important;
+                    }
             }
 
             .open-bracket {
@@ -137,8 +142,25 @@
                 bottom: 7px;
                 right: 20px;
             }
+
+            @media print {
+                font-size: 12pt !important;
+            }
         }
+        
+        @media print {
+            width: 100%;
+            font-size: 12pt !important;
+        }
+        //script-item-text-area end
     }
+
+
+    @media print {
+        page-break-inside: avoid !important;
+        padding: 10px 20px 0px 20px !important;
+    }
+//script-item end
 }
 
 .final-script-item {
@@ -177,7 +199,6 @@
     &.chat {
         color: white;
     }
-
 }
 
 .curtain-closed.chat {
@@ -199,7 +220,7 @@
     z-index: 12;
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: flex-end;
 }
 
 .header-controls.header-exists {
@@ -337,9 +358,13 @@
 
 .classic {
 
+    .script-item-parts {
+        height: unset;
+    }
+
     .part-avatar-name {
         flex: auto;
-        justify-content: start;
+        justify-content: flex-start;
 
         .text-input {
             font-weight: $font-weight-bold;
@@ -361,7 +386,7 @@
 .part-avatar-name {
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -459,7 +484,7 @@
     position: relative;
     z-index: 2;
     color: $text-color;
-    
+
 
     .part-selector-avatars {
         position: relative;
@@ -736,8 +761,7 @@
             }
         }
     }
-
-   /* &.curtain-open.chat * {
+    /* &.curtain-open.chat * {
         color: white;
 
         .type-dropdown {

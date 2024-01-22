@@ -20,7 +20,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50000",
+      "launchUrl": "http://localhost:50001",
       "environmentVariables": {
         "ASPNETCORE_URLS": "https://+:443;http://+:80",
         "ASPNETCORE_ENVIRONMENT": "Development",

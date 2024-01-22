@@ -1,9 +1,9 @@
 ﻿
-import { SHOW,  SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
+import { SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING, COMMENT } from "../../../dataAccess/scriptItemTypes";
 import { getLatest } from '../../../dataAccess/localServerUtils';
 import { refreshCurtain } from "./curtain";
 
-import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../logging';
+import { log, SCRIPT_EDITOR_SCENE_ORDER as logType } from '../../../dataAccess/logging';
 
 const debug = true;
 //Sorts ScriptItems and also works out curtain opening as requires same linked list calculation.
@@ -237,24 +237,18 @@ export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
 }
 
 
-
-
 const addSceneNumbers = (sceneOrder) => {
 
-    let i = 1;
+    let sceneNumber = 0;
+    let act = 0;
     const numberedSceneOrder = sceneOrder.map(scene => {
-        if (scene.type === SCENE) {
-            const numberedScene = { ...scene, sceneNumber: i }
-            i++;
-            return numberedScene
-
-        } else {
-            return scene
+        switch (scene.type) {
+            case SHOW: return scene;
+            case ACT: act++; return { ...scene, act };
+            case SCENE: sceneNumber++; return {...scene, sceneNumber, act };
+            default: return scene;
         }
-
-
     })
-
     return numberedSceneOrder
 }
 
@@ -271,7 +265,7 @@ export const alignRight = (sceneOrder, viewAsPartPerson, currentPartPersons, scr
 
     const righthandPartId = viewAsPartId || partIdsOrderInBody[1]
     //log(true, 'error check: alignRight', { partIdsOrderInBody, viewAsPartPerson, viewAsPartId,righthandPartId })
-    const alignedSceneOrder = mergedSceneOrder.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) }))
+    const alignedSceneOrder = mergedSceneOrder.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) ,isViewAsPartPerson: item.partIds.includes(viewAsPartId) }))
 
     return alignedSceneOrder
 
@@ -316,11 +310,16 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
 
 
 
-export const isSceneAffectedByViewAsPartPerson = (scene, viewAsPartPerson, currentPartPersons) => {
+export const isSceneAffectedByViewAsPartPerson = (scene, viewAsPartPerson, previousViewAsPartPerson, currentPartPersons) => {
 
     const scenePartPersonIds = scene.partIds.map(partId => currentPartPersons[partId]).map(partPerson => ({ sceneId: scene.id, partId: partPerson?.id, personId: partPerson?.personId }))
 
-    const match = scenePartPersonIds.some(scenePartPerson => scenePartPerson.partId === viewAsPartPerson?.id || scenePartPerson.personId === viewAsPartPerson?.id)
+    const match = scenePartPersonIds.some(scenePartPerson =>
+        scenePartPerson.partId === viewAsPartPerson?.id
+        || scenePartPerson.personId === viewAsPartPerson?.id
+        || scenePartPerson.personId === previousViewAsPartPerson?.id
+        || scenePartPerson.partId === previousViewAsPartPerson?.id
+    )
 
     return match
 }

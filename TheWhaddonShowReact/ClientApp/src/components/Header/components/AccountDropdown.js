@@ -1,23 +1,24 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
+import { useMsal } from '@azure/msal-react';
+import s from '../Header.module.scss';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button, Badge } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar.js';
-import UserDefault from '../../../images/sidebar/basil/UserDefault';
 
-import { impersonateUser, stopImpersonating, login, logout } from '../../../actions/user';
+import { updateCurrentUser, login, logout} from '../../../actions/user';
 import { setReadOnly, updatePersonSelectorConfig, updateViewAsPartPerson } from '../../../actions/scriptEditor';
 import { addUpdates } from '../../../actions/localServer';
 import { getLatest, prepareUpdate } from '../../../dataAccess/localServerUtils';
-import PowerButton from '../../../images/sidebar/basil/PowerButton';
 import { Icon } from '../../../components/Icons/Icons';
 import { PERSON } from '../../../dataAccess/localServerModels';
 import PersonSelector from '../../../pages/scriptEditor/components/PersonSelector';
-import { log, ACCOUNT_DROPDOWN as logType } from '../../../logging';
+import { log, ACCOUNT_DROPDOWN as logType } from '../../../dataAccess/logging';
+import { signOutAllUsers } from '../../../dataAccess/userAccess'
 
 function AccountDropdown(props) {
 
     const dispatch = useDispatch();
+    const { instance } = useMsal();
 
     const { menuOpen, onClick } = props;
 
@@ -37,20 +38,22 @@ function AccountDropdown(props) {
 
         log(logType, 'login', { personToLogIn })
 
-        dispatch(login(personToLogIn)) 
-        if (personToLogIn.isAdmin || personToLogIn.isWriter) dispatch(setReadOnly(false))
-        dispatch(updateViewAsPartPerson(mark))
+        dispatch(login(personToLogIn))
     }
+
 
     const doLogout = () => {
         dispatch(logout())
-        dispatch(setReadOnly())
-        dispatch(updateViewAsPartPerson(null))
+        signOutAllUsers(instance)
     }
 
-    const handlePersonSelect = (person) => {
-        log(logType,'handlePersonSelect', { person })
-        dispatch(impersonateUser(person))
+   
+
+    const changeCurrentUser = (person) => {
+        const readOnly = (person && (person.isAdmin || person.isWriter)) ? false : true
+        log(logType, 'changeCurrentUser', { person, readOnly })
+        dispatch(updateCurrentUser(person))
+        dispatch(setReadOnly(readOnly))
         dispatch(updateViewAsPartPerson(person))
     }
 
@@ -69,9 +72,13 @@ function AccountDropdown(props) {
 
     }
 
+    const handleImpersonate = (person) => {
+        log(logType, 'handleImpersonate', { person })
+        changeCurrentUser(person)
+    }
     const handleStopImpersonating = (e) => {
         e.preventDefault();
-        dispatch(stopImpersonating())
+        changeCurrentUser(authenticatedUser)
     }
 
     const handlePersonSelectorToggle = (e) => {
@@ -95,7 +102,7 @@ function AccountDropdown(props) {
                                     <div className={s['authenticated-user']}>
                                         <div>Current user:</div>
                                         <div >
-                                        <Avatar person={authenticatedUser} onChange={(pictureRef) => handleAvatarChange(pictureRef)} />
+                                            <Avatar person={authenticatedUser} onChange={(pictureRef) => handleAvatarChange(pictureRef)} />
                                         </div>
 
                                         <div>{`${authenticatedUser.firstName} ${authenticatedUser.lastName}`}</div>
@@ -111,7 +118,7 @@ function AccountDropdown(props) {
                                 }
                                 {authenticatedUser.isAdmin && currentUser.id !== authenticatedUser.id &&
                                     <>
-                                <DropdownItem onClick={(e) => handleStopImpersonating(e)}>
+                                        <DropdownItem onClick={(e) => handleStopImpersonating(e)}>
                                             <div className={s['currently-impersonating']}>
                                                 <div>Currently impersonating:</div>
                                                 <div className={s['impersonated-person']}>
@@ -124,11 +131,11 @@ function AccountDropdown(props) {
                                         <DropdownItem divider />
                                     </>
                                 }
-                                <DropdownItem onClick={doLogout}><span className={s.headerDropdownIcon}><PowerButton /></span> Log Out</DropdownItem>
+                                <DropdownItem onClick={doLogout}><Icon icon ="power-off"></Icon>Log Out</DropdownItem>
                             </DropdownMenu>
                         }
                     </Dropdown >
-                    <PersonSelector onSelect={(person) => handlePersonSelect(person)} closeModal={() => dispatch(updatePersonSelectorConfig(null))} />
+                    <PersonSelector onSelect={(person) => handleImpersonate(person)} closeModal={() => dispatch(updatePersonSelectorConfig(null))} />
                 </>}
 
         </>

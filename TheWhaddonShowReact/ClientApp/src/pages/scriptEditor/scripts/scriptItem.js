@@ -1,9 +1,8 @@
-﻿
-import { OPEN_CURTAIN, SHOW, ACT, SCENE, SYNOPSIS, STAGING, INITIAL_STAGING, DIALOGUE, HEADER_TYPES, INITIAL_CURTAIN, COMMENT } from "../../../dataAccess/scriptItemTypes";
+
+import { OPEN_CURTAIN, SHOW, ACT, SCENE, SYNOPSIS,  INITIAL_STAGING, DIALOGUE, HEADER_TYPES, INITIAL_CURTAIN, COMMENT } from "../../../dataAccess/scriptItemTypes";
 import { ABOVE, BELOW } from './utility';
 
 import { ScriptItemUpdate, PartUpdate } from "../../../dataAccess/localServerModels";
-import { log } from '../../../logging'
 
 export function newScriptItemsForCreateShow(title) {
 

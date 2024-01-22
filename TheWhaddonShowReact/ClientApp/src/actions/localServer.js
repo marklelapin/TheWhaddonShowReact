@@ -1,10 +1,10 @@
-﻿//global actions
+﻿
 export const UPDATE_LASTSYNCDATE = 'UPDATE_LASTSYNCDATE';
 export const SET_LOCALCOPYID = 'SET_LOCALCOPYID';
 export const UPDATE_CONNECTION_STATUS = 'UPDATE_CONNECTION_STATUS';
 export const SET_PAUSE_SYNC = 'SET_PAUSE_SYNC';
 export const CLEAR_LOCAL_SERVER_STATE = 'CLEAR_LOCAL_SERVER_STATE';
-
+export const REFRESH_SYNC = 'REFRESH_SYNC';
 
 export function updateLastSyncDate(payload) {
     return {
@@ -34,6 +34,12 @@ return {
     }
 }
 
+export function refreshSync() {
+    return {
+        type: REFRESH_SYNC,
+    }
+}
+
 export function clearLocalServerState() {
     return {
         type: CLEAR_LOCAL_SERVER_STATE
@@ -49,6 +55,7 @@ export const SYNC = 'SYNC';
 export const END_SYNC = 'END_SYNC';
 export const CLOSE_POSTBACK = 'CLOSE_POSTBACK';
 export const CLEAR_HAS_POSTED_BACK = 'CLEAR_HAS_POSTED_BACK';
+
 
 export function resetList(payload,payloadType) {
     return {
@@ -114,3 +121,4 @@ export function endSync(payload,payloadType) {
 
     }
 }
+

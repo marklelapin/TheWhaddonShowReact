@@ -1,8 +1,53 @@
 ﻿import React, { useState } from 'react';
 
 import { Tooltip } from 'reactstrap';
+//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+//import {
+//    faCloud,
+//    faPlus,
+//    faCheck,
+//    faTimes,
+//    faExclamation,
+//    faRotateLeft,
+//    faRotateRight,
+//    faBars,
+//    faArrowLeft,
+//    faComments,
+//    faAlignCenter,
+//    faEdit,
+//    faComment,
+//    faCommentDots,
+//    faPrint,
+//    faFileAudio,
+//    faFileVideo,
+//    faPlay,
+//    faPaperclip,
+//    faLink,
+//    faCircleO,
+//    faCircle,
+//    faSearch,
+//    faTags,
+//    faTrash,
+//    faArrowsV,
+//    faVolumeUp,
+//    faLightbulb,
+//    faMale,
+//    faChild,
+//    faHome,
+//    faFileLines,
+//    faPersonMilitaryToPerson,
+//    faPanorama,
+//    faRotate,
+//    faUser,
+//    faUsers,
+//    faCaretDown,
+//    faArrowDownUpAcrossLine,
+//    faRectangleList,
+//    faPowerOff,
+//    faGear,
+//} from '@fortawesome/free-solid-svg-icons' 
 
-import s from './Icons.module.scss'; // eslint-disable-line css-modules/no-unused-class'
+import s from './Icons.module.scss';
 
 export function TickOrCross(value) {
 
@@ -26,50 +71,61 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top',className } = props
+    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className, iconStyle = 'solid' } = props
 
     let { icon } = props
     if (icon === null) { icon = props }
 
     const [toolTipOpen, setToolTipOpen] = useState(null);
 
-
-
     const dictionary = {
-        "sync": "fa fa-cloud",
-        "add": "fa fa-plus",
-        "tick": "fa fa-check",
-        "cross": "fa fa-times",
-        "remove": "fa fa-times",
-        "warning": "fa fa-exclamation",
-        "undo": "fa fa-history",
-        "redo": "fa fa-history reverse-icon",
-        "menu": "fa fa-navicon",
-        "arrow-left": "fa fa-arrow-left",
-        "chat-mode": "fa fa-comments-o",
-        "classic-mode": "fa fa-align-center",
-        "edit": "fa fa-edit",
-        "comment-o": "fa fa-comment-o",
-        "comment": "fa fa-comment",
-        "print": "fa fa-print",
-        "audio-file": "fa fa-file-audio-o",
-        "video-file": "fa fa-file-video-o",
-        "play": "fa fa-play",
-        "attach": "fa fa-paperclip",
-        "attachment": "fa fa-paperclip",
-        "link": "fa fa-link",
-        "circle-o": "fa fa-circle-o",
-        "circle": "fa fa-circle",
-        "search": "fa fa-search",
-        "tags": "fa fa-tags",
-        "trash": "fa fa-trash-o",
-        "move-up-down": "fa fa-arrows-v",
-        "arrows-v": "fa fa-arrows-v",
-        "sound": "fa fa-volume-up",
-        "lightbulb": "fa fa-lightbulb-o",
-        "man": "fa fa-male",
-        "child": "fa fa-child",
+        "sync": 'fa-solid fa-cloud',
+        "add": 'fa-solid fa-plus',
+        "tick": 'fa-solid fa-check',
+        "cross": 'fa-solid fa-times',
+        "remove": 'fa-solid fa-times',
+        "warning": 'fa-solid fa-exclamation',
+        "undo": 'fa-solid fa-rotate-left',
+        "redo": 'fa-solid fa-rotate-right',
+        "menu": 'fa-solid fa-bars',
+        "arrow-left": 'fa-solid fa-arrow-left',
+        "chat-mode": 'fa-solid fa-comments',
+        "classic-mode": 'fa-solid fa-align-center',
+        "edit": 'fa-solid fa-edit',
+        "comment-o": 'fa-regular fa-comment',
+        "comment": 'fa-solid  fa-comment',
+        "print": 'fa-solid fa-print',
+        "audio-file": 'fa-solid fa-file-audio',
+        "video-file": 'fa-solid fa-file-video',
+        "play": 'fa-solid fa-play',
+        "attach": 'fa-solid fa-paperclip',
+        "attachment": 'fa-solid fa-paperclip',
+        "link": 'fa-solid fa-link',
+        "circle-o": 'fa-regular fa-circle',
+        "circle": 'fa-solid fa-circle',
+        "search": 'fa-solid fa-search',
+        "tags": 'fa-solid fa-tags',
+        "trash": 'fa-solid fa-trash',
+        "move-up-down": 'fa-solid fa-arrows-v',
+        "arrows-v": 'fa-solid fa-arrows-v',
+        "sound": 'fa-solid fa-volume-up',
+        "lightbulb": 'fa-solid fa-lightbulb',
+        "man": 'fa-solid fa-male',
+        "child": 'fa-solid fa-child',
+        "home": 'fa-solid fa-house',
+        "script": 'fa-solid fa-file-lines',
+        "refresh": 'fa-solid fa-rotate',
+        "user": 'fa-solid fa-user',
+        "users": 'fa-solid fa-users',
+        "caret": 'fa-solid fa-caret-down',
+        "api": 'fa-solid fa-arrow-down-up-across-line',
+        "summary": 'fa-solid fa-rectangle-list',
+        "power-off": 'fa-solid fa-power-off',
+        "gear": 'fa-solid fa-gear',
+        "gallery": 'fa-solid fa-panorama',
+        "casting": 'fa-solid fa-person-military-to-person',
     };
+
 
     if (dictionary.hasOwnProperty(icon.toLowerCase())) {
         icon = dictionary[icon.toLowerCase()];
@@ -82,17 +138,17 @@ export function Icon(props) {
         setToolTipOpen(toolTipOpen === id ? null : id)
     }
 
-
-
     if (id === null) {
-        return <i className={`m-1 ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
+        return <i
+            className={`m-1 ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
             style={style}
             onClick={onClick} />
     }
     if (id !== null) {
         return <>
-            <i id={id}
-                className={`m-1 ${icon}  ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
+            <i
+                id={id}
+                className={`m-1  ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
                 style={style}
                 onClick={onClick} />
 

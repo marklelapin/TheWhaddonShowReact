@@ -1,68 +1,79 @@
 ﻿//React & Redux
+import classnames from 'classnames';
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
-import { updateSearchParameters, toggleSceneSelector, trigger, MOVE_SCENE, updateMovementInProgress } from '../../../actions/scriptEditor';
+import { useDispatch, useSelector } from 'react-redux';
+import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress } from '../../../actions/scriptEditor';
 
 //Components
-import ScriptSearch from './ScriptSearch'
-import SceneSelectorRow from './SceneSelectorRow'
-
+import { Icon } from '../../../components/Icons/Icons';
+import SceneSelectorRow from './SceneSelectorRow';
+import ScriptSearch from './ScriptSearch';
 //Utils
 
-import { log } from '../../../logging';
-import { moveFocusToId, END } from '../scripts/utility'
-
+import { log, SCENE_SELECTOR as logType } from '../../../dataAccess/logging';
+import { ACT, SHOW } from '../../../dataAccess/scriptItemTypes';
+import s from '../Script.module.scss';
+import { isViewAsPartPerson } from '../scripts/part';
+import { END, moveFocusToId } from '../scripts/utility';
 
 
 function SceneSelector(props) {
-    const debug = true;
 
-    const { show, scenesToLoad } = props;
+    const { show, scenesToLoad, isModal = false } = props;
 
     const dispatch = useDispatch();
 
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
+    const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
+    const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
     const [beingDragged, setBeingDragged] = useState(false)
 
-    const handleSearchParameterChange = (type, value) => {
-        let newSearchParameters = { ...searchParameters }
+    log(logType, 'viewAsPartPerson', { viewAsPartPerson })
 
-        switch (type) {
-            case 'addTag':
-                newSearchParameters.tags.push(value)
-                break;
-            case 'removeTag':
-                newSearchParameters.tags = newSearchParameters.tags.filter(tag => tag !== value)
-                break;
-            case 'myScenes':
-                newSearchParameters.myScenes = value
-                break;
-            default:
-                break;
-        }
 
-        dispatch(updateSearchParameters(newSearchParameters))
+    let filteredScenes = showOrder.filter(scene => scene.type !== SHOW)
+        .map(scene => ({
+            ...scene,
+            show: true //gets converted to false if not matching searches below
+            , isViewAsPartPerson: isViewAsPartPerson(viewAsPartPerson, scene, currentPartPersons)   //indicates if viesAsPartPerson is in the scene
+        }))
+
+    //filter out scenes not matching characters
+    if (searchParameters.characters?.length > 0) {
+        filteredScenes = filteredScenes.map(scene => {
+            if (scene.type !== ACT && !(scene.text?.toLowerCase().includes(searchParameters.characters.toLowerCase()) || (scene.sceneNumber && scene.sceneNumber.toString().includes(searchParameters.characters)))) {
+                return { ...scene, show: false };
+            } else {
+                return scene;
+            }
+        })
+    }
+    //filter out scenes not matching tags
+    if (searchParameters.tags?.length > 0) {
+        filteredScenes = filteredScenes.map(scene => {
+            if (scene.type !== ACT && !scene.tags.some(tag => searchParameter.includes(tag))) {
+                return { ...scene, show: false };
+            } else {
+                return false;
+            }
+        })
+    }
+    //filter out scenes that don't contain viewAsPartPerson
+    if (searchParameters.myScenes === true) {
+        filteredScenes = filteredScenes.map(scene => {
+            if (scene.type !== ACT && !scene.isViewAsPartPerson) {
+                return { ...scene, show: false };
+            } else {
+                return scene;
+            };
+        });
     }
 
-
-    const filteredScenes = () => {
-
-        const searchTags = searchParameters.tags
-        const searchCharacters = searchParameters.characters
-        const myScenes = searchParameters.myScenes
-
-        //TODO filtering exercise
-
-        const filteredScenes = showOrder?.filter(scene => scene.isActive) || []
-
-        return filteredScenes
-
-    }
-
+    
+    const filteredShowOrder = filteredScenes.filter(scene=>scene.show===true);
 
 
     const handleDragStart = (e) => {
@@ -74,7 +85,6 @@ function SceneSelector(props) {
         if (e.dataTransfer.getData("text/plain").substring(0, 1) === "sceneId") {
             e.currentTarget.classList.add("drag-over")
         }
-
     }
     const handleDragLeave = (e) => {
         e.preventDefault()
@@ -90,11 +100,6 @@ function SceneSelector(props) {
         dispatch(trigger(MOVE_SCENE, { sceneId, value: newPreviousId }))
     }
 
-
-
-
-
-
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
@@ -104,35 +109,35 @@ function SceneSelector(props) {
             default:
                 break;
         }
+
+        if (isModal) dispatch(setShowSceneSelector(false))
     }
 
-
-
-    log(debug, 'SceneSelector Rendering: filteredScenes', filteredScenes())
+    log(logType, 'render props', { filteredShowOrder })
 
     return (
-        <div id="scene-selector" className="flex-full-height">
-            <h2>Search</h2>
-            <ScriptSearch onChange={(type, value) => handleSearchParameterChange(type, value)} />
-
+        <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
+            <ScriptSearch isModal={isModal} />
             <h2>Scenes</h2>
             <div className="full-height-overflow">
 
-                {filteredScenes().map((scene,idx) => {
-                    
+                {filteredShowOrder.map((scene, idx) => {
+
                     return (idx < scenesToLoad || scenesToLoad === null) &&
 
-                    <SceneSelectorRow
-                        key={scene.id}
-                        scene={scene}
-                        onClick={(action, id) => handleClick(action, id)}
-                        onDragStart={handleDragStart}
-                        onDrop={handleDrop}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        beingDragged={beingDragged}
-                        isInFocus={scene.id === sceneInFocus.id}
-                    />
+                        <SceneSelectorRow
+                            key={scene.id}
+                            scene={scene}
+                            onClick={(action, id) => handleClick(action, id)}
+                            onDragStart={handleDragStart}
+                            onDrop={handleDrop}
+                            onDragOver={handleDragOver}
+                            onDragLeave={handleDragLeave}
+                            beingDragged={beingDragged}
+                            isInFocus={scene.id === sceneInFocus.id}
+                            highlight={scene.isViewAsPartPerson}
+
+                        />
 
 
                 })}

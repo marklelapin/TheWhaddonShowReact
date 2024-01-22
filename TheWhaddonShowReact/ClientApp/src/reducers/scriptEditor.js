@@ -30,7 +30,7 @@ import {
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
 
-import { log, SCRIPT_EDITOR_REDUCER as logType } from '../logging';
+import { log, SCRIPT_EDITOR_REDUCER as logType } from '../dataAccess/logging';
 import { SCRIPT_ITEM, PERSON, PART } from '../dataAccess/localServerModels';
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
@@ -38,7 +38,7 @@ import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEdit
 export const initialState = {
     searchParameters: {
         tags: [],
-        characters: [],
+        characters: '',
         myScenes: false,
     },
     show: {
@@ -65,7 +65,7 @@ export const initialState = {
     maxWidthExists: false,
     maxScriptItemTextWidth: null,
     viewStyle: 'chat',
-    readOnly: false,
+    readOnly: true,
     initialSyncProgress: { part: 0, person: 0, scriptItem: 0 },
     scriptItemTextWidths: {},
 
@@ -99,9 +99,11 @@ export default function scriptEditorReducer(state = initialState, action) {
                 showComments: action.showComments,
             };
         case UPDATE_VIEW_AS_PART_PERSON:
+            const previousViewAsPartPerson = state.viewAsPartPerson
             return {
                 ...state,
                 viewAsPartPerson: action.partPerson,
+                previousViewAsPartPerson: previousViewAsPartPerson
             };
 
         case UPDATE_CURRENT_PART_PERSONS:
@@ -263,7 +265,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                         initialSyncProgress: { ...state.initialSyncProgress, part: 1 }
                     }
                 default: return state;
-            }; break;
+            }; 
 
         case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
 

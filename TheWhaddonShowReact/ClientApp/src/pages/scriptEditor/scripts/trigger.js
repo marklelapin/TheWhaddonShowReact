@@ -1,13 +1,12 @@
-﻿import {
+import {
     UPDATE_TEXT, UPDATE_PART_IDS, UPDATE_TAGS,
     ADD_TAG, REMOVE_TAG, UPDATE_ATTACHMENTS, UPDATE_TYPE,
-    OPEN_CURTAIN, CLOSE_CURTAIN, TOGGLE_CURTAIN,
+     TOGGLE_CURTAIN,
     ADD_COMMENT, DELETE_COMMENT, ADD_SCRIPT_ITEM,
     DELETE_SCRIPT_ITEM, DELETE_NEXT_SCRIPT_ITEM,
     ADD_SCENE, DELETE_SCENE, MOVE_SCENE, ADD_PART_TAG,
     REMOVE_PART_TAG, UPDATE_PART_NAME, ALLOCATE_PERSON_TO_PART,
     ADD_PART, DELETE_PART, DELETE_NEXT_PART, SWAP_PART
-    , CLEAR_SCRIPT
 } from '../../../actions/scriptEditor';
 import {
     newScriptItemsForCreate,
@@ -44,7 +43,7 @@ import { getLatest, prepareUpdates } from '../../../dataAccess/localServerUtils'
 import { SCENE, CURTAIN_TYPES, DIALOGUE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes';
 import { END, UP, START } from './utility';
 
-import { log, SCRIPT_EDITOR_TRIGGER as logType } from '../../../logging'
+import { log, SCRIPT_EDITOR_TRIGGER as logType } from '../../../dataAccess/logging'
 
 export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, currentPartPersons, storedPersons, previousCurtainOpen, show, viewAsPartPerson = null) => {
 

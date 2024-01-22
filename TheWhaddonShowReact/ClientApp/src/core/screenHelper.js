@@ -1,6 +1,6 @@
 const config = {
-    name: 'sing',
-    title: 'Sing Dashboard App built with React JS by Flatlogic',
+    name: 'The Whaddon Show App',
+    title: 'The Whaddon Show App by Mark Carter',
     version: '3.8.0',
     settings: {
         screenMaxs: {

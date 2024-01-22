@@ -1,9 +1,9 @@
-﻿import { PartUpdate } from '../../../dataAccess/localServerModels'
+import { PartUpdate } from '../../../dataAccess/localServerModels'
 import { UP, DOWN, START, END, BELOW } from './utility.js'
-import { SCENE, SYNOPSIS, INITIAL_STAGING } from '../../../dataAccess/scriptItemTypes'
+import { SCENE } from '../../../dataAccess/scriptItemTypes'
 import { getLatest } from '../../../dataAccess/localServerUtils'
-import { getOrderedSceneScriptItems } from './scriptItem'
-import { log } from '../../../logging'
+import { getOrderedSceneScriptItems } from './scriptItem';
+import { log, PART as logType } from '../../../dataAccess/logging';
 
 export const addPersonsInfo = (parts, persons) => {
 
@@ -213,3 +213,18 @@ const copy = (object) => {
     return JSON.parse(JSON.stringify(object))
 }
 
+export const isViewAsPartPerson = (viewAsPartPerson, scriptItem, currentPartPersons) => {
+
+    if (viewAsPartPerson === null || viewAsPartPerson === undefined || scriptItem === null || scriptItem === undefined || currentPartPersons === null || currentPartPersons === undefined) return false
+
+    const partIds = scriptItem.partIds || []
+    const personIds = Object.values(currentPartPersons).filter(partPerson => partIds.includes(partPerson.id) && partPerson.personId).map(partPerson => partPerson.personId) || []
+    const ids = [...partIds, ...personIds]
+
+    
+    const isViewAsPartPerson = (ids.includes(viewAsPartPerson.id) || ids.includes(viewAsPartPerson.personId))
+
+    log(logType, 'isViewAsPartPerson', { viewAsPartPerson, scriptItem, isViewAsPartPerson })
+
+    return  isViewAsPartPerson
+}

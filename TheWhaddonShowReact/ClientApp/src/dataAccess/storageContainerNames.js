@@ -1,4 +1,4 @@
-﻿export const AVATARS = 'avatars'
+export const AVATARS = 'avatars'
 export const MEDIA = 'media'
 export const IMAGES = 'images'
 

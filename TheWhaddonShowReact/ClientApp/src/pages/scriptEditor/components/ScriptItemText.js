@@ -16,17 +16,17 @@ import {
 } from '../../../actions/scriptEditor';
 
 //Components
-import TextareaAutosize from 'react-autosize-textarea';
+import TextareaAutosize from 'react-textarea-autosize';
 import ScriptItemControls, { CONFIRM } from './ScriptItemControls';
 import ScriptItemHeader from './ScriptItemHeader';
-import { log, SCRIPT_ITEM_TEXT as logType } from '../../../logging';
+import { log, SCRIPT_ITEM_TEXT as logType } from '../../../dataAccess/logging';
 
 
 //Utilities
 import { curtainText } from '../scripts/curtain';
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
-import { getTextAreaWidth } from '../scripts/layout';
+
 import { getScriptItemPlaceholder } from '../scripts/scriptItem'
 
 //constants
@@ -37,6 +37,7 @@ import { DEFAULT_END_MARGIN } from '../scripts/layout';
 //css
 import s from '../ScriptItem.module.scss';
 import { ElementInViewObserver } from '../../../components/ElementInViewObserver/ElementInViewObserver';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 
 function ScriptItemText(props) {
@@ -64,7 +65,8 @@ function ScriptItemText(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const textWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) //used to control when to re-render for text width.
     const textWidthPx = `${textWidth}px`
-    const readOnly = useSelector(state => state.scriptEditor.readOnly)
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     // const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
     //log(logType,'storedTextWidth',storedTextWidth)
     //Internal state
@@ -86,7 +88,7 @@ function ScriptItemText(props) {
             textInputRef.focus();
         }
 
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         setTempTextValue(null)
@@ -99,7 +101,7 @@ function ScriptItemText(props) {
         if (CURTAIN_TYPES.includes(scriptItem.type)) {
             dispatch(updateScriptItemTextWidth(id, finalText, type,endMargin ))
         }
-    }, [previousCurtainOpen])
+    }, [previousCurtainOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
 
@@ -299,6 +301,7 @@ function ScriptItemText(props) {
        const el = document.getElementById(`script-item-text-input-${id}`)
        if (el) el.classList.add('inView')
         dispatch(updateScriptItemTextWidth(scriptItem.id, finalText, scriptItem.type, endMargin))
+        if (type === SCENE) dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.id))
     }
 
     const handleExitView = () => {

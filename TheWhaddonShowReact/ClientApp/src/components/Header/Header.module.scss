@@ -26,6 +26,12 @@
         padding: 7px 0;
     }
 
+    @media print {
+        * {
+            display:none;
+        }
+    }
+
     :global {
         .input-group {
             overflow: hidden;

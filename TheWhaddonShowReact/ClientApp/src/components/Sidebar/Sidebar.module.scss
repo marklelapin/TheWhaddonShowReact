@@ -1,16 +1,22 @@
 @import '../../styles/app';
 
 .root {
-  width: $sidebar-width-open;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  border-right: $sidebar-border;
-  background-color: $gray-inverse; //var(--sidebar-bg-color);
-  color: var(--sidebar-color);
-  overflow-y: auto;
-  position: absolute;
-  @include scroll-bar($sidebar-scrollbar-bg);
+    width: $sidebar-width-open;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-right: $sidebar-border;
+    background-color: $gray-inverse; //var(--sidebar-bg-color);
+    color: var(--sidebar-color);
+    overflow-y: auto;
+    position: absolute;
+    @include scroll-bar($sidebar-scrollbar-bg);
+
+    @media print {
+        * {
+            display: none;
+        }
+    }
 }
 
 .logoStyle {
@@ -224,4 +230,12 @@
     }
   }
 }
+
+
+.minimize-sidebar-button {
+position: absolute;
+    top: 2px;
+    right: 5px;
+}
+
 

@@ -1,0 +1,33 @@
+@import '../../styles/app';
+
+.home-page{
+    display: block;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.welcom-block{
+    display: flex;
+}
+
+.home-image {
+    display:block;
+    justify-content: center;
+    padding-bottom: 40px;
+    img{
+       
+    }
+}
+
+.login{
+    padding: 20px;
+
+    button {
+        padding: 5px;
+        margin: 5px;
+        width: 130px;
+    }
+}
+

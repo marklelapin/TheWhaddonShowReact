@@ -5,7 +5,6 @@ import {
     NAVBAR_TYPE_TOGGLE,
     SIDEBAR_TYPE_TOGGLE,
     UPDATE_SCREEN_SIZE,
-    UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
 } from '../actions/layout';
 
 import config from '../config'

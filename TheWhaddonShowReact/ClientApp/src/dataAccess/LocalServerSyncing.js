@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useSync } from '../dataAccess/localServerUtils';
 import { sync } from '../actions/localServer';
 import { PERSON, SCRIPT_ITEM, PART } from '../dataAccess/localServerModels';
-import { log, LOCAL_SERVER_SYNCING as logType } from '../logging';
+import { log, LOCAL_SERVER_SYNCING as logType } from '../dataAccess/logging';
 
 export function LocalServerSyncing() {
 

@@ -150,7 +150,7 @@
   padding: $widget-padding-vertical $widget-padding-horizontal;
 
   > footer {
-    margin: $spacer/2 (-$widget-padding-horizontal) (-$widget-padding-vertical);
+    margin: calc($spacer/2) (-$widget-padding-horizontal) (-$widget-padding-vertical);
     padding: 10px 20px;
     border-bottom-left-radius: $widget-border-radius;
     border-bottom-right-radius: $widget-border-radius;

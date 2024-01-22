@@ -38,7 +38,7 @@ function ImageDropzone(props) {
         if (selectedFiles === undefined || selectedFiles === null) return null
         /*const selectedFilesArray = Object.values(selectedFiles)*/
         setImages([...images, ...selectedFiles])
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleTagsChange = (event = null) => {
         if (event !== null) {
@@ -83,9 +83,8 @@ function ImageDropzone(props) {
 
                                 <Row>
                                     {images.map((image, idx) => (
-                                        <Col>
-
-                                            <div className="display-inline-block me-2 mb-xs" key={`drop-id-${idx.toString()}`}>
+                                        <Col key={`drop-id-${idx.toString()}`}>
+                                            <div className="display-inline-block me-2 mb-xs">
                                                 <img alt="..." src={URL.createObjectURL(image)} className="img-fluid" />
                                                 <div>{image.name}</div>
                                             </div>

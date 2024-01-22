@@ -5,14 +5,16 @@ import { useDispatch, useSelector } from 'react-redux';
 //Components
 import { Icon } from '../../../components/Icons/Icons';
 import TagsInput from '../../../components/Forms/TagsInput';
-import TextareaAutosize from 'react-autosize-textarea';
+import TextareaAutosize from 'react-textarea-autosize';
 
 //utils
 import { updateScriptItemInFocus, trigger, DELETE_COMMENT, UPDATE_TEXT, ADD_TAG, REMOVE_TAG } from '../../../actions/scriptEditor';
 import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
-import { log, COMMENT as logType } from '../../../logging';
+
+import { log, COMMENT as logType } from '../../../dataAccess/logging';
 //css
 import s from '../ScriptItem.module.scss';
 
@@ -29,7 +31,9 @@ function Comment(props) {
     const comment = useSelector(state => state.scriptEditor.currentScriptItems[id]) || [];
     const showComments = useSelector(state => state.scriptEditor.showComments);
     const scriptItem = { ...comment };
-    const readOnly = false //useSelector(state => state.scriptEditor.readOnly) || true
+    const currentUser = useSelector(state => state.user.currentUser)
+
+    const readOnly = isScriptReadOnly(currentUser)
 
 
     //internal state

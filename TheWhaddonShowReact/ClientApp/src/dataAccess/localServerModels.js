@@ -78,6 +78,7 @@ export class PersonUpdate extends LocalServerModelUpdate {
         this.tags = [];
         this.isActive = true;
         this.pictureRef = null;
+        this.msalLink = null;
     }
 }
 

@@ -8,7 +8,7 @@ import {
     Button,
     Input
 } from 'reactstrap';
-import Dropzone from 'react-dropzone'
+import { useDropzone } from 'react-dropzone'
 import MediaDisplay from './MediaDisplay';
 import { Icon } from '../../components/Icons/Icons';
 
@@ -17,7 +17,7 @@ import { uploadFiles, fetchFiles } from '../../dataAccess/fileUtils';
 
 
 //utils
-import { log, MEDIA_DROPZONE as logType} from '../../logging';
+import { log, MEDIA_DROPZONE as logType } from '../../dataAccess/logging';
 
 //constants
 import { MEDIA } from '../../dataAccess/storageContainerNames';
@@ -37,7 +37,16 @@ function MediaDropzone(props) {
         , autoLoad = false
         , width = null
         , height = 100
+        , readOnly = false
     } = props;
+
+    const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+        onDrop: (selectedURLs) => handleDrop(selectedURLs),
+        accept: {
+            'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
+            'audio/mpeg': ['.mp3'],
+        },
+    });;
 
 
     const [newMediaFiles, setNewMediaFiles] = useState([]);
@@ -47,12 +56,12 @@ function MediaDropzone(props) {
     useEffect(() => {
         log(logType, 'useEffect[]')
         refreshMediaFiles()
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        log(logType, 'useEffect[existingMediaURLS,newMediaFiles]', {existingMediaURLs,newMediaFiles})
+        log(logType, 'useEffect[existingMediaURLS,newMediaFiles]', { existingMediaURLs, newMediaFiles })
         refreshMediaFiles()
-    }, [existingMediaURLs,newMediaFiles]) //es-lint disable-line react-hooks/exhaustive-deps
+    }, [existingMediaURLs, newMediaFiles]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const refreshMediaFiles = async () => {
 
@@ -173,6 +182,7 @@ function MediaDropzone(props) {
     }
 
 
+
     const dropZoneText = (mediaFiles.length > 0)
         ? 'drag or click to add more media...'
         : 'This dropzone accepts images, audio files, video files or youTube urls. Try dropping some here, or click to select files to upload.'
@@ -182,14 +192,10 @@ function MediaDropzone(props) {
     return (
 
 
-
         <div className={`${s['media-dropzone']} ${showControls ? s['show-controls'] : s['hide-controls']} ${(mediaFiles.length > 0) ? 'populated' : ''}`}>
 
-            <Dropzone
-                onDrop={(selectedURLs) => handleDrop(selectedURLs)} accept="image/*, audio/*, video/*"
-                className={`${s.dropzone}`}
-            >
-
+            <div {...getRootProps({ className: s.dropzone })}>
+                <input {...getInputProps()} />
                 <>
                     <div className={s['media-dropzone-items']}>
                         {mediaFiles.map((media, idx) => (
@@ -202,59 +208,62 @@ function MediaDropzone(props) {
                                         width={width}
                                         height={height}
                                     />
-                                    <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} />
+                                    {!readOnly && <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} toolTip="Delete" />}
                                 </div>
 
                             </div>
 
                         ))}
                     </div>
-                    <div className={s['controls']}>
-                        <p>{dropZoneText}</p>
-                        <div className={s['youtube-input']}>
-                            <Input
-                                type="text"
-                                label="youTubeUrl"
-                                name="youTubeUrl"
-                                id="youTubeUrl"
-                                placeholder="or enter YouTube URL"
-                                value={youTubeUrl}
-                                onChange={(e) => handleYouTubeInputChange(e)}
-                                onClick={(e) => e.stopPropagation()}
-                            />
-                            <Button onClick={(e) => handleClick(e, 'submitYouTube', youTubeUrl)}
-                                color="primary"
-                                disabled={youTubeUrl.length === 0}
-                            >Submit</Button>
+                    {!readOnly &&
+                        <div className={s['controls']}>
+                            <p>{dropZoneText}</p>
+                            <div className={s['youtube-input']}>
+                                <Input
+                                    type="text"
+                                    label="youTubeUrl"
+                                    name="youTubeUrl"
+                                    id="youTubeUrl"
+                                    placeholder="or enter YouTube URL"
+                                    value={youTubeUrl}
+                                    onChange={(e) => handleYouTubeInputChange(e)}
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                                <Button onClick={(e) => handleClick(e, 'submitYouTube', youTubeUrl)}
+                                    color="primary"
+                                    disabled={youTubeUrl.length === 0}
+                                >Submit</Button>
+                            </div>
+
                         </div>
-                    </div>
+                    }
                 </>
 
 
-            </Dropzone>
-
-            <div className={s['controls']}>
-                {(autoLoad === false) &&
+                <div className={s['controls']}>
+                    {(autoLoad === false) &&
+                        <Button
+                            type="button"
+                            color="primary"
+                            onClick={(e) => handleClick(e, 'upload')}
+                            disabled={newMediaFiles.length === 0}>Upload New Media</Button>
+                    }
                     <Button
                         type="button"
-                        color="primary"
-                        onClick={(e) => handleClick(e, 'upload')}
-                        disabled={newMediaFiles.length === 0}>Upload New Media</Button>
-                }
-                <Button
-                    type="button"
-                    color="secondary"
-                    onClick={(e) => handleClick(e, 'clear')}
-                    disabled={newMediaFiles.length === 0 && existingMediaURLs.length === 0}>Clear</Button>
+                        color="secondary"
+                        onClick={(e) => handleClick(e, 'clear')}
+                        disabled={newMediaFiles.length === 0 && existingMediaURLs.length === 0}>Clear</Button>
 
-            </div>
+                </div>
 
+
+
+            </div >
 
 
         </div>
+    )
 
-
-    );
 
 }
 export default MediaDropzone;

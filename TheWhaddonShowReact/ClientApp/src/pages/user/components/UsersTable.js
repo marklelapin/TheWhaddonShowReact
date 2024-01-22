@@ -14,11 +14,7 @@ import { headers, row } from './User';
 import { Table, Button } from 'reactstrap';
 import User from './User';
 import { PersonUpdate } from '../../../dataAccess/localServerModels';
-import Widget from '../../../components/Widget';
-import { log } from '../../../logging';
-//SASS
-import s from '../Users.module.scss';
-
+import { log } from '../../../dataAccess/logging';
 
 
 export function UsersTable() {
@@ -30,35 +26,30 @@ export function UsersTable() {
     const [userModalToOpen, setUserModalToOpen] = useState(null);
     const [newUser, setNewUser] = useState(null);
 
-    const [showActive, setShowActive] = useState(null);
+    const [showActive] = useState(null);
 
     //Access state from redux store
     const personsSync = useSelector((state) => state.localServer.persons.sync);
     const personsHistory = useSelector((state) => state.localServer.persons.history);
     log(debug, 'UsersTable personsHistory', personsHistory)
 
-    const persons = getLatest(personsHistory);
+    const persons = getLatest(personsHistory, true);
 
     log(debug, 'UsersTable persons', persons)
 
     useEffect(() => {
         setLoadingError();
-    }, [])
+    }, [personsHistory] // eslint-disable-line react-hooks/exhaustive-deps
+    )
 
     useEffect(() => {
         setLoadingError();
-    }, [personsHistory] //es-lint disable-line react-hooks/exhaustive-deps
-    )
 
-
-
-    //establish resize event listener to handle screen size changes.
-    useEffect(() => {
-
+        //establish resize event listener to handle screen size changes.
         window.addEventListener('resize', handleResize);
         handleResize();
         return () => { window.removeEventListener('resize', handleResize); }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleResize = () => {
         if (isScreen('xs') || isScreen('sm') || isScreen('md')) { //thes screen sized should match those in index.css for the .
@@ -155,21 +146,21 @@ export function UsersTable() {
             <DataLoading isLoading={isLoading && (filteredPersons().length === 0)} isError={error !== null && (filteredPersons().length === 0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
                 <Button color="primary" onClick={addNewUser}>Add New User</Button>
 
-                
-                    <Table id="user-table" responsive className="table-hover">
-                        <thead className="sticky">
-                            <User type={headers} />
-                        </thead>
-                        <tbody className="full-height-overflow" >
-                            {filteredPersons().map((person) => {
 
-                                return <User user={person} type={row} key={person.id} openModal={(person.id === userModalToOpen)} closeModal={closeModal} />
-                            }
-                            )}
-                            {(newUser !== null) && <User user={newUser} type={row} openModal={true} closeModal={closeModal} onCancelNewUser={closeModal} />}
-                        </tbody>
-                    </Table>
-               
+                <Table id="user-table" responsive className="table-hover">
+                    <thead className="sticky">
+                        <User type={headers} />
+                    </thead>
+                    <tbody className="full-height-overflow" >
+                        {filteredPersons().map((person) => {
+
+                            return <User user={person} type={row} key={person.id} openModal={(person.id === userModalToOpen)} closeModal={closeModal} />
+                        }
+                        )}
+                        {(newUser !== null) && <User user={newUser} type={row} openModal={true} closeModal={closeModal} onCancelNewUser={closeModal} />}
+                    </tbody>
+                </Table>
+
             </DataLoading>
 
 

@@ -1,7 +1,7 @@
-﻿
+
 //React and Redux
 import React from 'react';
-import { memo, useState, useRef } from 'react';
+import { memo, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 //Components
 import Comment from './Comment';
@@ -9,14 +9,15 @@ import Comment from './Comment';
 import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 import { Icon } from '../../../components/Icons/Icons';
-import { Button, Tooltip } from 'reactstrap';
+import { Button } from 'reactstrap';
 import CheckBox from '../../../components/Forms/CheckBox';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 //utilities
-import { log, SCRIPT_ITEM as logType } from '../../../logging';
-import { isScreenLargerThan } from '../../../core/screenHelper';
+import { log, SCRIPT_ITEM as logType } from '../../../dataAccess/logging';
+
+import classnames from 'classnames';
 //Constants
 import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
 //trigger types
@@ -29,9 +30,12 @@ import {
 
 //styling
 import s from '../ScriptItem.module.scss';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 
 const ScriptItem = memo((props) => {
+
+    ScriptItem.displayName = 'ScriptItem'
 
     //utility consts
     const dispatch = useDispatch();
@@ -41,6 +45,7 @@ const ScriptItem = memo((props) => {
     const { id = null,
         sceneId = null,
         alignRight = false,
+        isViewAsPartPerson = false,
         curtainOpen = null,
         previousCurtainOpen = null,
         previousFocusId = null,
@@ -57,7 +62,8 @@ const ScriptItem = memo((props) => {
     const isUndoInProgress = useSelector(state => (state.scriptEditor.currentUndo[sceneId]))
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
-    const readOnly = false //useSelector(state => state.scriptEditor.readOnly) || true
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     log(logType, 'redux:', { focus, isUndoInProgress, scriptItem, readOnly})
 
     const { type, commentId, nextId } = scriptItem;
@@ -118,7 +124,7 @@ const ScriptItem = memo((props) => {
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
     const handlePrint = () => {
-        alert("Sorry not yet implemented!")
+        window.print()
     }
 
     log(logType, 'rendering:', { id })
@@ -126,7 +132,15 @@ const ScriptItem = memo((props) => {
     return (
 
         <div id={id}
-            className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight & viewStyle === 'chat') ? s['align-right'] : ''} ${(alignRight & viewStyle === 'classic') ? s['highlight'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']} ${s[viewStyle]} ${(nextId === null) ? s['final-script-item'] : ''}`}
+            className={classnames('script-item',
+                s['script-item'],
+                s[type?.toLowerCase()],
+                (alignRight & viewStyle === 'chat') ? s['align-right'] : null,
+                (viewStyle === 'classic' && isViewAsPartPerson) ? s.highlight : null,
+                (finalCurtainOpen) ? s['curtain-open'] : s['curtain-closed'],
+                s[viewStyle],
+                (nextId === null) ? s['final-script-item'] : null)}
+
             style={{ zIndex: zIndex }}
         >
 
@@ -166,6 +180,7 @@ const ScriptItem = memo((props) => {
                         removeMedia={(media) => handleMedia('remove', media)}
                         showControls={(showMedia && focus)}
                         autoLoad={true}
+                        readOnly={readOnly}
                     />
                 </div>
             }

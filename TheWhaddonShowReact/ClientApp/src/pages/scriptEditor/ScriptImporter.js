@@ -18,7 +18,7 @@
 //import { clearImportUpdates } from '../../actions/scriptEditor';
 
 ////Utils
-//import { log } from '../../logging.js';
+//import { log } from '../../dataAccess/logging.js';
 //import isScreen from '../../core/screenHelper';
 //import { convertTextToHeaderScriptItems, getScriptItem, filterNonEmptyStrings } from './scripts/import';
 //import { getLatest } from '../../dataAccess/localServerUtils'

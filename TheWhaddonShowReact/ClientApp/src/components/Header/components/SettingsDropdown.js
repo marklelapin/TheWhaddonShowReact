@@ -1,12 +1,9 @@
-﻿import s from '../Header.module.scss'; // eslint-disable-line css-modules/no-unused-class
-import Settings from '../../../images/sidebar/basil/Settings';
-
+﻿import s from '../Header.module.scss'; 
+import { Icon } from '../../../components/Icons/Icons';
 import React from 'react';
 import { Dropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 
 
-
-import Notifications from '../../../components/Notifications';
 
 
 //interface Props {
@@ -22,12 +19,12 @@ export function SettingsDropdown(props) {
         <Dropdown nav isOpen={menuOpen} toggle={onClick} className="tutorial-dropdown pr-4">
             <DropdownToggle nav className={`${s.mobileCog}`}>
                 <span className={`${s.headerSvgFlipColor}`}>
-                <Settings />
+                <Icon icon="gear" />
                {/*     <i className="fa fa-gear" />*/}
                 </span>
             </DropdownToggle>
             <DropdownMenu end className={`${s.headerDropdownLinks} super-colors`}>
-                <Notifications />
+                
             </DropdownMenu>
         </Dropdown>
 

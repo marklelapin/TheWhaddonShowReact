@@ -1,20 +1,31 @@
-﻿import React from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import {userAccessToComponent, WRITE } from '../../../dataAccess/userAccess'; 
 import InputText from '../../../components/Forms/InputText';
 import Avatar from '../../../components/Avatar/Avatar';
 
-
+import { log, PERSONAL_DETAILS as logType } from '../../../dataAccess/logging';
 
 function PersonalDetails(props) {
 
+    const authenticatedUser = useSelector(state => state.user.authenticatedUser)
+    const hasWriteAccess = userAccessToComponent(authenticatedUser, 'Users') === WRITE
+
     const { person = {}, type, onChange } = props
 
-    const { firstName = '', lastName = null, email = '' } = person
+    const { firstName = '', lastName = null } = person
+
+    const email = hasWriteAccess ? person.email : '####'
+
+    log(logType, 'PersonalDetails person', { person, hasWriteAccess, authenticatedUser, email })
+
 
     let fullName = ''
 
     if (lastName === null) { fullName = firstName }
     else if (lastName === '') { fullName = firstName + ' ' }
-    else {fullName = firstName + ' ' + lastName }
+    else { fullName = firstName + ' ' + lastName }
+
 
 
     const headers = () => {
@@ -32,15 +43,15 @@ function PersonalDetails(props) {
         return (
             <>
                 <td>
-                    <Avatar person={person} onChange={(pictureRef)=>onChange('avatar',pictureRef)} />
+                    <Avatar person={person} onChange={(pictureRef) => onChange('avatar', pictureRef)} />
                 </td>
                 <td className="personal-details no-shrink" >
 
                     <div>
-                        <InputText className="full-name" placeholder="Enter first and last name" value={fullName} onChange={(e)=>onChange('name',e.target.value)} />
+                        <InputText className="full-name" placeholder="Enter first and last name" value={fullName} onChange={(e) => onChange('name', e.target.value)} />
                     </div>
                     <div>
-                        <InputText className="email" placeholder="Enter email" value={email} onChange={(e)=>onChange('email',e.target.value)} />
+                        <InputText className="email" placeholder="Enter email" value={email} onChange={(e) => onChange('email', e.target.value)} />
                     </div>
 
                 </td>
