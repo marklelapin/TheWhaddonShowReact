@@ -99,9 +99,11 @@ export default function scriptEditorReducer(state = initialState, action) {
                 showComments: action.showComments,
             };
         case UPDATE_VIEW_AS_PART_PERSON:
+            const previousViewAsPartPerson = state.viewAsPartPerson
             return {
                 ...state,
                 viewAsPartPerson: action.partPerson,
+                previousViewAsPartPerson: previousViewAsPartPerson
             };
 
         case UPDATE_CURRENT_PART_PERSONS:

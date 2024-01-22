@@ -265,7 +265,7 @@ export const alignRight = (sceneOrder, viewAsPartPerson, currentPartPersons, scr
 
     const righthandPartId = viewAsPartId || partIdsOrderInBody[1]
     //log(true, 'error check: alignRight', { partIdsOrderInBody, viewAsPartPerson, viewAsPartId,righthandPartId })
-    const alignedSceneOrder = mergedSceneOrder.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) }))
+    const alignedSceneOrder = mergedSceneOrder.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) ,isViewAsPartPerson: item.partIds.includes(viewAsPartId) }))
 
     return alignedSceneOrder
 
@@ -310,11 +310,16 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
 
 
 
-export const isSceneAffectedByViewAsPartPerson = (scene, viewAsPartPerson, currentPartPersons) => {
+export const isSceneAffectedByViewAsPartPerson = (scene, viewAsPartPerson, previousViewAsPartPerson, currentPartPersons) => {
 
     const scenePartPersonIds = scene.partIds.map(partId => currentPartPersons[partId]).map(partPerson => ({ sceneId: scene.id, partId: partPerson?.id, personId: partPerson?.personId }))
 
-    const match = scenePartPersonIds.some(scenePartPerson => scenePartPerson.partId === viewAsPartPerson?.id || scenePartPerson.personId === viewAsPartPerson?.id)
+    const match = scenePartPersonIds.some(scenePartPerson =>
+        scenePartPerson.partId === viewAsPartPerson?.id
+        || scenePartPerson.personId === viewAsPartPerson?.id
+        || scenePartPerson.personId === previousViewAsPartPerson?.id
+        || scenePartPerson.partId === previousViewAsPartPerson?.id
+    )
 
     return match
 }

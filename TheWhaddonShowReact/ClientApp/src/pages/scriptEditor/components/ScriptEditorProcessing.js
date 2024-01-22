@@ -57,6 +57,7 @@ export function ScriptEditorProcessing() {
     //scriptEditor (handles data for display)
     const show = useSelector(state => state.scriptEditor.show)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
+    const previousViewAsPartPerson = useSelector(state => state.scriptEditor.previousViewAsPartPerson)
     const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus)
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen)
@@ -105,7 +106,7 @@ export function ScriptEditorProcessing() {
         const scenes = sceneOrders[show.id]
         if (scenes) {
             scenes.forEach(scene => {
-                const isAffected = isSceneAffectedByViewAsPartPerson(scene, viewAsPartPerson, currentPartPersons)
+                const isAffected = isSceneAffectedByViewAsPartPerson(scene, viewAsPartPerson, previousViewAsPartPerson, currentPartPersons)
                 if (isAffected) {
                     const newSceneOrder = alignRight(sceneOrders[scene.id], viewAsPartPerson, currentPartPersons)
                     if (newSceneOrder.length > 0) {

@@ -9,6 +9,7 @@ import { Icon } from '../../../components/Icons/Icons';
 
 //Utils
 import { updateSearchParameters, setShowSceneSelector } from '../../../actions/scriptEditor';
+import classnames from 'classnames';
 import s from '../Script.module.scss'
 function ScriptSearch() {
 
@@ -71,8 +72,8 @@ function ScriptSearch() {
                     color={searchParameters.myScenes ? 'primary' : 'secondary'}
                     outline={searchParameters.myScenes ? false : true}
                     onClick={() => handleChange('myScenes', true)}
-                    className={s.scriptSearchMine}
-                ><div className={s.highlight}>{highlightMessage}</div></Button>
+                    className={classnames(s.scriptSearchMine,searchParameters.myScenes ? s.active : null)}
+                ><div >{highlightMessage}</div></Button>
             </div>
             <div className={s.scriptSearchCharacters}>
                 <Input

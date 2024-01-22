@@ -17,6 +17,7 @@ import { isScreenSmallerThan } from '../../core/screenHelper';
 import { PERSON } from '../../dataAccess/localServerModels';
 import { getLatest, prepareUpdate } from '../../dataAccess/localServerUtils.js';
 import { login, logout } from '../../actions/user';
+import {trigger,UPDATE_VIEW_AS_PART_PERSON } from '../../actions/scriptEditor';
 import { log, LOGIN as logType } from '../../dataAccess/logging.js';
 import classnames from 'classnames';
 //css
@@ -143,6 +144,7 @@ function Login() {
                 }
                 log(logType, 'useEffect[instance,account]', { user })
                 dispatch(login(user))
+                dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: user }))
                 navigate('/app/home', { replace: true })
             }
         }).catch(error => { log(logType, 'Authentication error: ' + error) })
@@ -198,7 +200,7 @@ function Login() {
     const loginMark = () => {
         const mark = persons.find(person => person.id === MARKID)
         dispatch(login(mark))
-        setFakeAuthenticated(true)
+  
 
     }
 
@@ -206,12 +208,12 @@ function Login() {
         const demo = persons.find(person => person.id === DEMOID)
         log(logType, 'demo login', { DEMOID, demo, persons })
         dispatch(login(demo))
-        setFakeAuthenticated(true)
+       
     }
 
     const loginUnknownPerson = () => {
         dispatch(logout())
-        setFakeAuthenticated(true)
+   
     }
 
     const isLoading = syncInfo.isSyncing && (!persons || persons?.length === 0)

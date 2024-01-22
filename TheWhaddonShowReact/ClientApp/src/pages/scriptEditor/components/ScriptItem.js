@@ -17,7 +17,7 @@ import QuickToolTip from '../../../components/Forms/QuickToolTip';
 //utilities
 import { log, SCRIPT_ITEM as logType } from '../../../dataAccess/logging';
 import { finalReadOnly } from '../scripts/layout';
-
+import classnames from 'classnames';
 //Constants
 import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
 //trigger types
@@ -44,6 +44,7 @@ const ScriptItem = memo((props) => {
     const { id = null,
         sceneId = null,
         alignRight = false,
+        isViewAsPartPerson = false,
         curtainOpen = null,
         previousCurtainOpen = null,
         previousFocusId = null,
@@ -130,7 +131,15 @@ const ScriptItem = memo((props) => {
     return (
 
         <div id={id}
-            className={`script-item ${s['script-item']} ${s[type?.toLowerCase()]}  ${(alignRight & viewStyle === 'chat') ? s['align-right'] : ''} ${(alignRight & viewStyle === 'classic') ? s['highlight'] : ''} ${finalCurtainOpen ? s['curtain-open'] : s['curtain-closed']} ${s[viewStyle]} ${(nextId === null) ? s['final-script-item'] : ''}`}
+            className={classnames('script-item',
+                s['script-item'],
+                s[type?.toLowerCase()],
+                (alignRight & viewStyle === 'chat') ? s['align-right'] : null,
+                (viewStyle === 'classic' && isViewAsPartPerson) ? s.highlight : null,
+                (finalCurtainOpen) ? s['curtain-open'] : s['curtain-closed'],
+                s[viewStyle],
+                (nextId === null) ? s['final-script-item'] : null)}
+
             style={{ zIndex: zIndex }}
         >
 

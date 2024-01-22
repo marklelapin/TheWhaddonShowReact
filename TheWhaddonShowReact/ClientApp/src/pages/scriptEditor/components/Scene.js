@@ -120,6 +120,7 @@ const Scene = memo((props) => {
                                 previousCurtainOpen={bodyOrder[idx - 1]?.curtainOpen || previousCurtainOpen}
                                 curtainOpen={scriptItem.curtainOpen}
                                 alignRight={scriptItem.alignRight}
+                                isViewAsPartPerson={scriptItem.isViewAsPartPerson}
                                 previousFocusId={scriptItem.previousFocusId}
                                 nextFocusId={(idx === bodyOrder.length - 1) ? scene.nextSceneId : scriptItem.nextFocusId}
                             />
