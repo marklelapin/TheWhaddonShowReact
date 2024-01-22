@@ -38,7 +38,7 @@ import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEdit
 export const initialState = {
     searchParameters: {
         tags: [],
-        characters: [],
+        characters: '',
         myScenes: false,
     },
     show: {

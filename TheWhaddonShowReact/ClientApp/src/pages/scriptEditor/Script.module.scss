@@ -9,7 +9,7 @@
 .script-viewer-header {
     text-align: end;
     align-items: center;
-    flex: 0 0 50px !important; //TODO: can get rid of important if flex-full-width is moved out of index.css to scss.  
+    flex: 0 0 50px !important; //TODO: can get rid of important if flex-full-width is moved out of index.css to scss.
 
     .left-controls {
         flex: 0 0 20px;
@@ -22,10 +22,9 @@
     }
 
     .script-viewer-navlink {
-display: flex;
-align-items: center;
-            padding: 5px 3px !important;
-            
+        display: flex;
+        align-items: center;
+        padding: 5px 3px !important;
     }
 
     .view-as-control {
@@ -151,18 +150,67 @@ align-items: center;
     position: relative;
     z-index: 1000;
 }
+
 .sceneSelector {
-    flex: 0,0,310px;
+    flex: 1;
+    max-width: 310px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    padding: 5px;
+    position: relative;
+   
+    .scriptSearch {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+
+        .closeIcon {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 5px;
+            cursor: pointer;
+        }
+    }
+
+    .scriptSearchCharacters {
+        flex: 0 0 50px;
+       
+    }
+
+    .scriptSearchTags {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 0px 10px 5px 10px;
+    }
+
+    .scriptSearchButtons {
+        display: flex;
+        flex-direction: row;
+        padding: 5px 10px 5px 10px;
+        align-items: center;
+        justify-content: space-evenly;
+
+        button {
+            width: 150px;
+        }
+
+        .scriptSearchMine {
+            background-color: $highlight;
+        }
+    }
+
 
     .inFocus {
         font-weight: 600;
     }
 
     &.modal {
-        flex: 0,0,1;
+        padding: 15px;
+        max-width: unset;
     }
 
     .sceneSelectorRow {

@@ -1,39 +1,100 @@
 import React from 'react';
-import TagsInput from '../../../components/Forms/TagsInput';
-import { Button } from 'reactstrap';
+import { useSelector, useDispatch } from 'react-redux';
+
 //Components
+import { Button } from 'reactstrap';
+import TagsInput from '../../../components/Forms/TagsInput';
 import { Input } from 'reactstrap';
-function ScriptSearch(props) {
+import { Icon } from '../../../components/Icons/Icons';
 
-    const { tags = [], onChange} = props;
+//Utils
+import { updateSearchParameters, setShowSceneSelector } from '../../../actions/scriptEditor';
+import s from '../Script.module.scss'
+function ScriptSearch() {
 
-    const tagOptions = ['Guy To Do','Mark B to Do','Mark C to Do','Heather to Do']
+    const dispatch = useDispatch();
+
+    const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
+    const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
+    const currentUser = useSelector(state => state.user.currentUser)
+
+    const viewAsPartPersonName = (viewAsPartPerson.personId === undefined) ? viewAsPartPerson.firstName : viewAsPartPerson.name
+
+    const highlightMessage = (viewAsPartPerson?.id === currentUser?.id) ? 'My scenes' : `${viewAsPartPersonName}'s scenes`
+
+    const tagOptions = ['Music', 'Comedy', 'Intro', 'Guy To Do', 'Mark B to Do', 'Mark C to Do', 'Heather to Do']
+
+    const tags = searchParameters.tags
+
+    const unselectedTags = tagOptions.filter(tag => !tags.includes(tag))
+
+    const handleChange = (type, value) => {
+        let newSearchParameters;
+        switch (type) {
+            case 'addTag':
+                newSearchParameters = { ...searchParameters, tags: [...searchParameters.tags, value] }
+                break;
+            case 'removeTag':
+                newSearchParameters = { ...searchParameters, tags: searchParameters.tags.filter(tag => tag !== value) }
+                break;
+            case 'myScenes':
+                newSearchParameters = { ...searchParameters, myScenes: value }
+                break;
+            case 'characters':
+                newSearchParameters = { ...searchParameters, characters: value }
+                break;
+            default: return;
+        }
+
+        dispatch(updateSearchParameters(newSearchParameters))
+    }
+
 
     return (
 
-        <div className="script-search">
+        <div className={s.scriptSearch}>
+            <h2>Search</h2>
+            <div className={s.closeIcon}>
+                <Icon icon="cross" onClick={() => dispatch(setShowSceneSelector(false))} />
+            </div>
+            <div className={s.scriptSearchButtons}>
+                <Button
+                    size='sm'
+                    color={searchParameters.myScenes ? 'secondary' : 'primary'}
+                    outline={searchParameters.myScenes ? true : false}
+                    onClick={() => handleChange('myScenes', false)}
+                    className={s.scriptSearchAll}
+                >All</Button>
+                <div className={s.scriptSearchOr}>or</div>
+                <Button
+                    size='sm'
+                    color={searchParameters.myScenes ? 'primary' : 'secondary'}
+                    outline={searchParameters.myScenes ? false : true}
+                    onClick={() => handleChange('myScenes', true)}
+                    className={s.scriptSearchMine}
+                ><div className={s.highlight}>{highlightMessage}</div></Button>
+            </div>
+            <div className={s.scriptSearchCharacters}>
+                <Input
+                    type="text"
+                    value={searchParameters.characters}
+                    onChange={(e) => handleChange('characters', e.target.value)}
+                    name="search"
+                    id="search"
+                    placeholder="Search"
+                />
+            </div>
 
-            <Input
-                type="text"
-                name="search"
-                id="search"
-                placeholder="Search"
-            />
-            <TagsInput
-                tags={tags}
-                tagOptions={tagOptions}
-                onClickAdd={(tag) => onChange('addTag', tag)}
-                onChange={(tag) => onChange('removeTag', tag)} />
+            <div className={s.scriptSearchTags}>
+                <TagsInput
+                    tags={tags}
+                    tagOptions={unselectedTags}
+                    onClickAdd={(tag) => handleChange('addTag', tag)}
+                    onClickRemove={(tag) => handleChange('removeTag', tag)}
+                />
+            </div>
+            
 
-    {/*        TODO - make radio buttons*/}
-            <Button
-                size='xs'
-                onClick={() => onChange('myScenes', false)}
-            >All</Button>
-            <Button
-                size='xs'
-                onClick={() => onChange('myScenes', true)}
-            >Just Mine</Button>
 
         </div>
 
