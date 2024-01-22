@@ -10,7 +10,7 @@ import { log, SCENE_SELECTOR_ROW as logType} from '../../../dataAccess/logging';
 import classnames from 'classnames';
 import { ACT, SCENE } from '../../../dataAccess/scriptItemTypes';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
-import { finalReadOnly } from '../scripts/layout';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess'; 
 
 import s from '../Script.module.scss'
 
@@ -22,9 +22,8 @@ function SceneSelectorRow(props) {
 
     log(logType, 'props', {highlight})
 
-    
-    const isWriter = useSelector(state => state.user.currentUser?.isWriter)
-    const readOnly = !isWriter
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
 
     return (
         <>

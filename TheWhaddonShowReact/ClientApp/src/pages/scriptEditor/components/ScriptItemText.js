@@ -26,7 +26,7 @@ import { log, SCRIPT_ITEM_TEXT as logType } from '../../../dataAccess/logging';
 import { curtainText } from '../scripts/curtain';
 import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
-import { finalReadOnly } from '../scripts/layout';
+
 import { getScriptItemPlaceholder } from '../scripts/scriptItem'
 
 //constants
@@ -37,6 +37,7 @@ import { DEFAULT_END_MARGIN } from '../scripts/layout';
 //css
 import s from '../ScriptItem.module.scss';
 import { ElementInViewObserver } from '../../../components/ElementInViewObserver/ElementInViewObserver';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 
 function ScriptItemText(props) {
@@ -64,8 +65,8 @@ function ScriptItemText(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const textWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) //used to control when to re-render for text width.
     const textWidthPx = `${textWidth}px`
-    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
-    const readOnly = finalReadOnly(_readOnly)
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     // const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
     //log(logType,'storedTextWidth',storedTextWidth)
     //Internal state

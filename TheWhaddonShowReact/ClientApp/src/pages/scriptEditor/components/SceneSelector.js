@@ -117,7 +117,7 @@ function SceneSelector(props) {
 
     return (
         <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
-            <ScriptSearch />
+            <ScriptSearch isModal={isModal} />
             <h2>Scenes</h2>
             <div className="full-height-overflow">
 

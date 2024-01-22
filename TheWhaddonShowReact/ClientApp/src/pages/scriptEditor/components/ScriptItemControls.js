@@ -25,10 +25,11 @@ import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 
 //utils
 import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../dataAccess/logging';
-import { finalReadOnly } from '../scripts/layout';
+
 import { moveFocusToId } from '../scripts/utility';
 
 import s from '../ScriptItem.module.scss';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 export const CONFIRM = 'CONFIRM';
 export const TOGGLE_PART_SELECTOR = 'TOGGLE_PART_SELECTOR';
@@ -48,8 +49,8 @@ function ScriptItemControls(props) {
     log(logType, 'props', props)
 
     //Redux
-    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
-    const readOnly = finalReadOnly(_readOnly)
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     //Internal State
     const [dropdownOpen, setDropdownOpen] = useState(false);
 

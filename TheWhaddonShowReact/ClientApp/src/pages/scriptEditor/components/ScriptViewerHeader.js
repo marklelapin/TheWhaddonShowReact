@@ -19,10 +19,11 @@ import { Icon } from '../../../components/Icons/Icons';
 import {  isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { setPauseSync } from '../../../actions/localServer'; 
 import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../dataAccess/logging';
-import { getShowBools, finalReadOnly } from '../scripts/layout';
+import { getShowBools} from '../scripts/layout';
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 import s from '../Script.module.scss';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 
 function ScriptViewer(props) {
@@ -38,8 +39,8 @@ function ScriptViewer(props) {
     //Redux State
     const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
     const defaultShowSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
-    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
-    const readOnly = finalReadOnly(_readOnly)
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)

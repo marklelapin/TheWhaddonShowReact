@@ -11,7 +11,8 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { updateScriptItemInFocus, trigger, DELETE_COMMENT, UPDATE_TEXT, ADD_TAG, REMOVE_TAG } from '../../../actions/scriptEditor';
 import { END } from '../scripts/utility';
 import { moveFocusToId } from '../scripts/utility';
-import { finalReadOnly } from '../scripts/layout';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
+
 
 import { log, COMMENT as logType } from '../../../dataAccess/logging';
 //css
@@ -30,8 +31,9 @@ function Comment(props) {
     const comment = useSelector(state => state.scriptEditor.currentScriptItems[id]) || [];
     const showComments = useSelector(state => state.scriptEditor.showComments);
     const scriptItem = { ...comment };
-    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
-    const readOnly = finalReadOnly(_readOnly)
+    const currentUser = useSelector(state => state.user.currentUser)
+
+    const readOnly = isScriptReadOnly(currentUser)
 
 
     //internal state

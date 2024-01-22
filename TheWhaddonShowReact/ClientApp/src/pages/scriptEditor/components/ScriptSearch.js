@@ -11,7 +11,9 @@ import { Icon } from '../../../components/Icons/Icons';
 import { updateSearchParameters, setShowSceneSelector } from '../../../actions/scriptEditor';
 import classnames from 'classnames';
 import s from '../Script.module.scss'
-function ScriptSearch() {
+function ScriptSearch(props) {
+
+    const { isModal } = props;
 
     const dispatch = useDispatch();
 
@@ -73,7 +75,8 @@ function ScriptSearch() {
                     outline={searchParameters.myScenes ? false : true}
                     onClick={() => handleChange('myScenes', true)}
                     className={classnames(s.scriptSearchMine,searchParameters.myScenes ? s.active : null)}
-                ><div >{highlightMessage}</div></Button>
+                >
+                    <div className={classnames(isModal ? s.highlight : null)} >{highlightMessage}</div></Button>
             </div>
             <div className={s.scriptSearchCharacters}>
                 <Input

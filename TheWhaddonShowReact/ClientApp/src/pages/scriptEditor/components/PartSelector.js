@@ -1,9 +1,7 @@
 ﻿//React and Redux
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
-import { trigger, CONFIRM_UNDO } from '../../../actions/scriptEditor';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 //Components
 import Avatar from '../../../components/Avatar/Avatar';
@@ -12,7 +10,7 @@ import PartSelectorDropdown from './PartSelectorDropdown';
 //styles
 import s from '../ScriptItem.module.scss';
 //Utilities
-import { finalReadOnly } from '../scripts/layout';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 import { log } from '../../../dataAccess/logging'
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 
@@ -21,7 +19,6 @@ function PartSelector(props) {
 
 
     const debug = true;
-    const dispatch = useDispatch();
 
     log(debug, 'Component:PartSelector props', props)
     //Props
@@ -30,8 +27,8 @@ function PartSelector(props) {
     //Redux
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const scenePartIds = scene?.partIds || []
-    const _readOnly = useSelector(state => state.scriptEditor.readOnly) || true
-    const readOnly = finalReadOnly(_readOnly)
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     //Internal State
     const [openPartSelector, setOpenPartSelector] = useState(false);
 

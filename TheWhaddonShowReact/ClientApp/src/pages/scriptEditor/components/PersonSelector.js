@@ -35,7 +35,7 @@ function PersonSelector(props) {
     const { persons = null, personIds = null, sceneId = null, tags = [], additionalCategory = null, partId } = config || {};
 
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId]) || {}
-    const scenePartIds = scene.partIds || []
+    const scenePartIds = scene?.partIds || []
 
     const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
@@ -44,11 +44,11 @@ function PersonSelector(props) {
 
     const scenePartPersonIds = scenePartIds.map(partId => partPersons[partId]) || []
 
-    const allocatedPersonIds = scenePartPersonIds.filter(item => item.personId !== null).map(person => person.id)
+    const allocatedPersonIds = scenePartPersonIds.filter(item => item?.personId !== null).map(person => person?.id)
 
     const finalPersons = (persons) ? persons
         : ((personIds) ? getLatest(storedPersons.filter(person => personIds.includes(person.id)))
-            : (allocatedPersonIds.length > 0) ? getLatest(storedPersons.filter(person => allocatedPersonIds.includes(person.id) === false))
+            : (allocatedPersonIds.length > 0) ? getLatest(storedPersons.filter(person => allocatedPersonIds.includes(person?.id) === false))
                 : getLatest(storedPersons) || [])
 
     const personsWithFriendlyName = addFriendlyName(finalPersons);

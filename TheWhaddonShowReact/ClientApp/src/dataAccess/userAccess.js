@@ -1,4 +1,4 @@
-
+import { isScreenLargerThan } from '../core/screenHelper';
 
 export const READ = 'READ'
 export const WRITE = 'WRITE'
@@ -68,4 +68,10 @@ const doMsalLogout = async (instance, account) => {
     } catch (popupLogoutError) {
         instance.logoutRedirect();
     }
+}
+
+
+
+export const isScriptReadOnly = (currentUser) => {
+    return (currentUser?.isWriter && isScreenLargerThan('sm')) ? false : true;
 }

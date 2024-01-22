@@ -24,7 +24,7 @@ import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { DOWN, UP, START, END, ABOVE, BELOW } from '../scripts/utility';
 import { moveFocusToId, closestPosition } from '../scripts/utility';
 import { partEditorRowId } from '../scripts/part'
-import { finalReadOnly } from '../scripts/layout';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 //styling
 import s from '../ScriptItem.module.scss'
@@ -55,8 +55,8 @@ function PartEditorRow(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
-    const readOnly = finalReadOnly(_readOnly)
+   const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
 
     //const scenePartIds = scene.partIds
 

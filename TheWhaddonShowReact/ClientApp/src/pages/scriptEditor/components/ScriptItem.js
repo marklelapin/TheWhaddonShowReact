@@ -16,7 +16,7 @@ import CurtainBackground from './CurtainBackground';
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 //utilities
 import { log, SCRIPT_ITEM as logType } from '../../../dataAccess/logging';
-import { finalReadOnly } from '../scripts/layout';
+
 import classnames from 'classnames';
 //Constants
 import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
@@ -30,6 +30,7 @@ import {
 
 //styling
 import s from '../ScriptItem.module.scss';
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 
 const ScriptItem = memo((props) => {
@@ -61,8 +62,8 @@ const ScriptItem = memo((props) => {
     const isUndoInProgress = useSelector(state => (state.scriptEditor.currentUndo[sceneId]))
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
-    const _readOnly = useSelector(state => state.scriptEditor.readOnly)
-    const readOnly = finalReadOnly(_readOnly)
+    const currentUser = useSelector(state => state.user.currentUser)
+    const readOnly = isScriptReadOnly(currentUser)
     log(logType, 'redux:', { focus, isUndoInProgress, scriptItem, readOnly})
 
     const { type, commentId, nextId } = scriptItem;
@@ -123,7 +124,7 @@ const ScriptItem = memo((props) => {
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
     const handlePrint = () => {
-        alert("Sorry not yet implemented!")
+        window.print()
     }
 
     log(logType, 'rendering:', { id })
