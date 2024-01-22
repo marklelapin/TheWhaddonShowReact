@@ -7,6 +7,7 @@ import { loginRequest, msalConfig } from '../../authConfig';
 
 //Components
 import { Button } from 'reactstrap'
+import { Icon } from '../../components/Icons/Icons';
 import DataLoading from '../../components/DataLoading/DataLoading';
 import TheWhaddonShowHomeWide from '../../images/TheWhaddonShowHomeWide.png'
 import TheWhaddonShowHomeThin from '../../images/TheWhaddonShowHomeThin.png'
@@ -17,7 +18,7 @@ import { PERSON } from '../../dataAccess/localServerModels';
 import { getLatest, prepareUpdate } from '../../dataAccess/localServerUtils.js';
 import { login, logout } from '../../actions/user';
 import { log, LOGIN as logType } from '../../dataAccess/logging.js';
-
+import classnames from 'classnames';
 //css
 import s from './Login.module.scss'
 
@@ -37,7 +38,53 @@ function Login() {
 
     const location = useLocation();
 
-    const [fakeAuthenticated, setFakeAuthenticated] = useState(false)
+    const [welcomeBlockState, setWelcomeBlockState] = useState('fallen') //hung, toppling,falling,hidden
+    const [curtainState, setCurtainState] = useState('closed') //open,closed
+    const [hideAll, setHideAll] = useState(false)
+
+    log(logType, 'props', { welcomeBlockState, curtainState, authenticatedUser, syncInfo, })
+
+    useEffect(() => {
+
+        if (authenticatedUser) {
+            setTimeout(() => {
+                setWelcomeBlockState('topple')
+            }, 1500)
+            setTimeout(() => {
+                setWelcomeBlockState('fall')
+            }, 3500)
+            setTimeout(() => {
+                setCurtainState('open')
+            }, 5000)
+            setTimeout(() => {
+                setHideAll(true)
+            }, 7000)
+        }
+
+        if (!authenticatedUser) {
+
+            setHideAll(false)
+            setWelcomeBlockState('fallen')
+
+            if (curtainState !== 'closed') {
+                setCurtainState('opened')
+                setTimeout(() => {
+                    setCurtainState('closing')
+                }, 1500)
+                setTimeout(() => {
+                    setWelcomeBlockState('hang')
+                }, 3500)
+            } else {
+                setTimeout(() => {
+                    setWelcomeBlockState('hang')
+                }, 1500)
+            }
+
+        }
+
+    }, [authenticatedUser])
+
+
 
     useEffect(() => {
 
@@ -50,7 +97,7 @@ function Login() {
             }
 
         }
- 
+
         handleHomeResize()
 
         findAndLoginUser()
@@ -105,12 +152,12 @@ function Login() {
     const getLinkedUser = () => {
         const searchParams = new URLSearchParams(location.search);
         const linkId = (location.pathname === '/app/loginlink') ? searchParams.get('id') : null;
-  
-        const linkedUser = persons.find(person => person.id === linkId && (person.msalLink === null || person.msalLink === undefined) )
-       
+
+        const linkedUser = persons.find(person => person.id === linkId && (person.msalLink === null || person.msalLink === undefined))
+
         if (location.pathname === '/app/loginlink' && (linkedUser === null || linkedUser === undefined)) {
             log(logType, 'refreshLinkUser navigate to home')
-            navigate('/app/home', {replace: true})
+            navigate('/app/home', { replace: true })
         }
 
         log(logType, 'useEffect[]', { linkId, linkedUser })
@@ -145,7 +192,7 @@ function Login() {
     };
 
     const doLogout = () => {
-       signOutAllUsers(instance)
+        signOutAllUsers(instance)
     }
 
     const loginMark = () => {
@@ -174,38 +221,54 @@ function Login() {
     //handle redirection of login link if the link has already been processed or doesn't matching existing person
 
 
+    if (hideAll) return null;
+
 
     return (
         <>
-            <div className={`${s['login-curtain']} ${authenticatedUser ? s['open'] : s['closed']}`}>
+            <div className={s.loginContainer}>
+                <div className={classnames(s.leftCurtain, s[curtainState])}>
+                </div>
+                <div className={classnames(s.rightCurtain, s[curtainState])}>
+                </div>
                 <DataLoading isLoading={isLoading}
                     isError={isErrorSyncing}
                     errorText={`Error loading intitial user data. Needs internet access. The app will keep retrying but if problem continues and you have internet access contact Mark (magcarter@hotmail.co.uk)`}
                     spinnerSize={50}>
+                    <div className={classnames(s.welcomeBlock, s[welcomeBlockState])}>
+                        <div className={s.loginWelcome}>
+                            <div className={s.loginImage}>
+                                <h3 className={s.welcomeTo}>Welcome to the...</h3>
+                                <img src={smallScreen ? TheWhaddonShowHomeWide : TheWhaddonShowHomeWide}
+                                    alt='The Whaddon Show Title with slightly shambolic, singing Cowboy playing the guitar.'
+                                    width={smallScreen ? '300px' : '500px'} />
+                                <h3 className={s.app}>...app.</h3>
+                            </div>
 
-                    {!fakeAuthenticated && !authenticatedUser &&
-                        < UnauthenticatedTemplate>
-                            <div className={`${s['welcome-block']}`}>
-                                <h2>Welcome to the...</h2>
-                                <div className={`${s['login-image']}`}>
-                                    <img src={smallScreen ? TheWhaddonShowHomeThin : TheWhaddonShowHomeWide}
-                                        alt='The Whaddon Show Title with slightly shambolic, singing Cowboy playing the guitar.'
-                                        width={smallScreen ? '300px' : '500px'} />
-                                </div>
-                                <h2>...app.</h2>
-                                <h5 className={`${s['description']}`}>Collaboratively write scripts, manage casting, and organise the show.</h5>
-                                <p>(in a less shambolic way than before!)</p>
+                        </div>
 
-                                <div className={`${s['login']}`}>
-                                    <h3>Please Login:</h3>
+                        <div className={s.description}>Collaboratively write scripts, manage casting, and organise the show.</div>
+                        <div className={s.joke}>(in a less shambolic way than before!)</div>
+
+                        <UnauthenticatedTemplate>
+                            <div className={s.login}>
+                                <h3>Please Login:</h3>
+                                <div className={s.loginButtons}>
                                     <Button color='primary' onClick={handleLogin}>Cast & Crew</Button>
                                     <Button color='primary' onClick={loginMark}>Demo Account</Button>
                                 </div>
+
                             </div>
-                        </UnauthenticatedTemplate>}
+                        </UnauthenticatedTemplate>
+                        <AuthenticatedTemplate>
+                            <div className={s.login}>
+                                <h3>LoggedIn!</h3><Icon icon="tick" />
+                            </div>
+                        </AuthenticatedTemplate>
+                    </div>
                     <AuthenticatedTemplate>
-                        {!authenticatedUser &&//<AuthenticatedTemplate>
-                            <div className={`${s['not-registered-block']}`}>
+                        {!authenticatedUser &&
+                            <div className={`${s['notRegisteredBlock']}`}>
                                 <h4>Hi!</h4>
                                 <h4>You have successfully logged in but are not yet a registered user.</h4>
                                 <h4>Please use the login link sent to you or get a new one from <a href="mailto:magcarter@hotmail.co.uk">Mark</a></h4>
@@ -215,8 +278,8 @@ function Login() {
                         }
                     </AuthenticatedTemplate>
 
-                </DataLoading>
-            </div>
+                </DataLoading >
+            </div >
         </>
 
     )

@@ -1,70 +1,288 @@
 @import '../../styles/app';
 
-.login-curtain {
+.loginContainer {
     position: absolute;
     z-index: 1000;
     top: 0px;
     left: 0px;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
     text-align: center;
-    background-color: $danger;
-    transition: width 1s ease-out;
+    width: 100%;
+    overflow: hidden;
 
-    &.open {
-        width: 0;
+    .leftCurtain {
+        height: 200%;
+        position: absolute;
+        left: 0;
+        top: -20%;
+        background-color: $danger;
+        width: 50%;
+
+
+
+
+        &.open {
+            animation: openLeftCurtain 1.5s ease-in-out;
+            transform: translate(-200%,0%) rotate(-10deg)
+        }
+
+        &.opened {
+            transform: translate(-200%,0%) rotate(-10deg)
+        }
+
+        &.closing {
+            animation: closeLeftCurtain 1s ease-in-out;
+        }
+
+        &.closed {
+            
+        }
     }
-    &.closed {
-        width: 100%;
+
+    .rightCurtain {
+        height: 200%;
+        position: absolute;
+        right: 0px;
+        top: -20%;
+        width: 50%;
+        background-color: $danger;
+
+
+
+        &.open {
+            animation: openRightCurtain 1.5s ease-in-out;
+            transform: translate(200%,0%) rotate(10deg)
+        }
+
+        &.opened {
+            transform: translate(200%,0%) rotate(10deg)
+        }
+
+        &.closing {
+            animation: closeRightCurtain 1s ease-in-out;
+        }
+
+        &.closed {
+           
+        }
     }
 
-}
 
-.login-curtain{
-    &.open {
-        width: 0;
+    .welcomeBlock {
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        width: 350px;
+        height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 10px;
+        transition: all 0.5s ease-out;
+
+        @include dropdown-box();
+
+        .loginWelcome {
+            flex: 1;
+            flex-direction: column;
+            min-height: 250px;
+
+            .loginImage {
+                display: flex;
+                justify-content: center;
+                padding-bottom: 40px;
+                position: relative;
+                justify-content: center;
+                padding: 20px;
+                margin-top: 20px;
+
+
+                .welcomeTo {
+                    width: 100%;
+                    position: absolute;
+                    top: 10px;
+                    left: 50%;
+                    transform: translate(-50%,0);
+                    font-weight: $font-weight-semi-bold;
+                }
+
+                img {
+                    width: 100%;
+                }
+
+                .app {
+                    position: absolute;
+                    bottom: -20px;
+                    left: 50%;
+                    transform: translate(-50%,0);
+                    font-weight: $font-weight-semi-bold;
+                }
+            }
+        }
+
+
+        .description {
+            flex: 0 1 auto;
+            font-weight: $font-weight-bold;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .joke {
+            flex: 0 1 auto;
+            font-size: $font-size-sm;
+            padding: 5px;
+        }
+
+        .login {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .loginButtons {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-evenly;
+                align-items: center;
+
+
+                button {
+                    padding: 5px;
+                    margin: 5px;
+                    width: 130px;
+                }
+            }
+        }
+
+        &.topple {
+            animation: topple 2s ease-in-out;
+            transform-origin: calc(100% - 10px) 10px;
+            transform: translate(-50%,-50%) rotate(-30deg);
+        }
+
+        &.fall {
+            animation: fall 0.5s;
+            transform-origin: calc(100% - 10px) 10px;
+            transform: translate(-50%,100%) rotate(-30deg);
+        }
+
+        &.fallen {
+            transform: translate(-50%,100%) rotate(-30deg);
+            transform-origin: calc(100% - 10px) 10px;
+        }
+
+        &.hang {
+            animation: hang 1s;
+            transform-origin: calc(100% - 10px) 10px;
+        }
+
+        &.hung {
+            transform: translate(-50%,-50%) rotate(0deg);
+        }
+    }
+
+    .notRegisteredBlock {
+        max-width: 600px;
+        padding: 30px;
+
+        h4 {
+            margin-bottom: 30px;
+        }
+    }
+
+    @keyframes topple {
+        0% {
+            transform: translate(-50%,-50%) rotate(0deg);
+        }
+
+        40% {
+            transform: translate(-50%,-50%) rotate(-36deg);
+        }
+
+        60% {
+            transform: translate(-50%,-50%) rotate(-26deg);
+        }
+
+        70% {
+            transform: translate(-50%,-50%) rotate(-34deg);
+        }
+
+        80% {
+            transform: translate(-50%,-50%) rotate(-28deg);
+        }
+
+        90% {
+            transform: translate(-50%,-50%) rotate(-32deg);
+        }
+
+        100% {
+            transform: translate(-50%,-50%) rotate(-30deg);
+        }
+    }
+
+    @keyframes fall {
+        0% {
+            transform: translate(-50%,-50%) rotate(-30deg);
+        }
+
+        100% {
+            transform: translate(-50%,100%) rotate(-30deg);
+        }
+    }
+
+    @keyframes hang {
+        0% {
+            transform: translate(-50%,100%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%,-50%) rotate(0deg);
+        }
     }
 
 
-}
+    @keyframes openRightCurtain {
+        0% {
+            transform: translate(0%,0%) rotate(0deg)
+        }
 
-
-.welcome-block {
-    background-color: white;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-}
-
-.not-registered-block {
-    max-width: 600px;
-    padding: 30px;
-
-    h4 {
-        margin-bottom: 30px;
+        100% {
+            transform: translate(100%,0%) rotate(10deg)
+        }
     }
-}
 
+    @keyframes openLeftCurtain {
+        0% {
+            transform: translate(0%,0%) rotate(0deg)
+        }
 
-.login-image {
-    display: flex;
-    justify-content: center;
-
-    padding-bottom: 40px;
-
-    img {
+        100% {
+            transform: translate(-100%,0%) rotate(-10deg)
+        }
     }
-}
 
-.login {
-    padding: 20px;
+    @keyframes closeRightCurtain {
+        0% {
+            transform: translate(100%,0%) rotate(-10deg)
+        }
 
-    button {
-        padding: 5px;
-        margin: 5px;
-        width: 130px;
+        100% {
+            transform: translate(0%,0%) rotate(0deg)
+        }
+    }
+
+    @keyframes closeLeftCurtain {
+        0% {
+            transform: translate(-100%,0%) rotate(10deg)
+        }
+
+        100% {
+            transform: translate(0%,0%) rotate(0deg)
+        }
     }
 }

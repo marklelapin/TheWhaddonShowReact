@@ -3,7 +3,7 @@ import {
 } from '../actions/user';
 
 
-const defaultState = {
+export const defaultState = {
     authenticatedUser: null,
     currentUser: null,
 }

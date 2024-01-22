@@ -20,7 +20,7 @@ import axios from 'axios';
 
 import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from '../src/dataAccess/browserStorage.js';
 import { NO_INDEXED_DB } from '../src/dataAccess/indexedDB.js'
-
+import {defaultState as defaultUserState} from '../src/reducers/user.js' 
 import App from '../src/components/App.jsx';
 import config from '../src/config.js';
 import createRootReducer from '../src/reducers';
@@ -42,10 +42,10 @@ import '../src/styles/theme.scss';
 const _ = require('lodash');
 
 //Azure AdB2c
-const msalInstance = new PublicClientApplication(msalConfig) 
+const msalInstance = new PublicClientApplication(msalConfig)
 
 
-msalInstance.addEventCallback((event) => {  
+msalInstance.addEventCallback((event) => {
     if (
         (event.eventType === EventType.LOGIN_SUCCESS ||
             event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS ||
@@ -77,15 +77,21 @@ const initApp = async () => {
         preloadedState = await loadStateFromBrowserStorage();
         if (preloadedState === NO_INDEXED_DB) {
             log(logType, NO_INDEXED_DB)
+            preloadedState = undefined;
+            //preloadingError = true; //TODO: handle this in layout.
         } else {
             log(logType, 'preloadedState exists:', { copyId: preloadedState?.localServer.localCopyId })
         }
 
     } catch (err) {
         log(logType, 'preloadedState error:', err)
-        preloadedState === undefined;
+        preloadedState = undefined;
     }
 
+    //ensure no authenticated user
+    if (preloadedState !== undefined) {
+        preloadedState = { ...preloadedState, user: defaultUserState }
+    }
 
     if (preloadedState === undefined) {
         store = createStore(
@@ -100,7 +106,7 @@ const initApp = async () => {
             createRootReducer(),
             preloadedState,
             compose(
-               window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+                window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
             )
         )
     }
@@ -124,7 +130,7 @@ const initApp = async () => {
     // If you want your app to work offline and load faster, you can change
     // unregister() to register() below. Note this comes with some pitfalls.
     // Learn more about service workers: http://bit.ly/CRA-PWA
-   serviceWorker.unregister();
+    serviceWorker.unregister();
 
 
 }

@@ -27,10 +27,11 @@ export const LOGIN = { type: DEBUG, location: 'Component: Login' }
 export const MEDIA_DISPLAY = { type: NONE, location: 'Component:MediaDisplay' }
 export const MEDIA_DROPZONE = { type: NONE, location: 'Component:MediaDropzone' }
 
-export const PART = {type: DEBUG, location: 'Component:Part'}
+export const PART = {type: DEBUG, location: 'Script:Part'}
 export const PART_EDITOR_ROW = {type: NONE, location: 'Component:PartEditorRow'}
-export const PART_SELECTOR_DROPDOWN = {type: NONE, location: 'Component:PartSelectorDropdown'}
+export const PART_SELECTOR_DROPDOWN = { type: NONE, location: 'Component:PartSelectorDropdown' }
 
+export const PERSON = {type: NONE, location: 'Script:Person'}    
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
 export const PERSONAL_DETAILS = { type: NONE, location: 'Component:PersonalDetails' }
 export const SCENE = { type: NONE, location: 'Component:Scene' }

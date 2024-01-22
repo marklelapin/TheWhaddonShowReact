@@ -1,4 +1,4 @@
-
+import { log, PERSON as logType } from './logging'
 
 export const categorisePersons = (persons, tags = []) => {
 
@@ -38,14 +38,18 @@ export const categorisePersons = (persons, tags = []) => {
 
 
 export const addFriendlyName = (persons) => {
+    try {
+        const personsWithFriendlyName = persons.map(person => {
+            if (persons.filter(persons => persons.firstName === person.firstName).length > 1) {
+                return { ...person, friendlyName: `${person.firstName} ${person.lastName[0]}` }
+            }
+            return { ...person, friendlyName: person.firstName };
+        })
+    } catch (error) {
+        log(logType, 'error in addFriendlyName:', error)
+        return persons;
+    }
 
-    const personsWithFriendlyName = persons.map(person => {
-
-        if (persons.filter(persons => persons.firstName === person.firstName).length > 1) {
-            return { ...person, friendlyName: `${person.firstName} ${person.lastName[0]}` }
-        }
-        return { ...person, friendlyName: person.firstName };
-    })
 
     return personsWithFriendlyName
 }
