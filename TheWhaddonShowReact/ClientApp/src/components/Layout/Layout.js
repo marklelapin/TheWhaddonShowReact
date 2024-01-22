@@ -30,19 +30,19 @@ export const Layout = (props) => {
     const sidebarOpened = useSelector(state => state.navigation.sidebarOpened);
     const currentUser = useSelector(state => state.user.currentUser)
 
-    const handleSwipe = (e) => {
-        if ('ontouchstart' in window) {
-            if (e.direction === 4) {
-                dispatch(openSidebar());
-                return;
-            }
+    //const handleSwipe = (e) => {
+    //    if ('ontouchstart' in window) {
+    //        if (e.direction === 4) {
+    //            dispatch(openSidebar());
+    //            return;
+    //        }
 
-            if (e.direction === 2 && sidebarOpened) {
-                dispatch(closeSidebar());
-                return;
-            }
-        }
-    }
+    //        if (e.direction === 2 && sidebarOpened) {
+    //            dispatch(closeSidebar());
+    //            return;
+    //        }
+    //    }
+    //}
 
 
     return (
@@ -59,7 +59,7 @@ export const Layout = (props) => {
             <Sidebar />
             <div className={s.wrap}>
                 <Header />
-                <Hammer onSwipe={handleSwipe}>
+              {/*  <Hammer onSwipe={handleSwipe}>*/}
                     <main className={s.content}>
                         <TransitionGroup className="flex-full-height">
                             <CSSTransition
@@ -72,7 +72,7 @@ export const Layout = (props) => {
                         </TransitionGroup>
                         
                     </main>
-                </Hammer>
+           {/*     </Hammer>*/}
             </div>
             <Login />
         </div>

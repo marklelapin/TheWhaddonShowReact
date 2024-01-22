@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {useDispatch} from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
 
 //Components
@@ -8,7 +9,8 @@ import CaretPin from './CaretPin'
 
 //utils
 import classnames from 'classnames';
-
+import {isScreenSmallerThan} from '../../../core/screenHelper';
+import {closeSidebar } from '../../../actions/navigation';
 //css
 import s from './LinksGroup.module.scss';
 
@@ -25,6 +27,8 @@ const LinksGroup = (props) => {
         parent = null,
         badge = null
     } = props;
+
+    const dispatch = useDispatch();
 
     const { childrenLinks = null, ...propsWithoutChildren } = props;
 
@@ -46,7 +50,13 @@ const LinksGroup = (props) => {
         setIsCollapsed(!isCollapsed);
     }
 
+    const handleNavLinkClick = (childrenLinks) => {
 
+        if (!childrenLinks && isScreenSmallerThan('md')) {
+            dispatch(closeSidebar())
+        }
+
+    }
 
     const isOpen = activeItem && activeItem.includes(index) && theaderLinkWasClicked;
 
@@ -55,6 +65,7 @@ const LinksGroup = (props) => {
             <NavLink
                 to={link}
                 key={link}
+                onClick={()=>handleNavLinkClick(childrenLinks)}
                 className={({ isActive }) => isActive ? s.headerLinkActive : ''}
             >
                 <span className={classnames('icon', s.icon)}>
@@ -71,6 +82,7 @@ const LinksGroup = (props) => {
                             <NavLink
                                 key={link + ind}
                                 to={child.link}
+                                onClick={()=>handleNavLinkClick(childrenLinks)}
                                 className={({ isActive }) => isActive ? s.headerLinkActive : ''}
                                 style={{ paddingLeft: `${26 + (10 * (deep - 1))}px` }}
                             >

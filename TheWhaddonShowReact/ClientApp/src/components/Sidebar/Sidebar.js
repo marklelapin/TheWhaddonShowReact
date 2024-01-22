@@ -12,7 +12,7 @@ import {
     closeStaticSidebar,
     openSidebar,
 } from '../../actions/navigation';
-import { isScreen } from '../../core/screenHelper';
+import { isScreenSmallerThan } from '../../core/screenHelper';
 
 import { Icon } from '../../components/Icons/Icons';
 import User from '../../pages/user/Users';
@@ -53,7 +53,7 @@ function Sidebar() {
 
     const handleResize = () => {
         //console.log(`hadnle resize static: ${sidebarStatic} opened: ${sidebarOpened}`)
-        if (isSmallerScreen()) {
+        if (isScreenSmallerThan('md')) {
             dispatch(closeStaticSidebar());
         }
     }
