@@ -16,7 +16,7 @@ import { Modal } from 'reactstrap';
 import { log, SCRIPT as logType } from '../../dataAccess/logging.js';
 import isScreen from '../../core/screenHelper';
 import { getShowBools } from './scripts/layout';
-
+import s from './Script.module.scss';
 function Script() {
 
     //constants
@@ -62,9 +62,9 @@ function Script() {
     log(logType, 'Script: show', { scenesToLoad, show })
     //-----------------------------------------------------------------------
     return (
-        <div id="script-page" className="flex-full-height">
+        <div id="script-page" className={`${s['script-page']}`}>
             {show &&
-                <div id="script-page-content" className="page-content flex-full-width">
+                <div id="script-page-content" className={s['script-page-content']}>
                     {(showSceneSelector && !modalSceneSelector) &&
                         <SceneSelector show={show} scenesToLoad={scenesToLoad} />
                     }

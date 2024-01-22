@@ -5,6 +5,44 @@
     resize: none;
 }
 
+.script-page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    @media print {
+        @page {
+            size: A4 !important;
+        }
+    }
+
+    .script-page-content {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+
+        @media print {
+            oveflow: visible !important;
+        }
+
+        .script-viewer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1;
+
+            @media print {
+                overflow: visible !important;
+            }
+        }
+    }
+}
+
+
+
 
 .script-viewer-header {
     text-align: end;
@@ -41,6 +79,11 @@
     .right-controls {
         flex: 0 0 60px;
     }
+
+
+    @media print {
+        display: none !important;
+    }
 }
 
 
@@ -50,9 +93,20 @@
     flex-direction: column;
     align-items: center;
     background-color: $gray-700;
+    flex: 1;
+    height: 100%;
+    overflow: auto;
 
     &.classic {
         background-color: $gray-700;
+    }
+
+
+
+    @media print {
+        background-color: white !important;
+        overflow: visible !important;
+        height: unset;
     }
 }
 
@@ -72,6 +126,12 @@
     &.classic {
         background-color: $gray-700;
     }
+
+    @media print {
+        background-color: white !important;
+        max-width: unset !important;
+        padding-right: 0 !important;
+    }
 }
 
 .script-comments {
@@ -82,6 +142,10 @@
 
     &.hide-comments {
         display: none;
+    }
+
+    @media print {
+        display: none !important;
     }
 }
 
@@ -103,8 +167,12 @@
 .scene-group {
     position: relative;
 
-    @include dropdown-box;
-    border-color: $gray-900;
+    @media screen {
+        border-color: $gray-900;
+        @include dropdown-box;
+    }
+
+    page-break-before: always;
 }
 
 .scene-header {
@@ -122,6 +190,10 @@
     z-index: 0;
     background-color: $gray-inverse;
     text-align: center;
+
+    @media print {
+        display: none !important;
+    }
 }
 
 
@@ -159,7 +231,7 @@
     overflow: hidden;
     padding: 5px;
     position: relative;
-   
+
     .scriptSearch {
         display: flex;
         flex-direction: column;
@@ -176,7 +248,6 @@
 
     .scriptSearchCharacters {
         flex: 0 0 50px;
-       
     }
 
     .scriptSearchTags {
@@ -197,8 +268,6 @@
         button {
             width: 150px;
         }
-
-        
     }
 
 
@@ -212,6 +281,10 @@
     }
 
     .sceneSelectorRow {
+    }
+
+    @media print {
+        display: none;
     }
 }
 
