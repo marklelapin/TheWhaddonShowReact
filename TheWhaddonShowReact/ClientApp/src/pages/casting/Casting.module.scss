@@ -1,0 +1,17 @@
+@import '../../styles/app';
+
+
+
+.castingContainer {
+    display: flex;
+    flex-direction: row;
+
+
+    .castSection {
+        flex: 1;     
+    }
+
+    .summarySection {
+        flex: 2;
+    }
+}
