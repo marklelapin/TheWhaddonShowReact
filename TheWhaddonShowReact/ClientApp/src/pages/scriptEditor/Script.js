@@ -28,12 +28,26 @@ function Script() {
     const modalSceneSelector = useSelector((state) => state.scriptEditor.modalSceneSelector)
 
     const show = useSelector((state) => state.scriptEditor.show)
-    
 
-    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) 
+
+    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id])
+    const scriptFilter = useSelector((state) => state.scriptEditor.scriptFilter)
     const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
 
     const [scenesToLoad, setScenesToLoad] = useState(3)
+
+
+    const getFilteredShowOrder = () => {
+
+        if (scriptFilter === undefined || scriptFilter === null) return showOrder;
+
+        const filteredShowOrder = showOrder.filter(scene => scriptFilter.includes(scene.id));
+
+        return filteredShowOrder;
+        
+    }
+
+    const filteredShowOrder = getFilteredShowOrder();
 
 
     useEffect(() => {

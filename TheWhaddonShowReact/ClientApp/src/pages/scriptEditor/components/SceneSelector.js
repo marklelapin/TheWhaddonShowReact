@@ -31,6 +31,8 @@ function SceneSelector(props) {
 
     const [beingDragged, setBeingDragged] = useState(false)
 
+    const noFilterExists = (searchParameters.characters === '' && searchParameters.tags.length === 0 && searchParameters.myScenes === false)
+    const filterExists = !noFilterExists
     log(logType, 'viewAsPartPerson', { viewAsPartPerson })
 
 
@@ -72,8 +74,8 @@ function SceneSelector(props) {
         });
     }
 
-    
-    const filteredShowOrder = filteredScenes.filter(scene=>scene.show===true);
+
+    const filteredShowOrder = filteredScenes.filter(scene => scene.show === true);
 
 
     const handleDragStart = (e) => {
@@ -103,8 +105,13 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                dispatch(updateMovementInProgress(true))
-                moveFocusToId(id, END, true)
+                if (scriptFilter === null) {
+                    dispatch(updateMovementInProgress(true))
+                    moveFocusToId(id, END, true)
+                } else {
+                    dispatch(updateScriptFilter(id))
+                }
+                
                 break;
             default:
                 break;
@@ -113,11 +120,25 @@ function SceneSelector(props) {
         if (isModal) dispatch(setShowSceneSelector(false))
     }
 
+    const handleSetFilter = () => {
+        const newScriptFilter = (noFilterExists) ? null : filteredShowOrder.map(scene=>scene.id)
+        dispatch(updateScriptFilter(newScriptFilter))
+    }
+
     log(logType, 'render props', { filteredShowOrder })
 
     return (
         <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
             <ScriptSearch isModal={isModal} />
+            <div className={s.setFilter} onClick={handleSetFilter}>
+                {noFilterExists && <>
+                    <p>view entire script</p><Icon icon='arrow-right' />
+                </>}
+                {filterExists && <>
+                    <p>filter script for scenes below'</p><Icon icon='arrow-right' />
+                </>}
+                <p>or click on individual scene</p>
+            </div>
             <h2>Scenes</h2>
             <div className="full-height-overflow">
 
