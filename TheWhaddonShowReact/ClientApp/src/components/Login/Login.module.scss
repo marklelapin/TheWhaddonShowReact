@@ -9,6 +9,10 @@
     text-align: center;
     width: 100%;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     .leftCurtain {
         height: 200%;
@@ -22,7 +26,7 @@
 
 
         &.open {
-            animation: openLeftCurtain 1.5s ease-in-out;
+            animation: openLeftCurtain 1s ease-in-out;
             transform: translate(-200%,0%) rotate(-10deg)
         }
 
@@ -35,7 +39,6 @@
         }
 
         &.closed {
-            
         }
     }
 
@@ -50,7 +53,7 @@
 
 
         &.open {
-            animation: openRightCurtain 1.5s ease-in-out;
+            animation: openRightCurtain 1s ease-in-out;
             transform: translate(200%,0%) rotate(10deg)
         }
 
@@ -63,10 +66,22 @@
         }
 
         &.closed {
-           
         }
     }
 
+    .content {
+        position: relative;
+        z-index: 5;
+
+        span {
+            font-size: 1.5em;
+            font-weight: $font-weight-bold;
+            color: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
 
     .welcomeBlock {
         position: absolute;
@@ -172,7 +187,7 @@
         }
 
         &.fallen {
-            transform: translate(-50%,100%) rotate(-30deg);
+            transform: translate(-50%,100%) rotate(0deg);
             transform-origin: calc(100% - 10px) 10px;
         }
 
@@ -188,10 +203,11 @@
 
     .notRegisteredBlock {
         max-width: 600px;
-        padding: 30px;
+        padding: 20px;
 
-        h4 {
-            margin-bottom: 30px;
+        p {
+            padding: 0px;
+            margin: 0px;
         }
     }
 
@@ -200,24 +216,24 @@
             transform: translate(-50%,-50%) rotate(0deg);
         }
 
-        40% {
+        25% {
             transform: translate(-50%,-50%) rotate(-36deg);
         }
 
-        60% {
-            transform: translate(-50%,-50%) rotate(-26deg);
+        50% {
+            transform: translate(-50%,-50%) rotate(-25deg);
         }
 
         70% {
-            transform: translate(-50%,-50%) rotate(-34deg);
-        }
-
-        80% {
-            transform: translate(-50%,-50%) rotate(-28deg);
-        }
-
-        90% {
             transform: translate(-50%,-50%) rotate(-32deg);
+        }
+
+        85% {
+            transform: translate(-50%,-50%) rotate(-29deg);
+        }
+
+        95% {
+            transform: translate(-50%,-50%) rotate(-31deg);
         }
 
         100% {

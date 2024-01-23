@@ -35,6 +35,7 @@ export const loadStateFromBrowserStorage = async () => {
 
 export const clearStateFromBrowserStorage = (dispatch) => {
     try {
+        log(logType, 'clearStateFromBrowserStorage')
         clearState()
         dispatch(clearLocalServerState())
         dispatch(clearScriptEditorState())
