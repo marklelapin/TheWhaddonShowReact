@@ -37,6 +37,10 @@ function Update(props) {
     }
 
 
+    const getLoginLink = () => {
+        alert('https://thewhaddonshowapp.azurewebsites.net/app/loginlink?id=' + user.id)
+    }
+
     const headers = () => {
         return (<th className={className}>Active</th>)
     }
@@ -53,6 +57,7 @@ function Update(props) {
                     <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={(e) => onChange('isActive',e.target.checked)} />
 
                     <Button id="save" color={button.color} disabled={button.disabled} onClick={onClickUpdate}>{button.text}</Button>
+                    <Button id="getLoginLink" color="secondary" onClick={getLoginLink}>login link</Button>
                     {/*<Update id="save" hasChanged={userChanged} onClickUpdate={onClickUpdate} onClickCancel={onClickCancel} isNew={isNew} ></Update >*/}
                 </div >
             </td>

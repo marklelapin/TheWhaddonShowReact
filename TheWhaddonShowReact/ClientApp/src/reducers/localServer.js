@@ -34,6 +34,7 @@ import { log, LOCAL_SERVER_REDUCER as logType } from '../dataAccess/logging.js';
 import { resetSyncId } from '../dataAccess/browserStorage';
 import { getDefaultPauseSync } from '../dataAccess/userAccess';
 
+
 const defaultState = {
     localCopyId: uuidv4(),
     sync: {
