@@ -90,8 +90,10 @@ const initApp = async () => {
 
     //ensure no authenticated user
     if (preloadedState !== undefined) {
-        preloadedState = { ...preloadedState, user: defaultUserState }
+        preloadedState.user = defaultUserState
+        preloadedState.localServer.sync.pauseSync = false         
     }
+    
 
     if (preloadedState === undefined) {
         store = createStore(

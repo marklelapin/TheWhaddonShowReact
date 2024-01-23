@@ -44,6 +44,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\PublishLatestToDockerHub.pubxml" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\PublishVersionToDockerHub.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="ClientApp\build\" />
     <Folder Include="ClientApp\public\images\" />
     <Folder Include="ClientApp\src\dataAccess\__tests__\" />
