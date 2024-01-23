@@ -1,4 +1,4 @@
-import { log, PERSON as logType } from './logging'
+import { log, PERSON as logType } from '../dataAccess/logging.js'
 
 export const categorisePersons = (persons, tags = []) => {
 

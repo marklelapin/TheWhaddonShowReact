@@ -1,5 +1,5 @@
 ﻿//React and REdux
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -16,10 +16,10 @@ import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
 
 //utitilites
-import {  isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
-import { setPauseSync } from '../../../actions/localServer'; 
+import { isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
+import { setPauseSync } from '../../../actions/localServer';
 import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../dataAccess/logging';
-import { getShowBools} from '../scripts/layout';
+import { getShowBools } from '../scripts/layout';
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 import s from '../Script.module.scss';
@@ -27,7 +27,7 @@ import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 
 function ScriptViewer(props) {
- 
+
     //utils
     const _ = require('lodash');
     const dispatch = useDispatch();
@@ -40,20 +40,51 @@ function ScriptViewer(props) {
     const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
     const defaultShowSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+
     const sceneInFocus = useSelector(state => state.scriptEditor.sceneInFocus)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
 
+
+
+    //internal state
+    const [tempReadOnly, setTempReadOnly] = React.useState(false)
+    const [print, setPrint] = React.useState(false)
+
+
+    //This section allows users with write access to print the script as read only
+    //The textareas used for editing don't print well so they are made div in read only mode.
+    useEffect(() => {
+        if (print === true) {
+            window.print()
+            setTempReadOnly(false)
+            setPrint(false)
+        }
+    }, [print])
+
+    useEffect(() => {
+        if (tempReadOnly === true) {
+            setPrint(true)
+        }
+    }, [tempReadOnly])
+
+
+    const readOnly = (tempReadOnly === true) ? true : isScriptReadOnly(currentUser)
+
     log(logType, 'props', { sceneInFocus, viewStyle, readOnly })
 
     //Event Handlers
     const handlePrint = () => {
-        alert("Sorry! Not yet implemented.")
-        // window.print()
+        if (viewStyle === CHAT) {
+            alert('Switching to classic mode. Please try again there.')
+            dispatch(updateViewStyle(CLASSIC))
+        } else if (readOnly === true) {
+            setPrint(true)
+        } else {
+            setTempReadOnly(true)
+        }
     }
-
 
     const handleNavLink = (type) => {
 
@@ -84,11 +115,11 @@ function ScriptViewer(props) {
 
     }
 
-    const { showComments, showCommentControls,showSceneSelectorControls} = getShowBools(defaultShowSceneSelector, defaultShowComments)
+    const { showComments, showCommentControls, showSceneSelectorControls } = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
 
     return (
-        
+
         <div id="script-viewer-header" className={`bg-light flex-full-width ${s['script-viewer-header']}`}>
 
             {/*<div className={`${s['left-controls']} justify-content-start align-items-center`}>*/}
@@ -97,7 +128,7 @@ function ScriptViewer(props) {
             <div className={`${s['center-controls']} justify-content-center`}>
                 <Nav className="bg-light" tabs>
                     <NavItem>
-                        <NavLink id ="chat-mode"
+                        <NavLink id="chat-mode"
                             className={`${s['script-viewer-navlink']} ${(viewStyle === CHAT) ? 'active' : ''}`}
                             onClick={() => handleNavLink(CHAT)}
                         >
@@ -116,7 +147,7 @@ function ScriptViewer(props) {
             <QuickToolTip id="chat-mode" tip="Fun, great on mobile and shows curtain more clearly." placement="top" />
             <QuickToolTip id="classic-mode" tip="Smart, great for printing" placement="top" />
             <div id="view-as-control" className={`${s['view-as-control']} ${viewAsPartPerson ? s['selected'] : ''} ${s[viewStyle]}`}>
-                <span>view as: 
+                <span>view as:
                 </span>
 
                 <Avatar
@@ -129,7 +160,7 @@ function ScriptViewer(props) {
             </div>
             <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
             <div className={`${['right-controls']} justify-content-end align-items-center`}>
-              
+
                 {showCommentControls && showComments && <Icon id="script-viewer-comments" icon="comment" onClick={() => toggleShowComments()} toolTip="Hide comments"></Icon>}
 
                 {showCommentControls && !showComments && <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>}
@@ -141,7 +172,7 @@ function ScriptViewer(props) {
                 {!readOnly && isScreenLargerThan('lg') && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>}
 
                 {readOnly && <Icon id="script-viewer-refresh" icon="refresh" onClick={() => dispatch(setPauseSync(false))} toolTip="Refresh script"></Icon>}
-               
+
             </div>
 
         </div>

@@ -19,6 +19,7 @@
 
     &.classic {
         align-items: center;
+        padding: 20px 50px  0px 50px;
     }
 
     &.chat {
@@ -61,6 +62,12 @@
             display: none;
         }
     }
+
+
+    .element-in-view-observer{
+        width: 100%;
+    }
+
     /*Layout*/
     .script-item-text-area {
         flex: 1;
@@ -71,6 +78,7 @@
         z-index: 2;
 
         &.classic {
+            width: 100%;
             justify-content: flex-start;
         }
 
@@ -81,6 +89,10 @@
             justify-content: center;
             position: relative;
             z-index: 3;
+            
+            &.classic {
+                width:100%;
+            }
 
             .script-item-header {
                 position: relative;
@@ -110,6 +122,7 @@
                 position: relative;
                 z-index: 4;
                 background-color: transparent;
+                
 
                 .bracketed-text::before {
                     content: '( ';
@@ -123,6 +136,7 @@
                     font-size: $h5-font-size;
                     text-align: center;
                     align-self: center;
+                    white-space: pre-line;
                 }
 
                 @media print {
@@ -130,6 +144,7 @@
                     width: 100% !important;
                     }
             }
+
 
             .open-bracket {
                 position: absolute;
@@ -157,7 +172,7 @@
 
 
     @media print {
-        page-break-inside: avoid !important;
+       
         padding: 10px 20px 0px 20px !important;
     }
 //script-item end
@@ -607,6 +622,7 @@
         font-size: $h2-font-size;
         text-align: center;
     }
+
 }
 
 .scene {
@@ -641,6 +657,10 @@
 
         .hide-redo {
             color: transparent;
+        }
+
+        @media print {
+            display: none !important;
         }
     }
     /*&.curtain-open {
@@ -760,6 +780,10 @@
                 background-color: $gray-inverse;
             }
         }
+
+        @media print {
+            display: none !important;
+        }
     }
     /* &.curtain-open.chat * {
         color: white;
@@ -850,7 +874,7 @@
     &.classic {
         .text-input {
             border-radius: 0px 0px 0px 0px !important;
-            padding: 5px 10px;
+            padding: 0px;
             text-align: center;
         }
     }

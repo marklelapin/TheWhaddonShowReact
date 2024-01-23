@@ -169,6 +169,7 @@ const ScriptItem = memo((props) => {
                     nextFocusId={nextFocusId}
                     isUndoInProgress={isUndoInProgress}
                     sceneNumber={sceneNumber}
+                    viewStyle={viewStyle}
                 />
 
             </div>
@@ -202,7 +203,7 @@ const ScriptItem = memo((props) => {
                             key={redoId}
                             className={isUndoInProgress ? s['show-redo'] : s['hide-redo']}
                             icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />}
-                    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>
+                {/*    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>*/}
                     {!readOnly && <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />}
 
                 </div>

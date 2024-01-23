@@ -15,6 +15,8 @@
         @page {
             size: A4 !important;
         }
+        display: block !important;
+        overflow: visible !important;
     }
 
     .script-page-content {
@@ -24,7 +26,7 @@
         overflow: hidden;
 
         @media print {
-            oveflow: visible !important;
+            overflow: visible !important;
         }
 
         .script-viewer {
@@ -35,6 +37,7 @@
             z-index: 1;
 
             @media print {
+                display: block !important;
                 overflow: visible !important;
             }
         }
@@ -131,6 +134,7 @@
         background-color: white !important;
         max-width: unset !important;
         padding-right: 0 !important;
+        overflow: visible !important;
     }
 }
 
