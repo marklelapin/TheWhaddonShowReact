@@ -22,7 +22,7 @@ const Casting = (props) => {
 
     const cast = addFriendlyName(persons.filter(person => person.isActor || person.isSinger))
 
-    const castWithParts = cast //getCastWithParts(cast,partPersons,scriptItems)
+    const castWithParts = getCastWithParts(cast, partPersons, scriptItems)
 
 
     return (
@@ -31,7 +31,7 @@ const Casting = (props) => {
             <div className={s.castingContainer}>
 
                 <div className={s.castSection}>
-                    {castWithParts.map(castMember => 
+                    {castWithParts.map(castMember =>
                         <>
                             <Avatar person={castMember} avatarInitials={(castMember.avatarInitials) || null} />
                             <span >{castMemeber.friendlyName || castMember.name}</span>
@@ -53,3 +53,40 @@ const Casting = (props) => {
 }
 export default Casting;
 
+
+
+const getLineStats = (scriptItems) => {
+    const lineStats = scriptItems.filter(item => item.type === DIALOGUE).map(item => ({
+        partId: item.partId,
+        sceneId: item.parentId,
+        wordCount: item.text.split[' '].length + 1
+    }))
+
+    return lineStats;
+}
+
+
+const getPartsWithStats = (partPersons, lineStats) => {
+
+    const partsWithStats = lineStats.reduce((acc, line) => {
+        const partId = line.partId || 'unallocated'
+        acc[partId] = acc[partId]
+            ? { ...acc, [partId]: { ...acc[partId], wordCount: acc[partId].wordCount + line.wordCount, lineCount: acc[partId].lineCount + 1 } }
+            : { part: partPersons[partId] || { id: 'none', name: 'unallocated' }, wordCount: line.wordCount, lineCount: 1 };
+    }, {})
+
+    return partsWithStats
+}
+
+const getCastWithParts = (cast, partStats) => {
+
+    const castParts = partStats.reduce((acc, part) => {
+        const personId = part.personId || 'unallocated'
+        acc[personId] = acc[personId]
+            ? { ...acc, [personId]: { ...acc[personId], parts: [...acc[personId].parts, part], wordCount: acc[personId].wordCount + part.wordCount, totalParts: acc[personId].partCount + 1 } }
+            : { person: cast[personId] || { id: 'none', firstName: 'unallocated' }, parts: [part], wordCount: part.wordCount, partCount: 1 };
+    }, {})
+}
+
+
+NEED TO ADD IN NUMBER OF SCENES AND SCENES themelves getCastWithScenes.
