@@ -25,7 +25,7 @@ import { clearStateFromBrowserStorage } from '../../dataAccess/browserStorage'
 import s from './Login.module.scss'
 
 //constants
-import { MARKID, DEMOID, signOutAllUsers } from '../../dataAccess/userAccess'
+import { REHEARSALID, DEMOID, signOutAllUsers } from '../../dataAccess/userAccess'
 
 function Login() {
     const dispatch = useDispatch();
@@ -49,15 +49,18 @@ function Login() {
     useEffect(() => {
 
         if (authenticatedUser) {
+            if (welcomeBlockState === 'fallen') {
+                setWelcomeBlockState('hang')
+            }
             setTimeout(() => {
                 setWelcomeBlockState('topple')
-            }, 1500)
+            }, 2000)
             setTimeout(() => {
                 setWelcomeBlockState('fall')
-            }, 4000)
+            }, 4500)
             setTimeout(() => {
                 setCurtainState('open')
-            }, 5000)
+            }, 5500)
             setTimeout(() => {
                 setHideAll(true)
             }, 7000)
@@ -81,6 +84,9 @@ function Login() {
                     setWelcomeBlockState('hang')
                 }, 1500)
             }
+            //setTimeout(() => {
+            //    setWelcomeBlockState('hung')
+            //},5000)
 
         }
 
@@ -156,7 +162,7 @@ function Login() {
         const searchParams = new URLSearchParams(location.search);
         const linkId = (location.pathname === '/app/loginlink') ? searchParams.get('id') : null;
 
-        const linkedUser = persons.find(person => person.id === linkId && (person.msalLink === null || person.msalLink === undefined))
+        const linkedUser = persons.find(person => person.id === linkId)
 
         if (location.pathname === '/app/loginlink' && (linkedUser === null || linkedUser === undefined)) {
             log(logType, 'refreshLinkUser navigate to home')
@@ -201,11 +207,17 @@ function Login() {
 
     const loginDemo = () => {
         const demo = persons.find(person => person.id === DEMOID)
-        log(logType, 'demo login', { DEMOID, demo, persons })
         dispatch(login(demo))
-
     }
 
+    const loginRehearsal = () => {
+        const rehearsal = persons.find(person => person.id === REHEARSALID)
+        if (rehearsal) {
+            dispatch(login(rehearsal))
+            dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: null }))
+        }
+
+    }
     const loginUnknownPerson = () => {
         dispatch(logout())
 
@@ -254,7 +266,7 @@ function Login() {
                                     <h3>Please Login:</h3>
                                     <div className={s.loginButtons}>
                                         <Button color='primary' onClick={handleLogin}>Cast & Crew</Button>
-                                        <Button color='primary' onClick={loginDemo}>Demo Account</Button>
+                                        <Button color='primary' onClick={loginRehearsal}>Rehearsal</Button>
                                     </div>
 
                                 </div>
