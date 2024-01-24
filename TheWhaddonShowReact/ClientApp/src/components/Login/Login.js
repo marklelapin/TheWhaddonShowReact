@@ -17,14 +17,15 @@ import { isScreenSmallerThan } from '../../core/screenHelper';
 import { PERSON } from '../../dataAccess/localServerModels';
 import { getLatest, prepareUpdate } from '../../dataAccess/localServerUtils.js';
 import { login, logout } from '../../actions/user';
-import {trigger,UPDATE_VIEW_AS_PART_PERSON } from '../../actions/scriptEditor';
+import { trigger, UPDATE_VIEW_AS_PART_PERSON } from '../../actions/scriptEditor';
 import { log, LOGIN as logType } from '../../dataAccess/logging.js';
 import classnames from 'classnames';
+import { clearStateFromBrowserStorage } from '../../dataAccess/browserStorage'
 //css
 import s from './Login.module.scss'
 
 //constants
-import { MARKID, DEMOID, signOutAllUsers } from '../../dataAccess/userAccess'
+import { REHEARSALID, DEMOID, signOutAllUsers } from '../../dataAccess/userAccess'
 
 function Login() {
     const dispatch = useDispatch();
@@ -48,15 +49,18 @@ function Login() {
     useEffect(() => {
 
         if (authenticatedUser) {
+            if (welcomeBlockState === 'fallen') {
+                setWelcomeBlockState('hang')
+            }
             setTimeout(() => {
                 setWelcomeBlockState('topple')
-            }, 1500)
+            }, 2000)
             setTimeout(() => {
                 setWelcomeBlockState('fall')
-            }, 3500)
+            }, 4500)
             setTimeout(() => {
                 setCurtainState('open')
-            }, 5000)
+            }, 5500)
             setTimeout(() => {
                 setHideAll(true)
             }, 7000)
@@ -80,6 +84,9 @@ function Login() {
                     setWelcomeBlockState('hang')
                 }, 1500)
             }
+            //setTimeout(() => {
+            //    setWelcomeBlockState('hung')
+            //},5000)
 
         }
 
@@ -155,7 +162,7 @@ function Login() {
         const searchParams = new URLSearchParams(location.search);
         const linkId = (location.pathname === '/app/loginlink') ? searchParams.get('id') : null;
 
-        const linkedUser = persons.find(person => person.id === linkId && (person.msalLink === null || person.msalLink === undefined))
+        const linkedUser = persons.find(person => person.id === linkId)
 
         if (location.pathname === '/app/loginlink' && (linkedUser === null || linkedUser === undefined)) {
             log(logType, 'refreshLinkUser navigate to home')
@@ -193,27 +200,27 @@ function Login() {
         }
     };
 
-    const doLogout = () => {
+    const doReset = () => {
         signOutAllUsers(instance)
-    }
-
-    const loginMark = () => {
-        const mark = persons.find(person => person.id === MARKID)
-        dispatch(login(mark))
-  
-
+        clearStateFromBrowserStorage(dispatch)
     }
 
     const loginDemo = () => {
         const demo = persons.find(person => person.id === DEMOID)
-        log(logType, 'demo login', { DEMOID, demo, persons })
         dispatch(login(demo))
-       
     }
 
+    const loginRehearsal = () => {
+        const rehearsal = persons.find(person => person.id === REHEARSALID)
+        if (rehearsal) {
+            dispatch(login(rehearsal))
+            dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: null }))
+        }
+
+    }
     const loginUnknownPerson = () => {
         dispatch(logout())
-   
+
     }
 
     const isLoading = syncInfo.isSyncing && (!persons || persons?.length === 0)
@@ -233,54 +240,61 @@ function Login() {
                 </div>
                 <div className={classnames(s.rightCurtain, s[curtainState])}>
                 </div>
-                <DataLoading isLoading={isLoading}
-                    isError={isErrorSyncing}
-                    errorText={`Error loading intitial user data. Needs internet access. The app will keep retrying but if problem continues and you have internet access contact Mark (magcarter@hotmail.co.uk)`}
-                    spinnerSize={50}>
-                    <div className={classnames(s.welcomeBlock, s[welcomeBlockState])}>
-                        <div className={s.loginWelcome}>
-                            <div className={s.loginImage}>
-                                <h3 className={s.welcomeTo}>Welcome to the...</h3>
-                                <img src={smallScreen ? TheWhaddonShowHomeWide : TheWhaddonShowHomeWide}
-                                    alt='The Whaddon Show Title with slightly shambolic, singing Cowboy playing the guitar.'
-                                    width={smallScreen ? '300px' : '500px'} />
-                                <h3 className={s.app}>...app.</h3>
-                            </div>
-
-                        </div>
-
-                        <div className={s.description}>Collaboratively write scripts, manage casting, and organise the show.</div>
-                        <div className={s.joke}>(in a less shambolic way than before!)</div>
-
-                        <UnauthenticatedTemplate>
-                            <div className={s.login}>
-                                <h3>Please Login:</h3>
-                                <div className={s.loginButtons}>
-                                    <Button color='primary' onClick={handleLogin}>Cast & Crew</Button>
-                                    <Button color='primary' onClick={loginMark}>Demo Account</Button>
+                <div className={s.content}>
+                    <DataLoading isLoading={isLoading}
+                        isError={isErrorSyncing}
+                        errorText={`Error loading intitial user data. Needs internet access. The app will keep retrying but if problem continues and you have internet access contact Mark (magcarter@hotmail.co.uk)`}
+                        spinnerSize={50}
+                        style={{ zIndex: 10 }}                >
+                        <div className={classnames(s.welcomeBlock, s[welcomeBlockState])}>
+                            <div className={s.loginWelcome}>
+                                <div className={s.loginImage}>
+                                    <h3 className={s.welcomeTo}>Welcome to the...</h3>
+                                    <img src={smallScreen ? TheWhaddonShowHomeWide : TheWhaddonShowHomeWide}
+                                        alt='The Whaddon Show Title with slightly shambolic, singing Cowboy playing the guitar.'
+                                        width={smallScreen ? '300px' : '500px'} />
+                                    <h3 className={s.app}>...app.</h3>
                                 </div>
 
                             </div>
-                        </UnauthenticatedTemplate>
-                        <AuthenticatedTemplate>
-                            <div className={s.login}>
-                                <h3>LoggedIn!</h3><Icon icon="tick" />
-                            </div>
-                        </AuthenticatedTemplate>
-                    </div>
-                    <AuthenticatedTemplate>
-                        {!authenticatedUser &&
-                            <div className={`${s['notRegisteredBlock']}`}>
-                                <h4>Hi!</h4>
-                                <h4>You have successfully logged in but are not yet a registered user.</h4>
-                                <h4>Please use the login link sent to you or get a new one from <a href="mailto:magcarter@hotmail.co.uk">Mark</a></h4>
-                                <h4>Thanks!</h4>
-                                <Button color='primary' onClick={doLogout}>Back To Login</Button>
-                            </div>
-                        }
-                    </AuthenticatedTemplate>
 
-                </DataLoading >
+                            <div className={s.description}>Collaboratively write scripts, manage casting, and organise the show.</div>
+                            <div className={s.joke}>(in a less shambolic way than before!)</div>
+
+                            <UnauthenticatedTemplate>
+                                <div className={s.login}>
+                                    <h3>Please Login:</h3>
+                                    <div className={s.loginButtons}>
+                                        <Button color='primary' onClick={handleLogin}>Cast & Crew</Button>
+                                        <Button color='primary' onClick={loginRehearsal}>Rehearsal</Button>
+                                    </div>
+
+                                </div>
+                            </UnauthenticatedTemplate>
+                            <AuthenticatedTemplate>
+                                {!authenticatedUser &&
+                                    <div className={`${s['notRegisteredBlock']}`}>
+                                        <h4>Not Registered!
+                                            <span ><Icon icon='cross' strapColor='danger' /></span>
+                                        </h4>
+                                        <p>{`If it's your first time logging in please use login link sent to you from `}<a href="mailto:magcarter@hotmail.co.uk">Mark</a>{` or try Resetting App below.`}</p>
+                                        <p>Thanks!</p>
+                                        <Button color='primary' onClick={doReset}>Reset</Button>
+                                    </div>
+                                }
+                                {authenticatedUser &&
+                                    <div className={s.login}>
+                                        <h3>Authenticated!</h3><Icon icon="tick" strapColor="success" />
+                                    </div>
+                                }
+                            </AuthenticatedTemplate>
+                        </div>
+                        <AuthenticatedTemplate>
+
+                        </AuthenticatedTemplate>
+
+                    </DataLoading >
+                </div>
             </div >
         </>
 

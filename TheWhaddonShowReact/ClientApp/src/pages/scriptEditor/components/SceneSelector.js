@@ -2,7 +2,7 @@
 import classnames from 'classnames';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress } from '../../../actions/scriptEditor';
+import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, updateScriptFilter } from '../../../actions/scriptEditor';
 
 //Components
 import { Icon } from '../../../components/Icons/Icons';
@@ -28,9 +28,12 @@ function SceneSelector(props) {
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
+    const currentScriptFilter = useSelector(state => state.scriptEditor.scriptFilter)
 
     const [beingDragged, setBeingDragged] = useState(false)
 
+    const noFilterExists = (searchParameters.characters === '' && searchParameters.tags.length === 0 && searchParameters.myScenes === false)
+    const filterExists = !noFilterExists
     log(logType, 'viewAsPartPerson', { viewAsPartPerson })
 
 
@@ -72,8 +75,8 @@ function SceneSelector(props) {
         });
     }
 
-    
-    const filteredShowOrder = filteredScenes.filter(scene=>scene.show===true);
+
+    const filteredShowOrder = filteredScenes.filter(scene => scene.show === true);
 
 
     const handleDragStart = (e) => {
@@ -103,8 +106,13 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                dispatch(updateMovementInProgress(true))
-                moveFocusToId(id, END, true)
+                if (currentScriptFilter === null || currentScriptFilter?.length > 1) {
+                    dispatch(updateMovementInProgress(true))
+                    moveFocusToId(id, END, true)
+                } else {
+                    dispatch(updateScriptFilter([id]))
+                }
+
                 break;
             default:
                 break;
@@ -113,11 +121,29 @@ function SceneSelector(props) {
         if (isModal) dispatch(setShowSceneSelector(false))
     }
 
+    const handleSetFilter = () => {
+        const newScriptFilter = (noFilterExists) ? null : filteredShowOrder.map(scene => scene.id)
+        dispatch(updateScriptFilter(newScriptFilter))
+    }
+
     log(logType, 'render props', { filteredShowOrder })
 
     return (
         <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
             <ScriptSearch isModal={isModal} />
+            <div className={s.filterSection}>
+                <div className={classnames(s.setFilter, 'clickable')} onClick={handleSetFilter} >
+                    {noFilterExists && <>
+                        <p>view entire script</p><Icon icon='arrow-right' />
+                    </>}
+                    {filterExists && <>
+                        <p>filter script for scenes below</p><Icon icon='arrow-right' />
+                    </>}
+
+                </div>
+                <p>or click on individual scene</p>
+            </div>
+
             <h2>Scenes</h2>
             <div className="full-height-overflow">
 

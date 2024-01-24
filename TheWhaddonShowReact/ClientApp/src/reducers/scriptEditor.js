@@ -25,7 +25,8 @@ import {
     UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
     SET_SHOW_SCENE_SELECTOR,
     UPDATE_SHOW_BOOLS,
-    UPDATE_MOVEMENT_IN_PROGRESS
+    UPDATE_MOVEMENT_IN_PROGRESS,
+    UPDATE_SCRIPT_FILTER,
 } from '../actions/scriptEditor';
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
@@ -265,7 +266,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                         initialSyncProgress: { ...state.initialSyncProgress, part: 1 }
                     }
                 default: return state;
-            }; 
+            };
 
         case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
 
@@ -346,7 +347,11 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 movementInProgress: action.movementInProgress
             }
-        
+        case UPDATE_SCRIPT_FILTER:
+            return {
+                ...state,
+                scriptFilter: action.scriptFilter
+            }
         default: return state;
     }
 }

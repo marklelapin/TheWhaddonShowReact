@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
-import { setShow, updateInitialSyncProgress, updateShowBools } from '../../actions/scriptEditor';
+import { setShow, updateInitialSyncProgress, updateShowBools, updateScriptFilter } from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
@@ -14,9 +14,10 @@ import { Modal } from 'reactstrap';
 
 //Utils
 import { log, SCRIPT as logType } from '../../dataAccess/logging.js';
-import isScreen from '../../core/screenHelper';
+import { isScreenSmallerThan } from '../../core/screenHelper';
 import { getShowBools } from './scripts/layout';
 import s from './Script.module.scss';
+
 function Script() {
 
     //constants
@@ -28,12 +29,40 @@ function Script() {
     const modalSceneSelector = useSelector((state) => state.scriptEditor.modalSceneSelector)
 
     const show = useSelector((state) => state.scriptEditor.show)
-    
 
-    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id]) 
+
+    const showOrder = useSelector((state) => state.scriptEditor.sceneOrders[show.id])
+    const scriptFilter = useSelector((state) => state.scriptEditor.scriptFilter)
     const sceneLoaded = useSelector((state) => state.scriptEditor.sceneLoaded)
 
     const [scenesToLoad, setScenesToLoad] = useState(3)
+
+
+    const getFilteredShowOrder = () => {
+
+        if (scriptFilter === undefined || scriptFilter === null) return showOrder;
+
+        const filteredShowOrder = showOrder.filter(scene => scriptFilter.includes(scene.id));
+
+        return filteredShowOrder;
+
+    }
+
+    const filteredShowOrder = getFilteredShowOrder();
+
+
+    useEffect(() => {
+        if (isScreenSmallerThan('lg')) {
+            const firstScene = showOrder.find(scene => scene.sceneNumber === 1)
+            if (firstScene) {
+                dispatch(updateScriptFilter([firstScene.id]))
+            } else {
+                dispatch(updateScriptFilter([show.id]))
+            }
+        } else {
+            dispatch(updateScriptFilter(null))
+        }
+    }, [])
 
 
     useEffect(() => {

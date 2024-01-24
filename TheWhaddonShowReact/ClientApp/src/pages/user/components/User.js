@@ -1,8 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
-import axios from 'axios';
-import config from '../../../config';
+
 import PersonalDetails from './PersonalDetails';
 import Roles from './Roles';
 import Update from './Update';
@@ -31,13 +30,14 @@ function User(props) {
 
     const debug = true;
 
-    const { user: storedUser = {}, type, closeModal, openModal = false, onCancelNewUser } = props //type = modal, headers, row.
+    const { user: storedUser, type, closeModal, openModal = false, onCancelNewUser } = props //type = modal, headers, row.
 
     log(debug, 'User props', props)
     log(debug, 'User storedUser', storedUser)
 
     //Set state for internal component.
     //This user state is used to track changes to the user and is not synced with the redux store until dispatch.
+
     const [user, setUser] = useState({});
     const [userChanged, setUserChanged] = useState(false)
 
@@ -53,7 +53,11 @@ function User(props) {
         } else {
             setUserChanged(true)
         }
-    }, [user]) //eslint-disable-line react-hooks/exhaustive-deps             
+    }, [user]) //eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        setUser(storedUser)
+    },[storedUser])
 
 
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
@@ -67,21 +71,6 @@ function User(props) {
         const preparedUpdate = prepareUpdate(userUpdate)
         dispatch(addUpdates(preparedUpdate, PERSON))  //saves the user to the redux store where it will be synced separately.
         setUserChanged(false)
-
-        const justMadeActive = (user.isActive === true && storedUser.isActive === false)  
-        if (justMadeActive && user.email) {
-            try {
-                const response = await sendLoginLink(user)
-                if (response.status === 200) {
-                    alert('Login link sent to ' + user.email)
-                } else {
-                    alert('Failed to send login link to ' + user.email + '. See console for more information.')
-                }
-            } catch (error) {
-                console.error("Error sending login link: " + error.message)
-            }
-            
-        }
         closeModal()
     }
 
@@ -182,7 +171,7 @@ function User(props) {
                 userChanged={userChanged}
                 onClickCancel={handleClickCancel}
                 onClickUpdate={handleClickUpdate}
-                isNew={user.newUser === true}
+                isNew={user?.newUser === true}
                 className={(show) ? '' : 'd-none d-lg-table-cell'}
                 onChange={(type, value) => handleChange(type, value)}
             />
@@ -246,26 +235,3 @@ export default User;
 
 
 
-const sendLoginLink = async (person) => {
-
-    const firstName = person.firstName
-    const email = person.email
-    const id = person.id
-    const appUrl = config.baseURLApp
-
-    const data = { firstName, email, id,appUrl }
-    
-    const url = `email/loginlink`
-
-    try {
-
-        const response = await axios.post(url, data);
-
-        log(logType, 'post email/loginlink response: ', { dataSent: data, status: response.status })
-
-        return (response)
-    }
-    catch (error) {
-        console.error("Error posting loginlink: " + error.message)
-    }
-}

@@ -59,7 +59,7 @@ export const TEST = { type: NONE, location: 'Test: ' }
 export const TEST_CURTAIN = { type: NONE, location: 'Script:curtain' }
 export const USERS = { type: DEBUG, location: 'Component:Users' }
 export const USER_ACCESS = { type: NONE, location: 'Script:userAccess' }
-
+export const USER_UPDATE = { type: DEBUG, location: 'Component:UserUpdate' }
 export function log(logObject, message, object = null) {
 
     switch (logObject?.type) {

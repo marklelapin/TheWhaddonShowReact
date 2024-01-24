@@ -1,51 +1,6 @@
 ﻿import React, { useState } from 'react';
 
 import { Tooltip } from 'reactstrap';
-//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-//import {
-//    faCloud,
-//    faPlus,
-//    faCheck,
-//    faTimes,
-//    faExclamation,
-//    faRotateLeft,
-//    faRotateRight,
-//    faBars,
-//    faArrowLeft,
-//    faComments,
-//    faAlignCenter,
-//    faEdit,
-//    faComment,
-//    faCommentDots,
-//    faPrint,
-//    faFileAudio,
-//    faFileVideo,
-//    faPlay,
-//    faPaperclip,
-//    faLink,
-//    faCircleO,
-//    faCircle,
-//    faSearch,
-//    faTags,
-//    faTrash,
-//    faArrowsV,
-//    faVolumeUp,
-//    faLightbulb,
-//    faMale,
-//    faChild,
-//    faHome,
-//    faFileLines,
-//    faPersonMilitaryToPerson,
-//    faPanorama,
-//    faRotate,
-//    faUser,
-//    faUsers,
-//    faCaretDown,
-//    faArrowDownUpAcrossLine,
-//    faRectangleList,
-//    faPowerOff,
-//    faGear,
-//} from '@fortawesome/free-solid-svg-icons' 
 
 import s from './Icons.module.scss';
 
@@ -89,6 +44,7 @@ export function Icon(props) {
         "redo": 'fa-solid fa-rotate-right',
         "menu": 'fa-solid fa-bars',
         "arrow-left": 'fa-solid fa-arrow-left',
+        "arrow-right": 'fa-solid fa-arrow-right',
         "chat-mode": 'fa-solid fa-comments',
         "classic-mode": 'fa-solid fa-align-center',
         "edit": 'fa-solid fa-edit',
@@ -124,6 +80,7 @@ export function Icon(props) {
         "gear": 'fa-solid fa-gear',
         "gallery": 'fa-solid fa-panorama',
         "casting": 'fa-solid fa-person-military-to-person',
+"paper-plane": 'fa-solid fa-paper-plane',
     };
 
 

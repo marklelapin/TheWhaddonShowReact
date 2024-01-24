@@ -38,8 +38,10 @@ export const categorisePersons = (persons, tags = []) => {
 
 
 export const addFriendlyName = (persons) => {
+    let personsWithFriendlyName = [];
+
     try {
-        const personsWithFriendlyName = persons.map(person => {
+        personsWithFriendlyName = persons.map(person => {
             if (persons.filter(persons => persons.firstName === person.firstName).length > 1) {
                 return { ...person, friendlyName: `${person.firstName} ${person.lastName[0]}` }
             }
@@ -47,10 +49,10 @@ export const addFriendlyName = (persons) => {
         })
     } catch (error) {
         log(logType, 'error in addFriendlyName:', error)
-        return persons;
+        personsWithFriendlyName =  persons;
     }
 
 
-    return personsWithFriendlyName
+    return personsWithFriendlyName || [];
 }
 

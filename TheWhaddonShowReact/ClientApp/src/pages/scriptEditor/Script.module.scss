@@ -170,9 +170,14 @@
 
 .scene-group {
     position: relative;
+    border-color: $gray-900 !important;
+
+    &.hide {
+        display: none;
+    }
+
 
     @media screen {
-        border-color: $gray-900;
         @include dropdown-box;
     }
 
@@ -192,8 +197,15 @@
 .scene-footer {
     position: relative;
     z-index: 0;
-    background-color: $gray-inverse;
+    background-color: transparent;
     text-align: center;
+
+    &.hide {
+        display: none;
+    }
+    &.scriptFilterOn{
+        height: 30px;
+    }
 
     @media print {
         display: none !important;
@@ -204,7 +216,7 @@
 
 .add-new-scene {
     padding: 40px;
-    background-color: $gray-700;
+    background-color: transparent;
     color: white;
 }
 
@@ -239,7 +251,6 @@
     .scriptSearch {
         display: flex;
         flex-direction: column;
-        margin-bottom: 20px;
 
         .closeIcon {
             position: absolute;
@@ -265,14 +276,46 @@
     .scriptSearchButtons {
         display: flex;
         flex-direction: row;
-        padding: 5px 10px 5px 10px;
+        padding: 5px 0px 5px 0px;
         align-items: center;
-        justify-content: space-evenly;
+        justify-content: space-between;
 
         button {
-            width: 150px;
+            width: 125px;
+        }
+
+    }
+
+    .filterSection {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .setFilter {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 5px 10px 5px 10px;
+
+            p {
+                margin: 0px;
+                padding: 0px;
+            }
+
+            button {
+                width: 150px;
+            }
+        }
+
+        p {
+            margin: 0px;
+            padding: 5px 10px 5px 10px;
+           
         }
     }
+
 
 
     .inFocus {
