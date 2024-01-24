@@ -33,10 +33,11 @@ import { log, INDEX as logType } from '../src/dataAccess/logging.js';
 
 // Styles
 import '../src/styles/theme.scss';
-//import './styles.css' 
-//assert { type: 'css' };
-//document.adoptedStyleSheets = [sheet];
-//shadowRoot.adoptedStyleSheets = [sheet];
+
+
+import LogRocket from 'logrocket';
+LogRocket.init('lirpcx/the-whaddon-show-app');
+
 
 //const history = createHashHistory();
 const _ = require('lodash');
