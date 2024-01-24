@@ -44,6 +44,7 @@ export function Icon(props) {
         "redo": 'fa-solid fa-rotate-right',
         "menu": 'fa-solid fa-bars',
         "arrow-left": 'fa-solid fa-arrow-left',
+        "arrow-right": 'fa-solid fa-arrow-right',
         "chat-mode": 'fa-solid fa-comments',
         "classic-mode": 'fa-solid fa-align-center',
         "edit": 'fa-solid fa-edit',
