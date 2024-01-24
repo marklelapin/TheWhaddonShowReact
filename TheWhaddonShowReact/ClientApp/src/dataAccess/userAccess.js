@@ -2,8 +2,8 @@ import { isScreenLargerThan } from '../core/screenHelper';
 
 export const READ = 'READ'
 export const WRITE = 'WRITE'
-export const MARKID = 'af60b927-7f73-4dfd-8343-206c1b30a03b'
-export const DEMOID = 'c44bd508-b26a-42a3-abdf-287d64cad080'
+export const DEMOID = '96eedb3d-132e-432f-a0f4-b1cd73728774'
+export const REHEARSALID = '7d0e525b-cc4b-4ef8-bf22-f9e58a4a5c92'
 
 import { log, logType } from './logging.js' 
 

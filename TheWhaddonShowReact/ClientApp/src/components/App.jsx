@@ -16,7 +16,7 @@ import { Layout } from '../components/Layout';
 import Routing from './Routing';
 import CacheProcessing from '../dataAccess/CacheProcessing';
 import TextAreaContexts from '../dataAccess/TextAreaContexts';
-
+import ErrorCatch from '../components/ErrorCatch/ErrorCatch';
 //Utils
 import { log, APP as logType } from '../dataAccess/logging.js';
 
@@ -49,21 +49,24 @@ function App(props) {
             <ScriptEditorProcessing />
             <CacheProcessing />
             <TextAreaContexts />
-            <Layout>
-                {/*Components performing background and preloading tasks*/}
+            <ErrorCatch>
+                <Layout>
+                    {/*Components performing background and preloading tasks*/}
 
 
-                {/*<ToastContainer*/}
-                {/*    autoClose={5000}*/}
-                {/*    hideProgressBar*/}
-                {/*    closeButton={<CloseButton />}*/}
-                {/*/>*/}
+                    {/*<ToastContainer*/}
+                    {/*    autoClose={5000}*/}
+                    {/*    hideProgressBar*/}
+                    {/*    closeButton={<CloseButton />}*/}
+                    {/*/>*/}
 
-                <MSALErrorHandling >
-                    <Routing />
-                </MSALErrorHandling>
+                    <MSALErrorHandling >
+                        <Routing />
+                    </MSALErrorHandling>
 
-            </Layout>
+                </Layout>
+            </ErrorCatch>
+
 
 
         </MsalProvider>
