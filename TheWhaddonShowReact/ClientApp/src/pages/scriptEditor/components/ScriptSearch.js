@@ -21,7 +21,7 @@ function ScriptSearch(props) {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const currentUser = useSelector(state => state.user.currentUser)
 
-    const viewAsPartPersonName = (viewAsPartPerson.personId === undefined) ? viewAsPartPerson.firstName : viewAsPartPerson.name
+    const viewAsPartPersonName = (viewAsPartPerson?.personId === undefined) ? (viewAsPartPerson?.firstName || 'Anyone') : viewAsPartPerson.name
 
     const highlightMessage = (viewAsPartPerson?.id === currentUser?.id) ? 'My scenes' : `${viewAsPartPersonName}'s scenes`
 

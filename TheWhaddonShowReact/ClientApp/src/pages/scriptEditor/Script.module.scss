@@ -167,8 +167,9 @@
 .scene-group {
     position: relative;
 
+    border-color: $gray-900 !important;
+
     @media screen {
-        border-color: $gray-900;
         @include dropdown-box;
     }
 
