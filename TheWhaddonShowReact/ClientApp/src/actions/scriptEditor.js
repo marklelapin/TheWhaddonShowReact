@@ -11,7 +11,7 @@ export const UPDATE_PREVIOUS_CURTAIN = 'UPDATE_PREVIOUS_CURTAIN';
 export const UPDATE_PERSON_SELECTOR_CONFIG = 'UPDATE_PERSON_SELECTOR_CONFIG';
 export const UPDATE_MOVEMENT_IN_PROGRESS = 'UPDATE_MOVEMENT_IN_PROGRESS';
 
-
+export const UPDATE_SCRIPT_FILTER = 'UPDATE_SCRIPT_FILTER';
 export const UPDATE_SCRIPT_ITEM_IN_FOCUS = 'CHANGE_SCRIPT_ITEM_IN_FOCUS';
 export const UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH';
 export const UPDATE_SCRIPT_ITEM_TEXT_WIDTH = 'UPDATE_SCRIPT_ITEM_TEXT_WIDTH';
@@ -229,7 +229,7 @@ export function updateScriptItemTextWidth(id, text, scriptItemType, endMargin) {
         id,
         text,
         scriptItemType,
-endMargin,
+        endMargin,
     }
 }
 
@@ -259,5 +259,12 @@ export function updateMovementInProgress(movementInProgress) {
     return {
         type: UPDATE_MOVEMENT_IN_PROGRESS,
         movementInProgress,
+    }
+}
+
+export function updateScriptFilter(scriptFilter) {
+    return {
+        type: UPDATE_SCRIPT_FILTER,
+        scriptFilter,
     }
 }
