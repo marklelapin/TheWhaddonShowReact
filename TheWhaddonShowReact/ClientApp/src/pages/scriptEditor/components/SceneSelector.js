@@ -37,12 +37,13 @@ function SceneSelector(props) {
     log(logType, 'viewAsPartPerson', { viewAsPartPerson })
 
 
-    let filteredScenes = showOrder.filter(scene => scene.type !== SHOW)
+    let filteredScenes = showOrder?.filter(scene => scene.type !== SHOW)
         .map(scene => ({
             ...scene,
             show: true //gets converted to false if not matching searches below
             , isViewAsPartPerson: isViewAsPartPerson(viewAsPartPerson, scene, currentPartPersons)   //indicates if viesAsPartPerson is in the scene
-        }))
+        })) || [];
+    
 
     //filter out scenes not matching characters
     if (searchParameters.characters?.length > 0) {
@@ -106,7 +107,7 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                if (currentScriptFilter === null || currentScriptFilter?.length > 1) {
+                if (currentScriptFilter === null ) {
                     dispatch(updateMovementInProgress(true))
                     moveFocusToId(id, END, true)
                 } else {

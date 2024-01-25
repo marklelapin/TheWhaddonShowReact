@@ -66,14 +66,14 @@ function Script() {
 
 
     useEffect(() => {
-        log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder.length })
-        if (!showOrder || showOrder.length === 0) {
+        log(logType, 'handleSceneLoaded updateState', { scenesToLoad, showOrderLength: showOrder?.length })
+        if (!showOrder || showOrder?.length === 0) {
             //do nothing
         }
-        if (showOrder.length > 0 && scenesToLoad !== null && scenesToLoad < showOrder.length) {
+        if (showOrder?.length > 0 && scenesToLoad !== null && scenesToLoad < showOrder?.length) {
             setScenesToLoad(scenesToLoad + 1)
         }
-        if (showOrder.length > 0 && scenesToLoad !== null && scenesToLoad >= showOrder.length) {
+        if (showOrder?.length > 0 && scenesToLoad !== null && scenesToLoad >= showOrder?.length) {
             setScenesToLoad(null)
         }
         //if (showOrder.length > 0 && scenesToLoad === null) {

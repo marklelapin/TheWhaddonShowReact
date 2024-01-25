@@ -64,7 +64,7 @@ const Scene = memo((props) => {
 
     return (
         <>
-            <div id={`scene-${scene.id}`} className={classnames(s[`scene-group`], (filterScene) ? null : s['hide'])} style={{ zIndex: zIndex }}>
+            <div id={`scene-${scene.id}`} className={classnames(s[`scene-group`],s[scene.type.toLowerCase()], (filterScene) ? null : s['hide'])} style={{ zIndex: zIndex }}>
                 <div className={s[`scene-header`]}>
                     {(scene) &&
                         <ScriptItem

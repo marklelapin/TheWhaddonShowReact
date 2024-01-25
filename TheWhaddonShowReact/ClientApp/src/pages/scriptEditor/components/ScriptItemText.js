@@ -28,7 +28,7 @@ import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
 
 import { getScriptItemPlaceholder } from '../scripts/scriptItem'
-
+import classnames from 'classnames';
 //constants
 import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN, ACT } from '../../../dataAccess/scriptItemTypes';
 import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
@@ -53,6 +53,7 @@ function ScriptItemText(props) {
         nextFocusId = null,
         isUndoInProgress = false,
         sceneNumber = null,
+        viewStyle = 'chat'
     } = props;
 
     const { id, type } = scriptItem
@@ -64,7 +65,7 @@ function ScriptItemText(props) {
     //Redux
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const textWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) //used to control when to re-render for text width.
-    const textWidthPx = `${textWidth}px`
+    const textWidthPx = (viewStyle === 'chat') ? `${textWidth}px` : '100%';
     const currentUser = useSelector(state => state.user.currentUser)
     const readOnly = isScriptReadOnly(currentUser)
     // const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
@@ -77,7 +78,7 @@ function ScriptItemText(props) {
 
     const finalPlaceholder = getScriptItemPlaceholder(scriptItem.type)
 
-    
+
 
 
     useEffect(() => {
@@ -99,7 +100,7 @@ function ScriptItemText(props) {
 
     useEffect(() => {
         if (CURTAIN_TYPES.includes(scriptItem.type)) {
-            dispatch(updateScriptItemTextWidth(id, finalText, type,endMargin ))
+            dispatch(updateScriptItemTextWidth(id, finalText, type, endMargin))
         }
     }, [previousCurtainOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -137,7 +138,6 @@ function ScriptItemText(props) {
                 break;
             default: return;
         }
-
     }
 
     const moveFocus = (direction, position) => {
@@ -298,8 +298,8 @@ function ScriptItemText(props) {
     }
 
     const handleEnterView = () => {
-       const el = document.getElementById(`script-item-text-input-${id}`)
-       if (el) el.classList.add('inView')
+        const el = document.getElementById(`script-item-text-input-${id}`)
+        if (el) el.classList.add('inView')
         dispatch(updateScriptItemTextWidth(scriptItem.id, finalText, scriptItem.type, endMargin))
         if (type === SCENE) dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.id))
     }
@@ -313,7 +313,7 @@ function ScriptItemText(props) {
         setIsFocused(true)
         dispatch(updateScriptItemInFocus(scriptItem.id, (scriptItem.type === SCENE) ? scriptItem.id : scriptItem.parentId)) //update global state of which item is focussed
         dispatch(updateMovementInProgress(false))
-        dispatch(updateScriptItemTextWidth(id,finalText,scriptItem.type,endMargin))
+        dispatch(updateScriptItemTextWidth(id, finalText, scriptItem.type, endMargin))
         toggleMedia(false)
     }
 
@@ -337,29 +337,52 @@ function ScriptItemText(props) {
     }
 
 
+    const textAreaJsx = () => (
+
+        <TextareaAutosize
+            key={id}
+            id={`script-item-text-input-${id}`}
+            placeholder={finalPlaceholder}
+            className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} ${isFocused ? s['focused'] : ''}`}
+            value={finalText}
+            onChange={(e) => handleTextChange(e)}
+            onBlur={(e) => handleBlur(e)}
+            onFocus={() => handleFocus()}
+            onKeyDown={(e) => handleKeyDown(e, scriptItem)}
+            style={{ width: textWidthPx }}
+            onPaste={(e) => handlePaste(e)}
+            readOnly={readOnly}
+        //rows={getTextAreaRows().length}
+        >
+        </TextareaAutosize>
+
+
+    )
+
+
     return (
-        <div id={`script-item-text-${id}`} className={s['script-item-text']}>
+        <div id={`script-item-text-${id}`} className={classnames(s['script-item-text'], s[viewStyle])}>
 
             <ScriptItemHeader scriptItem={scriptItem} sceneNumber={sceneNumber} />
-            <ElementInViewObserver onEnterView={handleEnterView} onExitView={handleExitView}>
-                <TextareaAutosize
-                    key={id}
-                    id={`script-item-text-input-${id}`}
-                    placeholder={finalPlaceholder}
-                    className={`form-control ${s.autogrow} transition-height text-input ${s['text-input']} text-input ${isFocused ? s['focused'] : ''}`}
-                    value={finalText}
-                    onChange={(e) => handleTextChange(e)}
-                    onBlur={(e) => handleBlur(e)}
-                    onFocus={() => handleFocus()}
-                    onKeyDown={(e) => handleKeyDown(e, scriptItem)}
-                    style={{ width: textWidthPx }}
-                    onPaste={(e) => handlePaste(e)}
-                    readOnly={readOnly}
-                //rows={getTextAreaRows().length}
-                >
-                </TextareaAutosize>
+            {viewStyle === 'chat' &&
+                <ElementInViewObserver onEnterView={handleEnterView} onExitView={handleExitView} className={s['element-in-view-observer']}>
+                    {textAreaJsx()}
+                </ElementInViewObserver>
+            }
+            {viewStyle === 'classic' && !readOnly && 
+                textAreaJsx()
+            }
+            {viewStyle === 'classic' && readOnly &&
+                <div id={`script-item-text-input-${id}`}
+                    className={classnames('text-input',
+                        s['text-input'],
+                        isFocused ? s.focused : '',
+                        s['script-item-text-div'],
+                        s[viewStyle])}>
+                    {finalText}
+                </div>
+            }
 
-            </ElementInViewObserver>
 
 
             {(focus) &&
