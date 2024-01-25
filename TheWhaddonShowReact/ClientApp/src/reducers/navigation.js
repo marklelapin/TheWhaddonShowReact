@@ -6,11 +6,21 @@ import {
 
 } from '../actions/navigation';
 
-const initialState = {
-    sidebarOpened: true,
-    sidebarStatic: true,
-    activeItem: null,
-};
+import { getDeviceInfo } from '../core/screenHelper';
+
+const deviceInfo = getDeviceInfo()
+
+const initialState = deviceInfo.isMobileDevice ?
+    {
+        sidebarOpened: false,
+        sidebarStatic: false,
+        activeItem: null,
+    }
+    : {
+        sidebarOpened: true,
+        sidebarStatic: true,
+        activeItem: null,
+    }
 
 export default function runtime(state = initialState, action) {
     switch (action.type) {

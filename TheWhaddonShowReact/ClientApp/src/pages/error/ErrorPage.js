@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import {
     Container,
     Form,
@@ -15,8 +15,6 @@ const ErrorPage = (props) => {
 
     const { code = 500, message = 'Sorry, it seems that something has gone wrong. Try refreshing the page or logging back in.', details = null, returnHome = false } = props;
 
-    const navigate = useNavigate();
-
     const [showDetails, setShowDetails] = useState(false);
 
     const toggleDetails = () => {
@@ -24,8 +22,7 @@ const ErrorPage = (props) => {
     }
 
     const handleReturnHome = () => {
-        navigate('/app/home')
-        window.location.reload(true)
+        window.location.href = "/";
     }
 
 
@@ -41,7 +38,7 @@ const ErrorPage = (props) => {
                         <>
                             <Button color="primary" className="mr-2" onClick={() => toggleDetails()}>Details</Button>
                             {showDetails &&
-                                <p>{details}</p>
+                                <p>{JSON.stringify(details)}</p>
                             }
                         </>
                     }
