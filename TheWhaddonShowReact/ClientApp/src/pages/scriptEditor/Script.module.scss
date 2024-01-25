@@ -176,6 +176,17 @@
         display: none;
     }
 
+    &.show {
+        @media print {
+            display: none;
+            }
+    }
+
+    &.act {
+        @media print {
+            display: none;
+        }
+    }
 
     @media screen {
         @include dropdown-box;
