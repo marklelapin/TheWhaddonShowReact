@@ -75,3 +75,10 @@ export const getDeviceInfo = () => {
         screenWidth: window.innerWidth,
     }
 }
+
+export const getSidebarWrapStatus = (isStatic, isOpen, isModal) => {
+    if (isModal) return 'sidebarNone'
+    if (isStatic) return 'sidebarStatic'
+    if (isOpen) return 'sidebarOpen'
+    return 'sidebarClose'
+}

@@ -14,11 +14,12 @@ import Login from '../Login/Login';
 import { Modal } from 'reactstrap';
 import { Icon } from '../Icons/Icons';
 //import Helper from '../Helper';
-import { openSidebar, closeSidebar, openStaticSidebar } from '../../actions/navigation';
+import { openSidebar, closeSidebar, openStaticSidebar, closeStaticSidebar } from '../../actions/navigation';
 import { updateDeviceInfo } from '../../actions/device';
 import s from './Layout.module.scss';
 import { log, LAYOUT as logType } from '../../dataAccess/logging.js'
-
+import { getSidebarWrapStatus } from '../../core/screenHelper';
+import classnames from 'classnames';
 
 export const Layout = (props) => {
 
@@ -36,6 +37,13 @@ export const Layout = (props) => {
 
     const isModalSidebar = isMobileDevice
 
+    const sidebarStatus = getSidebarWrapStatus(sidebarStatic, sidebarOpened, isModalSidebar)
+
+    useEffect(() => {
+        if (isMobileDevice) {
+            dispatch(closeStaticSidebar())
+        }
+    },[isMobileDevice])
 
     //const handleSwipe = (e) => {
     //    if ('ontouchstart' in window) {
@@ -65,9 +73,7 @@ export const Layout = (props) => {
         <div
             className={[
                 s.root,
-                isModalSidebar ? s.modalSidebar : '',
-                sidebarStatic ? s.sidebarStatic : '',
-                (isModalSidebar || !sidebarOpened) ? s.sidebarClose : '',
+                s[sidebarStatus],
                 'sing-dashboard',
                 `dashboard-${(localStorage.getItem("sidebarType") === SidebarTypes.TRANSPARENT) ? "light" : localStorage.getItem("dashboardTheme")}`,
                 `header-${localStorage.getItem("navbarColor") ? localStorage.getItem("navbarColor").replace('#', '') : 'FFFFFF'}`
@@ -79,7 +85,7 @@ export const Layout = (props) => {
             </Modal>
 
 
-            <div className={s.wrap}>
+            <div className={classnames(s.wrap, s[sidebarStatus])}>
                 <Header />
                 {/*  <Hammer onSwipe={handleSwipe}>*/}
                 <main className={s.content}>

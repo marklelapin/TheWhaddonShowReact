@@ -23,8 +23,23 @@
     right: 0;
     transition: left $sidebar-transition-time ease-in-out, margin-left $sidebar-transition-time ease-in-out;
 
-    &.modalSidebar {
+    &.sidebarNone {
         margin-left: 0;
+        left: 0;
+    }
+
+    &.sidebarStatic {
+        margin-left: $sidebar-width-open;
+        left: 0;
+    }
+
+    &.sidebarOpen {
+        margin-left: 0;
+        left: $sidebar-width-open;
+    }
+
+    &.sidebarClose {
+        margin-left: $sidebar-width-closed;
         left: 0;
     }
 
@@ -53,14 +68,6 @@
     }
 }
 
-.sidebarClose div.wrap {
-    left: 0;
-}
-
-.sidebarStatic .wrap {
-    left: 0;
-    margin-left: $sidebar-width-open;
-}
 
 
 .content {
