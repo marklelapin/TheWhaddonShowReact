@@ -3,7 +3,7 @@ const DEBUG = 'DEBUG'
 const NONE = 'NONE'
 
 //logTypes
-export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdown' }
+export const ACCOUNT_DROPDOWN = { type: DEBUG, location: 'Component:AccountDropdown' }
 
 export const APP = {type: NONE, location: 'Component: App'}
 
@@ -22,12 +22,12 @@ export const LOCAL_SERVER_SYNCING = { type: NONE, location: 'Component:LocalServ
 export const LOCAL_SERVER_REDUCER = { type: NONE, location: 'Reducer:localServer' }
 export const LOCAL_STORAGE = {type:NONE, location: 'Script:localStorage'}
 
-export const LOGIN = { type: DEBUG, location: 'Component: Login' }
+export const LOGIN = { type: NONE, location: 'Component: Login' }
 
 export const MEDIA_DISPLAY = { type: NONE, location: 'Component:MediaDisplay' }
 export const MEDIA_DROPZONE = { type: NONE, location: 'Component:MediaDropzone' }
 
-export const PART = {type: DEBUG, location: 'Script:Part'}
+export const PART = {type: NONE, location: 'Script:Part'}
 export const PART_EDITOR_ROW = {type: NONE, location: 'Component:PartEditorRow'}
 export const PART_SELECTOR_DROPDOWN = { type: NONE, location: 'Component:PartSelectorDropdown' }
 
@@ -35,8 +35,8 @@ export const PERSON = {type: NONE, location: 'Script:Person'}
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
 export const PERSONAL_DETAILS = { type: NONE, location: 'Component:PersonalDetails' }
 export const SCENE = { type: NONE, location: 'Component:Scene' }
-export const SCENE_SELECTOR = { type: DEBUG, location: 'Component:SceneSelector' }
-export const SCENE_SELECTOR_ROW = { type: DEBUG, location: 'Component:SceneSelectorRow' }
+export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
+export const SCENE_SELECTOR_ROW = { type: NONE, location: 'Component:SceneSelectorRow' }
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }
 export const SCRIPT_EDITOR_REDUCER = { type: NONE, location: 'Reducer:scriptEditor' }
