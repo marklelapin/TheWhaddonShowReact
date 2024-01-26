@@ -39,7 +39,7 @@ const Scene = memo((props) => {
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
     const currentUser = useSelector(state => state.user.currentUser)
     const readOnly = isScriptReadOnly(currentUser)
-
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
     const scene = (sceneScriptItem.type === ACT) ? sceneScriptItem : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
     const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
