@@ -1,5 +1,5 @@
 ﻿//React and REdux
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -8,6 +8,7 @@ import {
     updatePersonSelectorConfig,
     updateViewStyle,
     updateShowBools,
+    updatePrintScript,
 } from '../../../actions/scriptEditor';
 import {
     openSidebar
@@ -48,49 +49,43 @@ function ScriptViewer() {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-
+    const printScript = useSelector(state => state.scriptEditor.printScript)
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
-    //internal state
-    const [tempReadOnly, setTempReadOnly] = React.useState(false)
-    const [print, setPrint] = React.useState(false)
-
+    console.log('scriptViewerProps', { printScript, viewStyle })
+    const readOnly = isScriptReadOnly(currentUser)
 
     //This section allows users with write access to print the script as read only
-    //The textareas used for editing don't print well so they are made div in read only mode.
+    //The textareas used for editing don't print well so they are made div in read only mode.Event Handlers
+    //It also allows print to be triggered from modal.
     useEffect(() => {
-        if (print === true) {
-            window.print()
-            setTempReadOnly(false)
-            setPrint(false)
+
+        handlePrintSetup()
+
+    }, [printScript, viewStyle, dispatch]) //eslint-disable-line react-hooks/exhaustive-deps
+
+
+    const handlePrintSetup = () => {
+        if (printScript !== false && viewStyle === CLASSIC) {
+            console.log('useEffect printScript', { printScript, viewStyle })
+            setTimeout(() => {
+                window.print();
+                dispatch(updatePrintScript(false))
+            }, 2000)
+
         }
-    }, [print])
-
-    useEffect(() => {
-        if (tempReadOnly === true) {
-            setPrint(true)
-        }
-    }, [tempReadOnly])
-
-
-    const readOnly = (tempReadOnly === true) ? true : isScriptReadOnly(currentUser)
-
-    log(logType, 'props', { sceneInFocus, viewStyle, readOnly })
-
-    //Event Handlers
-    const handlePrint = () => {
-        if (viewStyle === CHAT) {
-            alert('Switching to classic mode. Please try again there.')
+        if (printScript !== false && viewStyle === CHAT) {
+            log(logType, 'Switching to classic mode.')
             dispatch(updateViewStyle(CLASSIC))
-        } else if (readOnly === true) {
-            setPrint(true)
-        } else {
-            setTempReadOnly(true)
         }
     }
 
-    const handleNavLink = (type) => {
+    log(logType, 'props', { sceneInFocus, viewStyle, readOnly })
 
+
+
+
+    const handleNavLink = (type) => {
         dispatch(updateViewStyle(type))
     }
 
@@ -118,6 +113,11 @@ function ScriptViewer() {
 
     }
 
+    const handleClickPrint = () => {
+        console.log('hello handleClickPrint')
+        dispatch(updatePrintScript(true))
+
+    }
 
     const { showComments, showCommentControls, showSceneSelectorControls } = getShowBools(defaultShowSceneSelector, defaultShowComments)
 
@@ -129,7 +129,7 @@ function ScriptViewer() {
             <div className={s['left-controls']}>
 
                 <Nav className="bg-light" tabs>
-                    
+
                     {(!isMobileDevice || viewStyle === CLASSIC) &&
                         <NavItem>
                             <NavLink id="chat-mode"
@@ -183,7 +183,8 @@ function ScriptViewer() {
 
                         {showCommentControls && !showComments && <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>}
 
-                        <Icon id="script-viewer-print" icon="print" onClick={() => handlePrint()} toolTip="Print whole script"></Icon>
+                        <Icon id="script-viewer-print" icon="print" onClick={() => handleClickPrint('regular')} toolTip="Print script" style={{ paddingLeft: '5px' }}></Icon>
+                        <Icon id="script-viewer-print-large" icon="glasses" onClick={() => handleClickPrint('large')} toolTip="Print script (large)" style={{ paddingRight: '5px' }}></Icon>
 
                         {!readOnly && isScreenLargerThan('lg') && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>}
 

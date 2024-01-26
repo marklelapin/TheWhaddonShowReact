@@ -32,6 +32,8 @@ export const UPDATE_SCENE_LOADED = 'UPDATE_SCENE_LOADED';
 export const UPDATE_INITIAL_SYNC_PROGRESS = 'INITIAL_SYNC_PROGRESS';
 export const SET_SHOW_SCENE_SELECTOR = 'SET_SHOW_SCENE_SELECTOR';
 
+export const PRINT_SCRIPT = 'PRINT_SCRIPT';
+
 export const TRIGGER = 'TRIGGER';
 
 //Trigger types 
@@ -266,5 +268,12 @@ export function updateScriptFilter(scriptFilter) {
     return {
         type: UPDATE_SCRIPT_FILTER,
         scriptFilter,
+    }
+}
+
+export function updatePrintScript(printScript) {
+    return {
+        type: PRINT_SCRIPT,
+        printScript
     }
 }

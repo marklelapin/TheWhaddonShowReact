@@ -27,7 +27,7 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className, iconStyle = 'solid' } = props
+    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className } = props
 
     let { icon } = props
     if (icon === null) { icon = props }
@@ -81,6 +81,7 @@ export function Icon(props) {
         "gear": 'fa-solid fa-gear',
         "gallery": 'fa-solid fa-panorama',
         "casting": 'fa-solid fa-person-military-to-person',
+        "glasses": 'fa-solid fa-glasses',
 "paper-plane": 'fa-solid fa-paper-plane',
     };
 

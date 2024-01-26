@@ -3,19 +3,20 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 //import { Progress, Alert } from 'reactstrap';
 import { useLocation } from 'react-router-dom';
-
-
-import LinksGroup from './LinksGroup/LinksGroup';
 import {
-
     closeStaticSidebar,
     openSidebar,
+    closeSidebar
 } from '../../actions/navigation';
+import {
+    updatePrintScript
+} from '../../actions/scriptEditor';
 
+//components
 import { Icon } from '../../components/Icons/Icons';
 import User from '../../pages/user/Users';
 import ApiMonitor from '../../pages/apiMonitor/ApiMonitor';
-
+import LinksGroup from './LinksGroup/LinksGroup';
 import wslogo from '../../images/whaddon-show-logo-reversed.png'
 import wstitle from '../../images/the-whaddon-show.png'
 
@@ -73,7 +74,11 @@ function Sidebar(props) {
 
     const isSidebarOpen = sidebarStatic || sidebarOpened;
 
-
+    const handlePrint = (type) => {
+        dispatch(closeSidebar())
+        setTimeout(()=>
+        dispatch(updatePrintScript(type)),500) //introduce delay to allow modal to close before printing (otherwise modal appears in print)
+    }
 
     const linksJsx = (
 
@@ -124,7 +129,14 @@ function Sidebar(props) {
                     <>
                         <LinksGroup
                         header="Print Scene"
-                        onClick={() => { alert('Sorry not yet implemented!') }} />
+                        iconElement={<Icon icon="print" />}
+                        onToolClick={()=>handlePrint('regular')}
+                    />
+                    <LinksGroup
+                        header="Print Scene (Large)"
+                        iconElement={<Icon icon="glasses" />}
+                        onToolClick={()=>handlePrint('large')}
+                    />
                         <LinksGroup
                             header="Refresh Script"
                             onClick={() => { alert('Sorry not yet implemented!') }} />

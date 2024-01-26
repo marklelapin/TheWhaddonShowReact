@@ -25,7 +25,7 @@ const LinksGroup = (props) => {
         label = '',
         badge = null,
         childrenLinks = null,
-        onClick = null,
+        onToolClick = null,
     } = props;
 
     const dispatch = useDispatch();
@@ -56,23 +56,33 @@ const LinksGroup = (props) => {
 
     }
 
+    const handleToolClick = (e) => {
+        e.preventDefault();
+        if (onToolClick) { onToolClick(); }
+    }
+
     const titleJSX = (
         <>
-            <span className={classnames('icon', s.icon)}>
-                {iconElement}
-            </span>
-            {header}
-            {subHeader}
-            {label && <sup className={s.headerLabel}>{label}</sup>}
+                <span className={classnames('icon', s.icon)}>
+                    {iconElement}
+                </span>
+                {header}
+                {subHeader}
+                {label && <sup className={s.headerLabel}>{label}</sup>}
         </>
     )
 
 
 
 
-    if (onClick) return titleJSX
-
-    if (!onClick) return (
+    if (onToolClick !== null) return (
+        <li className={classnames('link-wrapper', s.headerLink, className)}>
+        <NavLink key={header} onClick={(e)=>handleToolClick(e)} >
+            {titleJSX}
+            </NavLink>
+        </li>
+        )
+    if (onToolClick === null) return (
         <li className={classnames('link-wrapper', s.headerLink, className)}>
             <NavLink
                 to={link}
