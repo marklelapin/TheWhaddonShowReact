@@ -8,8 +8,7 @@ import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, up
 
 import SceneSelectorRow from './SceneSelectorRow';
 import ScriptSearch from './ScriptSearch';
-import { DropdownItem } from 'reactstrap';
-import { Icon } from '../../../components/Icons/Icons';
+
 //Utils
 
 import { log, SCENE_SELECTOR as logType } from '../../../dataAccess/logging';

@@ -10,6 +10,9 @@ export const APP = {type: NONE, location: 'Component: App'}
 export const AVATAR = { type: NONE, location: 'Component:Avatar' }
 export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
 export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
+
+export const CASTING = { type: DEBUG, location: 'Component:Casting' }
+export const CASTING_SCRIPTS = { type: DEBUG, location: 'Script:casting' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 
 export const INDEX = { type: NONE, location: 'Component:INDEX' }

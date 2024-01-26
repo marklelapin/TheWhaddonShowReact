@@ -10,7 +10,6 @@ import { ACT, SCENE, SYNOPSIS, LIGHTING, SOUND, INITIAL_CURTAIN, CURTAIN, INITIA
 import { PART } from '../../dataAccess/localServerModels';
 //scss
 import s from './ScriptSummary.module.scss';
-import ScriptItem from '../scriptEditor/components/ScriptItem';
 
 //SummaryTypes
 export const SHOW = 'show'
@@ -20,7 +19,7 @@ export const CASTING = 'casting'
 
 const ScriptSummary = (props) => {
 
-    const { summaryType = 'None', fixed = true } = props
+    const { summaryType = 'None' } = props
 
     const typeMap = new Map([
         [SHOW, [PART, SYNOPSIS]],
@@ -106,7 +105,6 @@ const ScriptSummary = (props) => {
 
     return (
         <>
-            <h1>Script Summary</h1>
             <div className={s.container}>
                 <div className={s.castSection}>
                 </div>

@@ -5,13 +5,23 @@
 .castingContainer {
     display: flex;
     flex-direction: row;
+    overflow: hidden;
 
 
     .castSection {
-        flex: 1;     
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+
+        .castMemberContainer {
+            display: flex;
+            flex-direction: row;
+        }
     }
 
     .summarySection {
         flex: 2;
+        overflow-y: auto;
     }
 }
