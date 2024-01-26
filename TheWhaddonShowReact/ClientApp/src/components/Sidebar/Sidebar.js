@@ -1,6 +1,5 @@
 import React from 'react';
 import { useEffect } from 'react';
-
 import { useSelector, useDispatch } from 'react-redux';
 //import { Progress, Alert } from 'reactstrap';
 import { useLocation } from 'react-router-dom';
@@ -12,7 +11,6 @@ import {
     closeStaticSidebar,
     openSidebar,
 } from '../../actions/navigation';
-import { isScreenSmallerThan } from '../../core/screenHelper';
 
 import { Icon } from '../../components/Icons/Icons';
 import User from '../../pages/user/Users';
@@ -24,9 +22,12 @@ import wstitle from '../../images/the-whaddon-show.png'
 import { userAccessToComponent } from '../../dataAccess/userAccess';
 
 import s from './Sidebar.module.scss';
+
 function Sidebar(props) {
 
     const { isModal = false } = props;
+
+    const dispatch = useDispatch();
 
     //Access state from Redux store
     const sidebarOpened = useSelector(store => store.navigation.sidebarOpened);
@@ -34,10 +35,12 @@ function Sidebar(props) {
     const isMobileDevice = useSelector(store => store.device.isMobileDevice);
     const currentUser = useSelector((state) => state.user.currentUser)
 
-    const dispatch = useDispatch();
 
     //get Location
     const location = useLocation();
+    const showScriptTools = location.pathname.includes('/app/script') && isMobileDevice
+
+    const showTools = showScriptTools
 
 
     useEffect(() => {
@@ -47,7 +50,6 @@ function Sidebar(props) {
         return () => {
             window.removeEventListener('onMouseEnter', onMouseEnter);
             window.removeEventListener('onMouseLeave', onMouseLeave);
-
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -79,10 +81,11 @@ function Sidebar(props) {
             <header className={s.logo}>
                 <a href="/app/home">
                     <img src={wslogo} height="60" alt="The Whaddon Show Logo of a cartoon cowboy playing the guitar" />
-
                     <img src={wstitle} height="40" alt="The Whaddon Show" />
                 </a>
             </header>
+
+            {/*PAGES SECTION*/}
 
             <ul className={s.nav}>
 
@@ -111,17 +114,36 @@ function Sidebar(props) {
                     link="/app/gallery"
                     iconElement={<Icon icon="gallery" />}
                 />
+
+             {/*   TOOLS SECTION*/}
+
+                {showTools &&
+                    <h5 className={[s.navTitle, s.groupTitle].join(' ')}>TOOLS</h5>
+                }
+                {showScriptTools &&
+                    <>
+                        <LinksGroup
+                        header="Print Scene"
+                        onClick={() => { alert('Sorry not yet implemented!') }} />
+                        <LinksGroup
+                            header="Refresh Script"
+                            onClick={() => { alert('Sorry not yet implemented!') }} />
+                    </>
+                }
+
+             {/*   ADIMN SECTION*/}
+                 
                 {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, 'ApiMonitor')) &&
                     <h5 className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
                 }
-                {userAccessToComponent(currentUser, 'Users') &&
+                {(userAccessToComponent(currentUser, 'Users')) &&
                     <LinksGroup
                         header="Users"
                         link="/app/users"
                         iconElement={<Icon icon="user" />}
                     />
                 }
-                {userAccessToComponent(currentUser, 'ApiMonitor') &&
+                {(userAccessToComponent(currentUser, 'ApiMonitor')) &&
 
                     <LinksGroup
                         header="API"
@@ -183,11 +205,3 @@ function Sidebar(props) {
 }
 
 export default Sidebar;
-
-
-
-export function isSmallerScreen() {
-
-    return (isScreen('xs') || isScreen('sm'))
-
-}

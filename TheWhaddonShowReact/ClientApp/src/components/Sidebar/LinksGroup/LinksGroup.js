@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
 
 //Components
@@ -9,8 +9,8 @@ import CaretPin from './CaretPin'
 
 //utils
 import classnames from 'classnames';
-import {isScreenSmallerThan} from '../../../core/screenHelper';
-import {closeSidebar } from '../../../actions/navigation';
+import { isScreenSmallerThan } from '../../../core/screenHelper';
+import { closeSidebar } from '../../../actions/navigation';
 //css
 import s from './LinksGroup.module.scss';
 
@@ -22,15 +22,13 @@ const LinksGroup = (props) => {
         iconElement = null,
         className = '',
         deep = 0,
-        activeItem = '',
         label = '',
-        parent = null,
-        badge = null
+        badge = null,
+        childrenLinks = null,
+        onClick = null,
     } = props;
 
     const dispatch = useDispatch();
-
-    const { childrenLinks = null, ...propsWithoutChildren } = props;
 
     const location = useLocation();
 
@@ -58,20 +56,34 @@ const LinksGroup = (props) => {
 
     }
 
-    const isOpen = activeItem && activeItem.includes(index) && theaderLinkWasClicked;
+    const titleJSX = (
+        <>
+            <span className={classnames('icon', s.icon)}>
+                {iconElement}
+            </span>
+            {header}
+            {subHeader}
+            {label && <sup className={s.headerLabel}>{label}</sup>}
+        </>
+    )
 
-    return (
+
+
+
+    if (onClick) return titleJSX
+
+    if (!onClick) return (
         <li className={classnames('link-wrapper', s.headerLink, className)}>
             <NavLink
                 to={link}
                 key={link}
-                onClick={()=>handleNavLinkClick(childrenLinks)}
+                onClick={() => handleNavLinkClick(childrenLinks)}
                 className={({ isActive }) => isActive ? s.headerLinkActive : ''}
             >
                 <span className={classnames('icon', s.icon)}>
                     {iconElement}
                 </span>
-                {header} {label && <sup className={`${s.headerLabel} ${s.headerUpdate}`}>{label}</sup>}
+                {titleJSX}
                 {badge && <Badge className={s.badge} pill color={"danger"}>9</Badge>}
                 {childrenLinks && <CaretPin isCollapsed={isCollapsed} onClick={() => toggleCollapse()} />}
             </NavLink>
@@ -82,14 +94,14 @@ const LinksGroup = (props) => {
                             <NavLink
                                 key={link + ind}
                                 to={child.link}
-                                onClick={()=>handleNavLinkClick(childrenLinks)}
+                                onClick={() => handleNavLinkClick(childrenLinks)}
                                 className={({ isActive }) => isActive ? s.headerLinkActive : ''}
                                 style={{ paddingLeft: `${26 + (10 * (deep - 1))}px` }}
                             >
                                 <span className={classnames('icon', s.icon)}>
                                     {iconElement}
                                 </span>
-                                {subHeader} {label && <sup className={s.headerLabel}>{label}</sup>}
+                                {titleJSX}
                             </NavLink>
                         ))}
                     </ul>

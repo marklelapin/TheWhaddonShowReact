@@ -1,6 +1,7 @@
 ﻿import React, { useState } from 'react';
 
 import { Tooltip } from 'reactstrap';
+import {isMouseAvailable} from '../../core/screenHelper';
 
 import s from './Icons.module.scss';
 
@@ -84,7 +85,7 @@ export function Icon(props) {
     };
 
 
-    if (dictionary.hasOwnProperty(icon.toLowerCase())) {
+    if (Object.prototype.hasOwnProperty.call(dictionary, icon.toLowerCase())) {
         icon = dictionary[icon.toLowerCase()];
     }
 
@@ -109,7 +110,7 @@ export function Icon(props) {
                 style={style}
                 onClick={onClick} />
 
-            {toolTip && <Tooltip placement={toolTipPlacement} isOpen={toolTipOpen === id} toggle={() => toggleToolTip(id)} target={id} delay={toolTipDelay}>{toolTip}</Tooltip>}
+            {toolTip && isMouseAvailable() && <Tooltip placement={toolTipPlacement} isOpen={toolTipOpen === id} toggle={() => toggleToolTip(id)} target={id} delay={toolTipDelay}>{toolTip}</Tooltip>}
         </>
 
     }

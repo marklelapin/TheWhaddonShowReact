@@ -4,10 +4,10 @@ import { openStaticSidebar, openSidebar } from '../../../actions/navigation';
 import { NavLink } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons';
 
-import { isScreenSmallerThan } from '../../../core/screenHelper';
 import s from '../Header.module.scss';
 export function SidebarToggle(props) {
 
+    const { showOverride = null } = props;
 
     const sidebarStatic = useSelector(store => store.navigation.sidebarStatic);
     const isMobileDevice = useSelector(store => store.device.isMobileDevice);
@@ -23,10 +23,12 @@ export function SidebarToggle(props) {
 
     }
 
+    const show = showOverride === null ? !sidebarStatic : showOverride
+
     return (
 
         <>
-            {!sidebarStatic &&
+            {show &&
                 <NavLink className={`${s.toggleSidebar}`} id="toggleSidebar" onClick={handleClick}>
                     <span className={s.headerSvgFlipColor}>
                         <Icon icon="menu" id="header-toggle-sidebar" className={s.headerSvgFlipColor} toolTip="Pin Sidebar Open" toolTipPlacement="right" />

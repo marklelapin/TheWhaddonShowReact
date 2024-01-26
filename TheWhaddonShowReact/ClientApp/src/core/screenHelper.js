@@ -53,11 +53,11 @@ export function isScreenLargerThan(size) {
 //    return screenSize;
 //}
 
-const isMouseAvailable = () => {
+export const isMouseAvailable = () => {
     return !('ontouchstart' in window) && (navigator.maxTouchPoints <= 0 || navigator.msMaxTouchPoints <= 0);
 }
 
-const isMobileDevice = () => {
+export const isMobileDevice = () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.matchMedia("(max-width: 767px)").matches && window.matchMedia("(orientation: portrait)").matches);
 }
 
