@@ -35,6 +35,7 @@ function ScriptViewer(props) {
     const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
     const initialSyncProgressTotal = initialSyncProgress.scriptItem * 70 + initialSyncProgress.person * 15 + initialSyncProgress.part * 15
     const maxWidthExists = useSelector(state => state.scriptEditor.maxWidthExists)
+    const isMobileDevice = useSelector(state => state.user.isMobileDevice)
 
     //internal state
     const [scriptBodyLoaded, setScriptBodyLoaded] = useState(false)
