@@ -40,10 +40,4 @@ export function sidebarTypeToggle(value) {
   }
 }
 
-export function updateScreenSize(screenSize) {
-    return {
-        type: UPDATE_SCREEN_SIZE,
-        screenSize
-    };
-}
 

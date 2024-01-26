@@ -1,4 +1,4 @@
-import { isScreenLargerThan } from '../core/screenHelper';
+import { isMobileDevice, isScreenLargerThan } from '../core/screenHelper';
 
 export const READ = 'READ'
 export const WRITE = 'WRITE'
@@ -54,7 +54,7 @@ export const signOutAllUsers = async (instance) => {
         accounts.forEach(async (account) => {
             doMsalLogout(instance, account)
         });
-    };
+    }
 
 };
 
@@ -72,6 +72,9 @@ const doMsalLogout = async (instance, account) => {
 
 
 
-export const isScriptReadOnly = (currentUser) => {
-    return (currentUser?.isWriter && isScreenLargerThan('sm')) ? false : true;
+export const isScriptReadOnly = (currentUser, printScript = false) => {
+    if (printScript === true) return true;
+    if (isMobileDevice() === true) return true;
+
+    return !currentUser?.isWriter;
 }

@@ -49,7 +49,7 @@ function App(props) {
             <ScriptEditorProcessing />
             <CacheProcessing />
             <TextAreaContexts />
-            <ErrorCatch>
+          {/* <ErrorCatch>*/}
                 <Layout>
                     {/*Components performing background and preloading tasks*/}
 
@@ -65,7 +65,7 @@ function App(props) {
                     </MSALErrorHandling>
 
                 </Layout>
-            </ErrorCatch>
+           {/* </ErrorCatch>*/}
 
 
 

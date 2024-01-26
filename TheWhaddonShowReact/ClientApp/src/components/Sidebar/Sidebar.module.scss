@@ -38,15 +38,23 @@
 }
 
 .sidebarWrapper {
-  position: fixed;
-  left: 0;
-  top: 0;
-  height: 100vh;
-  bottom: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  width: $sidebar-width-open;
-  transition: width $sidebar-transition-time ease-in-out;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: $sidebar-width-open;
+    transition: width $sidebar-transition-time ease-in-out;
+
+    .closeSidebarToggle {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        color: $gray-300;
+        z-index: 1;
+    }
 }
 
 .sidebarClose.sidebarWrapper {
@@ -231,11 +239,15 @@
   }
 }
 
-
-.minimize-sidebar-button {
-position: absolute;
-    top: 2px;
-    right: 5px;
+.modalSidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    padding: 10px;
+    background-color: $gray-inverse;
 }
+
 
 
