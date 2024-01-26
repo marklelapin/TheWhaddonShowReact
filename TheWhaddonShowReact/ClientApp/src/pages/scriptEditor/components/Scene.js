@@ -8,7 +8,6 @@ import { trigger, ADD_SCENE, updateSceneLoaded } from '../../../actions/scriptEd
 //Components
 import ScriptItem from '../../../pages/scriptEditor/components/ScriptItem.js';
 import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
-import CurtainBackground from './CurtainBackground.js';
 
 //Utilities
 import { log, SCENE as logType } from '../../../dataAccess/logging'
@@ -48,7 +47,7 @@ const Scene = memo((props) => {
 
     const bodyOrder = [...sceneOrder].filter(item => ([SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING].includes(item.type) === false)) || []//returns the body scriptItems
 
-    const finalScriptItem = bodyOrder[bodyOrder.length - 1] || {}
+
 
     const scriptFilter = useSelector(state => state.scriptEditor.scriptFilter)
 

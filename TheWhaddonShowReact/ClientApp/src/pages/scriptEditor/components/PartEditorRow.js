@@ -55,8 +55,9 @@ function PartEditorRow(props) {
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[partId])
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
-   const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+    const currentUser = useSelector(state => state.user.currentUser)
+    const printScript = useSelector(state => state.scriptEditor.printScript)
+    const readOnly = isScriptReadOnly(currentUser, printScript)
 
     //const scenePartIds = scene.partIds
 

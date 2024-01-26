@@ -1,61 +1,61 @@
 import React from 'react';
 import { useEffect } from 'react';
-
 import { useSelector, useDispatch } from 'react-redux';
 //import { Progress, Alert } from 'reactstrap';
 import { useLocation } from 'react-router-dom';
-
-
-import LinksGroup from './LinksGroup/LinksGroup';
 import {
-
     closeStaticSidebar,
     openSidebar,
+    closeSidebar
 } from '../../actions/navigation';
-import { isScreenSmallerThan } from '../../core/screenHelper';
+import {
+    updatePrintScript
+} from '../../actions/scriptEditor';
 
+//components
 import { Icon } from '../../components/Icons/Icons';
 import User from '../../pages/user/Users';
 import ApiMonitor from '../../pages/apiMonitor/ApiMonitor';
-
+import LinksGroup from './LinksGroup/LinksGroup';
 import wslogo from '../../images/whaddon-show-logo-reversed.png'
 import wstitle from '../../images/the-whaddon-show.png'
 
 import { userAccessToComponent } from '../../dataAccess/userAccess';
 
 import s from './Sidebar.module.scss';
-function Sidebar() {
+
+function Sidebar(props) {
+
+    const { isModal = false } = props;
+
+    const dispatch = useDispatch();
 
     //Access state from Redux store
     const sidebarOpened = useSelector(store => store.navigation.sidebarOpened);
     const sidebarStatic = useSelector(store => store.navigation.sidebarStatic);
-
+    const isMobileDevice = useSelector(store => store.device.isMobileDevice);
     const currentUser = useSelector((state) => state.user.currentUser)
 
-    const dispatch = useDispatch();
 
     //get Location
     const location = useLocation();
+    const showScriptTools = location.pathname.includes('/app/script') && isMobileDevice
+
+    const showTools = showScriptTools
 
 
     useEffect(() => {
-        window.addEventListener('resize', handleResize);
         window.addEventListener('onMouseEnter', onMouseEnter);
         window.addEventListener('onMouseLeave', onMouseLeave);
 
         return () => {
-            window.removeEventListener('resize', handleResize);
             window.removeEventListener('onMouseEnter', onMouseEnter);
             window.removeEventListener('onMouseLeave', onMouseLeave);
-
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleResize = () => {
-        //console.log(`hadnle resize static: ${sidebarStatic} opened: ${sidebarOpened}`)
-        if (isScreenSmallerThan('md')) {
-            dispatch(closeStaticSidebar());
-        }
+    const toggleCloseSidebar = () => {
+        dispatch(closeStaticSidebar())
     }
 
     const onMouseEnter = () => {
@@ -63,7 +63,6 @@ function Sidebar() {
         if (!sidebarStatic) {
             dispatch(openSidebar());
         }
-
     }
 
     const onMouseLeave = () => {
@@ -75,86 +74,137 @@ function Sidebar() {
 
     const isSidebarOpen = sidebarStatic || sidebarOpened;
 
+    const handlePrint = (type) => {
+        dispatch(closeSidebar())
+        setTimeout(()=>
+        dispatch(updatePrintScript(type)),500) //introduce delay to allow modal to close before printing (otherwise modal appears in print)
+    }
 
-    return (
+    const linksJsx = (
+
+        <>
+            <header className={s.logo}>
+                <a href="/app/home">
+                    <img src={wslogo} height="60" alt="The Whaddon Show Logo of a cartoon cowboy playing the guitar" />
+                    <img src={wstitle} height="40" alt="The Whaddon Show" />
+                </a>
+            </header>
+
+            {/*PAGES SECTION*/}
+
+            <ul className={s.nav}>
+
+                <LinksGroup
+                    header="Home"
+                    link="/app/home"
+                    iconElement={<Icon icon='home' />}
+                />
+                <LinksGroup
+                    header="Script"
+                    link="/app/script"
+                    iconElement={<Icon icon='script' />}
+                />
+                <LinksGroup
+                    header="Script Summary"
+                    link="/app/scriptsummary"
+                    iconElement={<Icon icon='summary' />}
+                />
+                <LinksGroup
+                    header="Casting"
+                    link="/app/casting"
+                    iconElement={<Icon icon='casting' />}
+                />
+                <LinksGroup
+                    header="Gallery"
+                    link="/app/gallery"
+                    iconElement={<Icon icon="gallery" />}
+                />
+
+             {/*   TOOLS SECTION*/}
+
+                {showTools &&
+                    <h5 className={[s.navTitle, s.groupTitle].join(' ')}>TOOLS</h5>
+                }
+                {showScriptTools &&
+                    <>
+                        <LinksGroup
+                        header="Print Scene"
+                        iconElement={<Icon icon="print" />}
+                        onToolClick={()=>handlePrint('regular')}
+                    />
+                    <LinksGroup
+                        header="Print Scene (Large)"
+                        iconElement={<Icon icon="glasses" />}
+                        onToolClick={()=>handlePrint('large')}
+                    />
+                        <LinksGroup
+                            header="Refresh Script"
+                            onClick={() => { alert('Sorry not yet implemented!') }} />
+                    </>
+                }
+
+             {/*   ADIMN SECTION*/}
+                 
+                {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, 'ApiMonitor')) &&
+                    <h5 className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
+                }
+                {(userAccessToComponent(currentUser, 'Users')) &&
+                    <LinksGroup
+                        header="Users"
+                        link="/app/users"
+                        iconElement={<Icon icon="user" />}
+                    />
+                }
+                {(userAccessToComponent(currentUser, 'ApiMonitor')) &&
+
+                    <LinksGroup
+                        header="API"
+                        link="/app/api"
+                        iconElement={<Icon icon="api" />}
+                        childrenLinks={[
+                            {
+                                subHeader: 'Documentation',
+                                link: '/app/api/documentation',
+                                iconElement: <Icon icon="document" />,
+                            },
+                            {
+                                subHeader: 'Monitor',
+                                link: '/app/api/monitor',
+                                iconElement: <Icon icon="layout" />,
+                            }
+                        ]}
+                    />
+
+                }
+
+            </ul>
+
+        </>
+
+
+
+    )
+
+
+    if (isModal) return (
+
+        <div className={s.modalSidebar}>
+            {linksJsx}
+        </div>
+
+    )
+
+
+    if (!isModal) return (
 
         <div className={`${isSidebarOpen ? 'sidebarOpen' : s['sidebarClose']} ${s['sidebarWrapper']}`}>
+            {sidebarOpened && sidebarStatic && !isMobileDevice && <Icon icon="arrow-left" id="close-sidebar-toggle" className={s.closeSidebarToggle} onClick={toggleCloseSidebar} toolTip="UnPin Sidebar" toolTipPlacement="right" />}
 
             <nav
                 onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
                 className={s.root}
             >
-                {sidebarStatic && <Icon icon={'arrow-left'} onClick={() => dispatch(closeStaticSidebar())} toolTip='Minimise Sidebar' className={s[`minimize-sidebar-button`]}></Icon>}
-
-                <header className={s.logo}>
-                    <a href="/app/home">
-                        <img src={wslogo} height="60" alt="The Whaddon Show Logo of a cartoon cowboy playing the guitar" />
-
-                        <img src={wstitle} height="40" alt="The Whaddon Show" />
-                    </a>
-                </header>
-
-                <ul className={s.nav}>
-
-                    <LinksGroup
-                        header="Home"
-                        link="/app/home"
-                        iconElement={<Icon icon='home' />}
-                    />
-                    <LinksGroup
-                        header="Script"
-                        link="/app/script"
-                        iconElement={<Icon icon='script' />}
-                    />
-                    <LinksGroup
-                        header="Script Summary"
-                        link="/app/scriptsummary"
-                        iconElement={<Icon icon='summary' />}
-                    />
-                    <LinksGroup
-                        header="Casting"
-                        link="/app/casting"
-                        iconElement={<Icon icon='casting' />}
-                    />
-                    <LinksGroup
-                        header="Gallery"
-                        link="/app/gallery"
-                        iconElement={<Icon icon="gallery" />}
-                    />
-                    {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, 'ApiMonitor')) &&
-                        <h5 className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
-                    }
-                    {userAccessToComponent(currentUser, 'Users') &&
-                        <LinksGroup
-                            header="Users"
-                            link="/app/users"
-                            iconElement={<Icon icon="user" />}
-                        />
-                    }
-                    {userAccessToComponent(currentUser, 'ApiMonitor') &&
-
-                        <LinksGroup
-                            header="API"
-                            link="/app/api"
-                            iconElement={<Icon icon="api" />}
-                            childrenLinks={[
-                                {
-                                    subHeader: 'Documentation',
-                                    link: '/app/api/documentation',
-                                    iconElement: <Icon icon="document" />,
-                                },
-                                {
-                                    subHeader: 'Monitor',
-                                    link: '/app/api/monitor',
-                                    iconElement: <Icon icon="layout" />,
-                                }
-                            ]}
-                        />
-
-                    }
-
-                </ul>
-
+                {linksJsx}
             </nav >
 
             <footer className={s.contentFooter}>
@@ -167,11 +217,3 @@ function Sidebar() {
 }
 
 export default Sidebar;
-
-
-
-export function isSmallerScreen() {
-
-    return (isScreen('xs') || isScreen('sm'))
-
-}

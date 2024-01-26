@@ -1,7 +1,7 @@
 @import '../../styles/app';
 
 $font-size-print-sm: 12pt;
-$font-size-print-md: 16pt;
+$font-size-print-md: 14pt;
 $font-size-print-lg: 18pt;
 
 .classic {
@@ -54,7 +54,6 @@ $font-size-print-lg: 18pt;
         position: relative;
         z-index: 3;
         width: auto;
-     
     }
 
     .dropzone {
@@ -143,13 +142,24 @@ $font-size-print-lg: 18pt;
                     text-align: center;
                     align-self: center;
                     white-space: pre-line;
-                }
 
-                @media print {
-                    font-size: $font-size-print-md !important;
-                    width: 100% !important;
-                    widows: 2;
-                    orphans: 2;
+                    &.regular {
+                        @media print {
+                            font-size: $font-size-print-md !important;
+                            width: 100% !important;
+                            widows: 2;
+                            orphans: 2;
+                        }
+                    }
+
+                    &.large {
+                        @media print {
+                            font-size: $font-size-print-lg !important;
+                            width: 100% !important;
+                            widows: 2;
+                            orphans: 2;
+                        }
+                    }
                 }
             }
 
@@ -413,7 +423,6 @@ $font-size-print-lg: 18pt;
         left: 50%;
         transform: translateX(-50%);
     }
-
 }
 /*PART AVATAR NAME*/
 .part-avatar-name {
@@ -746,8 +755,8 @@ $font-size-print-lg: 18pt;
         padding-bottom: 0px;
         text-align: center;
 
-        @print {
-            font-size: 12pt !important;
+        @media print {
+            font-size: $font-size-print-sm !important;
         }
     }
 }
@@ -758,6 +767,12 @@ $font-size-print-lg: 18pt;
         font-size: $h6-font-size;
         font-weight: $font-weight-bold;
         text-align: center;
+    }
+
+    .text-input {
+        @media print {
+            font-size: $font-size-print-sm !important;
+        }
     }
 }
 
@@ -851,6 +866,24 @@ $font-size-print-lg: 18pt;
             z-index: 2;
             background-color: white;
             overflow: hidden !important;
+
+            &.regular {
+                @media print {
+                    font-size: $font-size-print-md !important;
+                    width: 100% !important;
+                    widows: 2;
+                    orphans: 2;
+                }
+            }
+
+            &.large {
+                @media print {
+                    font-size: $font-size-print-lg !important;
+                    width: 100% !important;
+                    widows: 2;
+                    orphans: 2;
+                }
+            }
         }
     }
 

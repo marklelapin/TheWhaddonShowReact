@@ -78,7 +78,6 @@ const ScriptItem = memo((props) => {
     const undoId = `undo-${sceneId}`
     const redoId = `redo-${sceneId}`
     const deleteSceneId = `delete-scene-${sceneId}`
-    const printSceneId = `print-scene-${sceneId}`
 
     //calculations functions
     const showParts = () => {
@@ -123,9 +122,6 @@ const ScriptItem = memo((props) => {
 
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
-    const handlePrint = () => {
-        window.print()
-    }
 
     log(logType, 'rendering:', { id })
 

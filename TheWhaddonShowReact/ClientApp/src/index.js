@@ -25,7 +25,6 @@ import App from '../src/components/App.jsx';
 import ErrorPage from '../src/pages/error/ErrorPage';
 import config from '../src/config.js';
 import createRootReducer from '../src/reducers';
-
 import { createHashHistory } from 'history';
 
 
@@ -37,6 +36,7 @@ import '../src/styles/theme.scss';
 
 
 import LogRocket from 'logrocket';
+import { addDeviceInfo } from './core/screenHelper.js';
 LogRocket.init('lirpcx/the-whaddon-show-app');
 
 
@@ -88,10 +88,13 @@ const initApp = async () => {
         preloadedState = undefined;
     }
 
-    //ensure no authenticated user
     if (preloadedState !== undefined) {
+
+        //ensure no authenticated user
         preloadedState.user = defaultUserState
         preloadedState.localServer.sync.pauseSync = false
+        //ensure correct device details
+       // addDeviceInfo(preloadedState)
     }
 
 
@@ -143,8 +146,9 @@ const initAppCatchingErrors = async () => {
     } catch (error) {
         const container = document.getElementById("root");
         const root = createRoot(container);
+        console.error(error, { error})
         root.render(
-            <ErrorPage code={error.code || 500} message='Sorry, an error has occured initiating the app.' details={error}>
+            <ErrorPage code={error.code || 500} message='Sorry, an error has occured initiating the app.' details={error.message || error }>
             </ErrorPage>
         );
 
