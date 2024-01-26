@@ -86,7 +86,21 @@ const getCastWithParts = (cast, partStats) => {
             ? { ...acc, [personId]: { ...acc[personId], parts: [...acc[personId].parts, part], wordCount: acc[personId].wordCount + part.wordCount, totalParts: acc[personId].partCount + 1 } }
             : { person: cast[personId] || { id: 'none', firstName: 'unallocated' }, parts: [part], wordCount: part.wordCount, partCount: 1 };
     }, {})
+
+    return castParts;
 }
+
+const getCastWithScenes = ( castParts) => {
+
+    const castScenes =  castParts.reduce((acc, castMember) => {
+        const personId = castMember.personId
+        const scenes = castMember.parts.
+        acc[personId] = acc[personId]
+            ? { ...acc, [personId]: { ...acc[personId], scenes: [...acc[personId].scenes, castPart.parts.mapScen], wordCount: acc[personId].wordCount + part.wordCount, totalParts: acc[personId].partCount + 1 } }
+            : { person: cast[personId] || { id: 'none', firstName: 'unallocated' }, parts: [part], wordCount: part.wordCount, partCount: 1 };
+    }, {})
+
+    return castScenes;
 
 
 NEED TO ADD IN NUMBER OF SCENES AND SCENES themelves getCastWithScenes.
