@@ -74,34 +74,33 @@ function ScriptSearch(props) {
                     color={searchParameters.myScenes ? 'primary' : 'secondary'}
                     outline={searchParameters.myScenes ? false : true}
                     onClick={() => handleChange('myScenes', true)}
-                    className={classnames(s.scriptSearchMine,searchParameters.myScenes ? s.active : null)}
+                    className={classnames(s.scriptSearchMine, searchParameters.myScenes ? s.active : null)}
                 >
                     <div className={classnames(isModal ? s.highlight : null)} >{highlightMessage}</div></Button>
             </div>
-            <div className={s.scriptSearchCharacters}>
-                <Input
-                    type="text"
-                    value={searchParameters.characters}
-                    onChange={(e) => handleChange('characters', e.target.value)}
-                    name="search"
-                    id="search"
-                    placeholder="Search"
-                />
-            </div>
+            <div className={s.advancedSearch}>
+                <div className={s.scriptSearchCharacters}>
+                    <Input
+                        type="text"
+                        value={searchParameters.characters}
+                        onChange={(e) => handleChange('characters', e.target.value)}
+                        name="search"
+                        id="search"
+                        placeholder="Search"
+                    />
+                </div>
 
-            <div className={s.scriptSearchTags}>
-                <TagsInput
-                    tags={tags}
-                    tagOptions={unselectedTags}
-                    onClickAdd={(tag) => handleChange('addTag', tag)}
-                    onClickRemove={(tag) => handleChange('removeTag', tag)}
-                />
+                <div className={s.scriptSearchTags}>
+                    <TagsInput
+                        tags={tags}
+                        tagOptions={unselectedTags}
+                        onClickAdd={(tag) => handleChange('addTag', tag)}
+                        onClickRemove={(tag) => handleChange('removeTag', tag)}
+                    />
+                </div>
             </div>
-            
-
 
         </div>
-
 
     )
 }

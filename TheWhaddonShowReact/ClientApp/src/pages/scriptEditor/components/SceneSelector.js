@@ -8,6 +8,7 @@ import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, up
 import { Icon } from '../../../components/Icons/Icons';
 import SceneSelectorRow from './SceneSelectorRow';
 import ScriptSearch from './ScriptSearch';
+import { Button, Divider } from 'reactstrap';
 //Utils
 
 import { log, SCENE_SELECTOR as logType } from '../../../dataAccess/logging';
@@ -43,7 +44,7 @@ function SceneSelector(props) {
             show: true //gets converted to false if not matching searches below
             , isViewAsPartPerson: isViewAsPartPerson(viewAsPartPerson, scene, currentPartPersons)   //indicates if viesAsPartPerson is in the scene
         })) || [];
-    
+
 
     //filter out scenes not matching characters
     if (searchParameters.characters?.length > 0) {
@@ -107,13 +108,16 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                if (currentScriptFilter === null ) {
+                if (isMobileDevice) {
+                    dispatch(updateScriptFilter([id]))
+                } else if (scriptFilter === null || scriptFilter.includes(id)) {
                     dispatch(updateMovementInProgress(true))
                     moveFocusToId(id, END, true)
                 } else {
-                    dispatch(updateScriptFilter([id]))
+                    handleSetFilter()
+                    dispatch(updateMovementInProgress(true))
+                    moveFocusToId(id, END, true)
                 }
-
                 break;
             default:
                 break;
@@ -132,18 +136,8 @@ function SceneSelector(props) {
     return (
         <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
             <ScriptSearch isModal={isModal} />
-            <div className={s.filterSection}>
-                <div className={classnames(s.setFilter, 'clickable')} onClick={handleSetFilter} >
-                    {noFilterExists && <>
-                        <p>view entire script</p><Icon icon='arrow-right' />
-                    </>}
-                    {filterExists && <>
-                        <p>filter script for scenes below</p><Icon icon='arrow-right' />
-                    </>}
-
-                </div>
-                <p>or click on individual scene</p>
-            </div>
+            <Divider />
+            {!isMobileDevice && <Button type="button" color='primary' className={s.applyFilterButton} onClick={handleSetFilter} outline={filterMatchesCurrent ? true : false}>Apply Filter</Button>}
 
             <h2>Scenes</h2>
             <div className="full-height-overflow">
