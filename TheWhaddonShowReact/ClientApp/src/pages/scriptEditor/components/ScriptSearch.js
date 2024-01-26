@@ -20,6 +20,8 @@ function ScriptSearch(props) {
     const searchParameters = useSelector(state => state.scriptEditor.searchParameters)
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const currentUser = useSelector(state => state.user.currentUser)
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+
 
     const viewAsPartPersonName = (viewAsPartPerson?.personId === undefined) ? (viewAsPartPerson?.firstName || 'Anyone') : viewAsPartPerson.name
 
@@ -30,6 +32,7 @@ function ScriptSearch(props) {
     const tags = searchParameters.tags
 
     const unselectedTags = tagOptions.filter(tag => !tags.includes(tag))
+
 
     const handleChange = (type, value) => {
         let newSearchParameters;
@@ -74,34 +77,37 @@ function ScriptSearch(props) {
                     color={searchParameters.myScenes ? 'primary' : 'secondary'}
                     outline={searchParameters.myScenes ? false : true}
                     onClick={() => handleChange('myScenes', true)}
-                    className={classnames(s.scriptSearchMine,searchParameters.myScenes ? s.active : null)}
+                    className={classnames(s.scriptSearchMine, searchParameters.myScenes ? s.active : null)}
                 >
                     <div className={classnames(isModal ? s.highlight : null)} >{highlightMessage}</div></Button>
             </div>
-            <div className={s.scriptSearchCharacters}>
-                <Input
-                    type="text"
-                    value={searchParameters.characters}
-                    onChange={(e) => handleChange('characters', e.target.value)}
-                    name="search"
-                    id="search"
-                    placeholder="Search"
-                />
-            </div>
 
-            <div className={s.scriptSearchTags}>
-                <TagsInput
-                    tags={tags}
-                    tagOptions={unselectedTags}
-                    onClickAdd={(tag) => handleChange('addTag', tag)}
-                    onClickRemove={(tag) => handleChange('removeTag', tag)}
-                />
-            </div>
-            
+            {!isMobileDevice &&
+                <>
+                    <div className={s.scriptSearchCharacters}>
+                        <Input
+                            type="text"
+                            value={searchParameters.characters}
+                            onChange={(e) => handleChange('characters', e.target.value)}
+                            name="search"
+                            id="search"
+                            placeholder="Search"
+                        />
+                    </div>
+
+                    <div className={s.scriptSearchTags}>
+                        <TagsInput
+                            tags={tags}
+                            tagOptions={unselectedTags}
+                            onClickAdd={(tag) => handleChange('addTag', tag)}
+                            onClickRemove={(tag) => handleChange('removeTag', tag)}
+                        />
+                    </div>
+                </>
 
 
-        </div>
-
+            }
+        </div >
 
     )
 }

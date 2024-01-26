@@ -13,7 +13,7 @@ import PartEditor from '../../../pages/scriptEditor/components/PartEditor.js';
 import { log, SCENE as logType } from '../../../dataAccess/logging'
 import { partEditorRowId } from '../scripts/part';
 import classnames from 'classnames';
-import {isScriptReadOnly } from '../../../dataAccess/userAccess'; 
+import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 //styling
 import s from '../Script.module.scss'
 
@@ -39,7 +39,7 @@ const Scene = memo((props) => {
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
     const currentUser = useSelector(state => state.user.currentUser)
     const readOnly = isScriptReadOnly(currentUser)
-
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
     const scene = (sceneScriptItem.type === ACT) ? sceneScriptItem : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
     const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
@@ -51,7 +51,14 @@ const Scene = memo((props) => {
 
     const scriptFilter = useSelector(state => state.scriptEditor.scriptFilter)
 
-    const filterScene = [ACT, SHOW].includes(scene.type) || scriptFilter?.includes(scene.id) || scriptFilter === null || scriptFilter === undefined
+    let sceneFilter  
+    if (scriptFilter === null || scriptFilter === undefined) {
+        sceneFilter = isMobileDevice ? (sceneNumber === 1) : true
+    } else {
+        sceneFilter = scriptFilter.includes(scene.id)
+    }
+
+
 
     useEffect(() => {
         log(logType, 'useEffect[] dispatching updateSceneLoaded', id)
@@ -63,7 +70,7 @@ const Scene = memo((props) => {
 
     return (
         <>
-            <div id={`scene-${scene.id}`} className={classnames(s[`scene-group`],s[scene.type.toLowerCase()], (filterScene) ? null : s['hide'])} style={{ zIndex: zIndex }}>
+            <div id={`scene-${scene.id}`} className={classnames(s[`scene-group`], s[scene.type.toLowerCase()], (sceneFilter) ? null : s['hide'])} style={{ zIndex: zIndex }}>
                 <div className={s[`scene-header`]}>
                     {(scene) &&
                         <ScriptItem
@@ -146,7 +153,7 @@ const Scene = memo((props) => {
                     className={classnames(
                         s['scene-footer'],
                         (scriptFilter) ? s.scriptFilterOn : null,
-                        filterScene ? null : s.hide
+                        sceneFilter ? null : s.hide
                     )}
                 >{(!scriptFilter && !readOnly) &&
                     <div key={`add-scene-${scene.id}`} className={classnames(s['add-new-scene'], s[viewStyle], (readOnly) ? null : 'clickable')} onClick={() => dispatch(trigger(ADD_SCENE, { scriptItem: sceneScriptItem }))}>
@@ -154,7 +161,7 @@ const Scene = memo((props) => {
                     </div>
                     }
 
-                  {/*  <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />*/}
+                    {/*  <CurtainBackground curtainOpen={finalScriptItem.curtainOpen} />*/}
                 </div>
             }
         </>

@@ -1,13 +1,15 @@
 ﻿//React & Redux
 import classnames from 'classnames';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, updateScriptFilter } from '../../../actions/scriptEditor';
 
 //Components
-import { Icon } from '../../../components/Icons/Icons';
+
 import SceneSelectorRow from './SceneSelectorRow';
 import ScriptSearch from './ScriptSearch';
+import { DropdownItem } from 'reactstrap';
+import { Icon } from '../../../components/Icons/Icons';
 //Utils
 
 import { log, SCENE_SELECTOR as logType } from '../../../dataAccess/logging';
@@ -29,55 +31,73 @@ function SceneSelector(props) {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
     const currentScriptFilter = useSelector(state => state.scriptEditor.scriptFilter)
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
     const [beingDragged, setBeingDragged] = useState(false)
 
-    const noFilterExists = (searchParameters.characters === '' && searchParameters.tags.length === 0 && searchParameters.myScenes === false)
-    const filterExists = !noFilterExists
+    const noSearchParametersSet = (searchParameters.characters === '' && searchParameters.tags.length === 0 && searchParameters.myScenes === false)
+
     log(logType, 'viewAsPartPerson', { viewAsPartPerson })
 
 
-    let filteredScenes = showOrder?.filter(scene => scene.type !== SHOW)
-        .map(scene => ({
-            ...scene,
-            show: true //gets converted to false if not matching searches below
-            , isViewAsPartPerson: isViewAsPartPerson(viewAsPartPerson, scene, currentPartPersons)   //indicates if viesAsPartPerson is in the scene
-        })) || [];
-    
+    const getFilteredShowOrder = () => {
 
-    //filter out scenes not matching characters
-    if (searchParameters.characters?.length > 0) {
-        filteredScenes = filteredScenes.map(scene => {
-            if (scene.type !== ACT && !(scene.text?.toLowerCase().includes(searchParameters.characters.toLowerCase()) || (scene.sceneNumber && scene.sceneNumber.toString().includes(searchParameters.characters)))) {
-                return { ...scene, show: false };
-            } else {
-                return scene;
-            }
-        })
-    }
-    //filter out scenes not matching tags
-    if (searchParameters.tags?.length > 0) {
-        filteredScenes = filteredScenes.map(scene => {
-            if (scene.type !== ACT && !scene.tags.some(tag => searchParameter.includes(tag))) {
-                return { ...scene, show: false };
-            } else {
-                return false;
-            }
-        })
-    }
-    //filter out scenes that don't contain viewAsPartPerson
-    if (searchParameters.myScenes === true) {
-        filteredScenes = filteredScenes.map(scene => {
-            if (scene.type !== ACT && !scene.isViewAsPartPerson) {
-                return { ...scene, show: false };
-            } else {
-                return scene;
-            };
-        });
-    }
+        let filteredScenes = showOrder?.filter(scene => scene.type !== SHOW)
+            .map(scene => ({
+                ...scene,
+                show: true //gets converted to false if not matching searches below
+                , isViewAsPartPerson: isViewAsPartPerson(viewAsPartPerson, scene, currentPartPersons)   //indicates if viesAsPartPerson is in the scene
+            })) || [];
 
 
-    const filteredShowOrder = filteredScenes.filter(scene => scene.show === true);
+        //filter out scenes not matching characters
+        if (searchParameters.characters?.length > 0) {
+            filteredScenes = filteredScenes.map(scene => {
+                if (scene.type !== ACT && !(scene.text?.toLowerCase().includes(searchParameters.characters.toLowerCase()) || (scene.sceneNumber && scene.sceneNumber.toString().includes(searchParameters.characters)))) {
+                    return { ...scene, show: false };
+                } else {
+                    return scene;
+                }
+            })
+        }
+        //filter out scenes not matching tags
+        if (searchParameters.tags?.length > 0) {
+            filteredScenes = filteredScenes.map(scene => {
+                if (scene.type !== ACT && !scene.tags.some(tag => searchParameters.includes(tag))) {
+                    return { ...scene, show: false };
+                } else {
+                    return false;
+                }
+            })
+        }
+        //filter out scenes that don't contain viewAsPartPerson
+        if (searchParameters.myScenes === true) {
+            filteredScenes = filteredScenes.map(scene => {
+                if (scene.type !== ACT && !scene.isViewAsPartPerson) {
+                    return { ...scene, show: false };
+                } else {
+                    return scene;
+                }
+            });
+        }
+        const filteredShowOrder = filteredScenes.filter(scene => scene.show === true);
+
+        return filteredShowOrder;
+    }
+
+    const filteredShowOrder = getFilteredShowOrder();
+
+
+    useEffect(() => {
+        if (!isMobileDevice) { //doesn't do it for mobile devices due to performance
+            handleUpdateScriptFilter()
+        }
+    }, [searchParameters, isMobileDevice])
+
+    const handleUpdateScriptFilter = () => {
+        const newScriptFilter = (noSearchParametersSet) ? null : filteredShowOrder.map(scene => scene.id)
+        dispatch(updateScriptFilter(newScriptFilter))
+    }
 
 
     const handleDragStart = (e) => {
@@ -107,13 +127,16 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                if (currentScriptFilter === null ) {
+                if (isMobileDevice) {
+                    dispatch(updateScriptFilter([id]))
+                } else if (currentScriptFilter === null || currentScriptFilter.includes(id)) {
                     dispatch(updateMovementInProgress(true))
                     moveFocusToId(id, END, true)
                 } else {
-                    dispatch(updateScriptFilter([id]))
+                    handleUpdateScriptFilter()
+                    dispatch(updateMovementInProgress(true))
+                    moveFocusToId(id, END, true)
                 }
-
                 break;
             default:
                 break;
@@ -122,28 +145,19 @@ function SceneSelector(props) {
         if (isModal) dispatch(setShowSceneSelector(false))
     }
 
-    const handleSetFilter = () => {
-        const newScriptFilter = (noFilterExists) ? null : filteredShowOrder.map(scene => scene.id)
-        dispatch(updateScriptFilter(newScriptFilter))
-    }
+
 
     log(logType, 'render props', { filteredShowOrder })
 
     return (
         <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
             <ScriptSearch isModal={isModal} />
-            <div className={s.filterSection}>
-                <div className={classnames(s.setFilter, 'clickable')} onClick={handleSetFilter} >
-                    {noFilterExists && <>
-                        <p>view entire script</p><Icon icon='arrow-right' />
-                    </>}
-                    {filterExists && <>
-                        <p>filter script for scenes below</p><Icon icon='arrow-right' />
-                    </>}
-
-                </div>
-                <p>or click on individual scene</p>
-            </div>
+            {/*<DropdownItem divider />*/}
+            {/*{!isMobileDevice && !filteredShowOrderMatchesCurrentScriptFilter() &&*/}
+            {/*    <div className={classnames(s.applyFilterButton, 'clickable')} onClick={handleSetFilter} >*/}
+            {/*        Apply Filter <Icon icon="arrow-right" size="sm" />*/}
+            {/*    </div>*/}
+            {/*}*/}
 
             <h2>Scenes</h2>
             <div className="full-height-overflow">
