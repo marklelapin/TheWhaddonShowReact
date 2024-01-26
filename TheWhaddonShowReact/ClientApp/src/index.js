@@ -20,11 +20,11 @@ import axios from 'axios';
 
 import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from '../src/dataAccess/browserStorage.js';
 import { NO_INDEXED_DB } from '../src/dataAccess/indexedDB.js'
-import {defaultState as defaultUserState} from '../src/reducers/user.js' 
+import { defaultState as defaultUserState } from '../src/reducers/user.js'
 import App from '../src/components/App.jsx';
+import ErrorPage from '../src/pages/error/ErrorPage';
 import config from '../src/config.js';
 import createRootReducer from '../src/reducers';
-
 import { createHashHistory } from 'history';
 
 
@@ -33,18 +33,17 @@ import { log, INDEX as logType } from '../src/dataAccess/logging.js';
 
 // Styles
 import '../src/styles/theme.scss';
-//import './styles.css' 
-//assert { type: 'css' };
-//document.adoptedStyleSheets = [sheet];
-//shadowRoot.adoptedStyleSheets = [sheet];
+
+
+import LogRocket from 'logrocket';
+import { addDeviceInfo } from './core/screenHelper.js';
+LogRocket.init('lirpcx/the-whaddon-show-app');
+
 
 //const history = createHashHistory();
 const _ = require('lodash');
-
 //Azure AdB2c
 const msalInstance = new PublicClientApplication(msalConfig)
-
-
 msalInstance.addEventCallback((event) => {
     if (
         (event.eventType === EventType.LOGIN_SUCCESS ||
@@ -60,6 +59,7 @@ msalInstance.addEventCallback((event) => {
 let store;
 
 const initApp = async () => {
+
     console.log('baseURL', config.baseURLApi)
     axios.defaults.baseURL = config.baseURLApi;
 
@@ -88,12 +88,15 @@ const initApp = async () => {
         preloadedState = undefined;
     }
 
-    //ensure no authenticated user
     if (preloadedState !== undefined) {
+
+        //ensure no authenticated user
         preloadedState.user = defaultUserState
-        preloadedState.localServer.sync.pauseSync = false         
+        preloadedState.localServer.sync.pauseSync = false
+        //ensure correct device details
+       // addDeviceInfo(preloadedState)
     }
-    
+
 
     if (preloadedState === undefined) {
         store = createStore(
@@ -119,7 +122,6 @@ const initApp = async () => {
         _.debounce(() => saveStateToBrowserStorage(store.getState()), 5000)
     )
 
-
     const container = document.getElementById("root");
     const root = createRoot(container);
     root.render(
@@ -137,7 +139,26 @@ const initApp = async () => {
 
 }
 
-initApp();
+const initAppCatchingErrors = async () => {
+
+    try {
+        await initApp();
+    } catch (error) {
+        const container = document.getElementById("root");
+        const root = createRoot(container);
+        console.error(error, { error})
+        root.render(
+            <ErrorPage code={error.code || 500} message='Sorry, an error has occured initiating the app.' details={error.message || error }>
+            </ErrorPage>
+        );
+
+    }
+}
+
+
+initAppCatchingErrors();
+
+
 
 export const storeRef = store;
 

@@ -108,7 +108,7 @@ function ScriptViewer(props) {
 
     log(logType, 'render', { showOrderLength: showOrder?.length, scenesToLoad, initialSyncProgress, initialSyncProgressTotal, maxWidthExists })
 
-
+ 
 
     return (
         <>

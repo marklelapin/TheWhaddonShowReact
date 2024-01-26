@@ -1,5 +1,8 @@
 @import '../../styles/app';
 
+$font-size-print-sm: 12pt;
+$font-size-print-md: 14pt;
+$font-size-print-lg: 18pt;
 
 .classic {
     .avatar {
@@ -19,6 +22,7 @@
 
     &.classic {
         align-items: center;
+        padding: 20px 50px 0px 50px;
     }
 
     &.chat {
@@ -50,7 +54,6 @@
         position: relative;
         z-index: 3;
         width: auto;
-        height: 40px;
     }
 
     .dropzone {
@@ -60,6 +63,11 @@
         &.classic {
             display: none;
         }
+    }
+
+
+    .element-in-view-observer {
+        width: 100%;
     }
     /*Layout*/
     .script-item-text-area {
@@ -71,6 +79,7 @@
         z-index: 2;
 
         &.classic {
+            width: 100%;
             justify-content: flex-start;
         }
 
@@ -81,6 +90,10 @@
             justify-content: center;
             position: relative;
             z-index: 3;
+
+            &.classic {
+                width: 100%;
+            }
 
             .script-item-header {
                 position: relative;
@@ -95,6 +108,10 @@
 
                 .type-dropdown {
                     z-index: 1;
+                }
+
+                @media print {
+                    font-size: $font-size-print-md !important;
                 }
             }
 
@@ -111,6 +128,7 @@
                 z-index: 4;
                 background-color: transparent;
 
+
                 .bracketed-text::before {
                     content: '( ';
                 }
@@ -123,13 +141,28 @@
                     font-size: $h5-font-size;
                     text-align: center;
                     align-self: center;
-                }
+                    white-space: pre-line;
 
-                @media print {
-                    font-size: 12pt !important;
-                    width: 100% !important;
+                    &.regular {
+                        @media print {
+                            font-size: $font-size-print-md !important;
+                            width: 100% !important;
+                            widows: 2;
+                            orphans: 2;
+                        }
                     }
+
+                    &.large {
+                        @media print {
+                            font-size: $font-size-print-lg !important;
+                            width: 100% !important;
+                            widows: 2;
+                            orphans: 2;
+                        }
+                    }
+                }
             }
+
 
             .open-bracket {
                 position: absolute;
@@ -144,23 +177,20 @@
             }
 
             @media print {
-                font-size: 12pt !important;
             }
         }
-        
+
         @media print {
             width: 100%;
-            font-size: 12pt !important;
         }
         //script-item-text-area end
     }
 
 
     @media print {
-        page-break-inside: avoid !important;
-        padding: 10px 20px 0px 20px !important;
+        padding: 10px 20px 0px 30px !important;
     }
-//script-item end
+    //script-item end
 }
 
 .final-script-item {
@@ -308,9 +338,14 @@
             border: 0px;
             color: black;
             font-weight: $font-weight-bold;
+
+            @media print {
+                font-size: $font-size-print-sm !important;
+            }
         }
 
         .part-avatar-name {
+            font-size: $font-size-print-sm !important;
             font-weight: $font-weight-base;
         }
 
@@ -346,6 +381,10 @@
 
 .part-controls {
     text-align: start;
+
+    @media print {
+        display: none;
+    }
 }
 
 
@@ -359,7 +398,7 @@
 .classic {
 
     .script-item-parts {
-        height: unset;
+        height: unset !important;
     }
 
     .part-avatar-name {
@@ -379,9 +418,12 @@
         flex: unset;
         padding-left: 10px;
     }
+
+    .part-selector-dropdown {
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
-
-
 /*PART AVATAR NAME*/
 .part-avatar-name {
     display: flex;
@@ -398,7 +440,6 @@
 
 .part-avatar {
 }
-
 
 
 /* Script-Item-Comments*/
@@ -545,13 +586,6 @@
     }
 }
 
-.classic {
-    .part-selector-dropdown {
-        left: 50%;
-        transform: translateX(-50%);
-    }
-}
-
 .align-right {
     .part-selector-dropdown {
         right: 0;
@@ -587,13 +621,6 @@
 .part-selector-dropdown p {
     margin: 0px;
 }
-
-
-
-
-
-
-
 //Type Specific ScriptItem Styles
 .show {
     .text-input {
@@ -642,6 +669,10 @@
         .hide-redo {
             color: transparent;
         }
+
+        @media print {
+            display: none !important;
+        }
     }
     /*&.curtain-open {
         .script-item-controls{
@@ -687,6 +718,10 @@
         padding-top: 0px;
         padding-bottom: 0px;
         text-align: center;
+
+        @media print {
+            font-size: $font-size-print-sm !important;
+        }
     }
 
     .bottom-right-controls {
@@ -719,6 +754,10 @@
         padding-top: 0px;
         padding-bottom: 0px;
         text-align: center;
+
+        @media print {
+            font-size: $font-size-print-sm !important;
+        }
     }
 }
 
@@ -728,6 +767,12 @@
         font-size: $h6-font-size;
         font-weight: $font-weight-bold;
         text-align: center;
+    }
+
+    .text-input {
+        @media print {
+            font-size: $font-size-print-sm !important;
+        }
     }
 }
 
@@ -759,6 +804,10 @@
             i {
                 background-color: $gray-inverse;
             }
+        }
+
+        @media print {
+            display: none !important;
         }
     }
     /* &.curtain-open.chat * {
@@ -817,6 +866,24 @@
             z-index: 2;
             background-color: white;
             overflow: hidden !important;
+
+            &.regular {
+                @media print {
+                    font-size: $font-size-print-md !important;
+                    width: 100% !important;
+                    widows: 2;
+                    orphans: 2;
+                }
+            }
+
+            &.large {
+                @media print {
+                    font-size: $font-size-print-lg !important;
+                    width: 100% !important;
+                    widows: 2;
+                    orphans: 2;
+                }
+            }
         }
     }
 
@@ -850,7 +917,7 @@
     &.classic {
         .text-input {
             border-radius: 0px 0px 0px 0px !important;
-            padding: 5px 10px;
+            padding: 0px;
             text-align: center;
         }
     }

@@ -25,7 +25,9 @@ import {
     UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH,
     SET_SHOW_SCENE_SELECTOR,
     UPDATE_SHOW_BOOLS,
-    UPDATE_MOVEMENT_IN_PROGRESS
+    UPDATE_MOVEMENT_IN_PROGRESS,
+    UPDATE_SCRIPT_FILTER,
+    PRINT_SCRIPT
 } from '../actions/scriptEditor';
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
@@ -34,6 +36,7 @@ import { log, SCRIPT_EDITOR_REDUCER as logType } from '../dataAccess/logging';
 import { SCRIPT_ITEM, PERSON, PART } from '../dataAccess/localServerModels';
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
+import { remove } from 'lodash';
 
 export const initialState = {
     searchParameters: {
@@ -77,10 +80,19 @@ export const initialState = {
     modalSceneSelector: false,
 
     movementInProgress: false,
+
+    printScript: false,
 }
 
 export default function scriptEditorReducer(state = initialState, action) {
     // log(logType, 'action:', action)
+
+
+    //declarations
+    const previousViewAsPartPerson = state.viewAsPartPerson
+
+
+
 
     switch (action.type) {
         case UPDATE_SEARCH_PARAMETERS:
@@ -98,8 +110,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 showComments: action.showComments,
             };
-        case UPDATE_VIEW_AS_PART_PERSON:
-            const previousViewAsPartPerson = state.viewAsPartPerson
+        case UPDATE_VIEW_AS_PART_PERSON:     
             return {
                 ...state,
                 viewAsPartPerson: action.partPerson,
@@ -265,7 +276,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                         initialSyncProgress: { ...state.initialSyncProgress, part: 1 }
                     }
                 default: return state;
-            }; 
+            };
 
         case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
 
@@ -346,7 +357,18 @@ export default function scriptEditorReducer(state = initialState, action) {
                 ...state,
                 movementInProgress: action.movementInProgress
             }
-        
+        case UPDATE_SCRIPT_FILTER:
+            return {
+                ...state,
+                scriptFilter: action.scriptFilter
+            }
+
+        case PRINT_SCRIPT:
+            console.log('print_script reducer', {action})
+            return {
+                ...state,
+                printScript: action.printScript
+            }
         default: return state;
     }
 }

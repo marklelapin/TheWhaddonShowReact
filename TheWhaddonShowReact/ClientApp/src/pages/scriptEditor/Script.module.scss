@@ -15,6 +15,9 @@
         @page {
             size: A4 !important;
         }
+
+        display: block !important;
+        overflow: visible !important;
     }
 
     .script-page-content {
@@ -24,7 +27,7 @@
         overflow: hidden;
 
         @media print {
-            oveflow: visible !important;
+            overflow: visible !important;
         }
 
         .script-viewer {
@@ -35,6 +38,7 @@
             z-index: 1;
 
             @media print {
+                display: block !important;
                 overflow: visible !important;
             }
         }
@@ -50,13 +54,17 @@
     flex: 0 0 50px !important; //TODO: can get rid of important if flex-full-width is moved out of index.css to scss.
 
     .left-controls {
-        flex: 0 0 20px;
+        flex: 1;
+        justify-content: flex-start;
         align-items: center;
     }
 
     .center-controls {
-        flex: 1;
-        justify-self: center;
+        flex: 2;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
     }
 
     .script-viewer-navlink {
@@ -77,7 +85,11 @@
     }
 
     .right-controls {
-        flex: 0 0 60px;
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
     }
 
 
@@ -100,8 +112,6 @@
     &.classic {
         background-color: $gray-700;
     }
-
-
 
     @media print {
         background-color: white !important;
@@ -131,6 +141,7 @@
         background-color: white !important;
         max-width: unset !important;
         padding-right: 0 !important;
+        overflow: visible !important;
     }
 }
 
@@ -166,9 +177,25 @@
 
 .scene-group {
     position: relative;
+    border-color: $gray-900 !important;
+
+    &.hide {
+        display: none;
+    }
+
+    &.show {
+        @media print {
+            display: none;
+        }
+    }
+
+    &.act {
+        @media print {
+            display: none;
+        }
+    }
 
     @media screen {
-        border-color: $gray-900;
         @include dropdown-box;
     }
 
@@ -188,8 +215,16 @@
 .scene-footer {
     position: relative;
     z-index: 0;
-    background-color: $gray-inverse;
+    background-color: transparent;
     text-align: center;
+
+    &.hide {
+        display: none;
+    }
+
+    &.scriptFilterOn {
+        height: 30px;
+    }
 
     @media print {
         display: none !important;
@@ -200,7 +235,7 @@
 
 .add-new-scene {
     padding: 40px;
-    background-color: $gray-700;
+    background-color: transparent;
     color: white;
 }
 
@@ -235,7 +270,6 @@
     .scriptSearch {
         display: flex;
         flex-direction: column;
-        margin-bottom: 20px;
 
         .closeIcon {
             position: absolute;
@@ -261,14 +295,44 @@
     .scriptSearchButtons {
         display: flex;
         flex-direction: row;
-        padding: 5px 10px 5px 10px;
+        padding: 5px 0px 5px 0px;
         align-items: center;
-        justify-content: space-evenly;
+        justify-content: space-between;
 
         button {
-            width: 150px;
+            width: 125px;
         }
     }
+
+    .filterSection {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .setFilter {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 5px 10px 5px 10px;
+
+            p {
+                margin: 0px;
+                padding: 0px;
+            }
+
+            button {
+                width: 150px;
+            }
+        }
+
+        p {
+            margin: 0px;
+            padding: 5px 10px 5px 10px;
+        }
+    }
+
 
 
     .inFocus {

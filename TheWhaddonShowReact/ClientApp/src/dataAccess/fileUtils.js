@@ -131,7 +131,7 @@ export async function fetchFiles(containerName, fileNames) {
 
         }
         catch (error) {
-            throw new Error(`Error fetching ${containerName} files: ` + error.message)
+            console.error(`Error fetching ${containerName} files: ` + error.message)
         }
 
     }

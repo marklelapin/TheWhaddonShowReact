@@ -1,4 +1,4 @@
-import { log, PERSON as logType } from './logging'
+import { log, PERSON as logType } from '../dataAccess/logging.js'
 
 export const categorisePersons = (persons, tags = []) => {
 
@@ -38,8 +38,8 @@ export const categorisePersons = (persons, tags = []) => {
 
 
 export const addFriendlyName = (persons) => {
-
     let personsWithFriendlyName = [];
+
     try {
         personsWithFriendlyName = persons.map(person => {
             if (persons.filter(persons => persons.firstName === person.firstName).length > 1) {
@@ -49,11 +49,11 @@ export const addFriendlyName = (persons) => {
         })
     } catch (error) {
         log(logType, 'error in addFriendlyName:', error)
-        personsWithFriendlyName = persons;
+        personsWithFriendlyName =  persons;
     }
 
 
-    return personsWithFriendlyName
+    return personsWithFriendlyName || [];
 }
 
 

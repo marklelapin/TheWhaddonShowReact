@@ -78,7 +78,6 @@ const ScriptItem = memo((props) => {
     const undoId = `undo-${sceneId}`
     const redoId = `redo-${sceneId}`
     const deleteSceneId = `delete-scene-${sceneId}`
-    const printSceneId = `print-scene-${sceneId}`
 
     //calculations functions
     const showParts = () => {
@@ -123,9 +122,6 @@ const ScriptItem = memo((props) => {
 
     const finalCurtainOpen = (curtainOpen !== null) ? curtainOpen : scriptItem.curtainOpen
 
-    const handlePrint = () => {
-        window.print()
-    }
 
     log(logType, 'rendering:', { id })
 
@@ -169,6 +165,7 @@ const ScriptItem = memo((props) => {
                     nextFocusId={nextFocusId}
                     isUndoInProgress={isUndoInProgress}
                     sceneNumber={sceneNumber}
+                    viewStyle={viewStyle}
                 />
 
             </div>
@@ -202,7 +199,7 @@ const ScriptItem = memo((props) => {
                             key={redoId}
                             className={isUndoInProgress ? s['show-redo'] : s['hide-redo']}
                             icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />}
-                    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>
+                {/*    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>*/}
                     {!readOnly && <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />}
 
                 </div>

@@ -16,8 +16,6 @@ import s from '../Script.module.scss'
 
 function SceneSelectorRow(props) {
 
-    
-
     const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false, isInFocus, highlight = false} = props;
 
     log(logType, 'props', {highlight})

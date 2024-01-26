@@ -1,51 +1,7 @@
 ﻿import React, { useState } from 'react';
 
 import { Tooltip } from 'reactstrap';
-//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-//import {
-//    faCloud,
-//    faPlus,
-//    faCheck,
-//    faTimes,
-//    faExclamation,
-//    faRotateLeft,
-//    faRotateRight,
-//    faBars,
-//    faArrowLeft,
-//    faComments,
-//    faAlignCenter,
-//    faEdit,
-//    faComment,
-//    faCommentDots,
-//    faPrint,
-//    faFileAudio,
-//    faFileVideo,
-//    faPlay,
-//    faPaperclip,
-//    faLink,
-//    faCircleO,
-//    faCircle,
-//    faSearch,
-//    faTags,
-//    faTrash,
-//    faArrowsV,
-//    faVolumeUp,
-//    faLightbulb,
-//    faMale,
-//    faChild,
-//    faHome,
-//    faFileLines,
-//    faPersonMilitaryToPerson,
-//    faPanorama,
-//    faRotate,
-//    faUser,
-//    faUsers,
-//    faCaretDown,
-//    faArrowDownUpAcrossLine,
-//    faRectangleList,
-//    faPowerOff,
-//    faGear,
-//} from '@fortawesome/free-solid-svg-icons' 
+import {isMouseAvailable} from '../../core/screenHelper';
 
 import s from './Icons.module.scss';
 
@@ -71,7 +27,7 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className, iconStyle = 'solid' } = props
+    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className } = props
 
     let { icon } = props
     if (icon === null) { icon = props }
@@ -89,6 +45,7 @@ export function Icon(props) {
         "redo": 'fa-solid fa-rotate-right',
         "menu": 'fa-solid fa-bars',
         "arrow-left": 'fa-solid fa-arrow-left',
+        "arrow-right": 'fa-solid fa-arrow-right',
         "chat-mode": 'fa-solid fa-comments',
         "classic-mode": 'fa-solid fa-align-center',
         "edit": 'fa-solid fa-edit',
@@ -124,10 +81,12 @@ export function Icon(props) {
         "gear": 'fa-solid fa-gear',
         "gallery": 'fa-solid fa-panorama',
         "casting": 'fa-solid fa-person-military-to-person',
+        "glasses": 'fa-solid fa-glasses',
+"paper-plane": 'fa-solid fa-paper-plane',
     };
 
 
-    if (dictionary.hasOwnProperty(icon.toLowerCase())) {
+    if (Object.prototype.hasOwnProperty.call(dictionary, icon.toLowerCase())) {
         icon = dictionary[icon.toLowerCase()];
     }
 
@@ -152,7 +111,7 @@ export function Icon(props) {
                 style={style}
                 onClick={onClick} />
 
-            {toolTip && <Tooltip placement={toolTipPlacement} isOpen={toolTipOpen === id} toggle={() => toggleToolTip(id)} target={id} delay={toolTipDelay}>{toolTip}</Tooltip>}
+            {toolTip && isMouseAvailable() && <Tooltip placement={toolTipPlacement} isOpen={toolTipOpen === id} toggle={() => toggleToolTip(id)} target={id} delay={toolTipDelay}>{toolTip}</Tooltip>}
         </>
 
     }
