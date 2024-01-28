@@ -3,13 +3,15 @@ const DEBUG = 'DEBUG'
 const NONE = 'NONE'
 
 //logTypes
-export const ACCOUNT_DROPDOWN = { type: DEBUG, location: 'Component:AccountDropdown' }
+export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdown' }
 
 export const APP = {type: NONE, location: 'Component: App'}
 
 export const AVATAR = { type: NONE, location: 'Component:Avatar' }
 export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
 export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
+
+export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 
 export const CASTING = { type: DEBUG, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: DEBUG, location: 'Script:casting' }
@@ -62,7 +64,7 @@ export const TEST = { type: NONE, location: 'Test: ' }
 export const TEST_CURTAIN = { type: NONE, location: 'Script:curtain' }
 export const USERS = { type: DEBUG, location: 'Component:Users' }
 export const USER_ACCESS = { type: NONE, location: 'Script:userAccess' }
-export const USER_UPDATE = { type: DEBUG, location: 'Component:UserUpdate' }
+export const USER_UPDATE = { type: NONE, location: 'Component:UserUpdate' }
 export function log(logObject, message, object = null) {
 
     switch (logObject?.type) {

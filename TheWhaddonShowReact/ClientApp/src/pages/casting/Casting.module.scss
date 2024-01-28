@@ -8,20 +8,60 @@
     overflow: hidden;
 
 
+
     .castSection {
         flex: 1;
         display: flex;
         flex-direction: column;
+        max-width: 320px;
         overflow-y: auto;
 
         .castMemberContainer {
             display: flex;
             flex-direction: row;
+            width: 100%;
+
+            .castAvatar {
+            }
+
+            .castSummary {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+
+                .name {
+                    font-weight: $font-weight-bolder;
+                }
+
+                .wordCountLine {
+                    height: 5px;
+                    width: 100%;
+                }
+
+
+                .summaryLine {
+                    display: flex;
+                    flex-direction: row;
+                    font-size: $font-size-xs;
+
+                    .castStat {
+                        display: inline;
+                        margin-right: 5px;
+
+                    }
+
+                }
+            }
+
+            &.active {
+                background-color: $highlight;
+            }
         }
     }
 
     .summarySection {
         flex: 2;
         overflow-y: auto;
+        margin-left: 30px;
     }
 }

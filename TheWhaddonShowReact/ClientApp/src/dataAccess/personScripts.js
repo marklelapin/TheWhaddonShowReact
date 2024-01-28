@@ -52,8 +52,10 @@ export const addFriendlyName = (persons) => {
         personsWithFriendlyName =  persons;
     }
 
-
-    return personsWithFriendlyName || [];
+     return personsWithFriendlyName || [];
 }
 
 
+export const getCastMembers = (persons) => {
+    return persons.filter(person => (person.isActor || person.isSinger) && person.isActive )
+}

@@ -5,41 +5,43 @@ import React from 'react';
 import Avatar from '../../../components/Avatar/Avatar';
 import { Progress } from 'reactstrap';
 
+//utils
+import { log, CAST_MEMBER as logType } from '../../../dataAccess/logging';
+import classnames from 'classnames';
 //scss
 import s from '../Casting.module.scss';
 
 
 const CastMember = (props) => {
+    log(logType, 'props', { props })
+    const { castMember, highestWordCount, onClick, active } = props
 
-    const { castMember, highestWordCount } = props
-
-    const wordCount = castMember.person.wordCount
-    const wordCountPercentage = (highestWordCount ? (castMember.person.wordCount / highestWordCount) * 100 : 100).toFixed(0)
+    const wordCount = castMember.wordCount
+    const wordCountPercentage = (highestWordCount ? (castMember.wordCount / highestWordCount) * 100 : 0).toFixed(0)
     const sceneCount = castMember.scenes.length
-    const lineCount = castMember.parts.reduce((acc, part) => acc + part.lineCount, 0)
+    const lineCount = castMember.lineCount
 
     return (
 
-        <div key={castMember.person.id} className={s.castMemberContainer}>
-
-            <Avatar person={castMember.person} avatarInitials={(castMember.person.avatarInitials) || null} />
+        <div key={castMember.person.id} className={classnames(s.castMemberContainer, 'clickable', active ? s.active : null)} onClick={onClick} >
+            <div className={s.castAvatar}>
+                <Avatar person={castMember.person} avatarInitials={(castMember.person.avatarInitials) || null} color= '#e9ecef' />
+            </div>
+           
             <div className={s.castSummary}>
                 <div className={s.name}>{castMember.person.friendlyName || castMember.person.name}</div>
                 <div className={s.wordCountLine}>
-                    <Progress className="mb-sm" value={wordCountPercentage}></Progress>
+                    <Progress className="mb-sm" value={wordCountPercentage} style={{height: '5px'} }></Progress>
                 </div>
                 <div className={s.summaryLine}>
                     <div className={s.castStat}>
-                        <div className={s.castStatLabel}>Scenes:</div>
-                        <div className={s.castStatValue}>{sceneCount}</div>
+                        {`Scenes: ${sceneCount}, `}
                     </div>
                     <div className={s.castStat}>
-                        <div className={s.castStatLabel}>Lines:</div>
-                        <div className={s.castStatValue}>{lineCount}</div>
+                        {`Lines: ${lineCount}, `}
                     </div>
-                    <div className={s.castStatLine}>
-                        <div className={s.castStatLabel}>Words:</div>
-                        <div className={s.castStatValue}>{wordCount}</div>
+                    <div className={s.castStat}>
+                        {`Words: ${wordCount}` }
                     </div>
                 </div>
             </div>
