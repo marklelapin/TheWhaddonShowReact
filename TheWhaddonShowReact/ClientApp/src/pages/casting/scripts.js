@@ -3,6 +3,7 @@ import { log, CASTING_SCRIPTS as logType } from '../../dataAccess/logging';
 
 export const getLineStats = (scriptItems,sceneId = null) => {
 
+    console.log('getLineStats', { scriptItems: Object.values(scriptItems), sceneId})
     const dialogueItems = Object.values(scriptItems)
         .filter(item => [DIALOGUE,SCENE].includes(item.type) && (sceneId === null || item.parentId === sceneId || item.id === sceneId))
         .map(item => {

@@ -86,8 +86,9 @@ const ScriptSummary = (props) => {
         return showErrors ? s.error : null
     }
     const unallocatedLineError = (sceneId) => {
-        const unallocatedLines = getLineStats(currentScriptItems, sceneId).filter(item => item.partIds[0] === 'unallocated').length || 0;
 
+        const unallocatedLines = getLineStats(currentScriptItems, sceneId).filter(item => item.partIds[0] === 'unallocated').length || 0;
+        console.log('unallocatedLineError', { getLineStats: getLineStats(currentScriptItems, sceneId), sceneId, unallocatedLines })
         return (unallocatedLines > 0) ? `${unallocatedLines} unallocated line(s).` : null
     }
 
@@ -98,7 +99,7 @@ const ScriptSummary = (props) => {
     }
 
     const highlightViewAsPartPerson = (part) => {
-   
+
         return (part.personId === viewAsPerson?.id) ? { class: 'viewAsPartPerson', text: null } : null
     }
     const highlightUnallocatedPart = (part) => {
