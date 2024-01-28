@@ -38,7 +38,7 @@ export function Avatar(props) {
     //log(logType, 'Component:Avatar props', props)
     //log(logType, 'Component:Avatar person', { person, draftPerson, partPersonFromId })
 
-    const firstUserLetters = (person && firstName) ? `${firstName[0].toUpperCase()}${firstName[1].toLowerCase()}` : '?'
+    const firstUserLetters = (person && firstName) ? `${firstName[0].toUpperCase()}${(firstName[1]) ? firstName[1].toLowerCase() : ''}` : '?'
 
     const avatarText = avatarInitials ? avatarInitials : firstUserLetters
 
