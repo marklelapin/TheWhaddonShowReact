@@ -174,7 +174,7 @@ function SceneSelector(props) {
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             beingDragged={beingDragged}
-                            isInFocus={scene.id === sceneInFocus.id}
+                            isInFocus={scene.id === sceneInFocus}
                             highlight={scene.isViewAsPartPerson}
 
                         />

@@ -13,8 +13,8 @@ export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessi
 
 export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 
-export const CASTING = { type: DEBUG, location: 'Component:Casting' }
-export const CASTING_SCRIPTS = { type: DEBUG, location: 'Script:casting' }
+export const CASTING = { type: NONE, location: 'Component:Casting' }
+export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 
 export const INDEX = { type: NONE, location: 'Component:INDEX' }
@@ -34,7 +34,7 @@ export const MEDIA_DROPZONE = { type: NONE, location: 'Component:MediaDropzone' 
 
 export const PART = {type: NONE, location: 'Script:Part'}
 export const PART_EDITOR_ROW = {type: NONE, location: 'Component:PartEditorRow'}
-export const PART_SELECTOR_DROPDOWN = { type: NONE, location: 'Component:PartSelectorDropdown' }
+export const PART_SELECTOR_DROPDOWN = { type: DEBUG, location: 'Component:PartSelectorDropdown' }
 
 export const PERSON = {type: NONE, location: 'Script:Person'}    
 export const PERSON_SELECTOR = {type: NONE, location: 'Component:PersonSelector'}
@@ -62,7 +62,7 @@ export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 
 export const TEST = { type: NONE, location: 'Test: ' }
 export const TEST_CURTAIN = { type: NONE, location: 'Script:curtain' }
-export const USERS = { type: DEBUG, location: 'Component:Users' }
+export const USERS = { type: NONE, location: 'Component:Users' }
 export const USER_ACCESS = { type: NONE, location: 'Script:userAccess' }
 export const USER_UPDATE = { type: NONE, location: 'Component:UserUpdate' }
 export function log(logObject, message, object = null) {
