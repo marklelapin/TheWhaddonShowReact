@@ -11,7 +11,7 @@ import { AVATARS } from '../../dataAccess/storageContainerNames';
 
 //utils
 import { log, AVATAR as logType } from '../../dataAccess/logging';
-
+import classnames from 'classnames';
 import s from './Avatar.module.scss';
 
 
@@ -19,12 +19,14 @@ export function Avatar(props) {
 
     const dispatch = useDispatch();
 
-    const { person: draftPerson, partId = null, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md' } = props
+    const { person: draftPerson, partId = null, onClick = null, onChange = null, avatarInitials = null, linkId = null, size = 'md',color = null } = props
 
     //establish person object
     const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId]) || null
     const person = draftPerson || partPersonFromId || {}
-    const { firstName = null, email = null, pictureRef = null } = person;
+    const { email = null, pictureRef = null } = person;
+
+    const firstName = (person.personName) ? person.personName.split(' ')[0] : person.firstName
 
     //get storedObjectUrl of create one.
     const storedObjectURL = useSelector(state => state.cache[AVATARS][pictureRef])
@@ -36,9 +38,9 @@ export function Avatar(props) {
     //log(logType, 'Component:Avatar props', props)
     //log(logType, 'Component:Avatar person', { person, draftPerson, partPersonFromId })
 
-    const firstUserLetter = (person && firstName) ? firstName[0].toUpperCase() : '?'
+    const firstUserLetters = (person && firstName) ? `${firstName[0].toUpperCase()}${(firstName[1]) ? firstName[1].toLowerCase() : ''}` : '?'
 
-    const avatarText = avatarInitials ? avatarInitials : firstUserLetter
+    const avatarText = avatarInitials ? avatarInitials : firstUserLetters
 
     const avatarTitle = person && (firstName || email)
 
@@ -84,22 +86,19 @@ export function Avatar(props) {
         //otherwise do nothing.
     }
 
-    const avatarSize = () => {
-
-        switch (size) {
-            case "md": return { height: '40px', width: '40px' }
-            case "sm": return { height: '30px', width: '30px' }
-            case "xs": return { height: '20px', width: '20px' }
-            default: return { height: '40px', width: '40px' }
-        }
-    }
-
-
-
     const imageJSX = () => {
         return (
 
-            <span className={`${s.avatar} rounded-circle float-start avatar ${(onClick) ? 'clickable' : ''}`} onClick={(e) => handleImageClick(e)} style={avatarSize()}>
+            <span className={classnames(s.avatar,
+                'rounded-circle',
+                'float-start',
+                'avatar',
+                onClick ? 'clickable' : null,
+                s[size],
+                
+            )}
+                style={{ backgroundColor: color }}
+                onClick={(e) => handleImageClick(e)} >
                 {avatarImageObjectURL ?
                     <img src={avatarImageObjectURL} alt="..." title={avatarTitle} onClick={(e) => handleImageClick(e)} /> //={e => e.target.src = adminDefault} 
                     :

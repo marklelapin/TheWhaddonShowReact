@@ -27,7 +27,7 @@ import {
     UPDATE_SHOW_BOOLS,
     UPDATE_MOVEMENT_IN_PROGRESS,
     UPDATE_SCRIPT_FILTER,
-    PRINT_SCRIPT
+    PRINT_SCRIPT,
 } from '../actions/scriptEditor';
 
 import { SCENE } from '../dataAccess/scriptItemTypes';

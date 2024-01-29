@@ -24,7 +24,7 @@ import { log, SCRIPT_ITEM_TEXT as logType } from '../../../dataAccess/logging';
 
 //Utilities
 import { curtainText } from '../scripts/curtain';
-import { updateScriptItemInFocus } from '../../../actions/scriptEditor';
+import { updateSceneInFocus, updateScriptItemInFocus} from '../../../actions/scriptEditor';
 import { moveFocusFromScriptItem } from '../scripts/utility';
 
 import { getScriptItemPlaceholder } from '../scripts/scriptItem'
@@ -298,7 +298,7 @@ function ScriptItemText(props) {
         const el = document.getElementById(`script-item-text-input-${id}`)
         if (el) el.classList.add('inView')
         dispatch(updateScriptItemTextWidth(scriptItem.id, finalText, scriptItem.type, endMargin))
-        if (type === SCENE) dispatch(updateScriptItemInFocus(scriptItem.id, scriptItem.id))
+        if (type === SCENE) dispatch(updateSceneInFocus(scriptItem.id))
     }
 
     const handleExitView = () => {

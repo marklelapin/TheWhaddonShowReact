@@ -18,7 +18,7 @@ import { openSidebar, closeSidebar, openStaticSidebar, closeStaticSidebar } from
 import { updateDeviceInfo } from '../../actions/device';
 import s from './Layout.module.scss';
 import { log, LAYOUT as logType } from '../../dataAccess/logging.js'
-import { getSidebarWrapStatus } from '../../core/screenHelper';
+import { getSidebarWrapStatus, preventRefresh } from '../../core/screenHelper';
 import classnames from 'classnames';
 
 export const Layout = (props) => {
@@ -78,6 +78,7 @@ export const Layout = (props) => {
                 `dashboard-${(localStorage.getItem("sidebarType") === SidebarTypes.TRANSPARENT) ? "light" : localStorage.getItem("dashboardTheme")}`,
                 `header-${localStorage.getItem("navbarColor") ? localStorage.getItem("navbarColor").replace('#', '') : 'FFFFFF'}`
             ].join(' ')}
+            onTouchStart={preventRefresh}
         >
             {!isModalSidebar && <Sidebar />}
             <Modal isOpen={isModalSidebar && sidebarOpened} toggle={() => dispatch(closeSidebar())} centered>

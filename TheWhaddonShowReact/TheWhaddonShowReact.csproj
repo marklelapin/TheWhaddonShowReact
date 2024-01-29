@@ -53,7 +53,6 @@
     <Folder Include="ClientApp\public\images\" />
     <Folder Include="ClientApp\src\dataAccess\__tests__\" />
     <Folder Include="ClientApp\src\fonts\" />
-    <Folder Include="ClientApp\src\pages\casting\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

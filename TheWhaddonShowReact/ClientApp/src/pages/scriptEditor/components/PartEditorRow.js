@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
     updatePersonSelectorConfig,
     trigger, ADD_PART, DELETE_PART,
-    DELETE_NEXT_PART, CONFIRM_UNDO,
+    DELETE_NEXT_PART,
     SWAP_PART, UPDATE_PART_NAME,
     ADD_PART_TAG, REMOVE_PART_TAG
 } from '../../../actions/scriptEditor';
