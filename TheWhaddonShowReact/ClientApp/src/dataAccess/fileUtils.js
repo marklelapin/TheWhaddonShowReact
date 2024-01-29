@@ -1,12 +1,13 @@
 ﻿
 import axios from 'axios';
 
-import { log } from '../dataAccess/logging';
+import { log, FILE_UTILS as logType } from '../dataAccess/logging';
 
 export async function uploadFiles(filesObject, containerName, options = {}) {
 
-    const { showSuccessAlerts = true } = options
+    const { showSuccessAlerts = true, width = null, height = null } = options
 
+    
 
     const files = Object.values(filesObject)
 
@@ -14,6 +15,7 @@ export async function uploadFiles(filesObject, containerName, options = {}) {
         alert('Please select at least 1 file to upload.')
         return;
     }
+    log(logType, 'props', { filesObject, containerName, options, files })
 
     const blobNames = [];
     const failedUploads = [];
@@ -23,12 +25,21 @@ export async function uploadFiles(filesObject, containerName, options = {}) {
     const uploadPromises = files.map(async (file) => {
 
         const formData = new FormData();
+     
         formData.append('file', file)
         //formData.append('containerName', containerName)
         try {
-            const response = await axios.post('file/upload', formData, {
+            const response = await axios({
+                method: 'post',
+                url: 'file/upload',
+                data: formData,
+                headers: {
+                    'content-type': 'multipart/form-data'
+                },
                 params: {
-                    containerName: containerName
+                    containerName: containerName,
+                    width,
+                    height
                 }
             })
 
@@ -114,7 +125,7 @@ export async function fetchFiles(containerName, fileNames) {
                     fileName: fileName
                 }
                 , headers: { 
-                    'Cache-Control': `public, max-age=${60*60*24}`, 
+                    'Cache-Control': `public, max-age=${60*60*24*180}`, 
                 },
             });
 

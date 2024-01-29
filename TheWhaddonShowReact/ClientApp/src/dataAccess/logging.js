@@ -7,7 +7,7 @@ export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdo
 
 export const APP = {type: NONE, location: 'Component: App'}
 
-export const AVATAR = { type: NONE, location: 'Component:Avatar' }
+export const AVATAR = { type: DEBUG, location: 'Component:Avatar' }
 export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
 export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
 
@@ -16,6 +16,8 @@ export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
+
+export const FILE_UTILS = { type: DEBUG, location: 'Script:fileUtils' }
 
 export const INDEX = { type: NONE, location: 'Component:INDEX' }
 export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }

@@ -69,10 +69,12 @@ export function Avatar(props) {
             alert('Please only select 1 file.')
         }
 
-        if (files.length === 1) {
-            const response = await uploadFiles(files, AVATARS, { showSuccessAlerts: false })
+        log(logType, 'handleImageChange files', files)
 
-            const pictureRef = response.blobNames[0].toString()
+        if (files.length === 1) {
+            const response = await uploadFiles(files, AVATARS, { showSuccessAlerts: false, width: 60, height: 60 })
+
+            const pictureRef = response.blobNames[0]?.toString()
 
             const imageObjectURL = await createObjectURL(files[0])
 
