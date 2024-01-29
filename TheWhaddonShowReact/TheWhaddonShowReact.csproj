@@ -24,6 +24,7 @@
     <PackageReference Include="Microsoft.Office.Interop.Word" Version="15.0.4797.1004" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
     <PackageReference Include="MimeMapping" Version="2.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.2" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
     <PackageReference Include="TheWhaddonShow.ClassLibrary" Version="1.0.6" />
   </ItemGroup>

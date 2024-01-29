@@ -7,10 +7,12 @@ export const ACCOUNT_DROPDOWN = { type: DEBUG, location: 'Component:AccountDropd
 
 export const APP = {type: NONE, location: 'Component: App'}
 
-export const AVATAR = { type: NONE, location: 'Component:Avatar' }
+export const AVATAR = { type: DEBUG, location: 'Component:Avatar' }
 export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
 export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
+
+export const FILE_UTILS = { type: DEBUG, location: 'Script:fileUtils' }
 
 export const INDEX = { type: NONE, location: 'Component:INDEX' }
 export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
