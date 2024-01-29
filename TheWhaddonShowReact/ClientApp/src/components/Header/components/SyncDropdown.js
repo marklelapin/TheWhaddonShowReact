@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 //COmponents
@@ -25,7 +25,7 @@ function SyncDropdown(props) {
 
     //Set state relating to internal component
     const [syncOpen, setSyncOpen] = useState(false);
-
+    const [toggelRefresh,setToggleRefresh] = useState(true)
 
     log(debug, 'SyncDropdown: syncOpen', syncOpen)
 
@@ -45,6 +45,20 @@ function SyncDropdown(props) {
     const unsyncedPartUpdates = parts?.filter(item => item.updatedOnServer === null).length || 0
 
     log(debug, 'SyncDropdown: unsyncedUpdates', { parts: unsyncedPartUpdates, persons: unsyncedPersonUpdates, scriptItems: unsyncedScriptItemUpdates })
+
+
+    useEffect(() => {
+
+        const timeoutId = setTimeout(() => {
+            setToggleRefresh((prevToggle) => !prevToggle);
+        }, 5 * 60 * 1000);
+
+        // Cleanup function to clear the timeout when the component is unmounted
+        return () => {
+            clearTimeout(timeoutId);
+        };
+
+    },[])
 
 
     const syncSummary = () => {
@@ -193,7 +207,7 @@ function SyncDropdown(props) {
                             : <Icon icon="warning" strapColor="warning" />
                         }
 
-                        {target.unsyncedUpdates} unsynced updates
+                        {`${target.unsyncedUpdates} unsynced updates, `}
                     </>
 
                 }
@@ -201,10 +215,10 @@ function SyncDropdown(props) {
                 {pauseSync && <>{textTimeSince}</>}
                 {pauseSync && target.isSyncing === false && target.isRefreshing === false &&
                     <>
-                    <Icon icon="refresh"
-                        id="refresh-sync"
-                        toolTip="Refresh Script"
-                        onClick={(e) => { e.stopPropagation(); dispatch(refreshSync()) }}
+                        <Icon icon="refresh"
+                            id="refresh-sync"
+                            toolTip="Refresh Script"
+                            onClick={(e) => { e.stopPropagation(); dispatch(refreshSync()) }}
                         />
                     </>
                 }
@@ -224,7 +238,7 @@ function SyncDropdown(props) {
 
             </DropdownToggle>
             <DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>
-               
+
                 <DropdownItem >Persons: {syncText(PERSON)}</DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem >ScriptItems: {syncText(SCRIPT_ITEM)}</DropdownItem>
