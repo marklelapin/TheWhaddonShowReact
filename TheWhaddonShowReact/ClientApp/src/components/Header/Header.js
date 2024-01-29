@@ -20,9 +20,10 @@ import s from './Header.module.scss';
 
  
 
-function Header(props) {
-    
-    const layout = useLocation();
+function Header() {
+
+    const location = useLocation()
+
     const pathName = location.pathname
     const isMobileDevice = useSelector(store => store.device.isMobileDevice);
 
@@ -57,7 +58,7 @@ function Header(props) {
             </Nav>
 
             <Nav className="justify-content-end align-middle">
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <SyncDropdown menuOpen={syncMenuOpen} onClick={toggleSyncMenu}></SyncDropdown>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
