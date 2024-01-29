@@ -82,3 +82,14 @@ export const getSidebarWrapStatus = (isStatic, isOpen, isModal) => {
     if (isOpen) return 'sidebarOpen'
     return 'sidebarClose'
 }
+
+
+export const preventRefresh = (e) => {
+    if (e.touches.length > 1) return; // Ignore multi-touch gestures
+    const touch = e.touches[0];
+
+    // Check if the swipe is at the top of the page
+    if (touch.clientY <= 10) {
+        e.preventDefault();
+    }
+};
