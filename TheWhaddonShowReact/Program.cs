@@ -38,6 +38,16 @@ if (builder.Environment.IsDevelopment())
 	});
 
 }
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowTheWhaddonShow.AzureWebsites.net", builder =>
+	{
+		builder.WithOrigins("https://www.thewhaddonshow.org")
+			   .AllowAnyHeader()
+			   .AllowAnyMethod()
+			   .AllowCredentials();
+	});
+});
 builder.Services.AddDownstreamApi("TheWhaddonShowApi", builder.Configuration.GetSection("TheWhaddonShowApi"));
 
 builder.Services.AddHttpClient("OpenAI", opts =>
