@@ -26,6 +26,7 @@ function SyncDropdown(props) {
     //Set state relating to internal component
     const [syncOpen, setSyncOpen] = useState(false);
 
+
     log(debug, 'SyncDropdown: syncOpen', syncOpen)
 
 
@@ -107,38 +108,28 @@ function SyncDropdown(props) {
         setSyncOpen(!syncOpen);
     }
 
-
-
     const timeSince = (date) => {
 
         if (date === null) return { text: 'Never synced.', seconds: null }
 
         const now = new Date();
-        let secondsPast = Math.floor((now - date) / 1000);
+        const lastSyncedDate = new Date(date)
 
-        let textTimeSince;
+        const secondsPast = Math.floor((now - lastSyncedDate) / 1000);
 
-        if (secondsPast < 15) {
-            textTimeSince = 'just synced';
-        } else
-            if (secondsPast < 3600) {
-                textTimeSince = ', last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago';
-            } else
-                if (secondsPast <= 86400) {
-                    textTimeSince = ', last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago';
-                } else
-                    if (secondsPast > 86400) {
-                        const daysSince = parseInt(secondsPast / 86400);
-                        if (daysSince === 1) {
-                            textTimeSince = ', last synced a day ago';
-                        } else {
-                            textTimeSince = ', last synced ' + parseInt(secondsPast / 86400) + ' days ago';
-                        }
-                    } else {
-                        textTimeSince = `, no last synced date`;
-                    }
+        log(logType, 'timeSince', { now, date, secondsPast })
 
-        return { textTimeSince, secondsPast }
+        if (secondsPast < 15) return { textTimeSince: 'just synced', secondsPast };
+        if (secondsPast < 3600) return { textTimeSince: 'last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago', secondsPast };
+        if (secondsPast <= 86400) return { textTimeSince: 'last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago', secondsPast };
+
+        //else
+        const daysSince = parseInt(secondsPast / 86400)
+
+        if (daysSince === 1) return { textTimeSince: 'last synced a day ago' }
+
+        return { textTimeSince: 'last synced ' + parseInt(secondsPast / 86400) + ' days ago' }
+
     }
 
     const getTarget = (type) => {
@@ -210,14 +201,14 @@ function SyncDropdown(props) {
                 {pauseSync && <>{textTimeSince}</>}
                 {pauseSync && target.isSyncing === false && target.isRefreshing === false &&
                     <>
-                        <Icon icon="refresh"
-                            id="refresh-sync"
-                            toolTip="Refresh Script"
-                            onClick={() => dispatch(refreshSync())}
+                    <Icon icon="refresh"
+                        id="refresh-sync"
+                        toolTip="Refresh Script"
+                        onClick={(e) => { e.stopPropagation(); dispatch(refreshSync()) }}
                         />
                     </>
                 }
-               
+
             </>
         )
 
@@ -232,18 +223,18 @@ function SyncDropdown(props) {
                 {syncText('Summary')}
 
             </DropdownToggle>
-            {/*<DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>*/}
+            <DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>
+               
+                <DropdownItem >Persons: {syncText(PERSON)}</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem >ScriptItems: {syncText(SCRIPT_ITEM)}</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem >Parts: {syncText(PART)}</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={() => clearStateFromBrowserStorage(dispatch)}>Clear Local Storage</DropdownItem>
+                <DropdownItem onClick={() => togglePauseSync()}> {pauseSync ? 'Resume Sync' : 'Pause Sync'}<Icon icon="play" /></DropdownItem>
 
-            {/*    <DropdownItem >Persons: {syncText(PERSON)}</DropdownItem>*/}
-            {/*    <DropdownItem divider />*/}
-            {/*    <DropdownItem >ScriptItems: {syncText(SCRIPT_ITEM)}</DropdownItem>*/}
-            {/*    <DropdownItem divider />*/}
-            {/*    <DropdownItem >Parts: {syncText(PART)}</DropdownItem>*/}
-            {/*    <DropdownItem divider />*/}
-            {/*    <DropdownItem onClick={() => clearStateFromBrowserStorage(dispatch)}>Clear Local Storage</DropdownItem>*/}
-            {/*    <DropdownItem onClick={() => togglePauseSync()}> {pauseSync ? 'Resume Sync' : 'Pause Sync'}<Icon icon="play"/></DropdownItem>*/}
-
-            {/*</DropdownMenu>*/}
+            </DropdownMenu>
         </Dropdown>
     )
 }
