@@ -70,7 +70,7 @@ export function Avatar(props) {
         log(logType, 'handleImageChange files', files)
 
         if (files.length === 1) {
-            const response = await uploadFiles(files, AVATARS, { showSuccessAlerts: false })
+            const response = await uploadFiles(files, AVATARS, { showSuccessAlerts: false, width: 60, height: 60 })
 
             const pictureRef = response.blobNames[0]?.toString()
 

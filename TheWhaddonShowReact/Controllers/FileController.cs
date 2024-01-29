@@ -79,6 +79,7 @@ namespace TheWhaddonShowReact.Controllers
 								stream.Position = 0;
 							}
 
+
 							image.Save(stream, new JpegEncoder());
 							stream.Position = 0;
 							await blob.UploadAsync(stream, true);

@@ -5,7 +5,7 @@ import { log, FILE_UTILS as logType } from '../dataAccess/logging';
 
 export async function uploadFiles(filesObject, containerName, options = {}) {
 
-    const { showSuccessAlerts = true } = options
+    const { showSuccessAlerts = true, width = null, height = null } = options
 
     
 
@@ -37,7 +37,9 @@ export async function uploadFiles(filesObject, containerName, options = {}) {
                     'content-type': 'multipart/form-data'
                 },
                 params: {
-                    containerName: containerName
+                    containerName: containerName,
+                    width,
+                    height
                 }
             })
 
