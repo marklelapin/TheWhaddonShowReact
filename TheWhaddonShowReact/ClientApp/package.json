@@ -6,7 +6,6 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build": "cross-env PUBLIC_URL='' webpack --config webpack.config.js --mode production --node-env production --progress",
     "start": "webpack serve --config webpack.config.js --mode development --node-env development",
-    "start:backend": "cross-env REACT_APP_BACKEND=true node scripts/start.js",
     "test": "node scripts/test.js --runInBand --verbose=false"
   },
   "browserslist": [

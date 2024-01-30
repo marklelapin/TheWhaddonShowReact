@@ -40,7 +40,7 @@ if (builder.Environment.IsDevelopment())
 }
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowTheWhaddonShow.AzureWebsites.net", builder =>
+	options.AddPolicy("AllowTheWhaddonShow", builder =>
 	{
 		builder.WithOrigins("https://www.thewhaddonshow.org")
 			   .AllowAnyHeader()
@@ -108,7 +108,7 @@ if (app.Environment.IsDevelopment())
 {
 	app.UseCors("AllowDevelopmentOrigin");
 }
-
+app.UseCors("AllowTheWhaddonShow");
 
 
 app.UseDefaultFiles();

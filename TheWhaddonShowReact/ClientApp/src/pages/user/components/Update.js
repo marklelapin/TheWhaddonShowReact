@@ -51,7 +51,7 @@ function Update(props) {
 
 
     const onClickGetLoginLink = () => {
-        alert('https://thewhaddonshowapp.azurewebsites.net/app/loginlink?id=' + user.id)
+        alert('https://www.thewhaddonshow.org/app/loginlink?id=' + user.id)
     }
     const onClickRemoveMsalLink = () => {
         const newUser = { ...user, msalLink: null }
