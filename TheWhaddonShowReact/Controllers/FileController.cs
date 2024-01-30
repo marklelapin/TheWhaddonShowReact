@@ -124,7 +124,7 @@ namespace TheWhaddonShowReact.Controllers
 			{
 				using (var reader = new StreamReader(file.OpenReadStream()))
 				{
-					fileContent = reader.ReadToEnd();
+					fileContent = await reader.ReadToEndAsync();
 				}
 			}
 			catch (Exception ex)

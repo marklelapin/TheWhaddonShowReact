@@ -55,6 +55,7 @@ msalInstance.addEventCallback((event) => {
     }
 });
 
+console.log('Environement',process.env.NODE_ENV)
 
 let store;
 
