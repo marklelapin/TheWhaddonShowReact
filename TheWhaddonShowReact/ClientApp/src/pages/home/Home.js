@@ -4,9 +4,20 @@ import { useNavigate } from "react-router-dom";
 
 import { updatePersonSelectorConfig } from '../../actions/scriptEditor';
 
-
+//componets
 import { Button } from 'reactstrap';
 import PersonSelector from '../../pages/scriptEditor/components/PersonSelector';
+
+//images
+import whaddonShowCowboy from '../../images/whaddon-show-logo.png'
+import scriptPage from '../../images/script.png'
+import scriptSummary from '../../images/script-summary.png'
+import casting from '../../images/casting.png'
+import underConstruction from '../../images/under-construction-500.png'
+
+
+
+//utils
 import { REHEARSALID } from '../../dataAccess/userAccess';
 import { getLatest } from '../../dataAccess/localServerUtils';
 import { getCastWithPartsAndScenes, getPartsWithStats } from '../casting/scripts'
@@ -14,7 +25,7 @@ import { log, HOME as logType } from '../../dataAccess/logging';
 import classnames from 'classnames';
 
 import s from './Home.module.scss';
-
+import { SHOW } from '../../dataAccess/scriptItemTypes';
 function Home() {
 
     const dispatch = useDispatch();
@@ -119,7 +130,7 @@ function Home() {
 
                         }
                         <div className={s.whaddonShowCowboy}>
-                            <img src="/whaddon-show-logo.png" alt="The Whaddon Show Cowboy shouting into a speech bubble." className={s.logo} />
+                            <img src={whaddonShowCowboy} alt="The Whaddon Show Cowboy shouting into a speech bubble." className={s.logo} />
                         </div>
                     </div>
 
@@ -130,22 +141,22 @@ function Home() {
                 <div className={classnames(s.linksContainer, isMobileDevice ? s.mobile : null)}>
                     <div className={s.link}>
                         <h2>Script</h2>
-                        <img src="/script.png" alt="Script" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                        <img src={scriptPage} alt="Script" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
                     </div>
 
                     <div className={s.link}>
                         <h2>Script Summary</h2>
-                        <img src="/script-summary.png" alt="Script Summary" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                        <img src={scriptSummary} alt="Script Summary" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
                     </div>
 
                     <div className={s.link}>
                         <h2>Casting</h2>
-                        <img src="/casting.png" alt="Casting" className={s.linkImage} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                        <img src={casting} alt="Casting" className={s.linkImage} onClick={(e) => handlePictureClick(e, '/app/casting')} />
                     </div>
 
                     <div className={s.link}>
                         <h2>Gallery</h2>
-                        <img src="/under-construction.png" alt="Casting" className={s.linkImage} onClick={(e) => handlePictureClick(e, '/app/gallery')} />
+                        <img src={underConstruction} alt="Casting" className={s.linkImage} onClick={(e) => handlePictureClick(e, '/app/gallery')} />
                     </div>
                 </div>
 

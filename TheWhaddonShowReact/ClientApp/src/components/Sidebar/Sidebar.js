@@ -17,8 +17,8 @@ import { Icon } from '../../components/Icons/Icons';
 import User from '../../pages/user/Users';
 import ApiMonitor from '../../pages/apiMonitor/ApiMonitor';
 import LinksGroup from './LinksGroup/LinksGroup';
-import wslogo from '../../images/whaddon-show-logo-reversed.png'
-import wstitle from '../../images/the-whaddon-show.png'
+import wslogo from '../../images/whaddon-show-logo-reversed.png';
+import wstitle from '../../images/the-whaddon-show.png';
 
 import { userAccessToComponent } from '../../dataAccess/userAccess';
 
