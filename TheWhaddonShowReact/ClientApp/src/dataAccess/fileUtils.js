@@ -5,7 +5,7 @@ import { log, FILE_UTILS as logType } from '../dataAccess/logging';
 
 export async function uploadFiles(filesObject, containerName, options = {}) {
 
-    const { showSuccessAlerts = true, width = null, height = null } = options
+    const { showSuccessAlerts = true, width = null, height = null, compressionQuality = null } = options
 
     
 
@@ -39,7 +39,8 @@ export async function uploadFiles(filesObject, containerName, options = {}) {
                 params: {
                     containerName: containerName,
                     width,
-                    height
+                    height,
+                    compressionQuality
                 }
             })
 

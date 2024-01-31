@@ -25,7 +25,7 @@ export const getLineStats = (scriptItems,sceneId = null) => {
 }
 
 
-const getPartsWithStats = (partPersons, scriptItems) => {
+export const getPartsWithStats = (partPersons, scriptItems) => {
 
     const lineStats = getLineStats(scriptItems)
 
@@ -45,7 +45,7 @@ const getPartsWithStats = (partPersons, scriptItems) => {
         return acc;
     }, {})
 
-   // log(logType, 'partsWithStats', partsWithStats)
+   log(logType, 'partsWithStats', partsWithStats)
     return partsWithStats
 }
 
@@ -67,7 +67,7 @@ const getCastWithParts = (cast, partPersons, scriptItems) => {
         }
         return acc;
     }, {})
-    //log(logType, 'castParts', { castParts })
+    log(logType, 'castParts', { castParts })
     return castParts;
 }
 

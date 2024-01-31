@@ -17,7 +17,9 @@ export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 
-export const FILE_UTILS = { type: DEBUG, location: 'Script:fileUtils' }
+export const FILE_UTILS = { type: NONE, location: 'Script:fileUtils' }
+
+export const HOME = { type: DEBUG, location: 'Component:Home' }
 
 export const INDEX = { type: NONE, location: 'Component:INDEX' }
 export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
