@@ -13,7 +13,7 @@ import { addFriendlyName, getCastMembers } from '../../dataAccess/personScripts'
 import { log, CASTING as logType } from '../../dataAccess/logging';
 import { isScriptReadOnly } from '../../dataAccess/userAccess';
 import { getCastWithPartsAndScenes } from './scripts'
-
+import classnames from 'classnames';
 
 //scss
 import s from './Casting.module.scss';
@@ -27,12 +27,13 @@ const Casting = () => {
     const persons = getLatest(personsHistory)
     const scriptItems = useSelector(state => state.scriptEditor.currentScriptItems)
     const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
-
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
     const currentUser = useSelector(state => state.user.currentUser)
     const readOnly = isScriptReadOnly(currentUser)
 
     const [viewAsCastMember, setViewAsCastMember] = useState(null);
 
+    const mobile = isMobileDevice ? 'mobile' : 'desktop'
 
     const cast = addFriendlyName(getCastMembers(persons))
 
@@ -67,12 +68,13 @@ const Casting = () => {
 
     return (
         <>
-            <div className={s.castingContainer}>
-
-                <div className={s.castSection}>
-                    <h2 className={s.castTitle}>
-                        Cast
-                    </h2>
+<h1 > Casting </h1>
+            <div className={classnames(s.castingContainer,s[mobile])}>
+                
+                <div className={classnames(s.castSection,s[mobile])}>
+                  <h3 className={s.castTitle}>
+                    Cast
+                </h3>  
                     <div className={s.castMain}>
                         {castSortedByWordCount.map(castMember =>
                             <CastMember key={castMember.person.id}
@@ -87,10 +89,10 @@ const Casting = () => {
                     </div>
 
                 </div>
-                <div className={s.summarySection}>
-                    <div className={s.summaryTitle}>
-                        Summary
-                    </div>
+                <div className={classnames(s.summarySection,s[mobile])}>
+                    <h3 className={s.summaryTitle}>
+                        Show Summary
+                    </h3>
                     <div className={s.summaryMain}>
                         <ScriptSummary
                             summaryType={CASTING}

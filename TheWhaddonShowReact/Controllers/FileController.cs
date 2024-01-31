@@ -1,9 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using ImageMagick;
 using Microsoft.AspNetCore.Mvc;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
 
 namespace TheWhaddonShowReact.Controllers
 {
@@ -46,7 +44,7 @@ namespace TheWhaddonShowReact.Controllers
 
 
 		[HttpPost("upload")]
-		public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromQuery] string containerName, [FromQuery] int? width, [FromQuery] int? height)
+		public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromQuery] string containerName, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] int compressionQuality = 100)
 		{
 			if (file == null || file.Length == 0) { return BadRequest("No file selected"); }
 			if (containerName == null) { return BadRequest("No container name supplied"); }
@@ -71,16 +69,24 @@ namespace TheWhaddonShowReact.Controllers
 						{
 							await originalStream.CopyToAsync(stream);
 							stream.Position = 0;
-							Image image = Image.Load(stream);
 
-							if (width.HasValue && height.HasValue)
+							using (MagickImage image = new MagickImage(stream))
 							{
-								image.Mutate(x => x.Resize(width.Value, height.Value));
-								stream.Position = 0;
+
+								if (width.HasValue && height.HasValue)
+								{
+									image.Resize(new MagickGeometry(width.Value, height.Value));
+								}
+
+								image.Quality = compressionQuality;
+
+								image.Write(stream);
 							}
 
+							stream.Position = 0;
+							var optimizer = new ImageOptimizer();
+							optimizer.Compress(stream);
 
-							image.Save(stream, new JpegEncoder());
 							stream.Position = 0;
 							await blob.UploadAsync(stream, true);
 						}
@@ -136,30 +142,6 @@ namespace TheWhaddonShowReact.Controllers
 
 		}
 
-
-		private void ResizeImage(Image image, Stream outputStream, int? width = null, int? height = null)
-		{
-
-			try
-			{
-				if (width.HasValue && height.HasValue)
-				{
-					image.Mutate(x => x.Resize(width.Value, height.Value));
-				}
-
-				image.SaveAsJpeg(outputStream, new JpegEncoder());
-
-				outputStream.Seek(0, SeekOrigin.Begin);
-
-
-			}
-			catch (Exception ex)
-			{
-				throw new Exception("Error resizing image", ex);
-			}
-
-
-		}
 
 
 	}

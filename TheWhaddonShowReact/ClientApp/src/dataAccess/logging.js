@@ -19,6 +19,8 @@ export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 
 export const FILE_UTILS = { type: NONE, location: 'Script:fileUtils' }
 
+export const HOME = { type: DEBUG, location: 'Component:Home' }
+
 export const INDEX = { type: NONE, location: 'Component:INDEX' }
 export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
 
