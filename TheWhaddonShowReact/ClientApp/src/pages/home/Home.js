@@ -141,12 +141,12 @@ function Home() {
                 <div className={classnames(s.linksContainer, isMobileDevice ? s.mobile : null)}>
                     <div className={s.link}>
                         <h2>Script</h2>
-                        <img src={scriptPage} alt="Script" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                        <img src={scriptPage} alt="Script" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/script')} />
                     </div>
 
                     <div className={s.link}>
                         <h2>Script Summary</h2>
-                        <img src={scriptSummary} alt="Script Summary" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                        <img src={scriptSummary} alt="Script Summary" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/scriptsummary')} />
                     </div>
 
                     <div className={s.link}>
