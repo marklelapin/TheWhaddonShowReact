@@ -131,17 +131,18 @@ function ScriptViewer(props) {
                             }
 
                             )}
-                        {(!showOrder || showOrder.length === 0) &&
+                        
 
-                            <div className={`${s['loading-message']}`}>
-                                <p className={`${s['loading-message-text']}`}>Loading script...</p>
-                                <Progress className="mb-sm" value={initialSyncProgressTotal} />
-                            </div>
+                          
 
-                        }
+                        
                     </div>
 
                 </div>
+                <div className={`${s['loading-message']}`}>
+                                <p className={`${s['loading-message-text']}`}>Loading script...</p>
+                              {/*  <Progress className="mb-sm" value={initialSyncProgressTotal} />*/}
+                            </div>
             </div>
 
             {(isPersonSelectorOpen) &&

@@ -95,7 +95,7 @@ export const isQuickChange = (scene, part, scriptItems,partPersons) => {
     const sceneAfter = Object.values(scriptItems).find(item => item.id === scene.nextId)
 
     const sceneBeforeContainsPersonInDifferentPart = sceneBefore.partIds.some(partId => partPersons[partId]?.personId === part.personId && partId !== part.id);
-    const sceneAfterContainsPersonInDifferentPart = sceneAfter.partIds.some(partId => partPersons[partId]?.personId === part.personId && partId !== part.id)
+    const sceneAfterContainsPersonInDifferentPart = sceneAfter?.partIds.some(partId => partPersons[partId]?.personId === part.personId && partId !== part.id) || false;
 
     return (sceneBeforeContainsPersonInDifferentPart || sceneAfterContainsPersonInDifferentPart)
 }

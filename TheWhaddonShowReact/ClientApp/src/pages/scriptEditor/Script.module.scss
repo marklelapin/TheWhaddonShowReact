@@ -57,6 +57,7 @@
         flex: 1;
         justify-content: flex-start;
         align-items: center;
+        margin-left: 10px;
     }
 
     .center-controls {
@@ -90,6 +91,7 @@
         flex-direction: row;
         justify-content: flex-end;
         align-items: center;
+        margin-right: 10px;
     }
 
 
@@ -354,4 +356,16 @@
 
 .highlight {
     background-color: $highlight;
+}
+
+.loading-message {
+    position:absolute;
+    top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+
+}
+
+.loading-message-text{
+    color: $white;
 }
