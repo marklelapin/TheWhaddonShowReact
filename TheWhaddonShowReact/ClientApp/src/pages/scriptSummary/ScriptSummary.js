@@ -162,7 +162,7 @@ const ScriptSummary = (props) => {
             >
                 {scene.type === ACT &&
                     <div className={s.actHeader}>
-                        <span>{scene.text}</span><span className={error()}>{unallocatedLineError(scene.id)}</span>
+                        <h3>{scene.text}</h3><span className={error()}>{unallocatedLineError(scene.id)}</span>
                     </div>}
                 {scene.type === SCENE &&
                     <>

@@ -7,8 +7,11 @@
     flex-direction: row;
     overflow: hidden;
     flex-wrap: wrap;
- 
 
+    &.mobile {
+        height: 100%;
+        overflow-y: auto;
+    }
 
     .castSection {
         flex: 1;
@@ -16,7 +19,16 @@
         flex-direction: column;
         min-width: 320px;
         max-width: 400px;
+        height: 100%;
         overflow-y: auto;
+
+        &.mobile {
+            height: unset;
+            overflow-y: unset;
+            max-width: unset;
+            margin-right: 10px;
+            margin-left: 10px;
+        }
 
         .castMemberContainer {
             display: flex;
@@ -49,9 +61,7 @@
                     .castStat {
                         display: inline;
                         margin-right: 5px;
-
                     }
-
                 }
             }
 
@@ -63,7 +73,14 @@
 
     .summarySection {
         flex: 2;
+        height: 100%;
         overflow-y: auto;
         margin-left: 30px;
+        min-width: 400px;
+
+        &.mobile {
+           height: unset;
+overflow-y: unset;
+        }
     }
 }
