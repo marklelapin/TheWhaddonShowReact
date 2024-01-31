@@ -48,13 +48,15 @@
     width: $sidebar-width-open;
     transition: width $sidebar-transition-time ease-in-out;
 
-    .closeSidebarToggle {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        color: $gray-300;
-        z-index: 1;
-    }
+}
+
+
+.closeSidebarToggle {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: $gray-300;
+    z-index: 1;
 }
 
 .sidebarClose.sidebarWrapper {

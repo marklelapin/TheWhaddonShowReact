@@ -189,6 +189,7 @@ function Sidebar(props) {
     if (isModal) return (
 
         <div className={s.modalSidebar}>
+            {isModal && <Icon icon="cross" id="close-modal-sidebar-toggle" className={s.closeSidebarToggle} onClick={toggleCloseSidebar} />}
             {linksJsx}
         </div>
 
@@ -199,7 +200,7 @@ function Sidebar(props) {
 
         <div className={`${isSidebarOpen ? 'sidebarOpen' : s['sidebarClose']} ${s['sidebarWrapper']}`}>
             {sidebarOpened && sidebarStatic && !isMobileDevice && <Icon icon="arrow-left" id="close-sidebar-toggle" className={s.closeSidebarToggle} onClick={toggleCloseSidebar} toolTip="UnPin Sidebar" toolTipPlacement="right" />}
-
+         
             <nav
                 onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
                 className={s.root}

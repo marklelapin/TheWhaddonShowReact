@@ -25,7 +25,7 @@ import App from '../src/components/App.jsx';
 import ErrorPage from '../src/pages/error/ErrorPage';
 import config from '../src/config.js';
 import createRootReducer from '../src/reducers';
-import { createHashHistory } from 'history';
+
 
 
 import { log, INDEX as logType } from '../src/dataAccess/logging.js';
@@ -36,8 +36,27 @@ import '../src/styles/theme.scss';
 
 
 import LogRocket from 'logrocket';
-import { addDeviceInfo } from './core/screenHelper.js';
+
 LogRocket.init('lirpcx/the-whaddon-show-app');
+
+
+window.addEventListener("load", function () {
+
+    const lockOrientataion = async () => {
+        try {
+
+            if (screen.orientation?.lock) {
+                await screen.orientation.lock("portrait");
+            }
+        } catch (err) {
+            console.log('Screen orientation lock failed', err)
+
+        }
+
+    }
+
+        lockOrientataion()
+    });
 
 
 //const history = createHashHistory();
@@ -55,6 +74,7 @@ msalInstance.addEventCallback((event) => {
     }
 });
 
+console.log('Environement', process.env.NODE_ENV)
 
 let store;
 
@@ -94,7 +114,7 @@ const initApp = async () => {
         preloadedState.user = defaultUserState
         preloadedState.localServer.sync.pauseSync = false
         //ensure correct device details
-       // addDeviceInfo(preloadedState)
+        // addDeviceInfo(preloadedState)
     }
 
 
@@ -134,7 +154,7 @@ const initApp = async () => {
     // If you want your app to work offline and load faster, you can change
     // unregister() to register() below. Note this comes with some pitfalls.
     // Learn more about service workers: http://bit.ly/CRA-PWA
-    serviceWorker.unregister();
+    serviceWorker.register();
 
 
 }
@@ -146,9 +166,9 @@ const initAppCatchingErrors = async () => {
     } catch (error) {
         const container = document.getElementById("root");
         const root = createRoot(container);
-        console.error(error, { error})
+        console.error(error, { error })
         root.render(
-            <ErrorPage code={error.code || 500} message='Sorry, an error has occured initiating the app.' details={error.message || error }>
+            <ErrorPage code={error.code || 500} message='Sorry, an error has occured initiating the app.' details={error.message || error}>
             </ErrorPage>
         );
 

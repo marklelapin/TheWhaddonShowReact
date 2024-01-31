@@ -32,7 +32,7 @@ module.exports = (env, argv) => {
     //const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
     //const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
     //const safePostCssParser = require('postcss-safe-parser');
-    //const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+    const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 
 
     const publicPath = isDevelopment ? '/' : paths.servedPath;
@@ -322,6 +322,37 @@ module.exports = (env, argv) => {
                 filename: 'static/css/[name].[contenthash:8].css',
                 chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
             }),
+            // Makes some environment variables available to the JS code
+            
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+                'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || ''),
+            }),
+
+            isProduction &&
+            new WorkboxWebpackPlugin.GenerateSW({
+                clientsClaim: true,
+                skipWaiting: true,
+                exclude: [/\.map$/, /asset-manifest\.json$/],
+                /*            importWorkboxFrom: 'cdn',*/
+                navigateFallback: publicUrl + '/index.html',
+                navigateFallbackDenylist: [
+                    // Exclude URLs starting with /_, as they're likely an API call
+                    new RegExp('^/_'),
+                    // Exclude URLs containing a dot, as they're likely a resource in
+                    // public/ and not a SPA route
+                    new RegExp('/[^/]+\\.[^/]+$'),
+                ],
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/www\.thewhaddonshow\.org\/static\/media\/svg%3e/,
+                        handler: 'NetworkOnly',
+                    },
+                    // Add other runtime caching configurations as needed
+                ],
+
+            }),
+
         ].filter(Boolean)
     }
 
@@ -387,29 +418,7 @@ module.exports = (env, argv) => {
     //},
 
     //plugins: [
-    //    new ESLintPlugin({
-    //        extensions: ['js', 'jsx', 'mjs', 'ts', 'tsx'],
-    //        formatter: require.resolve('react-dev-utils/eslintFormatter'),
-    //    }),
-    //    // Generates an `index.html` file with the <script> injected.
-    //    new HtmlWebpackPlugin({
-    //        inject: true,
-    //        template: paths.appHtml,
-    //        minify: isDevelopment ? {} : {
-    //            //isProduction:
-    //            removeComments: true,
-    //            collapseWhitespace: true,
-    //            removeRedundantAttributes: true,
-    //            useShortDoctype: true,
-    //            removeEmptyAttributes: true,
-    //            removeStyleLinkTypeAttributes: true,
-    //            keepClosingSlash: true,
-    //            minifyJS: true,
-    //            minifyCSS: true,
-    //            minifyURLs: true,
-    //            minifySVG: false,
-    //        },
-    //    }),
+
 
     //    // Makes some environment variables available in index.html.
     //    // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
