@@ -25,7 +25,7 @@ import App from '../src/components/App.jsx';
 import ErrorPage from '../src/pages/error/ErrorPage';
 import config from '../src/config.js';
 import createRootReducer from '../src/reducers';
-import { createHashHistory } from 'history';
+
 
 
 import { log, INDEX as logType } from '../src/dataAccess/logging.js';
@@ -36,8 +36,15 @@ import '../src/styles/theme.scss';
 
 
 import LogRocket from 'logrocket';
-import { addDeviceInfo } from './core/screenHelper.js';
+
 LogRocket.init('lirpcx/the-whaddon-show-app');
+
+
+window.addEventListener("load", function () {
+    if (screen.orientation) {
+        screen.orientation.lock("portrait");
+    }
+});
 
 
 //const history = createHashHistory();

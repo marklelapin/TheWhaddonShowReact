@@ -45,6 +45,7 @@ export const Layout = (props) => {
         }
     },[isMobileDevice])
 
+
     //const handleSwipe = (e) => {
     //    if ('ontouchstart' in window) {
     //        if (e.direction === 4) {
