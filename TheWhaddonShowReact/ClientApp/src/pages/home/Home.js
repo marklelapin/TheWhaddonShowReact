@@ -1,55 +1,157 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from "react-router-dom";
+
+import { updatePersonSelectorConfig } from '../../actions/scriptEditor';
 
 
-import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
-import { InteractionStatus } from "@azure/msal-browser";
+import { Button } from 'reactstrap';
+import PersonSelector from '../../pages/scriptEditor/components/PersonSelector';
+import { REHEARSALID } from '../../dataAccess/userAccess';
+import { getLatest } from '../../dataAccess/localServerUtils';
+import { getCastWithPartsAndScenes, getPartsWithStats } from '../casting/scripts'
+import { log, HOME as logType } from '../../dataAccess/logging';
+import classnames from 'classnames';
 
+import s from './Home.module.scss';
 
-
-import { Button } from 'reactstrap'
-
-import { isScreenSmallerThan } from '../../core/screenHelper'
-
-import s from './Home.module.scss'
 function Home() {
 
-    const { instance, inProgress } = useMsal();
-    const activeAccount = instance?.getActiveAccount();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const [smallScreen, setSmallScreen] = useState(null)
+    const currentUser = useSelector(state => state.user.currentUser)
+    const personsHistory = useSelector(state => state.localServer.persons.history)
+    const persons = getLatest(personsHistory)
+    const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
+    const scriptItems = useSelector(state => state.scriptEditor.currentScriptItems)
+    const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
 
-    useEffect(() => {
+    const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
 
-        const handleHomeResize = () => {
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
-            if (isScreenSmallerThan('md')) {
-                setSmallScreen(true)
-            } else {
-                setSmallScreen(false)
-            }
+    const isRehearsal = (currentUser?.id === REHEARSALID);
 
+    const greetingUser = isRehearsal ? viewAsPartPerson : currentUser
+    log(logType, 'props', { currentUser, isRehearsal, greetingUser })
+
+    const userPartsAndScenes = (greetingUser) ? getCastWithPartsAndScenes(persons, partPersons, scriptItems).find(item => item.person.id === greetingUser.id) : null
+    const uncastParts = Object.values(getPartsWithStats(partPersons, scriptItems)).filter(part => part.personId === null).length
+
+    log(logType, 'userPartsAndScenes', { userPartsAndScenes })
+
+    const totalScenes = userPartsAndScenes?.scenes?.length || 0
+    const totalParts = userPartsAndScenes?.parts?.length || 0
+    const totalLines = userPartsAndScenes?.lineCount || 0
+
+
+    const castingText = `You are currently cast in ${totalParts} parts across ${totalScenes} scenes and have ${totalLines} lines to learn!*`
+
+    const castingSubText = `* This is subject to change as quite a few parts haven't been cast yet and parts of the script are still being written!!`
+
+    const message = 'Next Rehearsal: Wednesday 31st Jan 8pm'
+
+
+    const daysToGo = () => {
+        const now = new Date();
+        const showDate = new Date("2024-05-17T20:00:00");
+        const diff = (showDate.getTime() - now.getTime());
+
+        const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
+
+        return diffDays;
+    }
+
+
+    const togglePersonSelector = () => {
+        if (personSelectorConfig) {
+            dispatch(updatePersonSelectorConfig(null))
+        } else {
+            dispatch(updatePersonSelectorConfig({}))
         }
 
-        handleHomeResize()
+    }
 
-        window.addEventListener('resize', handleHomeResize)
-
-        return () => window.removeEventListener('resize', handleHomeResize)
-
-    }, [])
-
-
-
-    
+    const handlePictureClick = (e, path) => {
+        e.preventDefault();
+        navigate(path)
+    }
 
 
     return (
-        
         <>
-            <div className={`${s['home-page']}`}>
-              Home.
-            </div>
+            {!isMobileDevice && <h1>Home</h1>}
+            <div className={classnames(s.homeContainer, isMobileDevice ? s.mobile : null)}>
+                <div className={classnames(s.greetingContainer, isMobileDevice ? s.mobile : null)}>
+                    <div className={s.speechBubble}>
+                        <h2 className={s.greeting}>
+                            {`${!greetingUser ? 'Hi!' : ''}${greetingUser ? 'Hi ' + greetingUser?.firstName + '!' : ''}`}
+                        </h2>
 
+                        <div className={s.daysToGo}>
+                            <span className={s.daysToGoNumber} >{daysToGo()}</span><span>days to go!</span>
+                        </div>
+                        {!greetingUser && <div className={s.viewAsPartPersonSelector}>
+                            <p>Please select the person you wish to view as:</p>
+                            <Button className={s.viewAsButton} color="primary" size="sm" onClick={() => togglePersonSelector()}>View As</Button>
+                        </div>
+                        }
+                        {greetingUser &&
+                            <>
+
+                                <h2 className={s.castingText}>
+                                    {castingText}
+                                </h2>
+
+
+                                <div className={s.castingSubText}>
+                                    {castingSubText}
+                                </div>
+
+
+                                <h2 className={s.message}>
+                                    {message}
+                                </h2>
+
+                            </>
+
+
+                        }
+                        <div className={s.whaddonShowCowboy}>
+                            <img src="/whaddon-show-logo.png" alt="The Whaddon Show Cowboy shouting into a speech bubble." className={s.logo} />
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+                <div className={classnames(s.linksContainer, isMobileDevice ? s.mobile : null)}>
+                    <div className={s.link}>
+                        <h2>Script</h2>
+                        <img src="/script.png" alt="Script" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                    </div>
+
+                    <div className={s.link}>
+                        <h2>Script Summary</h2>
+                        <img src="/script-summary.png" alt="Script Summary" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                    </div>
+
+                    <div className={s.link}>
+                        <h2>Casting</h2>
+                        <img src="/casting.png" alt="Casting" className={s.linkImage} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                    </div>
+
+                    <div className={s.link}>
+                        <h2>Gallery</h2>
+                        <img src="/under-construction.png" alt="Casting" className={s.linkImage} onClick={(e) => handlePictureClick(e, '/app/gallery')} />
+                    </div>
+                </div>
+
+
+            </div >
+            <PersonSelector viewAs />
         </>
 
 

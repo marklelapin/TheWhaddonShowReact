@@ -78,7 +78,7 @@
     flex-direction: column;
     overflow-y: hidden;
     // 20px for footer height
-    padding: $content-padding $content-padding ($content-padding + 20px);
+    padding: 0 $content-padding $content-padding $content-padding;
     background-color: $body-bg;
 
 
@@ -87,8 +87,6 @@
     }
     //@media (max-width: breakpoint-max(sm)) {
     //    padding: 20px $content-padding-sm ($content-padding + 30px);
-
-
     // hammers disallows text selection, allowing it for large screens
     @media (min-width: breakpoint-min(sm)) {
         user-select: auto !important;
