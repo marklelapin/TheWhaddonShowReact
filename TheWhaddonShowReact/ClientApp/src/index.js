@@ -41,10 +41,22 @@ LogRocket.init('lirpcx/the-whaddon-show-app');
 
 
 window.addEventListener("load", function () {
-    if (screen.orientation) {
-        screen.orientation.lock("portrait");
+
+    const lockOrientataion = async () => {
+        try {
+
+            if (screen.orientation?.lock) {
+                await screen.orientation.lock("portrait");
+            }
+        } catch (err) {
+            console.log('Screen orientation lock failed', err)
+
+        }
+
     }
-});
+
+        lockOrientataion()
+    });
 
 
 //const history = createHashHistory();
@@ -62,7 +74,7 @@ msalInstance.addEventCallback((event) => {
     }
 });
 
-console.log('Environement',process.env.NODE_ENV)
+console.log('Environement', process.env.NODE_ENV)
 
 let store;
 
@@ -102,7 +114,7 @@ const initApp = async () => {
         preloadedState.user = defaultUserState
         preloadedState.localServer.sync.pauseSync = false
         //ensure correct device details
-       // addDeviceInfo(preloadedState)
+        // addDeviceInfo(preloadedState)
     }
 
 
@@ -154,9 +166,9 @@ const initAppCatchingErrors = async () => {
     } catch (error) {
         const container = document.getElementById("root");
         const root = createRoot(container);
-        console.error(error, { error})
+        console.error(error, { error })
         root.render(
-            <ErrorPage code={error.code || 500} message='Sorry, an error has occured initiating the app.' details={error.message || error }>
+            <ErrorPage code={error.code || 500} message='Sorry, an error has occured initiating the app.' details={error.message || error}>
             </ErrorPage>
         );
 
