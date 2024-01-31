@@ -53,7 +53,7 @@ export async function useSync() {
 
         const runSync = async () => {
 
-            if (pauseSync === true && !persons.sync.isRefreshing) finishSync(null, PERSON)
+            if (pauseSync === true && !persons.sync.isRefreshing) finishSync(persons.sync.error, PERSON)
 
             if (persons.sync.isSyncing || persons.sync.isRefreshing) {
 
@@ -75,7 +75,7 @@ export async function useSync() {
 
         const runSync = async () => {
 
-            if (pauseSync === true && !scriptItems.sync.isRefreshing) finishSync(null, SCRIPT_ITEM)
+            if (pauseSync === true && !scriptItems.sync.isRefreshing) finishSync(scriptItems.sync.error, SCRIPT_ITEM)
 
             if (scriptItems.sync.isSyncing || scriptItems.sync.isRefreshing) {
 
@@ -97,7 +97,7 @@ export async function useSync() {
 
         const runSync = async () => {
 
-            if (pauseSync === true && !parts.sync.isRefreshing) finishSync(null, PART)
+            if (pauseSync === true && !parts.sync.isRefreshing) finishSync(parts.sync.error, PART)
 
             if (parts.sync.isSyncing || parts.sync.isRefreshing) {
 

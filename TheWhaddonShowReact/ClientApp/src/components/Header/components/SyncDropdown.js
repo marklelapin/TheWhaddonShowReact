@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 //COmponents
@@ -25,6 +25,7 @@ function SyncDropdown(props) {
 
     //Set state relating to internal component
     const [syncOpen, setSyncOpen] = useState(false);
+    const [toggelRefresh,setToggleRefresh] = useState(true)
 
     log(debug, 'SyncDropdown: syncOpen', syncOpen)
 
@@ -44,6 +45,20 @@ function SyncDropdown(props) {
     const unsyncedPartUpdates = parts?.filter(item => item.updatedOnServer === null).length || 0
 
     log(debug, 'SyncDropdown: unsyncedUpdates', { parts: unsyncedPartUpdates, persons: unsyncedPersonUpdates, scriptItems: unsyncedScriptItemUpdates })
+
+
+    useEffect(() => {
+
+        const timeoutId = setTimeout(() => {
+            setToggleRefresh((prevToggle) => !prevToggle);
+        }, 5 * 60 * 1000);
+
+        // Cleanup function to clear the timeout when the component is unmounted
+        return () => {
+            clearTimeout(timeoutId);
+        };
+
+    },[])
 
 
     const syncSummary = () => {
@@ -107,38 +122,28 @@ function SyncDropdown(props) {
         setSyncOpen(!syncOpen);
     }
 
-
-
     const timeSince = (date) => {
 
         if (date === null) return { text: 'Never synced.', seconds: null }
 
         const now = new Date();
-        let secondsPast = Math.floor((now - date) / 1000);
+        const lastSyncedDate = new Date(date)
 
-        let textTimeSince;
+        const secondsPast = Math.floor((now - lastSyncedDate) / 1000);
 
-        if (secondsPast < 15) {
-            textTimeSince = 'just synced';
-        } else
-            if (secondsPast < 3600) {
-                textTimeSince = ', last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago';
-            } else
-                if (secondsPast <= 86400) {
-                    textTimeSince = ', last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago';
-                } else
-                    if (secondsPast > 86400) {
-                        const daysSince = parseInt(secondsPast / 86400);
-                        if (daysSince === 1) {
-                            textTimeSince = ', last synced a day ago';
-                        } else {
-                            textTimeSince = ', last synced ' + parseInt(secondsPast / 86400) + ' days ago';
-                        }
-                    } else {
-                        textTimeSince = `, no last synced date`;
-                    }
+        log(logType, 'timeSince', { now, date, secondsPast })
 
-        return { textTimeSince, secondsPast }
+        if (secondsPast < 15) return { textTimeSince: 'just synced', secondsPast };
+        if (secondsPast < 3600) return { textTimeSince: 'last synced ' + (parseInt(secondsPast / 60) + 1) + ' minutes ago', secondsPast };
+        if (secondsPast <= 86400) return { textTimeSince: 'last synced ' + (parseInt(secondsPast / 3600) + 1) + ' hours ago', secondsPast };
+
+        //else
+        const daysSince = parseInt(secondsPast / 86400)
+
+        if (daysSince === 1) return { textTimeSince: 'last synced a day ago' }
+
+        return { textTimeSince: 'last synced ' + parseInt(secondsPast / 86400) + ' days ago' }
+
     }
 
     const getTarget = (type) => {
@@ -202,7 +207,7 @@ function SyncDropdown(props) {
                             : <Icon icon="warning" strapColor="warning" />
                         }
 
-                        {target.unsyncedUpdates} unsynced updates
+                        {`${target.unsyncedUpdates} unsynced updates, `}
                     </>
 
                 }
@@ -213,11 +218,11 @@ function SyncDropdown(props) {
                         <Icon icon="refresh"
                             id="refresh-sync"
                             toolTip="Refresh Script"
-                            onClick={() => dispatch(refreshSync())}
+                            onClick={(e) => { e.stopPropagation(); dispatch(refreshSync()) }}
                         />
                     </>
                 }
-               
+
             </>
         )
 
@@ -232,18 +237,18 @@ function SyncDropdown(props) {
                 {syncText('Summary')}
 
             </DropdownToggle>
-            {/*<DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>*/}
+            <DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>
 
-            {/*    <DropdownItem >Persons: {syncText(PERSON)}</DropdownItem>*/}
-            {/*    <DropdownItem divider />*/}
-            {/*    <DropdownItem >ScriptItems: {syncText(SCRIPT_ITEM)}</DropdownItem>*/}
-            {/*    <DropdownItem divider />*/}
-            {/*    <DropdownItem >Parts: {syncText(PART)}</DropdownItem>*/}
-            {/*    <DropdownItem divider />*/}
-            {/*    <DropdownItem onClick={() => clearStateFromBrowserStorage(dispatch)}>Clear Local Storage</DropdownItem>*/}
-            {/*    <DropdownItem onClick={() => togglePauseSync()}> {pauseSync ? 'Resume Sync' : 'Pause Sync'}<Icon icon="play"/></DropdownItem>*/}
+                <DropdownItem >Persons: {syncText(PERSON)}</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem >ScriptItems: {syncText(SCRIPT_ITEM)}</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem >Parts: {syncText(PART)}</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={() => clearStateFromBrowserStorage(dispatch)}>Clear Local Storage</DropdownItem>
+                <DropdownItem onClick={() => togglePauseSync()}> {pauseSync ? 'Resume Sync' : 'Pause Sync'}<Icon icon="play" /></DropdownItem>
 
-            {/*</DropdownMenu>*/}
+            </DropdownMenu>
         </Dropdown>
     )
 }

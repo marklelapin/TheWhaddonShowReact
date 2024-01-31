@@ -60,7 +60,7 @@ export const SCRIPT = { type: NONE, location: 'Component:Script' }
 export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 export const SCRIPT_VIEWER_HEADER = { type: NONE, location: 'Component:ScriptViewerHeader' }
 
-export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
+export const SYNC_DROPDOWN = { type: DEBUG, location: 'Component:SyncDropdown' }
 
 export const TEST = { type: NONE, location: 'Test: ' }
 export const TEST_CURTAIN = { type: NONE, location: 'Script:curtain' }

@@ -112,9 +112,10 @@
 
 
 .sync-dropdown {
+    font-size: $font-size-base !important;
     margin-right: 10px;
     ::after{
-margin-left: 0px !important;
+    margin-left: 0px !important;
     }
 }
 
