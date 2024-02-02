@@ -197,6 +197,29 @@
         }
     }
 
+    .previousSceneIcon {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        padding: 5px;
+        cursor: pointer;
+        color: $white;
+        z-index: 10;
+    }
+
+   .nextSceneIcon {
+    i {
+        position: absolute;
+        top:0px;
+        right: 0px;
+        padding: 5px;
+        cursor: pointer;
+        color: $white;
+        z-index:10;
+    }
+}
+
+
     @media screen {
         @include dropdown-box;
     }
@@ -234,12 +257,21 @@
 }
 
 
-
 .add-new-scene {
     padding: 40px;
     background-color: transparent;
     color: white;
 }
+
+.next-previous-scene-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+
 
 .curtain-open {
     color: white;
@@ -359,13 +391,12 @@
 }
 
 .loading-message {
-    position:absolute;
+    position: absolute;
     top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-.loading-message-text{
+.loading-message-text {
     color: $white;
 }
