@@ -96,14 +96,8 @@ body {
 }
 
 
-/*Text Input Styles*/
-.text-input {
-    width: 100%;
-}
 
-.script-item .text-input:not(:focus) {
-    border: none;
-}
+
 
 .part .text-input:not(:focus) {
     border: none;

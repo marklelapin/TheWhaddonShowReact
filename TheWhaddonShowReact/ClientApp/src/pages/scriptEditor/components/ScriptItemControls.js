@@ -92,17 +92,8 @@ function ScriptItemControls(props) {
 
             <div className={`${s['header-controls']} ${header ? s['header-exists'] : ''}`}>
 
-                <div className={s['header-left-controls']}>
-                    {scriptItem && attachTypes.includes(scriptItem.type) &&
-                        <>
-                            <Icon id={attachId} key={attachId} icon="attach" onClick={() => toggleMedia()} toolTip="Attach media" />
-                        </>
-                    }
-                </div>
-                <div className={s['header-right-controls']}>
-
                     {scriptItem && HEADER_TYPES.includes(scriptItem.type) === false &&
-                        < Dropdown isOpen={dropdownOpen} toggle={toggle} className={`${s['type-dropdown']}` } >
+                        < Dropdown isOpen={dropdownOpen} toggle={toggle} className={`${s['type-dropdown']}`} >
                             <Icon id={changeTypeId} key={changeTypeId} icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} toolTip="Change Type to Action, Staging etc." />
                             <DropdownMenu >
                                 {bodyScriptItemTypes.map((type) => {
@@ -120,28 +111,29 @@ function ScriptItemControls(props) {
                     {(hasComment && ![SHOW, ACT, SCENE].includes(scriptItem.type)) &&
                         <Icon id={viewCommentId} key={viewCommentId} icon='comment' onClick={() => goToComment()} toolTip="View comment" />
                     }
-
-                </div>
-
-
-            </div>
-
-
-            <div className={s['bottom-right-controls']}>
-                {scriptItem &&
-                    <Icon id={confirmScriptItemId} key={confirmScriptItemId} icon="play" onClick={(e) => onClick(e,CONFIRM)} toolTip="Confirm text (tab)" />
-                }
-                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) &&
-                    <Icon id={addScriptItemId} key={addScriptItemId} icon="add" onClick={(e) => onClick(e,ADD_SCRIPT_ITEM)} toolTip="Add new line (return)" />
-                }
-                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) &&
-                    
-                        <Icon id={deleteScriptItemId} key={deleteScriptItemId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem }))} toolTip="Delete line" />
+                    {scriptItem && attachTypes.includes(scriptItem.type) &&
+                        <>
+                            <Icon id={attachId} key={attachId} icon="attach" onClick={() => toggleMedia()} toolTip="Attach media" />
+                        </>
                     }
             </div>
 
 
-            <div className={s['outside-right-controls']}>
+            <div className={s['footer-controls']}>
+                {scriptItem && ![SHOW, ACT, SCENE].includes(scriptItem.type) &&
+                    <Icon id={confirmScriptItemId} key={confirmScriptItemId} icon="play" onClick={(e) => onClick(e, CONFIRM)} toolTip="Confirm text (tab)" />
+                }
+                {scriptItem && (!HEADER_TYPES.includes(scriptItem.type) || scriptItem.type === INITIAL_CURTAIN) &&
+                    <Icon id={addScriptItemId} key={addScriptItemId} icon="add" onClick={(e) => onClick(e, ADD_SCRIPT_ITEM)} toolTip="Add new line (return)" />
+                }
+                {scriptItem && !HEADER_TYPES.includes(scriptItem.type) &&
+
+                    <Icon id={deleteScriptItemId} key={deleteScriptItemId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCRIPT_ITEM, { scriptItem }))} toolTip="Delete line" />
+                }
+            </div>
+
+
+            <div className={s['center-controls']}>
                 {part &&
                     <>
                         <Icon id={confirmPartId} key={confirmPartId} icon="play" onClick={() => onClick(CONFIRM)} toolTip="Confirm name (tab)" />

@@ -205,10 +205,15 @@ function MediaDropzone(props) {
                                         file={isYouTube(media) ? null : media}
                                         youTubeUrl={isYouTube(media) ? media : null}
                                         key={`drop-id-${idx}`}
+
                                         width={width}
                                         height={height}
                                     />
-                                    {!readOnly && <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} toolTip="Delete" />}
+                                    {!readOnly &&
+                                        <div className={s['remove-media-icon']}>
+                                            <Icon key={idx} icon="remove" onClick={(e) => handleClick(e, 'remove', media)} toolTip="Delete" />
+                                        </div>
+                                    }
                                 </div>
 
                             </div>

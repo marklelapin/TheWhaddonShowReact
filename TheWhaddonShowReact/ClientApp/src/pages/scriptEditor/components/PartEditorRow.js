@@ -288,7 +288,7 @@ function PartEditorRow(props) {
                                 allowMultiSelect={false}
                                 allowClear={false}
                                 centered
-                                toggle={(e) => setOpenPartSelector(!openPartSelector)}
+                                toggle={() => setOpenPartSelector(!openPartSelector)}
                                 onSelect={(selectedPartIds) => dispatch(trigger(SWAP_PART, { sceneId, oldPartId: partId, newPartId: selectedPartIds[0] }))} />
                         }
                     </div>

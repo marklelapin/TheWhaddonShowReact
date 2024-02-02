@@ -54,7 +54,7 @@
     flex: 0 0 50px !important; //TODO: can get rid of important if flex-full-width is moved out of index.css to scss.
 
     .left-controls {
-        flex: 1;
+        flex: 0 0 auto;
         justify-content: flex-start;
         align-items: center;
         margin-left: 10px;
@@ -73,6 +73,7 @@
         align-items: center;
         padding: 5px 3px !important;
         position: relative;
+        height:35px;
     }
 
     .view-as-control {

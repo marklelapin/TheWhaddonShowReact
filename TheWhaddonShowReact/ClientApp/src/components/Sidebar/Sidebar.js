@@ -189,7 +189,7 @@ function Sidebar(props) {
     if (isModal) return (
 
         <div className={s.modalSidebar}>
-            {isModal && <Icon icon="cross" id="close-modal-sidebar-toggle" className={s.closeSidebarToggle} onClick={toggleCloseSidebar} />}
+            {isModal && <Icon icon="cross" id="close-modal-sidebar-toggle" onClick={toggleCloseSidebar} />}
             {linksJsx}
         </div>
 
