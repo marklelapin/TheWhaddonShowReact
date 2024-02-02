@@ -29,9 +29,9 @@ export function SidebarToggle(props) {
 
         <>
             {show &&
-                <NavLink className={`${s.toggleSidebar}`} id="toggleSidebar" onClick={handleClick}>
+                <NavLink className={`${s.toggleSidebar}`} id="toggleSidebar" >
                     <span className={s.headerSvgFlipColor}>
-                        <Icon icon="menu" id="header-toggle-sidebar" className={s.headerSvgFlipColor} toolTip="Pin Sidebar Open" toolTipPlacement="right" />
+                        <Icon icon="menu" id="header-toggle-sidebar" className={s.headerSvgFlipColor} onClick={handleClick} toolTip="Pin Sidebar Open" toolTipPlacement="right" />
                     </span>
                 </NavLink>}
         </>

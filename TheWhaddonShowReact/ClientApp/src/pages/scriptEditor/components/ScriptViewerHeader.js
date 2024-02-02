@@ -18,6 +18,7 @@ import {
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
+import ConfirmClick from '../../../components/ConfirmClick/ConfirmClick';
 
 //utitilites
 import { isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
@@ -134,8 +135,8 @@ function ScriptViewer() {
                         <NavItem>
                             <NavLink id="chat-mode"
                                 className={`${s['script-viewer-navlink']} ${(viewStyle === CHAT) ? 'active' : ''}`}
-                                onClick={() => handleNavLink(CHAT)}
                             >
+                            <ConfirmClick type='rectangle' onClick={() => handleNavLink(CHAT)} />
                                 <span>Chat</span><Icon icon="chat-mode" />
                             </NavLink>
                             <QuickToolTip id="chat-mode" tip="Fun, great on mobile and shows curtain more clearly." placement="top" />
@@ -145,7 +146,8 @@ function ScriptViewer() {
                         <NavItem>
                             <NavLink id="classic-mode"
                                 className={`${s['script-viewer-navlink']} ${isScreenSmallerThan('xl') ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? 'active' : ''}`}
-                                onClick={() => handleNavLink(CLASSIC)}>
+                                >
+                                <ConfirmClick type='rectangle' onClick={() => handleNavLink(CLASSIC)} />
                                 <span>Classic</span><Icon icon="classic-mode" />
                             </NavLink>
                             <QuickToolTip id="classic-mode" tip="Smart, great for printing" placement="top" />
@@ -157,8 +159,8 @@ function ScriptViewer() {
             <div className={s['center-controls']}>
                 <div id="view-as-control"
                     className={classnames(s['view-as-control'], viewAsPartPerson ? s['selected'] : null, s[viewStyle], 'clickable')}
-                    onClick={() => togglePersonSelector()}
                 >
+                    <ConfirmClick type='rectangle' onClick={() => togglePersonSelector()} />
                     <span>view as:
                     </span>
 
@@ -168,11 +170,12 @@ function ScriptViewer() {
                         avatarInitials={(viewAsPartPerson === null) ? '?' : null}
                     />
                     <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
+
                 </div>
-                {showSceneSelectorControls && <div id="scene-selector-control" className={classnames(s['scene-selector-control'], 'clickable')} onClick={() => toggleSceneSelector()}>
+                {showSceneSelectorControls && <div id="scene-selector-control" className={classnames(s['scene-selector-control'])} >
                     {!isMobileDevice && <span>{`search `}
                     </span>}
-                    <Icon id="script-viewer-show-selector-modal" icon="search" toolTip="Search scenes"></Icon>
+                    <Icon id="script-viewer-show-selector-modal" icon="search" toolTip="Search scenes" onClick={() => toggleSceneSelector()}></Icon>
                     <QuickToolTip id="scene-selector-control" tip="Search scenes" placement="top" />
                 </div>}
             </div>

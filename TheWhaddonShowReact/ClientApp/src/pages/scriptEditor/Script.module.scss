@@ -72,6 +72,7 @@
         display: flex;
         align-items: center;
         padding: 5px 3px !important;
+        position: relative;
     }
 
     .view-as-control {
@@ -79,6 +80,10 @@
         display: flex;
         align-items: center;
         justify-content: space-evenly;
+        height:35px;
+        width:100px;
+        position: relative;
+      
 
         &.selected.classic {
             background-color: $highlight;
@@ -207,18 +212,15 @@
         z-index: 10;
     }
 
-   .nextSceneIcon {
-    i {
-        position: absolute;
-        top:0px;
-        right: 0px;
-        padding: 5px;
-        cursor: pointer;
-        color: $white;
-        z-index:10;
+    .nextSceneIcon {
+        position: absolute !important;
+        top: 0px !important;
+        right: 0px !important;
+        padding: 5px !important;
+        cursor: pointer !important;
+        color: $white !important;
+        z-index: 10 !important;
     }
-}
-
 
     @media screen {
         @include dropdown-box;
@@ -226,6 +228,8 @@
 
     page-break-before: always;
 }
+
+
 
 .scene-header {
     position: relative;

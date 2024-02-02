@@ -107,9 +107,9 @@ const Scene = memo((props) => {
                 <div id={`scene-${scene.id}`} className={classnames(s[`scene-group`], s[scene.type.toLowerCase()], (sceneFilter) ? null : s['hide'])} style={{ zIndex: zIndex }}>
                     {(scriptFilter?.length === 1) &&
                         <>
-                            {(sceneNumber !== 1) && <div className={classnames(s.previousSceneIcon,'clickable')} onClick={moveToPreviousScene} > <Icon icon='arrow-left' /></div>
+                            {(sceneNumber !== 1) && <div className={classnames(s.previousSceneIcon,'clickable')} > <Icon icon='arrow-left' onClick={moveToPreviousScene} /></div>
                             }
-                            {(scene.nextSceneId !==null) && <div className={classnames(s.nextSceneIcon,'clickable')} onClick={moveToNextScene} > <Icon icon='arrow-right' /></div>
+                            {(scene.nextSceneId !==null) && <div className={classnames(s.nextSceneIcon,'clickable')}  > <Icon icon='arrow-right' onClick={moveToNextScene} /></div>
                             }
                         </>
                     }

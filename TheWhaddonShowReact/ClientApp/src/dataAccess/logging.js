@@ -16,11 +16,12 @@ export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
+export const CONFIRM_CLICK = { type: DEBUG, location: 'Component:ConfirmClick' }
 
 export const FILE_UTILS = { type: NONE, location: 'Script:fileUtils' }
 
-export const HOME = { type: DEBUG, location: 'Component:Home' }
-
+export const HOME = { type: NONE, location: 'Component:Home' }
+export const ICONS = { type: DEBUG, location: 'Component:Icons' }
 export const INDEX = { type: NONE, location: 'Component:INDEX' }
 export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
 
