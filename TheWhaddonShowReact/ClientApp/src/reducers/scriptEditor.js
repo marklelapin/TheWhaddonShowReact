@@ -359,6 +359,15 @@ export default function scriptEditorReducer(state = initialState, action) {
                 movementInProgress: action.movementInProgress
             }
         case UPDATE_SCRIPT_FILTER:
+
+            if (action.scriptFilter && action.scriptFilter.length === 1) {
+                return {
+                    ...state,
+                    scriptFilter: action.scriptFilter,
+                    sceneInFocus: state.currentScriptItems[action.scriptFilter[0]]
+                }
+            }
+            //else
             return {
                 ...state,
                 scriptFilter: action.scriptFilter

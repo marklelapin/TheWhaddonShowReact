@@ -313,7 +313,38 @@
 .person-selector {
     position: relative;
     z-index: 1000;
+
+    .person-selector-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        h5 {
+            font-weight: $font-weight-bolder;
+        }
+    }
 }
+
+.person-selector-section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+    justify-self: center;
+    margin-bottom: 15px;
+
+
+    .person-selector-button {
+        display: flex;
+        flex-direction: row;
+        margin: 5px;
+        cursor: pointer;
+        align-items: center;
+    }
+}
+
 
 .sceneSelector {
     flex: 1;
@@ -404,7 +435,7 @@
     .sceneSelectorRow {
         padding: 3px;
 
-        h5{
+        h5 {
             margin: 0px;
         }
 
