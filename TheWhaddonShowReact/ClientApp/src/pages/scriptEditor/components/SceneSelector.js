@@ -166,16 +166,17 @@ function SceneSelector(props) {
                     return (idx < scenesToLoad || scenesToLoad === null) &&
 
                         <SceneSelectorRow
-                            key={scene.id}
-                            scene={scene}
-                            onClick={(action, id) => handleClick(action, id)}
-                            onDragStart={handleDragStart}
-                            onDrop={handleDrop}
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            beingDragged={beingDragged}
-                            isInFocus={scene.id === sceneInFocus}
-                            highlight={scene.isViewAsPartPerson}
+                        key={scene.id}
+                        scene={scene}
+                        onClick={(action, id) => handleClick(action, id)}
+                        onDragStart={handleDragStart}
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        beingDragged={beingDragged}
+                        isInFocus={scene.id === sceneInFocus}
+                        highlight={scene.isViewAsPartPerson}
+                        isMobileDevice={isMobileDevice }
 
                         />
 

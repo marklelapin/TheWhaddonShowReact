@@ -402,6 +402,17 @@
     }
 
     .sceneSelectorRow {
+        padding: 3px;
+
+        h5{
+            margin: 0px;
+        }
+
+        &.mobile {
+            padding: 5px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
     }
 
     @media print {
