@@ -44,7 +44,7 @@ const Scene = memo((props) => {
     const readOnly = isScriptReadOnly(currentUser)
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
-    const scene = (sceneScriptItem.type === ACT) ? sceneScriptItem : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
+    const scene = (sceneScriptItem.type === ACT) ? { ...sceneScriptItem, nextSceneId: sceneScriptItem.nextId } : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
     const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
     const staging = { ...sceneOrder.find(item => item.type === INITIAL_STAGING) } || {}
 
@@ -88,9 +88,9 @@ const Scene = memo((props) => {
 
 
     const moveToNextScene = () => {
-        if (scene.nextSceneId) {
+        if (scene.nextId) {
             dispatch(updateScriptFilter([scene.nextSceneId]));
-            moveFocusToId(scene.id);
+            moveFocusToId(scene.nextSceneId);
         }
     }
 
@@ -101,15 +101,17 @@ const Scene = memo((props) => {
         }
     }
 
+
+    log(logType,'scene',scene)
     return (
         <Hammer onSwipe={handleSwipe}>
             <>
                 <div id={`scene-${scene.id}`} className={classnames(s[`scene-group`], s[scene.type.toLowerCase()], (sceneFilter) ? null : s['hide'])} style={{ zIndex: zIndex }}>
                     {(scriptFilter?.length === 1) &&
                         <>
-                            {(sceneNumber !== 1) && <div className={classnames(s.previousSceneIcon,'clickable')} > <Icon icon='arrow-left' onClick={moveToPreviousScene} /></div>
+                            {(sceneNumber !== 1) && <div className={classnames(s.previousSceneIcon,'clickable',previousCurtainOpen ? s.curtainOpen : s.curtainClosed,s[viewStyle])} > <Icon icon='arrow-left' onClick={moveToPreviousScene} /></div>
                             }
-                            {(scene.nextSceneId !==null) && <div className={classnames(s.nextSceneIcon,'clickable')}  > <Icon icon='arrow-right' onClick={moveToNextScene} /></div>
+                        {(scene.nextSceneId !== null) && <div className={classnames(s.nextSceneIcon, 'clickable', previousCurtainOpen ? s.curtainOpen : s.curtainClosed,s[viewStyle])}  > <Icon icon='arrow-right' onClick={moveToNextScene} /></div>
                             }
                         </>
                     }

@@ -20,6 +20,7 @@ import { log, SCRIPT_ITEM as logType } from '../../../dataAccess/logging';
 import classnames from 'classnames';
 //Constants
 import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
+import {CHAT,CLASSIC } from '../scripts/layout';
 //trigger types
 import {
     trigger,
@@ -61,7 +62,7 @@ const ScriptItem = memo((props) => {
     const focus = useSelector(state => (state.scriptEditor.scriptItemInFocus[id])) || false
     const isUndoInProgress = useSelector(state => (state.scriptEditor.currentUndo[sceneId]))
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
-    const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || 'Chat'
+    const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || CHAT
     const currentUser = useSelector(state => state.user.currentUser)
     const readOnly = isScriptReadOnly(currentUser)
     log(logType, 'redux:', { focus, isUndoInProgress, scriptItem, readOnly})
@@ -131,8 +132,8 @@ const ScriptItem = memo((props) => {
             className={classnames('script-item',
                 s['script-item'],
                 s[type?.toLowerCase()],
-                (alignRight & viewStyle === 'chat') ? s['align-right'] : null,
-                (viewStyle === 'classic' && isViewAsPartPerson) ? s.highlight : null,
+                (alignRight & viewStyle === CHAT) ? s['align-right'] : null,
+                (viewStyle === CLASSIC && isViewAsPartPerson) ? s.highlight : null,
                 (finalCurtainOpen) ? s['curtain-open'] : s['curtain-closed'],
                 s[viewStyle],
                 (nextId === null) ? s['final-script-item'] : null)}
@@ -188,7 +189,7 @@ const ScriptItem = memo((props) => {
 
             {/*Elements specific for each scriptItem type*/}
 
-            {(type === SCENE) &&
+            {(type === SCENE) && (readOnly === false) &&
                 <div className={s['scene-controls']}>
                     {isUndoInProgress &&
                         <Button id={confirmUndoId} key={confirmUndoId} size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>

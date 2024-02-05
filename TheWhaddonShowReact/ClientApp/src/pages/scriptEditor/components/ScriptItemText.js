@@ -11,7 +11,6 @@ import {
     DELETE_NEXT_SCRIPT_ITEM,
     UNDO,
     REDO,
-    CONFIRM_UNDO,
     updateMovementInProgress
 } from '../../../actions/scriptEditor';
 
@@ -30,9 +29,9 @@ import { moveFocusFromScriptItem } from '../scripts/utility';
 import { getScriptItemPlaceholder } from '../scripts/scriptItem'
 import classnames from 'classnames';
 //constants
-import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, SYNOPSIS, DIALOGUE, STAGING, INITIAL_STAGING, TYPES_WITH_HEADER, CURTAIN_TYPES, CURTAIN, ACT } from '../../../dataAccess/scriptItemTypes';
-import { UP, DOWN, START, END, ABOVE, BELOW, SCENE_END } from '../scripts/utility';
-import { DEFAULT_END_MARGIN } from '../scripts/layout';
+import { HEADER_TYPES, INITIAL_CURTAIN, ACTION, LIGHTING, SOUND, SCENE, TYPES_WITH_HEADER, CURTAIN_TYPES } from '../../../dataAccess/scriptItemTypes';
+import { UP, DOWN, START, END, ABOVE, BELOW } from '../scripts/utility';
+import { DEFAULT_END_MARGIN, CHAT,CLASSIC } from '../scripts/layout';
 
 //css
 import s from '../ScriptItem.module.scss';
@@ -53,7 +52,7 @@ function ScriptItemText(props) {
         nextFocusId = null,
         isUndoInProgress = false,
         sceneNumber = null,
-        viewStyle = 'chat'
+        viewStyle = CHAT
     } = props;
 
     const { id, type } = scriptItem
@@ -65,7 +64,7 @@ function ScriptItemText(props) {
     //Redux
     const focus = useSelector(state => state.scriptEditor.scriptItemInFocus[scriptItem.id])
     const textWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) //used to control when to re-render for text width.
-    const textWidthPx = (viewStyle === 'chat') ? `${textWidth}px` : '100%';
+    const textWidthPx = (viewStyle === CHAT) ? `${textWidth}px` : '100%';
     const currentUser = useSelector(state => state.user.currentUser)
     const printScript = useSelector(state => state.scriptEditor.printScript)
     const readOnly = isScriptReadOnly(currentUser, printScript)
@@ -361,15 +360,15 @@ function ScriptItemText(props) {
         <div id={`script-item-text-${id}`} className={classnames(s['script-item-text'], s[viewStyle])}>
 
             <ScriptItemHeader scriptItem={scriptItem} sceneNumber={sceneNumber} />
-            {viewStyle === 'chat' &&
+            {viewStyle === CHAT &&
                 <ElementInViewObserver onEnterView={handleEnterView} onExitView={handleExitView} className={s['element-in-view-observer']}>
                     {textAreaJsx()}
                 </ElementInViewObserver>
             }
-            {viewStyle === 'classic' && !readOnly && 
+            {viewStyle === CLASSIC && !readOnly && 
                 textAreaJsx()
             }
-            {viewStyle === 'classic' && readOnly &&
+            {viewStyle === CLASSIC && readOnly &&
                 <div id={`script-item-text-input-${id}`}
                     className={classnames('text-input',
                         s['text-input'],

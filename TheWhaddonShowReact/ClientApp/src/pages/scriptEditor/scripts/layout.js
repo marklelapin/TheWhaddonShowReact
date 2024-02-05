@@ -1,6 +1,9 @@
 import { isScreen, isScreenSmallerThan } from '../../../core/screenHelper'
 import { getScriptItemPlaceholder } from './scriptItem';
 
+export const CHAT = 'chat'
+export const CLASSIC = 'classic'
+
 export const DEFAULT_END_MARGIN = 100;
 
 export const getShowBools = (defaultShowSceneSelector, defaultShowComments) => {

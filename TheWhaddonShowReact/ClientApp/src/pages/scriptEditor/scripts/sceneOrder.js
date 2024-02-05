@@ -34,6 +34,7 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
     if (head.type === SHOW) {
         finalSceneOrder = addSceneNumbers(zIndexedSceneOrder)
     }
+    log(logType,'refreshSceneOrder', {finalSceneOrder})
 
     if (finalSceneOrder) {
         return finalSceneOrder;

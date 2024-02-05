@@ -36,7 +36,8 @@ import { log, SCRIPT_EDITOR_REDUCER as logType } from '../dataAccess/logging';
 import { SCRIPT_ITEM, PERSON, PART } from '../dataAccess/localServerModels';
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
-import { remove } from 'lodash';
+
+import { CHAT } from '../pages/scriptEditor/scripts/layout';
 
 export const initialState = {
     searchParameters: {
@@ -67,7 +68,7 @@ export const initialState = {
     personSelectorConfig: null,
     maxWidthExists: false,
     maxScriptItemTextWidth: null,
-    viewStyle: 'chat',
+    viewStyle: CHAT,
     readOnly: true,
     initialSyncProgress: { part: 0, person: 0, scriptItem: 0 },
     scriptItemTextWidths: {},
