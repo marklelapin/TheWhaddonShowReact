@@ -45,7 +45,7 @@ function ScriptViewer(props) {
 
     //internal state
     const [scriptBodyLoaded, setScriptBodyLoaded] = useState(false) //for identifying width of script body to calculate textareawidth
-    const [loading, setLoading] = useState(true) //for identifying when all scenes are loaded.
+    const [loading, setLoading] = useState('script') //for identifying when all scenes are loaded.
 
     // const [isPostShowComments, setIsPostShowComments] = useState(false)
 
@@ -103,7 +103,7 @@ function ScriptViewer(props) {
 
 
     useEffect(() => {
-        if (scenesToLoad >= showOrder?.length) {
+        if (loading === 'script' && scenesToLoad >= showOrder?.length) {
             setLoading(false)
         }
     }, [scenesToLoad, showOrder])
@@ -112,13 +112,15 @@ function ScriptViewer(props) {
         if ([CLASSIC, CHAT].includes(loading)) {
             const newViewStyle = loading
             dispatch(updateViewStyle(newViewStyle))
-            setLoading(true)
         }
     }, [loading])
 
     useEffect(() => {
+        if ([CLASSIC,CHAT].includes(loading))
         setLoading(false)
-    },[viewStyle])
+    }, [viewStyle]) //eslint-disable-line react-hooks/exhaustive-deps
+
+
 
     if (scenesToLoad === 0) { //this allows a reset of scenesToLoad to occur.
         log(logType, 'updateState scenesToLoad', 0)
@@ -162,7 +164,7 @@ function ScriptViewer(props) {
                 </div>
                 {(loading !== false) &&
                     <div className={s.loader}>
-                        {<Loader size={60} text="Loading..." />}
+                        {<Loader size={60} text={loading === 'script' ? "Loading..." : `Changing to ${loading} mode...`} />}
                     </div>
                 }
             </div>

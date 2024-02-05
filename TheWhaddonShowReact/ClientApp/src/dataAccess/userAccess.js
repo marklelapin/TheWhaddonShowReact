@@ -72,9 +72,12 @@ const doMsalLogout = async (instance, account) => {
 
 
 
-export const isScriptReadOnly = (currentUser, printScript = false) => {
+export const isScriptReadOnly = (currentUser, _isMobileDevice, printScript = false) => {
+
+    const isMobile = (_isMobileDevice === null || _isMobileDevice === undefined) ? isMobileDevice() : _isMobileDevice;
+
     if (printScript === true) return true;
-    if (isMobileDevice() === true) return true;
+    if (isMobile === true) return true;
 
     return !currentUser?.isWriter;
 }

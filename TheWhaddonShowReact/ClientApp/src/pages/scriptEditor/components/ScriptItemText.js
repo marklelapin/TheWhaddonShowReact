@@ -37,6 +37,7 @@ import { DEFAULT_END_MARGIN, CHAT,CLASSIC } from '../scripts/layout';
 import s from '../ScriptItem.module.scss';
 import { ElementInViewObserver } from '../../../components/ElementInViewObserver/ElementInViewObserver';
 import { isScriptReadOnly } from '../../../dataAccess/userAccess';
+import { isMobileDevice } from '../../../core/screenHelper';
 
 
 function ScriptItemText(props) {
@@ -67,7 +68,8 @@ function ScriptItemText(props) {
     const textWidthPx = (viewStyle === CHAT) ? `${textWidth}px` : '100%';
     const currentUser = useSelector(state => state.user.currentUser)
     const printScript = useSelector(state => state.scriptEditor.printScript)
-    const readOnly = isScriptReadOnly(currentUser, printScript)
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const readOnly = isScriptReadOnly(currentUser, isMobileDevice, printScript)
    
     // const storedTextWidth = useSelector(state => state.scriptEditor.scriptItemTextWidths[scriptItem.id]) || null
     //log(logType,'storedTextWidth',storedTextWidth)

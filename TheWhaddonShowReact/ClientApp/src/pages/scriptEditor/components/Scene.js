@@ -41,9 +41,9 @@ const Scene = memo((props) => {
     const sceneScriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+    
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
-
+const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
     const scene = (sceneScriptItem.type === ACT) ? { ...sceneScriptItem, nextSceneId: sceneScriptItem.nextId } : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
     const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
     const staging = { ...sceneOrder.find(item => item.type === INITIAL_STAGING) } || {}

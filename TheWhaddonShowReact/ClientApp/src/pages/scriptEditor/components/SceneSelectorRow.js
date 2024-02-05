@@ -21,7 +21,7 @@ function SceneSelectorRow(props) {
     log(logType, 'props', {highlight})
 
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+    const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
     
     const deviceType = isMobileDevice ? 'mobile' : 'desktop'
 

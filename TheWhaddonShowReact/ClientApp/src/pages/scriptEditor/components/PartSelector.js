@@ -28,7 +28,8 @@ function PartSelector(props) {
     const scene = useSelector(state => state.scriptEditor.currentScriptItems[sceneId])
     const scenePartIds = scene?.partIds || []
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
     //Internal State
     const [openPartSelector, setOpenPartSelector] = useState(false);
 

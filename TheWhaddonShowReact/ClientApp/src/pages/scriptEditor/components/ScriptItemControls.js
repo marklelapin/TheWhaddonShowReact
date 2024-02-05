@@ -50,7 +50,8 @@ function ScriptItemControls(props) {
 
     //Redux
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const readOnly = isScriptReadOnly(currentUser, isMobileDevice)
     //Internal State
     const [dropdownOpen, setDropdownOpen] = useState(false);
 

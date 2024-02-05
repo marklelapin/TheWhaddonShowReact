@@ -31,9 +31,10 @@ function Comment(props) {
     const comment = useSelector(state => state.scriptEditor.currentScriptItems[id]) || [];
     const showComments = useSelector(state => state.scriptEditor.showComments);
     const scriptItem = { ...comment };
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
     const currentUser = useSelector(state => state.user.currentUser)
 
-    const readOnly = isScriptReadOnly(currentUser)
+    const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
 
 
     //internal state

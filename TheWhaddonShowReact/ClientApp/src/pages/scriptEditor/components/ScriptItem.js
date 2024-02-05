@@ -1,7 +1,7 @@
 
 //React and Redux
 import React from 'react';
-import { memo, useState} from 'react';
+import { memo, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 //Components
 import Comment from './Comment';
@@ -20,7 +20,7 @@ import { log, SCRIPT_ITEM as logType } from '../../../dataAccess/logging';
 import classnames from 'classnames';
 //Constants
 import { SCENE, DIALOGUE, CURTAIN_TYPES, OPEN_CURTAIN } from '../../../dataAccess/scriptItemTypes';
-import {CHAT,CLASSIC } from '../scripts/layout';
+import { CHAT, CLASSIC } from '../scripts/layout';
 //trigger types
 import {
     trigger,
@@ -64,8 +64,9 @@ const ScriptItem = memo((props) => {
     const scriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || CHAT
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
-    log(logType, 'redux:', { focus, isUndoInProgress, scriptItem, readOnly})
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const readOnly = isScriptReadOnly(currentUser, isMobileDevice)
+    log(logType, 'redux:', { focus, isUndoInProgress, scriptItem, readOnly })
 
     const { type, commentId, nextId } = scriptItem;
 
@@ -200,7 +201,7 @@ const ScriptItem = memo((props) => {
                             key={redoId}
                             className={isUndoInProgress ? s['show-redo'] : s['hide-redo']}
                             icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />}
-                {/*    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>*/}
+                    {/*    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>*/}
                     {!readOnly && <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />}
 
                 </div>

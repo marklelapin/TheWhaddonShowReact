@@ -98,7 +98,7 @@ function ScriptViewerHeader(props) {
         }
         if (printScript !== false && viewStyle === CHAT) {
             log(logType, 'Switching to classic mode.')
-            dispatch(updateViewStyle(CLASSIC))
+            setLoading(CLASSIC)
         }
     }
 
@@ -134,7 +134,6 @@ function ScriptViewerHeader(props) {
     }
 
     const handleClickPrint = () => {
-        console.log('hello handleClickPrint')
         dispatch(updatePrintScript(true))
 
     }
