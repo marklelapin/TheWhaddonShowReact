@@ -48,7 +48,6 @@ function Home() {
     log(logType, 'props', { currentUser, isRehearsal, greetingUser })
 
     const userPartsAndScenes = (greetingUser) ? getCastWithPartsAndScenes(persons, partPersons, scriptItems).find(item => item.person.id === greetingUser.id) : null
-    const uncastParts = Object.values(getPartsWithStats(partPersons, scriptItems)).filter(part => part.personId === null).length
 
     log(logType, 'userPartsAndScenes', { userPartsAndScenes })
 
@@ -59,9 +58,7 @@ function Home() {
 
     const castingText = `You are currently cast in ${totalParts} parts across ${totalScenes} scenes and have ${totalLines} lines to learn!*`
 
-    const castingSubText = `* This is subject to change as quite a few parts haven't been cast yet and parts of the script are still being written!!`
-
-    const message = 'Next Rehearsal: Wednesday 31st Jan 8pm'
+    const message = 'Next Rehearsal: Wednesday 7th Feb 8pm'
 
 
     const daysToGo = () => {
@@ -114,11 +111,6 @@ function Home() {
                                 <h2 className={s.castingText}>
                                     {castingText}
                                 </h2>
-
-
-                                <div className={s.castingSubText}>
-                                    {castingSubText}
-                                </div>
 
 
                                 <h2 className={s.message}>
