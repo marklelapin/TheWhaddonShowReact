@@ -97,7 +97,7 @@ export function moveFocusToId(id, position = START, scroll = false) {
 
         if (newTextInput) {
             if (scroll) {
-                newTextInput.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                newTextInput.scrollIntoView({ behavior: 'smooth', block: 'start' })
                 return;
             }
 

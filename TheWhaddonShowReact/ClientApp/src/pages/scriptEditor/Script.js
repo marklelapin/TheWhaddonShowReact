@@ -40,7 +40,7 @@ function Script() {
 
     useEffect(() => {
         if (isScreenSmallerThan('lg')) {
-            const firstScene = showOrder.find(scene => scene.sceneNumber === 1)
+            const firstScene = showOrder?.find(scene => scene.sceneNumber === 1)
             if (firstScene) {
                 dispatch(updateScriptFilter([firstScene.id]))
             } else {

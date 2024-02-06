@@ -29,7 +29,7 @@ const Casting = () => {
     const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+    const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
 
     const [viewAsCastMember, setViewAsCastMember] = useState(null);
 

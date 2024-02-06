@@ -158,6 +158,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
 
             .loginButtons {
                 display: flex;
@@ -171,6 +172,11 @@
                     margin: 5px;
                     width: 130px;
                 }
+            }
+
+            .loginTick{
+                justify-self: center;
+                text-align: center;
             }
         }
 

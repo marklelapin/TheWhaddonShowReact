@@ -16,16 +16,18 @@ import s from '../Script.module.scss'
 
 function SceneSelectorRow(props) {
 
-    const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false, isInFocus, highlight = false} = props;
+    const { scene, onClick, onDragStart, onDrop, onDragOver, onDragLeave, beingDragged = false, isInFocus, highlight = false, isMobileDevice = false} = props;
 
     log(logType, 'props', {highlight})
 
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+    const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
+    
+    const deviceType = isMobileDevice ? 'mobile' : 'desktop'
 
     return (
         <>
-            <div className={classnames(s.sceneSelectorRow, 'clickable',(highlight===true) ? s.highlight : null)}
+            <div className={classnames(s.sceneSelectorRow, 'clickable',(highlight===true) ? s.highlight : null,s[deviceType])}
                 id={`scene-selector-row-${scene.id}`}
                 data-sceneid={scene.id}
                 onDragStart={onDragStart}
