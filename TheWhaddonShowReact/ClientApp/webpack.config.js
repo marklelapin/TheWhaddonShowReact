@@ -330,28 +330,35 @@ module.exports = (env, argv) => {
             }),
 
             isProduction &&
-            new WorkboxWebpackPlugin.GenerateSW({
-                clientsClaim: true,
-                skipWaiting: true,
-                exclude: [/\.map$/, /asset-manifest\.json$/],
-                /*            importWorkboxFrom: 'cdn',*/
-                navigateFallback: publicUrl + '/index.html',
-                navigateFallbackDenylist: [
-                    // Exclude URLs starting with /_, as they're likely an API call
-                    new RegExp('^/_'),
-                    // Exclude URLs containing a dot, as they're likely a resource in
-                    // public/ and not a SPA route
-                    new RegExp('/[^/]+\\.[^/]+$'),
-                ],
-                runtimeCaching: [
-                    {
-                        urlPattern: /^https:\/\/www\.thewhaddonshow\.org\/static\/media\/svg%3e/,
-                        handler: 'NetworkOnly',
-                    },
-                    // Add other runtime caching configurations as needed
-                ],
+            new WorkboxWebpackPlugin.InjectManifest({
+                swSrc: './src/serviceWorker.js',
+                swDest: 'sw.js',
+                maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+            })
+            
 
-            }),
+            //new WorkboxWebpackPlugin.GenerateSW({
+            //    clientsClaim: true,
+            //    skipWaiting: true,
+            //    exclude: [/\.map$/, /asset-manifest\.json$/],
+            //    /*            importWorkboxFrom: 'cdn',*/
+            //    navigateFallback: publicUrl + '/index.html',
+            //    navigateFallbackDenylist: [
+            //        // Exclude URLs starting with /_, as they're likely an API call
+            //        new RegExp('^/_'),
+            //        // Exclude URLs containing a dot, as they're likely a resource in
+            //        // public/ and not a SPA route
+            //        new RegExp('/[^/]+\\.[^/]+$'),
+            //    ],
+            //    runtimeCaching: [
+            //        {
+            //            urlPattern: /^https:\/\/www\.thewhaddonshow\.org\/static\/media\/svg%3e/,
+            //            handler: 'NetworkOnly',
+            //        },
+            //        // Add other runtime caching configurations as needed
+            //    ],
+
+            //}),
 
         ].filter(Boolean)
     }

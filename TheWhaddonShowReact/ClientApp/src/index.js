@@ -15,7 +15,7 @@ import { msalConfig } from '../src/authConfig.js'
 
 //Utilities
 
-import * as serviceWorker from '../src/serviceWorker.js';
+import registerServiceWorker from '../src/serviceWorkerRegistration.js';
 import axios from 'axios';
 
 import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from '../src/dataAccess/browserStorage.js';
@@ -151,10 +151,8 @@ const initApp = async () => {
             </Provider>
         </BrowserRouter>
     );
-    // If you want your app to work offline and load faster, you can change
-    // unregister() to register() below. Note this comes with some pitfalls.
-    // Learn more about service workers: http://bit.ly/CRA-PWA
-    serviceWorker.register();
+
+    registerServiceWorker();
 
 
 }
