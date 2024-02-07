@@ -40,7 +40,7 @@ function ScriptViewer(props) {
     const initialSyncProgressTotal = initialSyncProgress.scriptItem * 70 + initialSyncProgress.person * 15 + initialSyncProgress.part * 15
     const maxWidthExists = useSelector(state => state.scriptEditor.maxWidthExists)
 
-
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
 
     //internal state
@@ -162,7 +162,7 @@ function ScriptViewer(props) {
 
 
                 </div>
-                {(loading !== false) &&
+                {(loading !== false) && !isMobileDevice &&
                     <div className={s.loader}>
                         {<Loader size={60} text={loading === 'script' ? "Loading..." : `Changing to ${loading} mode...`} />}
                     </div>
