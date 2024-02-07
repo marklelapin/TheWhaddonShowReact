@@ -25,7 +25,7 @@ import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../dataAccess/lo
 import { getTriggerUpdates } from '../scripts/trigger';
 import { getUndoUpdates } from '../scripts/undo';
 import { getScriptItemUpdatesLaterThanCurrent } from '../scripts/scriptItem';
-import { getSceneOrderUpdates, isSceneAffectedByViewAsPartPerson } from '../scripts/sceneOrder';
+import { getSceneOrderUpdates, isSceneAffectedByViewAsPartPerson, refreshSceneOrder } from '../scripts/sceneOrder';
 import { newPartPersonsFromPartUpdates, newPartPersonsFromPersonUpdates } from '../scripts/part';
 
 import { addUpdates } from '../../../actions/localServer';
@@ -34,10 +34,11 @@ import {
     alignRight,
 } from '../scripts/sceneOrder'
 
-import { moveFocusToId, END } from '../scripts/utility';
+import { moveFocusToId } from '../scripts/utility';
 
 //constants
 import { SCRIPT_ITEM, PART, PERSON } from '../../../dataAccess/localServerModels'
+import { SHOW,ACT,SCENE } from '../../../dataAccess/scriptItemTypes';
 import { isScreenSmallerThan } from '../../../core/screenHelper';
 
 export function ScriptEditorProcessing() {
@@ -269,7 +270,7 @@ export function ScriptEditorProcessing() {
                     dispatch(updatePreviousCurtain(previousCurtainUpdate.sceneId, previousCurtainUpdate.previousCurtainOpen))
                 })
             }
-
+    
             if (initialSyncProgress.scriptItem === 0) dispatch(updateInitialSyncProgress(SCRIPT_ITEM))
         }
 

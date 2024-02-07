@@ -11,6 +11,7 @@ import {
 import {
     updatePrintScript
 } from '../../actions/scriptEditor';
+import {  refreshSync } from '../../actions/localServer';
 
 //components
 import { Icon } from '../../components/Icons/Icons';
@@ -80,6 +81,11 @@ function Sidebar(props) {
         dispatch(updatePrintScript(type)),500) //introduce delay to allow modal to close before printing (otherwise modal appears in print)
     }
 
+
+    const handleRefresh = () => {
+        dispatch(refreshSync())
+        dispatch(closeSidebar())
+    }
     const linksJsx = (
 
         <>
@@ -133,13 +139,13 @@ function Sidebar(props) {
                         onToolClick={()=>handlePrint('regular')}
                     />
                     <LinksGroup
-                        header="Print Scene (Large)"
+                        header="Print (Large)"
                         iconElement={<Icon icon="glasses" />}
                         onToolClick={()=>handlePrint('large')}
                     />
                         <LinksGroup
-                            header="Refresh Script"
-                            onClick={() => { alert('Sorry not yet implemented!') }} />
+                        header="Refresh Script"
+                        onClick={() => handleRefresh() } />
                     </>
                 }
 
