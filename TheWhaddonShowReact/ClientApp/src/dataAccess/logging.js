@@ -39,7 +39,7 @@ export const MEDIA_DROPZONE = { type: NONE, location: 'Component:MediaDropzone' 
 
 export const PART = { type: NONE, location: 'Script:Part' }
 export const PART_EDITOR_ROW = { type: NONE, location: 'Component:PartEditorRow' }
-export const PART_SELECTOR_DROPDOWN = { type: DEBUG, location: 'Component:PartSelectorDropdown' }
+export const PART_SELECTOR_DROPDOWN = { type: NONE, location: 'Component:PartSelectorDropdown' }
 
 export const PERSON = { type: NONE, location: 'Script:Person' }
 export const PERSON_SELECTOR = { type: NONE, location: 'Component:PersonSelector' }
@@ -50,7 +50,7 @@ export const SCENE_SELECTOR_ROW = { type: NONE, location: 'Component:SceneSelect
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }
 export const SCRIPT_EDITOR_REDUCER = { type: NONE, location: 'Reducer:scriptEditor' }
-export const SCRIPT_EDITOR_SCENE_ORDER = { type: DEBUG, location: 'Component:ScriptEditorSceneOrder' }
+export const SCRIPT_EDITOR_SCENE_ORDER = { type: NONE, location: 'Component:ScriptEditorSceneOrder' }
 export const SCRIPT_EDITOR_TRIGGER = { type: NONE, location: 'Script:trigger' }
 export const SCRIPT_EDITOR_UNDO = { type: NONE, location: 'Script:undo' }
 export const SCRIPT_EDITOR_UTILITY = { type: NONE, location: 'Script:utility' }
