@@ -11,12 +11,12 @@ const ConfirmClick = (props) => {
 
     const [clicked, setClicked] = useState(false)
 
-    const handleClick = () => {
+    const handleClick = (e) => {
         setClicked(true)
         setTimeout(() => {
             setClicked(false)
         }, 500)
-        onClick()
+        onClick(e)
     }
 
     if (onClick === null) return children;
@@ -26,7 +26,7 @@ const ConfirmClick = (props) => {
 
         <>
             {children}
-            <div className={classnames(s[type], 'clickable', (clicked) ? s.clicked : null)} onClick={handleClick} style={style}>
+            <div className={classnames(s[type], 'clickable', (clicked) ? s.clicked : null)} onClick={(e)=>handleClick(e)} style={style}>
 
             </div>
         </>

@@ -102,7 +102,11 @@ const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
     }
 
 
-    log(logType,'scene',scene)
+    log(logType, 'scene', scene)
+
+
+    if ((scriptFilter) && sceneFilter !== true && isMobileDevice) return null
+
     return (
         <Hammer onSwipe={handleSwipe}>
             <>
