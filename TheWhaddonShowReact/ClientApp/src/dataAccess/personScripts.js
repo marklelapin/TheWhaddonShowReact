@@ -31,7 +31,10 @@ export const categorisePersons = (persons, tags = []) => {
             }
 
     })
-
+    ///sort by friendlyName
+    matchingTags = matchingTags.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName));
+    frontStage = frontStage.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName));
+    backStage = backStage.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName));
 
     return { matchingTags, frontStage, backStage };
 }
@@ -49,13 +52,13 @@ export const addFriendlyName = (persons) => {
         })
     } catch (error) {
         log(logType, 'error in addFriendlyName:', error)
-        personsWithFriendlyName =  persons;
+        personsWithFriendlyName = persons;
     }
 
-     return personsWithFriendlyName || [];
+    return personsWithFriendlyName || [];
 }
 
 
 export const getCastMembers = (persons) => {
-    return persons.filter(person => (person.isActor || person.isSinger) && person.isActive )
+    return persons.filter(person => (person.isActor || person.isSinger) && person.isActive)
 }

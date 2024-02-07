@@ -11,7 +11,6 @@ import {
 //Components
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar';
-import Widget from '../../../components/Widget';
 
 //utilities
 import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts';
@@ -39,7 +38,8 @@ function PersonSelector(props) {
 
     const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
-    const additionalCategoryPersons = additionalCategory?.persons || additionalCategory?.partIds?.map(partId => partPersons[partId]) || null
+    let additionalCategoryPersons = additionalCategory?.persons || additionalCategory?.partIds?.map(partId => partPersons[partId]) || null
+    if (additionalCategoryPersons) additionalCategoryPersons = additionalCategoryPersons.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName))
     //calcs
 
     const scenePartPersonIds = scenePartIds.map(partId => partPersons[partId]) || []

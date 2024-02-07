@@ -45,7 +45,7 @@ export const PERSON = { type: NONE, location: 'Script:Person' }
 export const PERSON_SELECTOR = { type: NONE, location: 'Component:PersonSelector' }
 export const PERSONAL_DETAILS = { type: NONE, location: 'Component:PersonalDetails' }
 export const SCENE = { type: DEBUG, location: 'Component:Scene' }
-export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
+export const SCENE_SELECTOR = { type: DEBUG, location: 'Component:SceneSelector' }
 export const SCENE_SELECTOR_ROW = { type: NONE, location: 'Component:SceneSelectorRow' }
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }
