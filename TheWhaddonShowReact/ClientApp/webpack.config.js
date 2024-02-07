@@ -4,6 +4,7 @@
 module.exports = (env, argv) => {
 
     const isDevelopment = env.WEBPACK_SERVE || false
+    const isDevelopmentBuild = (process.env.isDevBuild === 'true')
     const isProduction = !isDevelopment
 
     //Shared modules
@@ -35,17 +36,18 @@ module.exports = (env, argv) => {
     const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
 
 
-    const publicPath = isDevelopment ? '/' : paths.servedPath;
+    const publicPath = (isDevelopment || isDevelopmentBuild) ? '/' : paths.servedPath;
     // `publicUrl` is just like `publicPath`, but we will provide it to our app
     // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
     // Omit trailing slash as %PUBLIC_PATH%/xyz looks better than %PUBLIC_PATH%xyz.
-    const publicUrl = isDevelopment ? '' : publicPath.slice(0, -1);
+    const publicUrl = (isDevelopment || isDevelopmentBuild) ? '' : publicPath.slice(0, -1);
 
 
     // Source maps are resource heavy and can cause out of memory issue for large source files.
     const useSourceMap = isDevelopment ? false : false;
 
     console.log('isDevelopment', isDevelopment)
+    console.log('isDevelopmentBuild', isDevelopmentBuild)
     console.log('useSourceMap', useSourceMap)
 
     ///Additional Configuration for PRODUCTION

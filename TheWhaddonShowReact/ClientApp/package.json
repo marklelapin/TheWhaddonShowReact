@@ -5,7 +5,8 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "build": "cross-env NODE_ENV=production PUBLIC_URL='' webpack --config webpack.config.js --mode production --node-env production",
-    "testSW": "cross-env isTestSW=true webpack serve --config webpack.config.js --mode development --node-env development --progress ",
+    "devBuild": "cross-env isDevBuild=true NODE_ENV=production PUBLIC_URL='' webpack --config webpack.config.js --mode production --node-env production",
+    "testBuild": "http-server --ssl --cert ./certificates/localhost.crt --key ./certificates/localhost.key -p 60001",
     "start": "webpack serve --config webpack.config.js --mode development --node-env development --progress",
     "test": "node scripts/test.js --runInBand --verbose=false"
   },
