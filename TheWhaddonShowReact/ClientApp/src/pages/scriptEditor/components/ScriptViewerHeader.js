@@ -19,7 +19,7 @@ import { Nav } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
 import ConfirmClick from '../../../components/ConfirmClick/ConfirmClick';
-import Loader from '../../../components/Loader/Loader';
+
 //utitilites
 import { isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { setPauseSync } from '../../../actions/localServer';
@@ -176,7 +176,6 @@ function ScriptViewerHeader(props) {
                         </ >
                     }
                 </Nav >
-                <span>{loading}</span>
             </div>
             <div className={s['center-controls']}>
                 <div id="view-as-control"
