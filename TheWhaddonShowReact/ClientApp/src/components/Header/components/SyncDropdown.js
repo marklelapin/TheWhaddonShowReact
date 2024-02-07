@@ -217,7 +217,7 @@ function SyncDropdown(props) {
                     <>
                         <Icon icon="refresh"
                             id="refresh-sync"
-                            toolTip="Refresh Script"
+                            //toolTip="Refresh Script"
                             onClick={(e) => { e.stopPropagation(); dispatch(refreshSync()) }}
                         />
                     </>

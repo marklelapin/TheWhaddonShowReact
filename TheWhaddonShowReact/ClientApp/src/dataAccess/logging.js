@@ -19,7 +19,7 @@ export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 
 export const FILE_UTILS = { type: NONE, location: 'Script:fileUtils' }
 
-export const HOME = { type: DEBUG, location: 'Component:Home' }
+export const HOME = { type: NONE, location: 'Component:Home' }
 
 export const INDEX = { type: NONE, location: 'Component:INDEX' }
 export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
@@ -38,7 +38,7 @@ export const MEDIA_DROPZONE = { type: NONE, location: 'Component:MediaDropzone' 
 
 export const PART = { type: NONE, location: 'Script:Part' }
 export const PART_EDITOR_ROW = { type: NONE, location: 'Component:PartEditorRow' }
-export const PART_SELECTOR_DROPDOWN = { type: DEBUG, location: 'Component:PartSelectorDropdown' }
+export const PART_SELECTOR_DROPDOWN = { type: NONE, location: 'Component:PartSelectorDropdown' }
 
 export const PERSON = { type: NONE, location: 'Script:Person' }
 export const PERSON_SELECTOR = { type: NONE, location: 'Component:PersonSelector' }
@@ -62,7 +62,7 @@ export const SCRIPT = { type: NONE, location: 'Component:Script' }
 export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 export const SCRIPT_VIEWER_HEADER = { type: NONE, location: 'Component:ScriptViewerHeader' }
 
-export const SYNC_DROPDOWN = { type: DEBUG, location: 'Component:SyncDropdown' }
+export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 
 export const TEST = { type: NONE, location: 'Test: ' }
 export const TEST_CURTAIN = { type: NONE, location: 'Script:curtain' }
