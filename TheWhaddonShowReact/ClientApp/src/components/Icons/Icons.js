@@ -4,7 +4,10 @@ import { Tooltip } from 'reactstrap';
 import ConfirmClick from '../../components/ConfirmClick/ConfirmClick';
 
 import { isMouseAvailable } from '../../core/screenHelper';
-import {log, ICONS as logType} from '../../dataAccess/logging.js';
+import { log, ICONS as logType } from '../../dataAccess/logging.js';
+
+import classnames from 'classnames';
+
 import s from './Icons.module.scss';
 
 export function TickOrCross(value) {
@@ -29,7 +32,17 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className } = props
+    const { style = null,
+        strapColor,
+        strapBackgroundColor,
+        onClick,
+        id = null,
+        toolTip,
+        toolTipPlacement = 'top',
+        className,
+        label = null,
+        labelPlacement = 'left',
+        noMargin } = props
 
     let { icon } = props
     if (icon === null) { icon = props }
@@ -102,13 +115,21 @@ export function Icon(props) {
 
     if (id === null) {
         return (
-            <div className={s.iconContainer}>
+            <div className={classnames(s.iconContainer, (noMargin) ? s.noMargin : null, `${className}`)}>
                 <ConfirmClick type='circle' onClick={onClick}>
-
+                
+                    {label && labelPlacement==='left' && <div className="me-1">{label}</div>} 
                     <i
-                        className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
+                        className={classnames(icon,
+                            s.icon,
+                            (strapColor) ? 'text-' + strapColor : '',
+                            (strapBackgroundColor) ? 'bg-' + strapBackgroundColor : '',
+                            (onClick) ? 'clickable' : '',
+                            (noMargin) ? 'm-0' : null,
+                        )}
                         style={style}
                     />
+                    {label && labelPlacement === 'right' && <div className="ms-1">{label}</div>} 
                 </ConfirmClick>
             </div>
         )

@@ -1,37 +1,22 @@
 import React from 'react';
-import { FormGroup, Input, Label, Col } from 'reactstrap';
-
+import { Input } from 'reactstrap';
+import classnames from 'classnames';
+import s from './Forms.module.scss';
 
 function InputText(props) {
-    const { label, placeholder, onChange, id, labelCols, textCols, value = ''} = props
+    const { label, placeholder = '', onChange, id, value = '',className = '' } = props
 
     const inputId = () => {
-      return  `input-text-${id}`
+        return `input-text-${id}`
     }
 
-    if (label === undefined) {
-        return (
-            <Input type="text" placeholder={placeholder} value={value || ''}  onChange={onChange} />
-        )
-
-    } else {
-
-        return (
-            <FormGroup row className="personal-details">
-                <Label for={inputId} md={labelCols} className="text-md-right">
-                    {label}
-                </Label>
-                <Col md={textCols}>
-                    <Input type="text" id={inputId} value={value || ''} onChange={onChange} placeholder={placeholder}/>
-                </Col>
-            </FormGroup>
-        )
-    }
-
-
-
-
-
+    return (
+        <div className={classnames(s.inputText, `${ className }`)} >
+            {label && <div className={s.label}>{`${label}: `}</div>}
+            <Input className={s.input} type="text" id={inputId} value={value || ''} onChange={onChange} placeholder={placeholder} />
+        </div>
+    )
 }
+
 
 export default InputText

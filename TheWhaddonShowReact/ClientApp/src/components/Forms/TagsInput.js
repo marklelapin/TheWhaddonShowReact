@@ -1,6 +1,6 @@
 import React from 'react';
 import TagButton from './TagButton';
-
+import s from './Forms.module.scss';
 function TagsInput(props) {
 
     let { tags = [], tagOptions, strapColor, onClickRemove, onClickAdd, id, readOnly = false } = props
@@ -17,9 +17,9 @@ function TagsInput(props) {
 
         }
 
-        return (
+    return (
 
-            <div key={dropdownId()} className="tags-input" >
+        <div key={dropdownId()} className={s.tagsInput} >
 
                 {tags.map((tag) => {
                     return <TagButton key={`${dropdownId()}-${tag}`} tag={tag} strapColor={strapColor} onClickRemove={onClickRemove} onClickAdd={onClickAdd} readOnly={readOnly} />
