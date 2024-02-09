@@ -32,9 +32,9 @@ export const categorisePersons = (persons, tags = []) => {
 
     })
     ///sort by friendlyName
-    matchingTags = matchingTags.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName));
-    frontStage = frontStage.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName));
-    backStage = backStage.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName));
+    matchingTags = matchingTags.sort((a, b) => (a.friendlyName || '').localeCompare(b.friendlyName || ''));
+    frontStage = frontStage.sort((a, b) => (a.friendlyName || '').localeCompare(b.friendlyName || ''));
+    backStage = backStage.sort((a, b) => (a.friendlyName || '').localeCompare(b.friendlyName || ''));
 
     return { matchingTags, frontStage, backStage };
 }
