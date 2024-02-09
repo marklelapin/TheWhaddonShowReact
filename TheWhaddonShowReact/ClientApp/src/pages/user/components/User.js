@@ -16,7 +16,7 @@ import {
 
 import { prepareUpdate } from '../../../dataAccess/localServerUtils'
 import '../../../index.css'
-
+import s from '../Users.module.scss';
 import { addUpdates } from '../../../actions/localServer';
 import { PERSON } from '../../../dataAccess/localServerModels';
 import { log, USERS as logType } from '../../../dataAccess/logging'
@@ -213,17 +213,17 @@ function User(props) {
                     <Modal isOpen={true} toggle={closeModal}>
                         <ModalHeader toggle={closeModal}>Edit User</ModalHeader>
                         <ModalBody className="bg-white">
-
-                            <div id="user-modal" className="draft-border">
+                            <div className={s.modalContainer}>
+<div id="user-modal-body" className={s.modalBody}>
                                 {personalDetails('table')}
                                 {roles('table', true)}
                                 {tags('table', true)}
+                                {update('table', true)}
                             </div>
 
+                            </div>
+                            
                         </ModalBody>
-                        <ModalFooter>
-                            {update('table', true)}
-                        </ModalFooter>
                     </Modal>)}
 
             </>

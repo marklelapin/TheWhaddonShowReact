@@ -91,9 +91,13 @@ function Update(props) {
                         <div className='me-2'>loginLink:</div>
                         <Icon icon="search" onClick={onClickGetLoginLink} label='view' className='me-2' noMargin />
                         <Icon icon="paper-plane" onClick={onClickSendLoginLink} label='send' className='me-2' noMargin/>
-                        {user.msalLink && <div className={classnames(s.linked, 'ms-2', 'clickable')} onClick={(e) => toggleShowSub(e)}><Icon icon='tick' strapColor='success' noMargin/></div>}
+                        <div className={classnames(s.linked, 'ms-2', 'clickable')} onClick={(e) => toggleShowSub(e)}>
+                            {user.msalLink ? <Icon icon='tick' strapColor='success' noMargin /> : <Icon icon='add' strapColor='warning' noMargin />}
+                          
+                            </div>
+
                     </div>
-                    {user.msalLink && showSub &&
+                    { showSub &&
                         <div className={s.msalLinkSection}>
                             <InputText className={s.msalLink} label='sub' value={user.msalLink} onChange={(e) => onChange('msalLink', e.target.value)}></InputText>
                             <Icon icon="cross" onClick={onClickRemoveMsalLink} />
