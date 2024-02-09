@@ -15,7 +15,7 @@ function TagButton(props) {
                     size="xs"
                     outline
                 >
-                    <div className={s.tag}>Add Tag</div>
+                    <div className={s.tag}>add</div>
                 </DropdownToggle >
                 <DropdownMenu className={s.dropdown}>
 

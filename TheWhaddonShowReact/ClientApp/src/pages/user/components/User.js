@@ -57,7 +57,7 @@ function User(props) {
 
     useEffect(() => {
         setUser(storedUser)
-    },[storedUser])
+    }, [storedUser])
 
 
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
@@ -67,7 +67,7 @@ function User(props) {
 
     const handleClickUpdate = async () => {
 
-        const userUpdate = (user.isActive === false) ? {...user,msalLink: null } : user
+        const userUpdate = (user.isActive === false) ? { ...user, msalLink: null } : user
         const preparedUpdate = prepareUpdate(userUpdate)
         dispatch(addUpdates(preparedUpdate, PERSON))  //saves the user to the redux store where it will be synced separately.
         setUserChanged(false)
@@ -109,6 +109,8 @@ function User(props) {
             case 'addTag': setUser({ ...user, tags: [...user.tags, value] })
                 break;
             case 'removeTag': setUser({ ...user, tags: user.tags.filter((tagOption) => tagOption !== value) })
+                break;
+            case 'msalLink': setUser({ ...user, msalLink: value })
                 break;
 
             default:

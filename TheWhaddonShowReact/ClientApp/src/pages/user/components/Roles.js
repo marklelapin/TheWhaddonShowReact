@@ -13,12 +13,12 @@ function Roles(props) {
 
         return (
             <>
-                <th className={classnames(s.checkboxTitle, className)}>Actor</th>
-                <th className={classnames(s.checkboxTitle, className)}>Singer</th>
-                <th className={classnames(s.checkboxTitle, className)}>Writer</th>
-                <th className={classnames(s.checkboxTitle, className)}>Band</th>
-                <th className={classnames(s.checkboxTitle, className)}>Technical</th>
-                <th className={classnames(s.checkboxTitle, className)}>Admin</th>
+                <th className={classnames(s.centerHorizontally, className)}>Actor</th>
+                <th className={classnames(s.centerHorizontally, className)}>Singer</th>
+                <th className={classnames(s.centerHorizontally, className)}>Writer</th>
+                <th className={classnames(s.centerHorizontally, className)}>Band</th>
+                <th className={classnames(s.centerHorizontally, className)}>Technical</th>
+                <th className={classnames(s.centerHorizontally, className)}>Admin</th>
             </>
         )
     }
@@ -29,33 +29,33 @@ function Roles(props) {
 
         return (
             <>
-                <td className={classnames(s.checkbox, className)} >
-                    <div className={s.checkBoxContainer}>
+                <td className={classnames(s.center, className)} >
+                    <div className={s.checkboxContainer}>
                         <CheckBox id={`isActor-${id}`} strapColor={strapColor} checked={isActor} onChange={(e) => onChange('isActor', e.target.checked)} centered />
                     </div>
                 </td>
-                <td className={classnames(s.checkbox, className)}>
-                    <div className={s.checkBoxContainer}>
-                        <CheckBox id={`isSinger-${id}`} strapColor={strapColor} checked={isSinger} onChange={(e) => onChange('isSinger', e.target.checked)} centered />
-                    </div>
+                <td className={classnames(s.center, className)}>
+                    <div className={s.checkboxContainer}>
+                            <CheckBox id={`isSinger-${id}`} strapColor={strapColor} checked={isSinger} onChange={(e) => onChange('isSinger', e.target.checked)} centered />
+                </div>
                 </td>
-                <td className={classnames(s.checkbox, className)}>
-                    <div className={s.checkBoxContainer}>
+                <td className={classnames(s.center, className)}>
+                    <div className={s.checkboxContainer}>
                         <CheckBox id={`isWriter-${id}`} strapColor={strapColor} checked={isWriter} onChange={(e) => onChange('isWriter', e.target.checked)} centered />
                     </div>
                 </td>
-                <td className={classnames(s.checkbox, className)}>
-                    <div className={s.checkBoxContainer}>
+                <td className={classnames(s.center, className)}>
+                    <div className={s.checkboxContainer}>
                         <CheckBox id={`isBand-${id}`} strapColor={strapColor} checked={isBand} onChange={(e) => onChange('isBand', e.target.checked)} centered />
                     </div>
                 </td>
-                <td className={classnames(s.checkbox, className)}>
-                    <div className={s.checkBoxContainer}>
+                <td className={classnames(s.center, className)}>
+                    <div className={s.checkboxContainer}>
                         <CheckBox id={`isTechnical-${id}`} strapColor={strapColor} checked={isTechnical} onChange={(e) => onChange('isTechnical', e.target.checked)} centered />
                     </div>
                 </td>
-                <td className={classnames(s.checkbox, className)}>
-                    <div className={s.checkBoxContainer}>
+                <td className={classnames(s.center, className)}>
+                    <div className={s.checkboxContainer}>
                         <CheckBox id={`isAdmin-${id}`} strapColor={strapColor} checked={isAdmin} onChange={(e) => onChange('isAdmin', e.target.checked)} centered />
                     </div>
                 </td>

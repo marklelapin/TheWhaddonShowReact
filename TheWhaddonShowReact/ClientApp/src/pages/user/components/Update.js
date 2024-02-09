@@ -1,6 +1,6 @@
 
 import React from 'react';
-import {useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import CheckBox from '../../../components/Forms/CheckBox';
 import { Button } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons';
@@ -8,47 +8,20 @@ import { Icon } from '../../../components/Icons/Icons';
 import { prepareUpdate } from '../../../dataAccess/localServerUtils'
 import { addUpdates } from '../../../actions/localServer';
 import { PERSON } from '../../../dataAccess/localServerModels';
-
+import InputText from '../../../components/Forms/InputText';
 import axios from 'axios';
 import config from '../../../config';
-
+import classnames from 'classnames';
 import { log, USER_UPDATE as logType } from '../../../dataAccess/logging';
 import s from '../Users.module.scss';
 function Update(props) {
 
-    const { user, type, userChanged, onChange, className, onClickUpdate, isNew } = props
+    const { user, type, userChanged, onChange, className, onClickUpdate, onClickCancel, isNew } = props
 
     const dispatch = useDispatch()
     /*  const {userChanged,newUser } = props*/
 
-
-    //Functionality for both table and modal.
-
-    const saveButtonConfig = () => {
-
-        if (!userChanged) {
-            return {
-                disabled: true,
-                text: 'No changes',
-                color: 'tertiary'
-            }
-        }
-        if (isNew === true) {
-            return {
-                disabled: false,
-                text: 'Add User',
-                color: 'danger'
-            }
-        }
-
-        return {
-            disabled: false,
-            text: 'Update',
-            color: 'danger'
-        }
-    }
-
-
+    const [showSub, setShowSub] = React.useState(false)
 
     const onClickGetLoginLink = () => {
         alert('https://www.thewhaddonshow.org/app/loginlink?id=' + user.id)
@@ -66,7 +39,6 @@ function Update(props) {
                 alert('Login link sent to ' + user.email)
             } else {
                 alert('Failed to send login link to ' + user.email + '. See console for more information.')
-                console.error("Error sending login link: " + error.message)
             }
         } catch (error) {
             console.error("Error sending login link: " + error.message)
@@ -89,9 +61,11 @@ function Update(props) {
         }
     }
 
+    const toggleShowSub = (e) => {
+        e.preventDefault();
 
-
-
+        setShowSub(!showSub)
+    }
 
     const headers = () => {
         return (<th className={className}>Active</th>)
@@ -99,49 +73,62 @@ function Update(props) {
 
     const row = () => {
 
-        const button = saveButtonConfig();
-
-
         return (
-            <td className={className}>
-                < div className="user-update">
-
-                    <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={(e) => onChange('isActive', e.target.checked)} />
-                    <Button id="save" color={button.color} disabled={button.disabled} onClick={onClickUpdate}>{button.text}</Button></div>
-                    <div className={s.loginSection}>
-                    <div className={s.msalLink}>{user.msalLink ? `sub: ${user.msalLink.substring(0, 5)}...` : 'sub: none'}</div>
-                        loginLink:
-                        {user.msalLink && <Icon icon="cross" onClick={onClickRemoveMsalLink} />}
-                    <Icon icon="search" onClick={onClickGetLoginLink} />
-                        <Icon icon="paper-plane" onClick={onClickSendLoginLink} />
+            <td className={classnames(s.center, className,s.updateCell)}>
+                <div className={s.updateContainer} >
+                    < div className={s.updateSection}>
+                        <div className={s.isActive}>isActive:</div>
+                        <div className={s.isActiveCheckbox}>
+                            <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={(e) => onChange('isActive', e.target.checked)} />
+                        </div>
+                        <div className={s.updateButtons}>
+                            {(userChanged && !isNew) && <Button id="update" size='xs' color={'danger'} onClick={onClickUpdate}>Update</Button>}
+                            {isNew && <Button id="add" size='xs' color={'danger'} onClick={onClickUpdate}>Add User</Button>}
+                            {(isNew || userChanged) && <Button id="cancel" size='xs' color={'secondary'} onClick={onClickCancel}>Cancel</Button>}
+                        </div>
                     </div>
+                    <div className={s.loginSection}>
+                        <div className='me-2'>loginLink:</div>
+                        <Icon icon="search" onClick={onClickGetLoginLink} label='view' className='me-2' noMargin />
+                        <Icon icon="paper-plane" onClick={onClickSendLoginLink} label='send' className='me-2' noMargin/>
+                        {user.msalLink && <div className={classnames(s.linked, 'ms-2', 'clickable')} onClick={(e) => toggleShowSub(e)}><Icon icon='tick' strapColor='success' noMargin/></div>}
+                    </div>
+                    {user.msalLink && showSub &&
+                        <div className={s.msalLinkSection}>
+                            <InputText className={s.msalLink} label='sub' value={user.msalLink} onChange={(e) => onChange('msalLink', e.target.value)}></InputText>
+                            <Icon icon="cross" onClick={onClickRemoveMsalLink} />
+                        </div>
+                    }
+
+                </div>
+
             </td >
         )
 
-}
+    }
 
 
-if (type === "headers") return headers();
-if (type === "row") return row();
-if (type === "table") {
+    if (type === "headers") return headers();
+    if (type === "row") return row();
+    if (type === "table") {
 
-    return (
-        <table>
-            <thead>
-                <tr>
-                    {headers()}
-                </tr>
+        return (
+            <table>
+                <thead>
+                    <tr>
+                        {headers()}
+                    </tr>
 
-            </thead>
-            <tbody>
-                <tr>
-                    {row()}
-                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {row()}
+                    </tr>
 
-            </tbody>
-        </table>
-    )
-}
+                </tbody>
+            </table>
+        )
+    }
 
 
 }

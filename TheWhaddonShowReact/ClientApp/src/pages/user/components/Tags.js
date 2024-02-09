@@ -1,11 +1,13 @@
 import React from 'react';
 
 import TagsInput from '../../../components/Forms/TagsInput';
+
+import classnames from 'classnames'
 import s from '../Users.module.scss';
 
 function Update(props) {
 
-    const {className, user, tagOptions, onChange, type } = props
+    const { className, user, tagOptions, onChange, type } = props
 
 
     const headers = () => {
@@ -15,10 +17,12 @@ function Update(props) {
     const row = () => {
         return (
 
-            <td className={className}>
-                <TagsInput tags={user.tags} strapColor="primary" tagOptions={tagOptions}
-                    onClickAdd={(tag)=>onChange('addTag',tag)}
-                    onClickRemove={(tag)=>onChange('removeTag',tag)} />
+            <td className={classnames(s.center, className)}>
+                <div className={s.tagsContainer}>
+                    <TagsInput tags={user.tags} strapColor="primary" tagOptions={tagOptions}
+                        onClickAdd={(tag) => onChange('addTag', tag)}
+                        onClickRemove={(tag) => onChange('removeTag', tag)} />
+                </div>
             </td>
         )
     }
@@ -43,7 +47,7 @@ function Update(props) {
         </table>
 
     )
-   
+
 }
 
 export default Update

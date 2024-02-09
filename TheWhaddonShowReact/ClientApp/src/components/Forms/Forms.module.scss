@@ -1,5 +1,7 @@
 ﻿.tagsInput {
     display: flex;
+    flex-direction: row;
+    align-items: center;
     z-index: 2;
 }
 
@@ -25,5 +27,19 @@
 
     .dropdown {
         margin: 2px;
+    }
+}
+
+.inputText {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    .label {
+       flex: auto;
+    }
+    
+    .input {
+        flex: auto;
     }
 }

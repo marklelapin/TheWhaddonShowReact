@@ -32,7 +32,17 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className, noMargin } = props
+    const { style = null,
+        strapColor,
+        strapBackgroundColor,
+        onClick,
+        id = null,
+        toolTip,
+        toolTipPlacement = 'top',
+        className,
+        label = null,
+        labelPlacement = 'left',
+        noMargin } = props
 
     let { icon } = props
     if (icon === null) { icon = props }
@@ -105,9 +115,10 @@ export function Icon(props) {
 
     if (id === null) {
         return (
-            <div className={s.iconContainer,(noMargin) ? s.noMargin : null}>
+            <div className={classnames(s.iconContainer, (noMargin) ? s.noMargin : null, `${className}`)}>
                 <ConfirmClick type='circle' onClick={onClick}>
-
+                
+                    {label && labelPlacement==='left' && <div className="me-1">{label}</div>} 
                     <i
                         className={classnames(icon,
                             s.icon,
@@ -115,10 +126,10 @@ export function Icon(props) {
                             (strapBackgroundColor) ? 'bg-' + strapBackgroundColor : '',
                             (onClick) ? 'clickable' : '',
                             (noMargin) ? 'm-0' : null,
-                            className
                         )}
                         style={style}
                     />
+                    {label && labelPlacement === 'right' && <div className="ms-1">{label}</div>} 
                 </ConfirmClick>
             </div>
         )
