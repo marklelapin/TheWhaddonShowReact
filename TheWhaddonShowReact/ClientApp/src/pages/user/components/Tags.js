@@ -1,6 +1,7 @@
 import React from 'react';
 
 import TagsInput from '../../../components/Forms/TagsInput';
+import s from '../Users.module.scss';
 
 function Update(props) {
 

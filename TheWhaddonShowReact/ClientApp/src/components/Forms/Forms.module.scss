@@ -1,0 +1,29 @@
+﻿.tagsInput {
+    display: flex;
+    z-index: 2;
+}
+
+
+.tagButton {
+    margin-right: 3px;
+
+    button {
+        display: flex;
+        align-items: center;
+
+        .tag {
+            width: auto;
+            margin-right: 3px;
+        }
+
+
+        .removeTag {
+            margin-left: 3px;
+        }
+    }
+
+
+    .dropdown {
+        margin: 2px;
+    }
+}

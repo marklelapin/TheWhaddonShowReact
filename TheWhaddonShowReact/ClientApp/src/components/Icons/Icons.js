@@ -4,7 +4,10 @@ import { Tooltip } from 'reactstrap';
 import ConfirmClick from '../../components/ConfirmClick/ConfirmClick';
 
 import { isMouseAvailable } from '../../core/screenHelper';
-import {log, ICONS as logType} from '../../dataAccess/logging.js';
+import { log, ICONS as logType } from '../../dataAccess/logging.js';
+
+import classnames from 'classnames';
+
 import s from './Icons.module.scss';
 
 export function TickOrCross(value) {
@@ -29,7 +32,7 @@ export function TickOrCross(value) {
 
 export function Icon(props) {
 
-    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className } = props
+    const { style = null, strapColor, strapBackgroundColor, onClick, id = null, toolTip, toolTipPlacement = 'top', className, noMargin } = props
 
     let { icon } = props
     if (icon === null) { icon = props }
@@ -102,11 +105,18 @@ export function Icon(props) {
 
     if (id === null) {
         return (
-            <div className={s.iconContainer}>
+            <div className={s.iconContainer,(noMargin) ? s.noMargin : null}>
                 <ConfirmClick type='circle' onClick={onClick}>
 
                     <i
-                        className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
+                        className={classnames(icon,
+                            s.icon,
+                            (strapColor) ? 'text-' + strapColor : '',
+                            (strapBackgroundColor) ? 'bg-' + strapBackgroundColor : '',
+                            (onClick) ? 'clickable' : '',
+                            (noMargin) ? 'm-0' : null,
+                            className
+                        )}
                         style={style}
                     />
                 </ConfirmClick>
