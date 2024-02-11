@@ -32,7 +32,6 @@ export const Layout = (props) => {
     const sidebarStatic = useSelector(state => state.navigation.sidebarStatic);
     const sidebarOpened = useSelector(state => state.navigation.sidebarOpened);
     const isMobileDevice = useSelector(state => state.device.isMobileDevice);
-    const currentUser = useSelector(state => state.user.currentUser)
 
 
     const isModalSidebar = isMobileDevice

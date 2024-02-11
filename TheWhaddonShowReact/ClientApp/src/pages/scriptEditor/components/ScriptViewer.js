@@ -6,7 +6,7 @@ import { updateMaxScriptItemTextWidth, updateScriptItemTextWidth, updateShowBool
 
 //Components
 import Scene from './Scene'
-import PersonSelector from './PersonSelector'
+
 import ScriptViewerHeader from './ScriptViewerHeader';
 import Loader from '../../../components/Loader/Loader';
 import { Progress } from 'reactstrap';
@@ -32,8 +32,6 @@ function ScriptViewer(props) {
     const defaultShowComments = useSelector(state => state.scriptEditor.showComments)
     const defaultShowSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
-    const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig) || null
-    const isPersonSelectorOpen = (personSelectorConfig !== null)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
@@ -169,9 +167,7 @@ function ScriptViewer(props) {
                 }
             </div>
 
-            {(isPersonSelectorOpen) &&
-                <PersonSelector viewAs />
-            }
+           
 
 
 

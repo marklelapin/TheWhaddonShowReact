@@ -19,7 +19,7 @@ import { Nav } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
 import ConfirmClick from '../../../components/ConfirmClick/ConfirmClick';
-
+import PersonSelector from './PersonSelector'
 //utitilites
 import { isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
 import { setPauseSync } from '../../../actions/localServer';
@@ -106,9 +106,6 @@ function ScriptViewerHeader(props) {
 
 
 
-
-
-
     const toggleShowComments = () => {
         const newShowComments = !defaultShowComments
         const newShowSceneSelector = (newShowComments === false) ? false : defaultShowSceneSelector
@@ -125,7 +122,6 @@ function ScriptViewerHeader(props) {
 
     const togglePersonSelector = () => {
         if (personSelectorConfig) {
-
             dispatch(updatePersonSelectorConfig(null))
         } else {
             dispatch(updatePersonSelectorConfig({ additionalCategory: { name: 'Parts', partIds: sceneInFocus?.partIds || [] } }))
@@ -220,7 +216,9 @@ function ScriptViewerHeader(props) {
                 }
 
             </div>
-           
+            {(personSelectorConfig) &&
+                <PersonSelector viewAs />
+            }
 
         </div >
     )

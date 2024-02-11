@@ -1,6 +1,6 @@
 //import Login from '../pages/auth/login';
 
-import React, { useLocation } from 'react';
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from '../pages/home/Home';
 import Script from '../pages/scriptEditor/Script';
