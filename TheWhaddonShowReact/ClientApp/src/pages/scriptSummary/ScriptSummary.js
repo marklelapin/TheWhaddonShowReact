@@ -53,7 +53,8 @@ const ScriptSummary = (props) => {
     const currentScriptItems = useSelector((state) => state.scriptEditor.currentScriptItems)
 
     const currentUser = useSelector(state => state.user.currentUser)
-    const readOnly = isScriptReadOnly(currentUser)
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
 
     const isSceneDraggable = (allowSceneOrderChanges && !readOnly)
     const isPartDraggable = (!readOnly)

@@ -2,7 +2,7 @@
 import classnames from 'classnames';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, updateScriptFilter } from '../../../actions/scriptEditor';
+import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, updateScriptFilter, updateSceneInFocus } from '../../../actions/scriptEditor';
 
 //Components
 
@@ -131,10 +131,12 @@ function SceneSelector(props) {
                 } else if (currentScriptFilter === null || currentScriptFilter.includes(id)) {
                     dispatch(updateMovementInProgress(true))
                     moveFocusToId(id, END, true)
+                    dispatch(updateSceneInFocus(showOrder.find(item => item.id === id)))
                 } else {
                     handleUpdateScriptFilter()
                     dispatch(updateMovementInProgress(true))
                     moveFocusToId(id, END, true)
+                    dispatch(updateSceneInFocus(showOrder.find(item=>item.id === id)))
                 }
                 break;
             default:
@@ -176,6 +178,7 @@ function SceneSelector(props) {
                             beingDragged={beingDragged}
                             isInFocus={scene.id === sceneInFocus}
                             highlight={scene.isViewAsPartPerson}
+                            isMobileDevice={isMobileDevice}
 
                         />
 

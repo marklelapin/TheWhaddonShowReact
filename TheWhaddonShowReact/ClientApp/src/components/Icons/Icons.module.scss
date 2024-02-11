@@ -1,10 +1,20 @@
 @import '../../styles/app';
 
 
+.iconContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
 
-.icon {
-    font-size: 18px !important;
-    @media only screen and (max-width: breakpoint-max(sm)) {
-        font-size: 26px !important;
+    .icon {
+        text-align: center;
+        font-size: 18px !important;
+
+        @media only screen and (max-width: breakpoint-max(sm)) {
+            font-size: 26px !important;
+        }
     }
 }

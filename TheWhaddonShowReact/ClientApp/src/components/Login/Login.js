@@ -284,7 +284,10 @@ function Login() {
                                 }
                                 {authenticatedUser &&
                                     <div className={s.login}>
-                                        <h3>Authenticated!</h3><Icon icon="tick" strapColor="success" />
+                                        <h3>Authenticated!</h3>
+                                        <div className={s.loginTick}>
+                                            <Icon icon="tick" strapColor="success" />
+                                        </div>
                                     </div>
                                 }
                             </AuthenticatedTemplate>

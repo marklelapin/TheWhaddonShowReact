@@ -11,7 +11,6 @@ import {
 //Components
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar';
-import Widget from '../../../components/Widget';
 
 //utilities
 import { categorisePersons, addFriendlyName } from '../../../dataAccess/personScripts';
@@ -26,7 +25,7 @@ function PersonSelector(props) {
     const dispatch = useDispatch();
 
     //props 
-    const { onSelect = null, closeModal, viewAs } = props;
+    const { onSelect = null, closeModal, viewAs, backStage = true, frontStage = true } = props;
 
 
     //Redux state
@@ -39,7 +38,8 @@ function PersonSelector(props) {
 
     const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
-    const additionalCategoryPersons = additionalCategory?.persons || additionalCategory?.partIds?.map(partId=>partPersons[partId]) || null
+    let additionalCategoryPersons = additionalCategory?.persons || additionalCategory?.partIds?.map(partId => partPersons[partId]) || null
+    if (additionalCategoryPersons) additionalCategoryPersons = additionalCategoryPersons.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName))
     //calcs
 
     const scenePartPersonIds = scenePartIds.map(partId => partPersons[partId]) || []
@@ -79,10 +79,10 @@ function PersonSelector(props) {
         const { id, friendlyName, name } = person;
 
         return (
-            <div key={id} className="person-button" onClick={() => handleClick(person)} >
-                    <Avatar onClick={() => handleClick(person)} person={person} avatarInitials={(person.avatarInitials) || null} />
-                    <span >{friendlyName || name}</span>
-                </div>
+            <div key={id} className={s['person-selector-button']} onClick={() => handleClick(person)} >
+                <Avatar onClick={() => handleClick(person)} person={person} avatarInitials={(person.avatarInitials) || null} />
+                <span >{friendlyName || name}</span>
+            </div>
 
         )
 
@@ -96,18 +96,11 @@ function PersonSelector(props) {
             <ModalBody className="bg-white">
 
 
-                <Widget
-                    widgetType="news"
-                    id="news-widget"
-                    title={<div><h6> Persons <span className="badge badge-pill badge-success">17</span></h6>
-                        <span className="text-muted">select a person from the list below</span>
-                    </div>}
-                    bodyClass={"pt-3 px-0 py-0"}
-                >
+                <div className={s['person-selector-body']} >
                     {(additionalCategory && additionalCategoryPersons) &&
                         <>
                             <h5>{additionalCategory.name.toUpperCase()}</h5>
-                            <div className="select-person-section">
+                            <div className={s['person-selector-section']}>
                                 {additionalCategoryPersons.map(person => {
                                     return personJSX(person)
                                 })}
@@ -122,7 +115,7 @@ function PersonSelector(props) {
 
                         <>
                             <h5>MATCHING TAGS</h5>
-                            <div className="select-person-section">
+                            <div className={s['person-selector-section']}>
 
                                 {(categorisedPersons.matchingTags.length === 0) && <p>No matching persons</p>}
                                 {categorisedPersons.matchingTags.map(person => {
@@ -134,35 +127,48 @@ function PersonSelector(props) {
                             </div>
                         </>
                     }
-                    <h5>FRONT STAGE</h5>
-                    <div className="select-person-section">
+                    {frontStage &&
 
-                        {categorisedPersons.frontStage.map(person => {
+                        <>
+                            <h5>FRONT STAGE</h5>
+                            <div className={s['person-selector-section']}>
 
-                            return personJSX(person)
+                                {categorisedPersons.frontStage.map(person => {
 
-                        })}
+                                    return personJSX(person)
 
-                    </div>
-                    <h5>BACK STAGE</h5>
-                    <div className="select-person-section">
+                                })}
 
-                        {categorisedPersons.backStage.map(person => {
+                            </div>
+                        </>}
 
-                            return personJSX(person)
+                    {backStage &&
+                        <>
+                            <h5>BACK STAGE</h5>
+                            <div className={s['person-selector-section']}>
 
-                        })}
+                                {categorisedPersons.backStage.map(person => {
 
-                    </div>
+                                    return personJSX(person)
 
-                </Widget>
+                                })}
+
+                            </div>
+                        </>
+
+                    }
+
+
+                </div>
 
             </ModalBody>
             <ModalFooter>
+                <div className={s['person-selector-section']}>
                     {personJSX(deselectPerson)}
-                    <div key={'cancel-person-selector-button'} className="person-button" >
+                    <div key={'cancel-person-selector-button'} className={s['person-selector-button']} >
                         <Button onClick={() => dispatch(updatePersonSelectorConfig(null))}>Cancel</Button>
                     </div>
+                </div>
             </ModalFooter>
         </Modal >
     )

@@ -1,8 +1,10 @@
 ﻿import React, { useState } from 'react';
 
 import { Tooltip } from 'reactstrap';
-import {isMouseAvailable} from '../../core/screenHelper';
+import ConfirmClick from '../../components/ConfirmClick/ConfirmClick';
 
+import { isMouseAvailable } from '../../core/screenHelper';
+import {log, ICONS as logType} from '../../dataAccess/logging.js';
 import s from './Icons.module.scss';
 
 export function TickOrCross(value) {
@@ -82,7 +84,7 @@ export function Icon(props) {
         "gallery": 'fa-solid fa-panorama',
         "casting": 'fa-solid fa-person-military-to-person',
         "glasses": 'fa-solid fa-glasses',
-"paper-plane": 'fa-solid fa-paper-plane',
+        "paper-plane": 'fa-solid fa-paper-plane',
     };
 
 
@@ -96,23 +98,38 @@ export function Icon(props) {
     const toggleToolTip = (id) => {
         setToolTipOpen(toolTipOpen === id ? null : id)
     }
+    log(logType, 'props', { props,onClick })
 
     if (id === null) {
-        return <i
-            className={`m-1 ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
-            style={style}
-            onClick={onClick} />
+        return (
+            <div className={s.iconContainer}>
+                <ConfirmClick type='circle' onClick={onClick}>
+
+                    <i
+                        className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''}   ${(onClick) ? 'clickable' : ''} ${className}`}
+                        style={style}
+                    />
+                </ConfirmClick>
+            </div>
+        )
+
     }
     if (id !== null) {
-        return <>
-            <i
-                id={id}
-                className={`m-1  ${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
-                style={style}
-                onClick={onClick} />
 
-            {toolTip && isMouseAvailable() && <Tooltip placement={toolTipPlacement} isOpen={toolTipOpen === id} toggle={() => toggleToolTip(id)} target={id} delay={toolTipDelay}>{toolTip}</Tooltip>}
-        </>
+        return (
+            <div className={s.iconContainer}>
+                <ConfirmClick type='circle' onClick={onClick}>
+                    <i
+                        id={id}
+                        className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
+                        style={style}
+                    />
+
+                    {toolTip && isMouseAvailable() && <Tooltip placement={toolTipPlacement} isOpen={toolTipOpen === id} toggle={() => toggleToolTip(id)} target={id} delay={toolTipDelay}>{toolTip}</Tooltip>}
+
+                </ConfirmClick>
+            </div>
+        )
 
     }
 

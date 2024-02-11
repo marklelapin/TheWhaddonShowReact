@@ -15,9 +15,10 @@ import {
 } from '../../../actions/navigation';
 
 //Components
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Nav } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
+import ConfirmClick from '../../../components/ConfirmClick/ConfirmClick';
 
 //utitilites
 import { isScreenLargerThan, isScreenSmallerThan } from '../../../core/screenHelper';
@@ -25,18 +26,22 @@ import { setPauseSync } from '../../../actions/localServer';
 import { log, SCRIPT_VIEWER_HEADER as logType } from '../../../dataAccess/logging';
 import { getShowBools } from '../scripts/layout';
 import classnames from 'classnames';
+
+//Constants
+import {CHAT,CLASSIC } from '../scripts/layout';
+
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
 import s from '../Script.module.scss';
 import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 
-function ScriptViewer() {
+function ScriptViewerHeader(props) {
+
+    const { loading, setLoading } = props
 
     //utils
     const dispatch = useDispatch();
-    const CLASSIC = 'classic'
-    const CHAT = 'chat'
 
     //props
 
@@ -55,6 +60,7 @@ function ScriptViewer() {
     console.log('scriptViewerProps', { printScript, viewStyle })
     const readOnly = isScriptReadOnly(currentUser)
 
+
     //This section allows users with write access to print the script as read only
     //The textareas used for editing don't print well so they are made div in read only mode.Event Handlers
     //It also allows print to be triggered from modal.
@@ -63,6 +69,22 @@ function ScriptViewer() {
         handlePrintSetup()
 
     }, [printScript, viewStyle, dispatch]) //eslint-disable-line react-hooks/exhaustive-deps
+
+    //useEffect(() => {
+    //    setLoading(false)
+    //}, [viewStyle])
+
+    //useEffect(() => {
+    //    if (loading !== false && loading !== true) {
+    //        //loading = text of new viewStyle
+    //        dispatch(updateViewStyle(loading))
+    //    }
+    //}, [loading]) //eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleNavLink = (type) => {
+        setLoading(type)
+    }
+
 
 
     const handlePrintSetup = () => {
@@ -76,7 +98,7 @@ function ScriptViewer() {
         }
         if (printScript !== false && viewStyle === CHAT) {
             log(logType, 'Switching to classic mode.')
-            dispatch(updateViewStyle(CLASSIC))
+            setLoading(CLASSIC)
         }
     }
 
@@ -85,9 +107,7 @@ function ScriptViewer() {
 
 
 
-    const handleNavLink = (type) => {
-        dispatch(updateViewStyle(type))
-    }
+
 
     const toggleShowComments = () => {
         const newShowComments = !defaultShowComments
@@ -114,7 +134,6 @@ function ScriptViewer() {
     }
 
     const handleClickPrint = () => {
-        console.log('hello handleClickPrint')
         dispatch(updatePrintScript(true))
 
     }
@@ -131,34 +150,38 @@ function ScriptViewer() {
                 <Nav className="bg-light" tabs>
 
                     {(!isMobileDevice || viewStyle === CLASSIC) &&
-                        <NavItem>
-                            <NavLink id="chat-mode"
+                        <>
+                            <div id="chat-mode"
                                 className={`${s['script-viewer-navlink']} ${(viewStyle === CHAT) ? 'active' : ''}`}
-                                onClick={() => handleNavLink(CHAT)}
                             >
-                                <span>Chat</span><Icon icon="chat-mode" />
-                            </NavLink>
+                                <ConfirmClick type='rectangle' onClick={() => handleNavLink(CHAT)}>
+                                    <span>Chat</span><Icon icon="chat-mode" />
+                                </ConfirmClick>
+                            </div>
                             <QuickToolTip id="chat-mode" tip="Fun, great on mobile and shows curtain more clearly." placement="top" />
-                        </NavItem>
+                        </>
+
+
                     }
                     {(!isMobileDevice || viewStyle === CHAT) &&
-                        <NavItem>
-                            <NavLink id="classic-mode"
+                        <>
+                            <div id="classic-mode"
                                 className={`${s['script-viewer-navlink']} ${isScreenSmallerThan('xl') ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? 'active' : ''}`}
-                                onClick={() => handleNavLink(CLASSIC)}>
-                                <span>Classic</span><Icon icon="classic-mode" />
-                            </NavLink>
+                            >
+                                <ConfirmClick type='rectangle' onClick={() => handleNavLink(CLASSIC)}>
+                                    <span>Classic</span><Icon icon="classic-mode" />
+                                </ConfirmClick>
+                            </div>
                             <QuickToolTip id="classic-mode" tip="Smart, great for printing" placement="top" />
-                        </NavItem >
+                        </ >
                     }
                 </Nav >
-
             </div>
             <div className={s['center-controls']}>
                 <div id="view-as-control"
                     className={classnames(s['view-as-control'], viewAsPartPerson ? s['selected'] : null, s[viewStyle], 'clickable')}
-                    onClick={() => togglePersonSelector()}
                 >
+                    <ConfirmClick type='rectangle' onClick={() => togglePersonSelector()} />
                     <span>view as:
                     </span>
 
@@ -168,11 +191,12 @@ function ScriptViewer() {
                         avatarInitials={(viewAsPartPerson === null) ? '?' : null}
                     />
                     <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
+
                 </div>
-                {showSceneSelectorControls && <div id="scene-selector-control" className={classnames(s['scene-selector-control'], 'clickable')} onClick={() => toggleSceneSelector()}>
+                {showSceneSelectorControls && <div id="scene-selector-control" className={classnames(s['scene-selector-control'])} >
                     {!isMobileDevice && <span>{`search `}
                     </span>}
-                    <Icon id="script-viewer-show-selector-modal" icon="search" toolTip="Search scenes"></Icon>
+                    <Icon id="script-viewer-show-selector-modal" icon="search" toolTip="Search scenes" onClick={() => toggleSceneSelector()}></Icon>
                     <QuickToolTip id="scene-selector-control" tip="Search scenes" placement="top" />
                 </div>}
             </div>
@@ -196,9 +220,10 @@ function ScriptViewer() {
                 }
 
             </div>
+           
 
         </div >
     )
 }
 
-export default ScriptViewer;
+export default ScriptViewerHeader;

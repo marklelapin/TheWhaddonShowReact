@@ -2,16 +2,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { updateMaxScriptItemTextWidth, updateScriptItemTextWidth, updateShowBools } from '../../../actions/scriptEditor';
+import { updateMaxScriptItemTextWidth, updateScriptItemTextWidth, updateShowBools, updateViewStyle } from '../../../actions/scriptEditor';
 
 //Components
 import Scene from './Scene'
 import PersonSelector from './PersonSelector'
 import ScriptViewerHeader from './ScriptViewerHeader';
+import Loader from '../../../components/Loader/Loader';
 import { Progress } from 'reactstrap';
 //utitilites
 import { log, SCRIPT_VIEWER as logType } from '../../../dataAccess/logging';
-import { getShowBools } from '../scripts/layout';
+import { getShowBools, CLASSIC, CHAT } from '../scripts/layout';
+
 //ConstantsdataAccess
 
 import s from '../Script.module.scss'
@@ -19,9 +21,11 @@ import s from '../Script.module.scss'
 
 function ScriptViewer(props) {
 
+    const _ = require('lodash');
+
     //props
     const { show, scenesToLoad, setScenesToLoad } = props;
-    const _ = require('lodash');
+
     //Redux 
     const dispatch = useDispatch();
 
@@ -36,9 +40,12 @@ function ScriptViewer(props) {
     const initialSyncProgressTotal = initialSyncProgress.scriptItem * 70 + initialSyncProgress.person * 15 + initialSyncProgress.part * 15
     const maxWidthExists = useSelector(state => state.scriptEditor.maxWidthExists)
 
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+
 
     //internal state
-    const [scriptBodyLoaded, setScriptBodyLoaded] = useState(false)
+    const [scriptBodyLoaded, setScriptBodyLoaded] = useState(false) //for identifying width of script body to calculate textareawidth
+    const [loading, setLoading] = useState('script') //for identifying when all scenes are loaded.
 
     // const [isPostShowComments, setIsPostShowComments] = useState(false)
 
@@ -95,6 +102,26 @@ function ScriptViewer(props) {
     }, [initialSyncProgress, scriptBodyLoaded]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
+    useEffect(() => {
+        if (loading === 'script' && scenesToLoad >= showOrder?.length) {
+            setLoading(false)
+        }
+    }, [scenesToLoad, showOrder])
+
+    useEffect(() => {
+        if ([CLASSIC, CHAT].includes(loading)) {
+            const newViewStyle = loading
+            dispatch(updateViewStyle(newViewStyle))
+        }
+    }, [loading])
+
+    useEffect(() => {
+        if ([CLASSIC,CHAT].includes(loading))
+        setLoading(false)
+    }, [viewStyle]) //eslint-disable-line react-hooks/exhaustive-deps
+
+
+
     if (scenesToLoad === 0) { //this allows a reset of scenesToLoad to occur.
         log(logType, 'updateState scenesToLoad', 0)
         setScenesToLoad(1)
@@ -109,12 +136,12 @@ function ScriptViewer(props) {
 
     log(logType, 'render', { showOrderLength: showOrder?.length, scenesToLoad, initialSyncProgress, initialSyncProgressTotal, maxWidthExists })
 
- 
+
 
     return (
         <>
             <div id="script-viewer" className={s['script-viewer']} style={{ zIndex: 1 }}>
-                <ScriptViewerHeader />
+                <ScriptViewerHeader loading={loading} setLoading={setLoading} />
 
                 <div id="script-viewer-main" className={`${s['script-viewer-main']}`}>
                     <div id="script-body" className={`${s['script-body']} ${(showComments) ? s['show-comments'] : s['hide-comments']} ${s[viewStyle]}`}>
@@ -131,18 +158,15 @@ function ScriptViewer(props) {
                             }
 
                             )}
-                        
-
-                          
-
-                        
                     </div>
 
+
                 </div>
-                <div className={`${s['loading-message']}`}>
-                                <p className={`${s['loading-message-text']}`}>Loading script...</p>
-                              {/*  <Progress className="mb-sm" value={initialSyncProgressTotal} />*/}
-                            </div>
+                {(loading !== false) && !isMobileDevice &&
+                    <div className={s.loader}>
+                        {<Loader size={60} text={loading === 'script' ? "Loading..." : `Changing to ${loading} mode...`} />}
+                    </div>
+                }
             </div>
 
             {(isPersonSelectorOpen) &&

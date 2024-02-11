@@ -89,7 +89,9 @@ function PartNameAndAvatar(props) {
                             onBlur={onBlur}
                             onFocus={onFocus}
                         className={`${s['text-input']} text-input`}
-                            readOnly={readOnly}
+                            maxLength="20"
+                        readOnly={readOnly}
+
                         />
 
                     }
@@ -102,15 +104,14 @@ function PartNameAndAvatar(props) {
                     }
 
                 </div>
-            }
-            {(personName) &&
+            }            {(personName) &&
                 <>
                 <div id={personNameId} className={`${s["part-person-name"]} clickable`} onClick={(e) => handleAvatarClick(e)}>
                     {(finalPartPerson.personName) &&
-                        ` played by ${finalPartPerson.personName}`
+                        `(${finalPartPerson.personName})`
                     }
                     {(!finalPartPerson.personName) &&
-                        ' (unallocated)'    
+                        '(_______)'    
                     }
                 </div>
                 <QuickToolTip id={personNameId} tip={avatarToolTip} placement={toolTipPlacement} />

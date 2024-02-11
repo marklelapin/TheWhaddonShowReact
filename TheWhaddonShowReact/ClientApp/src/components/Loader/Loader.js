@@ -1,14 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import cx from 'classnames';
 import s from './Loader.module.scss';
 
 const Loader = (props) => {
 
-    const { size = 21,className = null } = props;
+    const { size = 21,className = null,text=null, color='black' } = props;
     return (
         <div className={cx(s.root, className)}>
-            <i className="la la-spinner la-spin" style={{ fontSize: size }} />
+            {text && <p style={{ fontSize: `${size}px` }}>{text}</p>}
+
+            <i className="fa-solid fa-spinner" style={{ fontSize: `${size}px`, color: color }} />
         </div>
     );
 

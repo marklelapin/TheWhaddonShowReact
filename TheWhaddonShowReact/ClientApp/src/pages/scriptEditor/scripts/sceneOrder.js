@@ -34,6 +34,7 @@ export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], v
     if (head.type === SHOW) {
         finalSceneOrder = addSceneNumbers(zIndexedSceneOrder)
     }
+    log(logType, 'refreshSceneOrder', { finalSceneOrder })
 
     if (finalSceneOrder) {
         return finalSceneOrder;
@@ -62,7 +63,6 @@ export const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
         }
     })
 
-
     const mergedSceneOrder = getLatest([...currentSceneOrder, ...preparedNewScriptItems])
 
     return mergedSceneOrder;
@@ -70,8 +70,6 @@ export const mergeSceneOrder = (currentSceneOrder, newScriptItems) => {
 
 
 export const getHead = (mergedSceneOrder) => {
-
-
 
     let head = null;
 
@@ -133,7 +131,10 @@ export const sortSceneOrder = (head, unsortedSceneOrder) => {
     while (currentId !== null) {
         let currentItem = idToObjectMap[currentId];
 
-        if (currentItem) {
+        if (sortedLinkedList.map(item => item?.id).includes(currentItem?.id)) {
+            console.error('circular reference in linked list when sorting scene order', currentItem.id)
+            currentId = null
+        } else if (currentItem) {
             currentId = currentItem.nextId;
             sortedLinkedList.push(copy(currentItem));
 
@@ -245,7 +246,7 @@ const addSceneNumbers = (sceneOrder) => {
         switch (scene.type) {
             case SHOW: return scene;
             case ACT: act++; return { ...scene, act };
-            case SCENE: sceneNumber++; return {...scene, sceneNumber, act };
+            case SCENE: sceneNumber++; return { ...scene, sceneNumber, act };
             default: return scene;
         }
     })
@@ -265,7 +266,7 @@ export const alignRight = (sceneOrder, viewAsPartPerson, currentPartPersons, scr
 
     const righthandPartId = viewAsPartId || partIdsOrderInBody[1]
     //log(true, 'error check: alignRight', { partIdsOrderInBody, viewAsPartPerson, viewAsPartId,righthandPartId })
-    const alignedSceneOrder = mergedSceneOrder.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId) ,isViewAsPartPerson: item.partIds.includes(viewAsPartId) }))
+    const alignedSceneOrder = mergedSceneOrder.map(item => ({ ...item, alignRight: item.partIds.includes(righthandPartId), isViewAsPartPerson: item.partIds.includes(viewAsPartId) }))
 
     return alignedSceneOrder
 
@@ -273,6 +274,9 @@ export const alignRight = (sceneOrder, viewAsPartPerson, currentPartPersons, scr
 
 
 export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItems, sceneOrders, viewAsPartPerson, currentPartPersons) => {
+
+
+
 
     const sceneIds = currentScriptItemUpdates.map(item => item.parentId)
 
@@ -303,6 +307,19 @@ export const getSceneOrderUpdates = (currentScriptItemUpdates, currentScriptItem
     })
 
 
+    //Then do show order update if required
+    const sceneUpdates = currentScriptItemUpdates.filter(item => [SHOW, ACT, SCENE].includes(item.type))
+
+    if (sceneUpdates.length > 0) {
+
+        const currentScenes = Object.values(currentScriptItems).filter(item => [SHOW, ACT, SCENE].includes(item.type))
+
+        const mergedScenes = mergeScenes(sceneUpdates, currentScenes)
+
+        const newShowOrder = refreshSceneOrder([], mergedScenes,viewAsPartPerson, currentPartPersons)
+
+        if (newShowOrder) sceneOrderUpdates.push(newShowOrder)
+    }
 
     return { sceneOrderUpdates, previousCurtainUpdates }
 }
@@ -327,4 +344,24 @@ export const isSceneAffectedByViewAsPartPerson = (scene, viewAsPartPerson, previ
 
 const copy = (object) => {
     return JSON.parse(JSON.stringify(object))
+}
+
+const mergeScenes = (sceneUpdates, currentScenes) => {
+    // Create a map for quick lookup of sceneUpdates
+    const sceneUpdatesMap = new Map(sceneUpdates.map(scene => [scene.id, scene]));
+
+    // Iterate over currentScenes, replacing with updates if present
+    const mergedScenes = currentScenes.map(scene => {
+        const updatedScene = sceneUpdatesMap.get(scene.id);
+        return updatedScene ? updatedScene : scene;
+    });
+
+    // Add sceneUpdates with IDs not present in currentScenes
+    sceneUpdates.forEach(scene => {
+        if (!currentScenes.find(s => s.id === scene.id)) {
+            mergedScenes.push(scene);
+        }
+    });
+
+    return mergedScenes;
 }

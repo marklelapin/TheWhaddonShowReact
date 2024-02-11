@@ -4,6 +4,8 @@ $font-size-print-sm: 12pt;
 $font-size-print-md: 14pt;
 $font-size-print-lg: 18pt;
 
+$script-item-control-bottom: -30px;
+
 .classic {
     .avatar {
         display: none;
@@ -33,6 +35,7 @@ $font-size-print-lg: 18pt;
     .text-input {
         text-align: start;
         color: black;
+        border: none;
     }
 
     &.curtain-open.chat {
@@ -245,47 +248,22 @@ $font-size-print-lg: 18pt;
 
 .header-controls {
     position: absolute;
-    top: -20px;
+    top: -10px;
     right: 0px;
     z-index: 12;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-}
-
-.header-controls.header-exists {
-    top: 0px;
-    right: -52px;
-}
-
-.align-right {
-    .header-controls {
-        right: 0px;
-    }
-}
-
-.header-right-controls {
-    flex: 1;
-    text-align: end;
-    position: relative;
-    z-index: 10;
     padding-left: 10px;
+}
+
+
+.footer-controls {
+    position: absolute;
     display: flex;
     flex-direction: row;
-}
-
-
-.header-left-controls {
-    flex: 1;
-    text-align: end;
-    position: relative;
-    z-index: 10;
-}
-
-.bottom-right-controls {
-    position: absolute;
-    bottom: 0px;
-    right: -52px;
+    bottom: $script-item-control-bottom;
+    right: 0px;
     z-index: 10;
 }
 
@@ -300,11 +278,15 @@ $font-size-print-lg: 18pt;
 }
 
 
+.center-right-controls {
+    display: flex;
+    flex-direction: row;
+}
 //End of SCriptItemControls.
 
 
 .part-editor {
-    padding: 0px 50px 10px 50px;
+    padding: 0px 50px 0px 50px;
     background-color: $gray-inverse;
     display: flex;
     flex-direction: column;
@@ -328,26 +310,10 @@ $font-size-print-lg: 18pt;
         display: flex;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
         padding: 0px 0px 4px 20px;
         position: relative;
         z-index: 2;
 
-        .text-input {
-            background-color: transparent;
-            border: 0px;
-            color: black;
-            font-weight: $font-weight-bold;
-
-            @media print {
-                font-size: $font-size-print-sm !important;
-            }
-        }
-
-        .part-avatar-name {
-            font-size: $font-size-print-sm !important;
-            font-weight: $font-weight-base;
-        }
 
         ::placeholder {
             color: black;
@@ -358,6 +324,11 @@ $font-size-print-lg: 18pt;
         .part-editor-controls {
             position: relative;
             z-index: 5;
+
+            .center-controls {
+                display: flex;
+                flex-direction: row;
+            }
         }
     }
 
@@ -370,13 +341,16 @@ $font-size-print-lg: 18pt;
             }
         }
     }
-
-    .part-avatar-name {
-        flex: 1;
-        z-index: 2;
-    }
 }
 
+.part-name {
+    width: auto;
+
+    input {
+        width: auto;
+        min-width: 50px;
+    }
+}
 
 
 .part-controls {
@@ -401,15 +375,6 @@ $font-size-print-lg: 18pt;
         height: unset !important;
     }
 
-    .part-avatar-name {
-        flex: auto;
-        justify-content: flex-start;
-
-        .text-input {
-            font-weight: $font-weight-bold;
-        }
-    }
-
     .part-tags {
         flex: 1;
     }
@@ -428,18 +393,38 @@ $font-size-print-lg: 18pt;
 .part-avatar-name {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
     align-items: center;
+
+    .part-avatar {
+        flex: 0 0 auto;
+        margin-right: 10px;
+    }
+
+    .part-name {
+        flex: 0 0 auto;
+
+        .text-input {
+            width: 180px;
+            background-color: transparent;
+            border: 0px;
+            color: black;
+            font-weight: $font-weight-bold;
+            margin-left: 0px;
+            padding-left: 0px;
+
+            @media print {
+                font-size: $font-size-print-sm !important;
+            }
+        }
+    }
+
+    .part-person-name {
+        flex: 0 0 auto;
+        text-align: start;
+        align-items: center;
+    }
 }
 
-.part-person-name {
-    flex: auto;
-    text-align: start;
-    align-items: center;
-}
-
-.part-avatar {
-}
 
 
 /* Script-Item-Comments*/
@@ -564,12 +549,6 @@ $font-size-print-lg: 18pt;
 
     @include dropdown-box;
 
-    .part-avatar-name {
-        position: relative;
-        white-space: nowrap;
-        z-index: 1000;
-        margin-bottom: 10px;
-    }
 
     .parts-container {
         position: relative;
@@ -663,8 +642,11 @@ $font-size-print-lg: 18pt;
     .scene-controls {
         position: absolute;
         top: 10px;
-        right: 0px;
+        right: 5px;
         z-index: 5;
+        display: flex;
+        flex-direction: row;
+
 
         .hide-redo {
             color: transparent;
@@ -674,27 +656,12 @@ $font-size-print-lg: 18pt;
             display: none !important;
         }
     }
-    /*&.curtain-open {
-        .script-item-controls{
-            color: black;
-        }
 
-        .text-input {
-            color: white;
-        }
-        .scene-controls {
-            color: white;
-        }
-    }*/
-
-    .bottom-right-controls {
-        bottom: 0px;
-        right: -17px;
+    .footer-controls {
+        bottom: 10px;
+        right: 0px;
     }
 
-    .header-controls {
-        color: black;
-    }
 }
 
 .scene.header-controls {
@@ -724,25 +691,20 @@ $font-size-print-lg: 18pt;
         }
     }
 
-    .bottom-right-controls {
-        bottom: 0px;
-        right: -17px;
+    .footer-controls {
+    
     }
 
     .header-controls {
-        top: unset;
-        bottom: 0px;
-        right: -57px;
-        margin: 0px;
-
-        .header-right-controls {
-            padding-left: 0px;
-        }
+     top: unset;
+     bottom: $script-item-control-bottom;
+     right: 35px;
     }
 }
 
+
 .initialstaging {
-    padding-top: 0px;
+    padding-top: 10px;
 
     .script-item-text-area {
     }
@@ -751,7 +713,7 @@ $font-size-print-lg: 18pt;
     }
 
     .text-input {
-        padding-top: 0px;
+        padding-top:0px;
         padding-bottom: 0px;
         text-align: center;
 
@@ -759,6 +721,11 @@ $font-size-print-lg: 18pt;
             font-size: $font-size-print-sm !important;
         }
     }
+
+    .header-controls{
+        top: -10px;
+    }
+    
 }
 
 .staging,
@@ -824,7 +791,7 @@ $font-size-print-lg: 18pt;
     .header-controls {
         top: unset;
         bottom: 0px;
-        right: -105px;
+        right:  0px;
         margin: 0px;
 
         .header-right-controls {
@@ -955,5 +922,14 @@ $font-size-print-lg: 18pt;
         .text-input {
             color: white;
         }
+    }
+}
+
+
+.action {
+    paddding-top:10px;
+    .header-controls {
+        top: -10px;
+        right: -50px;
     }
 }

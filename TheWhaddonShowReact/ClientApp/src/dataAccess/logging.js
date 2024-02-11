@@ -16,11 +16,12 @@ export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
+export const CONFIRM_CLICK = { type: NONE, location: 'Component:ConfirmClick' }
 
 export const FILE_UTILS = { type: NONE, location: 'Script:fileUtils' }
 
 export const HOME = { type: NONE, location: 'Component:Home' }
-
+export const ICONS = { type: NONE, location: 'Component:Icons' }
 export const INDEX = { type: NONE, location: 'Component:INDEX' }
 export const INDEXED_DB = { type: NONE, location: 'Script:indexedDB' }
 
@@ -43,8 +44,8 @@ export const PART_SELECTOR_DROPDOWN = { type: NONE, location: 'Component:PartSel
 export const PERSON = { type: NONE, location: 'Script:Person' }
 export const PERSON_SELECTOR = { type: NONE, location: 'Component:PersonSelector' }
 export const PERSONAL_DETAILS = { type: NONE, location: 'Component:PersonalDetails' }
-export const SCENE = { type: NONE, location: 'Component:Scene' }
-export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
+export const SCENE = { type: DEBUG, location: 'Component:Scene' }
+export const SCENE_SELECTOR = { type: DEBUG, location: 'Component:SceneSelector' }
 export const SCENE_SELECTOR_ROW = { type: NONE, location: 'Component:SceneSelectorRow' }
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }

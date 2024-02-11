@@ -25,6 +25,7 @@ import { DOWN, UP, START, END, ABOVE, BELOW } from '../scripts/utility';
 import { moveFocusToId, closestPosition } from '../scripts/utility';
 import { partEditorRowId } from '../scripts/part'
 import { isScriptReadOnly } from '../../../dataAccess/userAccess';
+import { CHAT, CLASSIC } from '../scripts/layout';
 
 //styling
 import s from '../ScriptItem.module.scss'
@@ -57,7 +58,8 @@ function PartEditorRow(props) {
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
     const currentUser = useSelector(state => state.user.currentUser)
     const printScript = useSelector(state => state.scriptEditor.printScript)
-    const readOnly = isScriptReadOnly(currentUser, printScript)
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const readOnly = isScriptReadOnly(currentUser, isMobileDevice, printScript)
 
     //const scenePartIds = scene.partIds
 
@@ -262,7 +264,7 @@ function PartEditorRow(props) {
 
             <div key={partEditorRowId(partId, sceneId)} id={partEditorRowId(partId, sceneId)} className={`${s["part"]} ${s[viewStyle]}`} style={{ zIndex: zIndex }}>
 
-                <PartNameAndAvatar avatar={viewStyle === 'chat'} personName={viewStyle === 'classic'} partName
+                <PartNameAndAvatar avatar={viewStyle === CHAT} personName={viewStyle === CLASSIC} partName
                     id={'part-name-avatar-' + partEditorRowId(partId, sceneId)}
                     avatarInitials={partPerson.avatarInitials}
                     partPerson={partWithTempName()}
@@ -288,7 +290,7 @@ function PartEditorRow(props) {
                                 allowMultiSelect={false}
                                 allowClear={false}
                                 centered
-                                toggle={(e) => setOpenPartSelector(!openPartSelector)}
+                                toggle={() => setOpenPartSelector(!openPartSelector)}
                                 onSelect={(selectedPartIds) => dispatch(trigger(SWAP_PART, { sceneId, oldPartId: partId, newPartId: selectedPartIds[0] }))} />
                         }
                     </div>

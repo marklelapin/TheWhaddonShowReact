@@ -1,7 +1,7 @@
+/* eslint-disable no-prototype-builtins */
 //REact and REdux
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+
 
 //dataAccess Components
 import LocalServerSyncing from '../dataAccess/LocalServerSyncing';
@@ -10,13 +10,14 @@ import ScriptEditorProcessing from '../pages/scriptEditor/components/ScriptEdito
 //Azure
 import { MsalProvider, useMsal } from '@azure/msal-react';
 import { EventType } from '@azure/msal-browser';
-import { b2cPolicies, protextedResources } from '../authConfig.js'
+import { b2cPolicies, protectedResources } from '../authConfig.js'
+
 //Components
 import { Layout } from '../components/Layout';
 import Routing from './Routing';
 import CacheProcessing from '../dataAccess/CacheProcessing';
 import TextAreaContexts from '../dataAccess/TextAreaContexts';
-import ErrorCatch from '../components/ErrorCatch/ErrorCatch';
+
 //Utils
 import { log, APP as logType } from '../dataAccess/logging.js';
 
@@ -33,8 +34,6 @@ function App(props) {
     const { instance } = props
 
     //const loadingInit = useSelector((state) => state.auth.loadingInit)
-
-    const dispatch = useDispatch();
 
     //const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
 
@@ -165,4 +164,10 @@ const MSALErrorHandling = ({ children }) => {
 }
 
 
+function compareIssuingPolicy(idTokenClaims, policyToCompare) {
+    // eslint-disable-next-line no-prototype-builtins
+    let tfpMatches = idTokenClaims.hasOwnProperty('tfp') && idTokenClaims['tfp'].toLowerCase() === policyToCompare.toLowerCase();
 
+    let acrMatches = idTokenClaims.hasOwnProperty('acr') && idTokenClaims['acr'].toLowerCase() === policyToCompare.toLowerCase();
+    return tfpMatches || acrMatches;
+}

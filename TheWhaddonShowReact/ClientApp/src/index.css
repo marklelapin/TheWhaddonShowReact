@@ -68,25 +68,9 @@ body {
 }
 
 
-/*PersonSelector Component*/
-.select-person-section {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
-}
-
-.person-button {
-    margin: 5px;
-    cursor: pointer;
-}
-
-.page-content{
-
+.page-content {
     overflow: auto;
-
 }
-
 
 
 
@@ -96,14 +80,8 @@ body {
 }
 
 
-/*Text Input Styles*/
-.text-input {
-    width: 100%;
-}
 
-.script-item .text-input:not(:focus) {
-    border: none;
-}
+
 
 .part .text-input:not(:focus) {
     border: none;
