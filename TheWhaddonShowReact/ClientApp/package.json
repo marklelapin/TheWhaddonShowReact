@@ -8,7 +8,14 @@
     "devBuild": "cross-env isDevBuild=true NODE_ENV=production PUBLIC_URL='' webpack --config webpack.config.js --mode production --node-env production",
     "testBuild": "http-server --ssl --cert ./certificates/localhost.crt --key ./certificates/localhost.key -p 60001",
     "start": "webpack serve --config webpack.config.js --mode development --node-env development --progress",
-    "test": "node scripts/test.js --runInBand --verbose=false"
+    "test": "node scripts/test.js --runInBand --verbose=false",
+
+
+    "webpack-dev-server": "webpack-dev-server",
+    "devServe": "cross-env NODE_ENV=development webpack serve --config webpack2.config.js --mode=development",
+    "prodBuild": "cross-env NODE_ENV=production webpack --config webpack2.config.js --mode=production",
+    "localHostBuild": "cross-env NODE_ENV=production webpack --config webpack2.config.js --mode=production",
+    "localHostServe": "cross-env IS_LOCAL_HOST=true npm run localHostBuild && http-server build --ssl --cert ./certificates/localhost.crt --key ./certificates/localhost.key -p 60001"
   },
   "browserslist": [
     ">0.2%",

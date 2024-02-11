@@ -74,8 +74,8 @@ msalInstance.addEventCallback((event) => {
     }
 });
 
-console.log('Environement', process.env.NODE_ENV)
-
+console.log('Environment', process.env.NODE_ENV)
+//console.log('isLocalHost', process.env.IS_LOCAL_HOST)
 let store;
 
 const initApp = async () => {
@@ -152,7 +152,7 @@ const initApp = async () => {
         </BrowserRouter>
     );
 
-    registerServiceWorker();
+    //registerServiceWorker();
 
 
 }

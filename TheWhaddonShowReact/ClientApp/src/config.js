@@ -1,12 +1,18 @@
-const hostApi = process.env.NODE_ENV === "development" ? "http://localhost" : "https://www.thewhaddonshow.org";
-const portApi = process.env.NODE_ENV === "development" ? 50001 : "";
+
+const isLocalHost = process.env.NODE_ENV === "development" || process.env.IS_LOCAL_HOST === 'true';
+
+console.log('IS_LOCAL_HOST', process.env.IS_LOCAL_HOST)
+console.log('isLocalHost', isLocalHost)
+
+const hostApi = isLocalHost ? "http://localhost" : "https://www.thewhaddonshow.org";
+const portApi = isLocalHost ? 50001 : "";
 const baseURLApi = `${hostApi}${portApi ? `:${portApi}` : ``}/api`;
 
-const hostApp = process.env.NODE_ENV === "development" ? "https://localhost" : "https://www.thewhaddonshow.org";
-const portApp = process.env.NODE_ENV === "development" ? 60001 : "";
+const hostApp = isLocalHost ? "https://localhost" : "https://www.thewhaddonshow.org";
+const portApp = isLocalHost ? 60001 : "";
 const baseURLApp = `${hostApp}${portApp ? `:${portApp}` : ``}/app`;
 
-const redirectUrl = process.env.NODE_ENV === "development" ? "https://localhost:60001" : "https://www.thewhaddonshow.org";
+const redirectUrl = isLocalHost ? "https://localhost:60001" : "https://www.thewhaddonshow.org";
 
 export default {
     redirectUrl,
