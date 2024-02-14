@@ -7,9 +7,9 @@ export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdo
 
 export const APP = { type: NONE, location: 'Component: App' }
 
-export const AVATAR = { type: NONE, location: 'Component:Avatar' }
+export const AVATAR = { type: DEBUG, location: 'Component:Avatar' }
 export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
-export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
+export const CACHE_PROCESSING = { type: DEBUG, location: 'Component:CacheProcessing' }
 
 export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 
@@ -44,8 +44,8 @@ export const PART_SELECTOR_DROPDOWN = { type: NONE, location: 'Component:PartSel
 export const PERSON = { type: NONE, location: 'Script:Person' }
 export const PERSON_SELECTOR = { type: NONE, location: 'Component:PersonSelector' }
 export const PERSONAL_DETAILS = { type: NONE, location: 'Component:PersonalDetails' }
-export const SCENE = { type: DEBUG, location: 'Component:Scene' }
-export const SCENE_SELECTOR = { type: DEBUG, location: 'Component:SceneSelector' }
+export const SCENE = { type: NONE, location: 'Component:Scene' }
+export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
 export const SCENE_SELECTOR_ROW = { type: NONE, location: 'Component:SceneSelectorRow' }
 
 export const SCRIPT_EDITOR_PROCESSING = { type: NONE, location: 'Component:ScriptEditorProcessing' }

@@ -8,7 +8,7 @@ export default function registerServiceWorker() {
         console.log('service worker not available in users browser'); return
     }
 
-    const wb = new Workbox('sw.js');
+    const wb = new Workbox('/sw.js');
 
     wb.addEventListener('installed', event => {
         if (event.isUpdate) {

@@ -10,7 +10,7 @@ const baseURLApi = `${hostApi}${portApi ? `:${portApi}` : ``}/api`;
 
 const hostApp = isLocalHost ? "https://localhost" : "https://www.thewhaddonshow.org";
 const portApp = isLocalHost ? 60001 : "";
-const baseURLApp = `${hostApp}${portApp ? `:${portApp}` : ``}/app`;
+const baseURLApp = `${hostApp}${portApp ? `:${portApp}` : ``}`;
 
 const redirectUrl = isLocalHost ? "https://localhost:60001" : "https://www.thewhaddonshow.org";
 

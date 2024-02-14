@@ -152,7 +152,7 @@ const initApp = async () => {
         </BrowserRouter>
     );
 
-    //registerServiceWorker();
+    registerServiceWorker();
 
 
 }

@@ -11,7 +11,7 @@ import {
 import {
     updatePrintScript
 } from '../../actions/scriptEditor';
-import {  refreshSync } from '../../actions/localServer';
+import { refreshSync } from '../../actions/localServer';
 
 //components
 import { Icon } from '../../components/Icons/Icons';
@@ -20,7 +20,7 @@ import ApiMonitor from '../../pages/apiMonitor/ApiMonitor';
 import LinksGroup from './LinksGroup/LinksGroup';
 import wslogo from '../../images/whaddon-show-logo-reversed.png';
 import wstitle from '../../images/the-whaddon-show.png';
-
+import classnames from 'classnames';
 import { userAccessToComponent } from '../../dataAccess/userAccess';
 
 import s from './Sidebar.module.scss';
@@ -77,8 +77,8 @@ function Sidebar(props) {
 
     const handlePrint = (type) => {
         dispatch(closeSidebar())
-        setTimeout(()=>
-        dispatch(updatePrintScript(type)),500) //introduce delay to allow modal to close before printing (otherwise modal appears in print)
+        setTimeout(() =>
+            dispatch(updatePrintScript(type)), 500) //introduce delay to allow modal to close before printing (otherwise modal appears in print)
     }
 
 
@@ -126,7 +126,7 @@ function Sidebar(props) {
                     iconElement={<Icon icon="gallery" />}
                 />
 
-             {/*   TOOLS SECTION*/}
+                {/*   TOOLS SECTION*/}
 
                 {showTools &&
                     <h5 className={[s.navTitle, s.groupTitle].join(' ')}>TOOLS</h5>
@@ -134,23 +134,23 @@ function Sidebar(props) {
                 {showScriptTools &&
                     <>
                         <LinksGroup
-                        header="Print Scene"
-                        iconElement={<Icon icon="print" />}
-                        onToolClick={()=>handlePrint('regular')}
-                    />
-                    <LinksGroup
-                        header="Print (Large)"
-                        iconElement={<Icon icon="glasses" />}
-                        onToolClick={()=>handlePrint('large')}
-                    />
+                            header="Print Scene"
+                            iconElement={<Icon icon="print" />}
+                            onToolClick={() => handlePrint('regular')}
+                        />
                         <LinksGroup
-                        header="Refresh Script"
-                        onClick={() => handleRefresh() } />
+                            header="Print (Large)"
+                            iconElement={<Icon icon="glasses" />}
+                            onToolClick={() => handlePrint('large')}
+                        />
+                        <LinksGroup
+                            header="Refresh Script"
+                            onClick={() => handleRefresh()} />
                     </>
                 }
 
-             {/*   ADIMN SECTION*/}
-                 
+                {/*   ADIMN SECTION*/}
+
                 {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, 'ApiMonitor')) &&
                     <h5 className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
                 }
@@ -205,8 +205,12 @@ function Sidebar(props) {
     if (!isModal) return (
 
         <div className={`${isSidebarOpen ? 'sidebarOpen' : s['sidebarClose']} ${s['sidebarWrapper']}`}>
-            {sidebarOpened && sidebarStatic && !isMobileDevice && <Icon icon="arrow-left" id="close-sidebar-toggle" className={s.closeSidebarToggle} onClick={toggleCloseSidebar} toolTip="UnPin Sidebar" toolTipPlacement="right" />}
-         
+            {sidebarOpened && sidebarStatic && !isMobileDevice &&
+                <div className={classnames(s.closeSidebarToggle,'clickable')} onClick={toggleCloseSidebar}>
+                    <Icon icon="arrow-left" id="close-sidebar-toggle" toolTip="UnPin Sidebar" toolTipPlacement="right" />
+                </div>
+            }
+
             <nav
                 onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}
                 className={s.root}

@@ -50,7 +50,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\build\" />
     <Folder Include="ClientApp\public\images\" />
     <Folder Include="ClientApp\src\dataAccess\__tests__\" />
     <Folder Include="ClientApp\src\fonts\" />
@@ -69,7 +68,7 @@
   <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
      <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" /> 
-     <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" /> 
+     <Exec WorkingDirectory="$(SpaRoot)" Command="npm run prodBuild" /> 
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
