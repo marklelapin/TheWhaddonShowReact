@@ -39,7 +39,7 @@ function PersonSelector(props) {
     const partPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
     let additionalCategoryPersons = additionalCategory?.persons || additionalCategory?.partIds?.map(partId => partPersons[partId]) || null
-    if (additionalCategoryPersons) additionalCategoryPersons = additionalCategoryPersons.sort((a, b) => a.friendlyName.localeCompare(b.friendlyName))
+    if (additionalCategoryPersons) additionalCategoryPersons = additionalCategoryPersons.sort((a, b) => (a.friendlyName || a.name || '').localeCompare(b.friendlyName || a.name || ''))
     //calcs
 
     const scenePartPersonIds = scenePartIds.map(partId => partPersons[partId]) || []

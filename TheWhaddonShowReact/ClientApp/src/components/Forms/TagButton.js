@@ -1,7 +1,7 @@
 import React from 'react';
 import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Icon } from '../../components/Icons/Icons';
-
+import s from './Forms.module.scss';
 function TagButton(props) {
 
     let { tag, tagOptions, strapColor, onClickAdd, onClickRemove} = props
@@ -9,15 +9,15 @@ function TagButton(props) {
     if (tag === null) {
 
         return (
-            < UncontrolledDropdown className="tag-button"> {/*//classsName=tag?*/}
+            < UncontrolledDropdown className={s.tagButton}> {/*//classsName=tag?*/}
                 < DropdownToggle
                     className={`btn-outline-${strapColor}`}
                     size="xs"
                     outline
                 >
-                    Add Tag
+                    <div className={s.tag}>add</div>
                 </DropdownToggle >
-                <DropdownMenu>
+                <DropdownMenu className={s.dropdown}>
 
                     {tagOptions.map((tagOption) => {
 
@@ -35,12 +35,13 @@ function TagButton(props) {
 
     }
     return (
-        < UncontrolledDropdown className="tag-button " >
+        < UncontrolledDropdown className={s.tagButton} >
             < DropdownToggle
                 color={strapColor}
                 size="xs"
             >
-                <div onClick={()=>onClickRemove(tag)}>{tag}<Icon icon="cross"/></div>
+                <div className={s.tag}>{tag}</div>
+                <Icon icon="cross" onClick={() => onClickRemove(tag)} className={s.removeTag} noMargin />
             </DropdownToggle >
         </UncontrolledDropdown >
     )

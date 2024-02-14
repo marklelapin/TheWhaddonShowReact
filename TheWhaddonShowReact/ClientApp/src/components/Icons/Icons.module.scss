@@ -6,8 +6,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 35px;
+    width: auto;
+    min-width: 35px;
     height: 35px;
+
+    &.noMargin {
+        width: auto;
+        min-width: unset;
+        height: auto;
+    }
 
     .icon {
         text-align: center;

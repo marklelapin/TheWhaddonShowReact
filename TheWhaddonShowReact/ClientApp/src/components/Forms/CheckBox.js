@@ -3,7 +3,7 @@ import { FormGroup, Input, Label} from 'reactstrap';
 
 
 function CheckBox(props) {
-    const {  label, id, checked = false, onChange, ios = false } = props
+    const {  label, id, checked = false, onChange, ios = false} = props
 
     const checkboxKey = () => {
         return `checkbox-${id}`
@@ -14,14 +14,14 @@ function CheckBox(props) {
         <>
 
             {!ios &&
-                <FormGroup className="checkbox abc-checkbox abc-checkbox-success" check>
+                <div className="form-check" style={{ margin: 'auto', display: 'block' } }>
 
-                    <Input type="checkbox" id={id} key={checkboxKey()} checked={checked} onChange={onChange} />
+                    <input className="form-check-input" type="checkbox" id={id} key={checkboxKey()} checked={checked} onChange={onChange} />
 
-                    <Label for={id} check >
+                    <label className="form-check-label" htmlFor={id} >
                         {label}
-                    </Label>
-                </FormGroup>
+                    </label>
+                </div>
 
 
             }

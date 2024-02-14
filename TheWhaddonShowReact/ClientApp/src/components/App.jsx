@@ -30,16 +30,7 @@ function App(props) {
 
     log(logType, 'props', props)
 
-
     const { instance } = props
-
-    //const loadingInit = useSelector((state) => state.auth.loadingInit)
-
-    //const CloseButton = ({ closeToast }) => <i onClick={closeToast} className="la la-close notifications-close" />
-
-    //if (loadingInit) { //this.props.loadingInit this.props.dispatch in {} below
-    //    return <div />;
-    //}
 
     return (
 
@@ -50,19 +41,9 @@ function App(props) {
             <TextAreaContexts />
           {/* <ErrorCatch>*/}
                 <Layout>
-                    {/*Components performing background and preloading tasks*/}
-
-
-                    {/*<ToastContainer*/}
-                    {/*    autoClose={5000}*/}
-                    {/*    hideProgressBar*/}
-                    {/*    closeButton={<CloseButton />}*/}
-                    {/*/>*/}
-
                     <MSALErrorHandling >
                         <Routing />
                     </MSALErrorHandling>
-
                 </Layout>
            {/* </ErrorCatch>*/}
 

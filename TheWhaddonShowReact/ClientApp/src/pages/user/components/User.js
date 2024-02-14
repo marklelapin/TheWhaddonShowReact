@@ -16,7 +16,7 @@ import {
 
 import { prepareUpdate } from '../../../dataAccess/localServerUtils'
 import '../../../index.css'
-
+import s from '../Users.module.scss';
 import { addUpdates } from '../../../actions/localServer';
 import { PERSON } from '../../../dataAccess/localServerModels';
 import { log, USERS as logType } from '../../../dataAccess/logging'
@@ -57,7 +57,7 @@ function User(props) {
 
     useEffect(() => {
         setUser(storedUser)
-    },[storedUser])
+    }, [storedUser])
 
 
     const tagOptions = ['male', 'female', 'kid', 'teacher', 'adult']
@@ -67,7 +67,7 @@ function User(props) {
 
     const handleClickUpdate = async () => {
 
-        const userUpdate = (user.isActive === false) ? {...user,msalLink: null } : user
+        const userUpdate = (user.isActive === false) ? { ...user, msalLink: null } : user
         const preparedUpdate = prepareUpdate(userUpdate)
         dispatch(addUpdates(preparedUpdate, PERSON))  //saves the user to the redux store where it will be synced separately.
         setUserChanged(false)
@@ -109,6 +109,8 @@ function User(props) {
             case 'addTag': setUser({ ...user, tags: [...user.tags, value] })
                 break;
             case 'removeTag': setUser({ ...user, tags: user.tags.filter((tagOption) => tagOption !== value) })
+                break;
+            case 'msalLink': setUser({ ...user, msalLink: value })
                 break;
 
             default:
@@ -211,17 +213,17 @@ function User(props) {
                     <Modal isOpen={true} toggle={closeModal}>
                         <ModalHeader toggle={closeModal}>Edit User</ModalHeader>
                         <ModalBody className="bg-white">
-
-                            <div id="user-modal" className="draft-border">
+                            <div className={s.modalContainer}>
+<div id="user-modal-body" className={s.modalBody}>
                                 {personalDetails('table')}
                                 {roles('table', true)}
                                 {tags('table', true)}
+                                {update('table', true)}
                             </div>
 
+                            </div>
+                            
                         </ModalBody>
-                        <ModalFooter>
-                            {update('table', true)}
-                        </ModalFooter>
                     </Modal>)}
 
             </>

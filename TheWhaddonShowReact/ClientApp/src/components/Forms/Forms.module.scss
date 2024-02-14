@@ -1,0 +1,45 @@
+﻿.tagsInput {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    z-index: 2;
+}
+
+
+.tagButton {
+    margin-right: 3px;
+
+    button {
+        display: flex;
+        align-items: center;
+
+        .tag {
+            width: auto;
+            margin-right: 3px;
+        }
+
+
+        .removeTag {
+            margin-left: 3px;
+        }
+    }
+
+
+    .dropdown {
+        margin: 2px;
+    }
+}
+
+.inputText {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    .label {
+       flex: auto;
+    }
+    
+    .input {
+        flex: auto;
+    }
+}

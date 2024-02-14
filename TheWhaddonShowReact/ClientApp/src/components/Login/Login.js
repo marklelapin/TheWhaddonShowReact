@@ -274,11 +274,10 @@ function Login() {
                             <AuthenticatedTemplate>
                                 {!authenticatedUser &&
                                     <div className={`${s['notRegisteredBlock']}`}>
-                                        <h4>Not Registered!
-                                            <span ><Icon icon='cross' strapColor='danger' /></span>
-                                        </h4>
-                                        <p>{`If it's your first time logging in please use login link sent to you from `}<a href="mailto:magcarter@hotmail.co.uk">Mark</a>{` or try Resetting App below.`}</p>
-                                        <p>Thanks!</p>
+                                        <h5>Not Registered.</h5>
+                                        <p>Are you logged in on a different account?</p>
+                                        <p>{`If it's your first time please use login link sent from `}<a href="mailto:magcarter@hotmail.co.uk">Mark</a>.</p>
+                                        <p>Otherwise try resetting the app below:</p>
                                         <Button color='primary' onClick={doReset}>Reset</Button>
                                     </div>
                                 }
