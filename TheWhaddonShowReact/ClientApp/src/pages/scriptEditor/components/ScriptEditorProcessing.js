@@ -1,5 +1,5 @@
 ﻿//React and Redux
-import React from 'react';
+
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -25,7 +25,7 @@ import { log, SCRIPT_EDITOR_PROCESSING as logType } from '../../../dataAccess/lo
 import { getTriggerUpdates } from '../scripts/trigger';
 import { getUndoUpdates } from '../scripts/undo';
 import { getScriptItemUpdatesLaterThanCurrent } from '../scripts/scriptItem';
-import { getSceneOrderUpdates, isSceneAffectedByViewAsPartPerson, refreshSceneOrder } from '../scripts/sceneOrder';
+import { getSceneOrderUpdates, isSceneAffectedByViewAsPartPerson } from '../scripts/sceneOrder';
 import { newPartPersonsFromPartUpdates, newPartPersonsFromPersonUpdates } from '../scripts/part';
 
 import { addUpdates } from '../../../actions/localServer';
@@ -38,14 +38,12 @@ import { moveFocusToId } from '../scripts/utility';
 
 //constants
 import { SCRIPT_ITEM, PART, PERSON } from '../../../dataAccess/localServerModels'
-import { SHOW,ACT,SCENE } from '../../../dataAccess/scriptItemTypes';
 import { isScreenSmallerThan } from '../../../core/screenHelper';
 
 export function ScriptEditorProcessing() {
 
     //This component is used to process updates from the localServer and update the scriptEditor state and vice versa.
 
-    const _ = require('lodash');
     const dispatch = useDispatch();
 
     ///REDUX
@@ -87,15 +85,13 @@ export function ScriptEditorProcessing() {
     useEffect(() => {
         let currentFocus = null;
         for (var key in scriptItemInFocus) {
-            if (scriptItemInFocus.hasOwnProperty(key)) {
+            if (scriptItemInFocus[key].sceneId !== sceneInFocus?.id) {
                 currentFocus = scriptItemInFocus[key];
             }
         }
 
-        if (currentFocus && currentFocus.sceneId !== sceneInFocus?.id) {
-
+        if (currentFocus) {
             const newSceneInFocus = currentScriptItems[currentFocus.sceneId]
-
             dispatch(updateSceneInFocus(newSceneInFocus))
         }
 
@@ -312,8 +308,4 @@ export function ScriptEditorProcessing() {
 
 export default ScriptEditorProcessing;
 
-
-
-const copy = (obj) => {
-    return JSON.parse(JSON.stringify(obj))
-}   
+  

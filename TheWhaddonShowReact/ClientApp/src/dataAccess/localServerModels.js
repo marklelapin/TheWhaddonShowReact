@@ -1,5 +1,5 @@
 ﻿import {v4 as uuidv4} from 'uuid'; 
-import {  SCENE, SYNOPSIS, INITIAL_STAGING, STAGING, SONG, DIALOGUE, ACTION, SOUND, LIGHTING, INITIAL_CURTAIN } from './scriptItemTypes'; 
+import {  SCENE} from './scriptItemTypes'; 
 
 import { localServerDateNow } from './localServerUtils';
 

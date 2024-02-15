@@ -84,6 +84,8 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
     let doRefreshCurtain = false; //if true will refresh the curtain calculation of sceneOrder
     let doPreviousCurtainUpdate = false;
 
+
+    /* eslint-disable no-case-declarations */
     switch (triggerType) {
 
         case UPDATE_TEXT: scriptItemUpdates.push({ ...copy(scriptItem), text: value });
@@ -101,7 +103,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
             moveFocus = { id: scriptItem.id, position: END }
             break;
         case ADD_TAG:
-            const newTags = copy(scriptItem).tags.filter(item => item !== tag)
+            const newTags = copy(scriptItem).tags.filter(item => item !== tag) //eslint-disable-line
             newTags.push(tag)
             scriptItemUpdates.push({ ...copy(scriptItem), tags: newTags });
             moveFocus = { id: scriptItem.id, position: END }
@@ -158,7 +160,7 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
                 moveFocus = { id: scriptItem.previousId, position: END };
             } else {
                 moveFocus = { id: scriptItem.nextId, position: START };
-            };
+            }
             break;
         case DELETE_NEXT_SCRIPT_ITEM:
             const nextScriptItem = currentScriptItems[scriptItem.nextId]

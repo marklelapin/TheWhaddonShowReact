@@ -17,7 +17,7 @@ import { Layout } from '../components/Layout';
 import Routing from './Routing';
 import CacheProcessing from '../dataAccess/CacheProcessing';
 import TextAreaContexts from '../dataAccess/TextAreaContexts';
-
+import ErrorCatch from '../components/ErrorCatch/ErrorCatch';
 //Utils
 import { log, APP as logType } from '../dataAccess/logging.js';
 
@@ -39,13 +39,13 @@ function App(props) {
             <ScriptEditorProcessing />
             <CacheProcessing />
             <TextAreaContexts />
-          {/* <ErrorCatch>*/}
+          <ErrorCatch>
                 <Layout>
                     <MSALErrorHandling >
                         <Routing />
                     </MSALErrorHandling>
                 </Layout>
-           {/* </ErrorCatch>*/}
+           </ErrorCatch>
 
 
 

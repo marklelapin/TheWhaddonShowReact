@@ -17,17 +17,17 @@ import { log, SYNC_DROPDOWN as logType } from '../../../dataAccess/logging';
 //css
 import s from '../Header.module.scss';
 
-function SyncDropdown(props) {
+function SyncDropdown() {
 
-    const debug = true
     const dispatch = useDispatch();
 
 
     //Set state relating to internal component
     const [syncOpen, setSyncOpen] = useState(false);
-    const [toggelRefresh,setToggleRefresh] = useState(true)
+    const [toggleRefresh,setToggleRefresh] = useState(true)
+    log(logType, 'toggleRefresh', toggleRefresh)
 
-    log(debug, 'SyncDropdown: syncOpen', syncOpen)
+    log(logType, 'SyncDropdown: syncOpen', syncOpen)
 
 
     //Set state relating to redux store
@@ -44,7 +44,7 @@ function SyncDropdown(props) {
     const unsyncedPersonUpdates = persons?.filter(item => item.updatedOnServer === null).length || 0
     const unsyncedPartUpdates = parts?.filter(item => item.updatedOnServer === null).length || 0
 
-    log(debug, 'SyncDropdown: unsyncedUpdates', { parts: unsyncedPartUpdates, persons: unsyncedPersonUpdates, scriptItems: unsyncedScriptItemUpdates })
+    log(logType, 'SyncDropdown: unsyncedUpdates', { parts: unsyncedPartUpdates, persons: unsyncedPersonUpdates, scriptItems: unsyncedScriptItemUpdates })
 
 
     useEffect(() => {
@@ -217,7 +217,7 @@ function SyncDropdown(props) {
                     <>
                         <Icon icon="refresh"
                             id="refresh-sync"
-                            toolTip="Refresh Script"
+                            //toolTip="Refresh Script"
                             onClick={(e) => { e.stopPropagation(); dispatch(refreshSync()) }}
                         />
                     </>

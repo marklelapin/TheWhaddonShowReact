@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from "react-router-dom";
 
@@ -20,12 +20,12 @@ import underConstruction from '../../images/under-construction-500.png'
 //utils
 import { REHEARSALID } from '../../dataAccess/userAccess';
 import { getLatest } from '../../dataAccess/localServerUtils';
-import { getCastWithPartsAndScenes, getPartsWithStats } from '../casting/scripts'
+import { getCastWithPartsAndScenes } from '../casting/scripts'
 import { log, HOME as logType } from '../../dataAccess/logging';
 import classnames from 'classnames';
 
 import s from './Home.module.scss';
-import { SHOW } from '../../dataAccess/scriptItemTypes';
+
 function Home() {
 
     const dispatch = useDispatch();

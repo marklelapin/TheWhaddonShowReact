@@ -6,18 +6,15 @@ import { useLocation } from 'react-router-dom';
 
 
 //Components
-import Hammer from 'rc-hammerjs';
 import { SidebarTypes } from '../../reducers/layout';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar';
 import Login from '../Login/Login';
 import { Modal } from 'reactstrap';
-import { Icon } from '../Icons/Icons';
 //import Helper from '../Helper';
-import { openSidebar, closeSidebar, openStaticSidebar, closeStaticSidebar } from '../../actions/navigation';
+import {  closeSidebar, closeStaticSidebar } from '../../actions/navigation';
 import { updateDeviceInfo } from '../../actions/device';
 import s from './Layout.module.scss';
-import { log, LAYOUT as logType } from '../../dataAccess/logging.js'
 import { getSidebarWrapStatus, preventRefresh } from '../../core/screenHelper';
 import classnames from 'classnames';
 
@@ -42,7 +39,7 @@ export const Layout = (props) => {
         if (isMobileDevice) {
             dispatch(closeStaticSidebar())
         }
-    },[isMobileDevice])
+    }, [isMobileDevice])//eslint-disable-line react-hooks/exhaustive-deps
 
 
     //const handleSwipe = (e) => {
@@ -66,7 +63,7 @@ export const Layout = (props) => {
         }
         window.addEventListener('resize', handleResize);
         return () => { window.removeEventListener('resize', handleResize); }
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
 
     return (

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
-import { setShow, updateInitialSyncProgress, updateShowBools, updateScriptFilter } from '../../actions/scriptEditor';
+import { setShow, updateShowBools, updateScriptFilter } from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
@@ -49,7 +49,7 @@ function Script() {
         } else {
             dispatch(updateScriptFilter(null))
         }
-    }, [])
+    }, []) //eslint-disable-line react-hooks/exhaustive-deps
 
 
     useEffect(() => {

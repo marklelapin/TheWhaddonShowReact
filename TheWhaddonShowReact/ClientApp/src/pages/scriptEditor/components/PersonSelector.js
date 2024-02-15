@@ -102,7 +102,7 @@ function PersonSelector(props) {
                             <h5>{additionalCategory.name.toUpperCase()}</h5>
                             <div className={s['person-selector-section']}>
                                 {additionalCategoryPersons.map(person => {
-                                    return personJSX(person)
+                                    return (person && personJSX(person))
                                 })}
 
                             </div>

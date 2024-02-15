@@ -31,6 +31,7 @@ export function CacheProcessing() {
 
         const unprocessedPictureRefsNotBeingProcessed = unprocessedPictureRefs.filter(pictureRef => !avatarsBeingProcessed.includes[pictureRef])
         log(logType, 'pictureRefs', { pictureRefs, unprocessedPictureRefs, unprocessedPictureRefsNotBeingProcessed })
+
         const cacheAvatarURLs = async () => {
 
             setAvatarsBeingProcessed([...avatarsBeingProcessed, ...unprocessedPictureRefsNotBeingProcessed])
@@ -40,8 +41,9 @@ export function CacheProcessing() {
                 const file = await fetchFile(pictureRef)
 
                 const imageObjectURL = await createObjectURL(file)
-
+                
                 if (imageObjectURL) {
+                   
                     dispatch(addToCache(AVATARS, pictureRef, imageObjectURL))
                 }
 

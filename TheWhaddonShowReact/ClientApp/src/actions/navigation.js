@@ -27,10 +27,3 @@ export function closeSidebar() {
 }
 
 
-export function changeActiveSidebarItem(activeItem) {
-    return {
-        type: CHANGE_ACTIVE_SIDEBAR_ITEM,
-        activeItem,
-    };
-}
-

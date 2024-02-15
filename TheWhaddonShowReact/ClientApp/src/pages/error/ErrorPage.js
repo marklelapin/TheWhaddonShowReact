@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 
 import {
     Container,
-    Form,
-    FormGroup,
-    Input,
     Button,
 } from 'reactstrap';
-import { Link } from 'react-router-dom';
+
+import { clearStateFromBrowserStorage } from '../../dataAccess/browserStorage';
 
 import s from './ErrorPage.module.scss';
 
@@ -22,6 +20,7 @@ const ErrorPage = (props) => {
     }
 
     const handleReturnHome = () => {
+        clearStateFromBrowserStorage();
         window.location.href = "/";
     }
 
@@ -42,7 +41,7 @@ const ErrorPage = (props) => {
                             }
                         </>
                     }
-                    {returnHome && <Button color="primary" className="mr-2" onClick={handleReturnHome} >Return Home</Button>}
+                    {returnHome && <Button color="primary" className="mr-2" onClick={handleReturnHome} >Reset and Return Home</Button>}
                 </div>
             </Container>
         </div>

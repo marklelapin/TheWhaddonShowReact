@@ -1,11 +1,10 @@
-import { isMobileDevice, isScreenLargerThan } from '../core/screenHelper';
+import { isMobileDevice } from '../core/screenHelper';
 
 export const READ = 'READ'
 export const WRITE = 'WRITE'
 export const DEMOID = '96eedb3d-132e-432f-a0f4-b1cd73728774'
 export const REHEARSALID = '7d0e525b-cc4b-4ef8-bf22-f9e58a4a5c92'
 
-import { log, logType } from './logging.js' 
 
 export const userAccessToComponent = (user = null, componentOrPage = null) => {
 

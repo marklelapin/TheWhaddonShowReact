@@ -22,7 +22,7 @@ const ErrorCatch = ({ children }) => {
             };
         }
 
-    }, []);
+    }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
     if (error) {
         // Render fallback UI

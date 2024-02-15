@@ -10,13 +10,12 @@ import { Button } from 'reactstrap'
 import { Icon } from '../../components/Icons/Icons';
 import DataLoading from '../../components/DataLoading/DataLoading';
 import TheWhaddonShowHomeWide from '../../images/TheWhaddonShowHomeWide.png'
-import TheWhaddonShowHomeThin from '../../images/TheWhaddonShowHomeThin.png'
 
 //utils
 import { isScreenSmallerThan } from '../../core/screenHelper';
 import { PERSON } from '../../dataAccess/localServerModels';
 import { getLatest, prepareUpdate } from '../../dataAccess/localServerUtils.js';
-import { login, logout } from '../../actions/user';
+import { login} from '../../actions/user';
 import { trigger, UPDATE_VIEW_AS_PART_PERSON } from '../../actions/scriptEditor';
 import { log, LOGIN as logType } from '../../dataAccess/logging.js';
 import classnames from 'classnames';
@@ -25,7 +24,7 @@ import { clearStateFromBrowserStorage } from '../../dataAccess/browserStorage'
 import s from './Login.module.scss'
 
 //constants
-import { REHEARSALID, DEMOID, signOutAllUsers } from '../../dataAccess/userAccess'
+import { REHEARSALID,  signOutAllUsers } from '../../dataAccess/userAccess'
 
 function Login() {
     const dispatch = useDispatch();
@@ -90,7 +89,7 @@ function Login() {
 
         }
 
-    }, [authenticatedUser])
+    }, [authenticatedUser]) //eslint-disable-line react-hooks/exhaustive-deps
 
 
 
@@ -125,7 +124,7 @@ function Login() {
 
     const findAndLoginUser = async () => {
 
-        instance.handleRedirectPromise().then(response => {
+        instance.handleRedirectPromise().then(response => { //eslint-disable-line no-unused-vars
 
             if (accounts.length > 0) {
                 const signedInAccount = accounts[0]; // Assuming there is only one signed-in account
@@ -205,11 +204,6 @@ function Login() {
         clearStateFromBrowserStorage(dispatch)
     }
 
-    const loginDemo = () => {
-        const demo = persons.find(person => person.id === DEMOID)
-        dispatch(login(demo))
-    }
-
     const loginRehearsal = () => {
         const rehearsal = persons.find(person => person.id === REHEARSALID)
         if (rehearsal) {
@@ -218,10 +212,7 @@ function Login() {
         }
 
     }
-    const loginUnknownPerson = () => {
-        dispatch(logout())
-
-    }
+ 
 
     const isLoading = syncInfo.isSyncing && (!persons || persons?.length === 0)
     const isErrorSyncing = syncInfo.error && (!persons || persons?.length === 0)

@@ -91,7 +91,7 @@ function SceneSelector(props) {
         if (!isMobileDevice) { //doesn't do it for mobile devices due to performance
             handleUpdateScriptFilter()
         }
-    }, [searchParameters, isMobileDevice])
+    }, [searchParameters, isMobileDevice]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleUpdateScriptFilter = () => {
         const newScriptFilter = (noSearchParametersSet) ? null : filteredShowOrder.map(scene => scene.id)

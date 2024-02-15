@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { useEffect, useState, useLayoutEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -37,7 +37,7 @@ import { DEFAULT_END_MARGIN, CHAT,CLASSIC } from '../scripts/layout';
 import s from '../ScriptItem.module.scss';
 import { ElementInViewObserver } from '../../../components/ElementInViewObserver/ElementInViewObserver';
 import { isScriptReadOnly } from '../../../dataAccess/userAccess';
-import { isMobileDevice } from '../../../core/screenHelper';
+
 
 
 function ScriptItemText(props) {

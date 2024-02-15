@@ -29,7 +29,7 @@ const ScriptSummary = (props) => {
         showHighlights = false,
         viewAsPerson = null,
         onClickPart = null,
-        onDropPart = null,
+        //onDropPart = null, //TODO-implement drag and drop for parts
         allowSceneOrderChanges = false
     } = props
 
@@ -57,10 +57,11 @@ const ScriptSummary = (props) => {
     const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
 
     const isSceneDraggable = (allowSceneOrderChanges && !readOnly)
-    const isPartDraggable = (!readOnly)
+   // const isPartDraggable = (!readOnly) //TODO-implement drag and drop for parts
 
+   /* eslint-disable no-unused-vars */ //until drag and drop for parts is implemented
+    const [beingDragged, setBeingDragged] = useState(false) //TODO-implement drag and drop for parts
 
-    const [beingDragged, setBeingDragged] = useState(false)
 
     useEffect(() => {
         setTypes(typeMap.get(summaryType))

@@ -9,11 +9,11 @@ import Scene from './Scene'
 
 import ScriptViewerHeader from './ScriptViewerHeader';
 import Loader from '../../../components/Loader/Loader';
-import { Progress } from 'reactstrap';
+
 //utitilites
 import { log, SCRIPT_VIEWER as logType } from '../../../dataAccess/logging';
 import { getShowBools, CLASSIC, CHAT } from '../scripts/layout';
-
+import _ from 'lodash';
 //ConstantsdataAccess
 
 import s from '../Script.module.scss'
@@ -21,7 +21,6 @@ import s from '../Script.module.scss'
 
 function ScriptViewer(props) {
 
-    const _ = require('lodash');
 
     //props
     const { show, scenesToLoad, setScenesToLoad } = props;
@@ -104,14 +103,14 @@ function ScriptViewer(props) {
         if (loading === 'script' && scenesToLoad >= showOrder?.length) {
             setLoading(false)
         }
-    }, [scenesToLoad, showOrder])
+    }, [scenesToLoad, showOrder]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if ([CLASSIC, CHAT].includes(loading)) {
             const newViewStyle = loading
             dispatch(updateViewStyle(newViewStyle))
         }
-    }, [loading])
+    }, [loading]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if ([CLASSIC,CHAT].includes(loading))
