@@ -1,7 +1,6 @@
 import React from 'react';
 
 import underConstruction from '../../images/under-construction.png'; 
-import s from './UnderConstruction.module.scss';
 
 
  function UnderConstruction() {

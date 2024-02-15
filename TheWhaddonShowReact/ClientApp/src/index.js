@@ -2,9 +2,9 @@
 import React from 'react';
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from 'react-router-dom';
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, compose } from 'redux';
 import { Provider } from 'react-redux'
-import ReduxThunk from 'redux-thunk'
+
 
 
 
@@ -17,7 +17,7 @@ import { msalConfig } from '../src/authConfig.js'
 
 import registerServiceWorker from '../src/serviceWorkerRegistration.js';
 import axios from 'axios';
-
+import _ from 'lodash';
 import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from '../src/dataAccess/browserStorage.js';
 import { NO_INDEXED_DB } from '../src/dataAccess/indexedDB.js'
 import { defaultState as defaultUserState } from '../src/reducers/user.js'
@@ -59,8 +59,6 @@ window.addEventListener("load", function () {
     });
 
 
-//const history = createHashHistory();
-const _ = require('lodash');
 //Azure AdB2c
 const msalInstance = new PublicClientApplication(msalConfig)
 msalInstance.addEventCallback((event) => {

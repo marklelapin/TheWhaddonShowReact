@@ -266,6 +266,7 @@ module.exports = (env, argv) => {
         },
         plugins: [
             new HtmlPlugin({ template: paths.appHtml, }),
+            new ESLintPlugin(),
             new webpack.IgnorePlugin({ resourceRegExp: /^\.\/locale$/, contextRegExp: /moment$/ }),
             isProduction &&
             new MiniCssExtractPlugin({

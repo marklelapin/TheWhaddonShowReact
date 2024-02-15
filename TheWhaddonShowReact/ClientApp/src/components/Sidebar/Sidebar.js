@@ -16,13 +16,13 @@ import { refreshSync } from '../../actions/localServer';
 //components
 import { Icon } from '../../components/Icons/Icons';
 import User from '../../pages/user/Users';
-import ApiMonitor from '../../pages/apiMonitor/ApiMonitor';
+/*import ApiMonitor from '../../pages/apiMonitor/ApiMonitor'; */
 import LinksGroup from './LinksGroup/LinksGroup';
 import wslogo from '../../images/whaddon-show-logo-reversed.png';
 import wstitle from '../../images/the-whaddon-show.png';
 import classnames from 'classnames';
 import { userAccessToComponent } from '../../dataAccess/userAccess';
-
+import { log, SIDEBAR as logType } from '../../dataAccess/logging';
 import s from './Sidebar.module.scss';
 
 function Sidebar(props) {
@@ -60,14 +60,14 @@ function Sidebar(props) {
     }
 
     const onMouseEnter = () => {
-        console.log(`on mouse enter static: ${sidebarStatic} opened: ${sidebarOpened}`)
+        log(logType,`on mouse enter static: ${sidebarStatic} opened: ${sidebarOpened}`)
         if (!sidebarStatic) {
             dispatch(openSidebar());
         }
     }
 
     const onMouseLeave = () => {
-        console.log(`on mouse leave static: ${sidebarStatic} opened: ${sidebarOpened}`)
+        log(logType,`on mouse leave static: ${sidebarStatic} opened: ${sidebarOpened}`)
         if (!sidebarStatic) {
             dispatch(closeStaticSidebar());
         }

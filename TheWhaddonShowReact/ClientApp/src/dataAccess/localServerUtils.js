@@ -22,9 +22,9 @@ import {
     endSync,
     closePostBack,
     clearHasPostedBack,
-    refreshSync
 } from '../actions/localServer';
 
+import moment from 'moment';
 import { log, LOCAL_SERVER_UTILS as logType } from '../dataAccess/logging.js';
 
 
@@ -337,8 +337,6 @@ export function prepareUpdates(updates, overrideCreatedDate) {
 
 
 export function localServerDateNow(overrideCreatedDate = null) {
-
-    const moment = require("moment");
 
     const createdDate = overrideCreatedDate ? moment(overrideCreatedDate) : moment()
 

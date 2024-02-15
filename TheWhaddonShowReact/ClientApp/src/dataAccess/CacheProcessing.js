@@ -41,8 +41,9 @@ export function CacheProcessing() {
                 const file = await fetchFile(pictureRef)
 
                 const imageObjectURL = await createObjectURL(file)
-
+                
                 if (imageObjectURL) {
+                   
                     dispatch(addToCache(AVATARS, pictureRef, imageObjectURL))
                 }
 

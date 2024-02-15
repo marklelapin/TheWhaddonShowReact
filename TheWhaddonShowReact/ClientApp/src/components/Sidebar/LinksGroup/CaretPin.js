@@ -1,6 +1,4 @@
 import React from 'react';
-import { UncontrolledTooltip } from 'reactstrap';
-import classnames from 'classnames';
 import {Icon} from '../../Icons/Icons';
 
 import s from './LinksGroup.module.scss';

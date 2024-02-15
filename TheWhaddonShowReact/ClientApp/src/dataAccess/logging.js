@@ -7,9 +7,10 @@ export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdo
 
 export const APP = { type: NONE, location: 'Component: App' }
 
-export const AVATAR = { type: DEBUG, location: 'Component:Avatar' }
+export const AVATAR = { type: NONE, location: 'Component:Avatar' }
 export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
-export const CACHE_PROCESSING = { type: DEBUG, location: 'Component:CacheProcessing' }
+export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
+export const CACHE_REDUCER = { type: NONE, location: 'Reducer:cache' }
 
 export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 
@@ -63,6 +64,7 @@ export const SCRIPT = { type: NONE, location: 'Component:Script' }
 export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 export const SCRIPT_VIEWER_HEADER = { type: NONE, location: 'Component:ScriptViewerHeader' }
 
+export const SIDEBAR = { type: NONE, location: 'Component:Sidebar' }
 export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 
 export const TEST = { type: NONE, location: 'Test: ' }

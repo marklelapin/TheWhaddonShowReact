@@ -1,8 +1,8 @@
-﻿import React, { useState } from 'react';
+﻿import React from 'react';
 import { useSelector } from 'react-redux';
 
 import Avatar from '../../../components/Avatar/Avatar';
-import { Input, Tooltip} from 'reactstrap';
+import { Input} from 'reactstrap';
 
 import { log } from '../../../dataAccess/logging';
 import s from '../ScriptItem.module.scss';

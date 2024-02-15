@@ -30,7 +30,7 @@ export const loadStateFromBrowserStorage = async () => {
     catch (err) {
         log(logType, 'Failed to get state from browser Storage: ' + err);
         return undefined;
-    };
+    }
 }
 
 export const clearStateFromBrowserStorage = (dispatch) => {

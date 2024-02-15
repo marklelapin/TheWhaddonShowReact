@@ -77,7 +77,7 @@ const retrieveStateFromIndexedDB = async () => {
         const transaction = db.transaction(['reduxState'], 'readonly');
         const objectStore = transaction.objectStore('reduxState');
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => { 
             const request = objectStore.get(1);
             request.onsuccess = (event) => {
                 // Deserialize and resolve with the Redux state
@@ -85,8 +85,8 @@ const retrieveStateFromIndexedDB = async () => {
                 resolve(serializedState);
             };
 
-            request.onerror = (event) => {
-                log(logType, 'Error retrieving Redux state from IndexedDB');
+            request.onerror = (error) => {
+                log(logType, 'Error retrieving Redux state from IndexedDB',error);
                 resolve(null)
             };
         });
@@ -120,7 +120,7 @@ const saveStateToIndexedDB = async (serializedState) => {
 
 const openOrCreateReduxDB = async () => {
     log(logType, 'openOrCreateReduxDB')
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const dbRequest = indexedDB.open('reduxDB', 1);
 
         dbRequest.onupgradeneeded = (event) => {
@@ -140,8 +140,8 @@ const openOrCreateReduxDB = async () => {
             resolve(db);
 
         };
-        dbRequest.onerror = (event) => {
-            log(logType, 'Failed to open or create IndexedDB.')
+        dbRequest.onerror = (error) => {
+            log(logType, 'Failed to open or create IndexedDB.',error)
             resolve(NO_INDEXED_DB)
         };
     });

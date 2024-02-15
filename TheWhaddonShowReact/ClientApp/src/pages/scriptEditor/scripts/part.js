@@ -183,19 +183,18 @@ export const newPartPersonsFromPartUpdates = (partUpdates, currentPartPersons, s
 
 
 export const newPartPersonsFromPersonUpdates = (personUpdates, currentPartPersons) => {
-    const latestPersonUpdates = getLatest(personUpdates, true)
+    const latestPersonUpdates = getLatest(personUpdates, true);
 
-    const newPartPersons = []
-    for (const key in currentPartPersons) {
-        if (currentPartPersons.hasOwnProperty(key)) {
-            const part = currentPartPersons[key]
-            const newPerson = latestPersonUpdates.find(item => item.id === part.personId)
+    const newPartPersons = Object.keys(currentPartPersons)
+        .map(key => currentPartPersons[key])
+        .map(part => {
+            const newPerson = latestPersonUpdates.find(item => item.id === part.personId);
             if (newPerson) {
-                newPartPersons.push(addPersonInfo(part, newPerson))
+                return addPersonInfo(part, newPerson);
             }
-
-        }
-    }
+            return null;
+        })
+        .filter(Boolean);
 
     return newPartPersons;
 }

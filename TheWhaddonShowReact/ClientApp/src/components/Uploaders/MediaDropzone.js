@@ -1,7 +1,6 @@
 ﻿//React and redux
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 //Components
 import {
@@ -28,9 +27,9 @@ import s from './Uploaders.module.scss';
 function MediaDropzone(props) {
 
     const {
-        singleFile = false
-        , inputTags = true
-        , existingMediaURLs = []
+        //singleFile = false
+        //, inputTags = true
+        existingMediaURLs = []
         , addMedia
         , removeMedia
         , showControls
@@ -40,13 +39,13 @@ function MediaDropzone(props) {
         , readOnly = false
     } = props;
 
-    const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+    const {  getRootProps, getInputProps } = useDropzone({
         onDrop: (selectedURLs) => handleDrop(selectedURLs),
         accept: {
             'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
             'audio/mpeg': ['.mp3'],
         },
-    });;
+    });
 
 
     const [newMediaFiles, setNewMediaFiles] = useState([]);
@@ -131,6 +130,8 @@ function MediaDropzone(props) {
 
     const handleClick = (e, type, value = null) => {
 
+        const updatedURLs = newMediaFiles?.filter(media => media !== value && media !== value.name)
+
         switch (type) {
             case 'upload':
                 e.preventDefault()
@@ -146,7 +147,6 @@ function MediaDropzone(props) {
                 if (existingMediaURLs.includes(value.name || value)) {
                     removeMedia(value.name || value)
                 }
-                const updatedURLs = newMediaFiles.filter(media => media !== value && media !== value.name)
                 setNewMediaFiles(updatedURLs)
                 break;
             case 'submitYouTube':

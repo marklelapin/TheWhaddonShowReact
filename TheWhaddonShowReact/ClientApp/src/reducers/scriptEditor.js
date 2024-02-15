@@ -94,7 +94,7 @@ export default function scriptEditorReducer(state = initialState, action) {
 
 
 
-
+    /* eslint-disable no-case-declarations */
     switch (action.type) {
         case UPDATE_SEARCH_PARAMETERS:
             return {
@@ -277,7 +277,7 @@ export default function scriptEditorReducer(state = initialState, action) {
                         initialSyncProgress: { ...state.initialSyncProgress, part: 1 }
                     }
                 default: return state;
-            };
+            }
 
         case UPDATE_MAX_SCRIPT_ITEM_TEXT_WIDTH:
 

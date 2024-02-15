@@ -1,12 +1,11 @@
 ﻿//React and REdux
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
     CLEAR_SCRIPT,
     trigger,
     updatePersonSelectorConfig,
-    updateViewStyle,
     updateShowBools,
     updatePrintScript,
 } from '../../../actions/scriptEditor';
@@ -38,7 +37,7 @@ import { isScriptReadOnly } from '../../../dataAccess/userAccess';
 
 function ScriptViewerHeader(props) {
 
-    const { loading, setLoading } = props
+    const { setLoading } = props
 
     //utils
     const dispatch = useDispatch();
@@ -57,7 +56,6 @@ function ScriptViewerHeader(props) {
     const printScript = useSelector(state => state.scriptEditor.printScript)
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
-    console.log('scriptViewerProps', { printScript, viewStyle })
     const readOnly = isScriptReadOnly(currentUser)
 
 
@@ -69,17 +67,6 @@ function ScriptViewerHeader(props) {
         handlePrintSetup()
 
     }, [printScript, viewStyle, dispatch]) //eslint-disable-line react-hooks/exhaustive-deps
-
-    //useEffect(() => {
-    //    setLoading(false)
-    //}, [viewStyle])
-
-    //useEffect(() => {
-    //    if (loading !== false && loading !== true) {
-    //        //loading = text of new viewStyle
-    //        dispatch(updateViewStyle(loading))
-    //    }
-    //}, [loading]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleNavLink = (type) => {
         setLoading(type)

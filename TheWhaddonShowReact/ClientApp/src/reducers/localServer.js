@@ -57,6 +57,7 @@ const defaultState = {
 
 export default function localServerReducer(state = defaultState, action) {
 
+    /* eslint-disable no-case-declarations */
     switch (action.type) {
 
         //Global
@@ -116,7 +117,7 @@ export default function localServerReducer(state = defaultState, action) {
                     case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: updatedHistory } };
                     case PART: return { ...state, parts: { ...state.parts, history: updatedHistory } };
                     default: return state;
-                };
+                }
             }
         case CLOSE_POSTBACK:
             const { id, created } = action.payload;
@@ -148,7 +149,7 @@ export default function localServerReducer(state = defaultState, action) {
                 case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: updatedHistory } };
                 case PART: return { ...state, parts: { ...state.parts, history: updatedHistory } };
                 default: return state;
-            };
+            }
         case CLEAR_HAS_POSTED_BACK:
 
             const updatesToClear = action.payload
@@ -180,7 +181,7 @@ export default function localServerReducer(state = defaultState, action) {
                 case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: newHistory } };
                 case PART: return { ...state, parts: { ...state.parts, history: newHistory } };
                 default: return state;
-            };
+            }
 
         case ADD_UPDATES:
 
@@ -196,7 +197,7 @@ export default function localServerReducer(state = defaultState, action) {
                 case SCRIPT_ITEM: history = [...state.scriptItems.history]; break
                 case PART: history = [...state.parts.history]; break
                 default: return state
-            };
+            }
 
             //filter out any updates from payload that are already in the store. This can happen if postBacks have failed due to poor connection.
 
@@ -226,7 +227,7 @@ export default function localServerReducer(state = defaultState, action) {
                         updateTrigger: { updates: updatesFromServer, type: action.payloadType }
                     };
                     default: return state
-                };
+                }
 
 
             }
@@ -267,7 +268,7 @@ export default function localServerReducer(state = defaultState, action) {
                 case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, history: updatedArray } };
                 case PART: return { ...state, parts: { ...state.parts, history: updatedArray } };
                 default: return state;
-            };
+            }
         case SYNC:
             log(logType, `syncing ${action.payloadType}`)
             switch (action.payloadType) {
@@ -277,7 +278,7 @@ export default function localServerReducer(state = defaultState, action) {
                 case SCRIPT_ITEM: return { ...state, scriptItems: { ...state.scriptItems, sync: { ...state.scriptItems.sync, isSyncing: true } } };
                 case PART: return { ...state, parts: { ...state.parts, sync: { ...state.parts.sync, isSyncing: true } } };
                 default: return state;
-            };
+            }
         case REFRESH_SYNC:
             log(logType, `refresh syncing ${action.payloadType}`)
             //**LSMTypeInCode** */
@@ -344,11 +345,6 @@ export default function localServerReducer(state = defaultState, action) {
         case CLEAR_LOCAL_SERVER_STATE:
             return {
                 ...defaultState,
-            }
-        case REFRESH_SYNC:
-            return {
-                ...state,
-                scriptItems: { ...state.scriptItems, sync: { ...state.scriptItems.sync, isSyncing: false } },
             }
 
         case LOGIN:

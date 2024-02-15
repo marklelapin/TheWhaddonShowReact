@@ -11,7 +11,6 @@ import {
     Modal,
     ModalHeader,
     ModalBody,
-    ModalFooter,
 } from 'reactstrap';
 
 import { prepareUpdate } from '../../../dataAccess/localServerUtils'
@@ -27,13 +26,10 @@ export const modal = 'modal'
 
 function User(props) {
 
-
-    const debug = true;
-
     const { user: storedUser, type, closeModal, openModal = false, onCancelNewUser } = props //type = modal, headers, row.
 
-    log(debug, 'User props', props)
-    log(debug, 'User storedUser', storedUser)
+    log(logType, 'User props', props)
+    log(logType, 'User storedUser', storedUser)
 
     //Set state for internal component.
     //This user state is used to track changes to the user and is not synced with the redux store until dispatch.
