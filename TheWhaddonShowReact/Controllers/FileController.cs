@@ -31,7 +31,12 @@ namespace TheWhaddonShowReact.Controllers
 					BlobDownloadInfo download = await blobClient.DownloadAsync();
 					var contentType = download.ContentType;
 					Stream blobStream = download.Content;
-					return File(blobStream, contentType, fileName);
+
+					int maxAge = 60 * 60 * 24 * 180; // 180 days
+
+					Response.Headers.Add("Cache-Control", $"public, max-age={maxAge}");
+
+                    return File(blobStream, contentType, fileName);
 				}
 				return NotFound();
 			}

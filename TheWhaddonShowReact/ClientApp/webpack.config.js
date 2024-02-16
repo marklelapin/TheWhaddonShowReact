@@ -4,7 +4,7 @@ module.exports = (env, argv) => {
 
     const isDevelopment = process.env.NODE_ENV === 'development';
     const isProduction = !isDevelopment
-    console.log('Environement:', process.env.NODE_ENV)
+    console.log('Environment:', process.env.NODE_ENV)
     console.log('webpackmode:', argv.mode)
 
 
@@ -253,13 +253,13 @@ module.exports = (env, argv) => {
                             }
                         },
                         // "file" loader at end to catch all other files.
-                        {
-                            exclude: [/\.(js|jsx)$/, /\.html$/, /\.json$/, /\.bin$/],
-                            loader: require.resolve('file-loader'),
-                            options: {
-                                name: 'static/media/[name].[hash:8].[ext]',
-                            },
-                        },
+                        //{
+                        //    exclude: [/\.(js|jsx)$/, /\.html$/, /\.json$/, /\.bin$/],
+                        //    loader: require.resolve('file-loader'),
+                        //    options: {
+                        //        name: 'static/other/[name].[hash:8].[ext]',
+                        //    },
+                        //},
                     ],
                 },
             ]
@@ -286,6 +286,7 @@ module.exports = (env, argv) => {
                     { from: './public/apple-touch-icon.png', to: '' },
                     { from: './public/favicon.png', to: '' },
                     { from: './public/manifest.json', to: '' },
+                    { from: './public/offline.html', to: ''}
                 ],
             }),
             isProduction &&

@@ -98,6 +98,7 @@ export function Icon(props) {
         "casting": 'fa-solid fa-person-military-to-person',
         "glasses": 'fa-solid fa-glasses',
         "paper-plane": 'fa-solid fa-paper-plane',
+        "offline": 'fa-solid fa-cloud-arrow-down'
     };
 
 
