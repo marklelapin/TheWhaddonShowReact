@@ -39,6 +39,10 @@ function Header() {
     const currentUser = useSelector(store => store.user.currentUser);
  
 
+    const isServiceWorkerActivated = (navigator.serviceWorker?.controller) ? true : false;
+
+
+
     const toggleSyncMenu = () => {
         setSyncMenuOpen(!syncMenuOpen);
     }
@@ -65,7 +69,11 @@ function Header() {
                     <AccountDropdown user={user} menuOpen={accountMenuOpen} onClick={toggleAccountMenu} />
                 </div>
             </Nav>
-
+            {isServiceWorkerActivated &&
+                <div className={s.offline}> 
+                available offline
+            </div>    
+            }
         </Navbar >
 
     );

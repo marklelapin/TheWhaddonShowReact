@@ -10,14 +10,21 @@ export default function registerServiceWorker() {
 
     const wb = new Workbox('/sw.js');
 
-    wb.addEventListener('installed', event => {
-        if (event.isUpdate) {
-            //replace with button on header
-            if (confirm('New app update is available, CLick Ok to refresh')) {
-                window.location.reload();
-            }
-        }
-    })
+    wb.addEventListener('install', event => {
+        console.log('Service Worker installed', event);
+    });
+
+    wb.addEventListener('activate', event => {
+        console.log('Service Worker activated', event);
+    });
+    //wb.addEventListener('installed', event => {
+    //    if (event.isUpdate) {
+    //        //replace with button on header
+    //        if (confirm('New app update is available, CLick Ok to refresh')) {
+    //            window.location.reload();
+    //        }
+    //    }
+    //})
 
     wb.register();
     console.log('server worker registered')

@@ -1,21 +1,19 @@
 import { clientsClaim } from 'workbox-core'
-import { precacheAndRoute } from 'workbox-precaching'
-import { registerRoute } from 'workbox-routing';
+import { precacheAndRoute,createHandlerBoundToURL } from 'workbox-precaching'
+import { registerRoute, NavigationRoute} from 'workbox-routing';
 /*import {StaleWhileRevalidate} from 'workbox-strategies';*/
-import {CacheFirst} from 'workbox-strategies';
-import {CacheableResponsePlugin} from 'workbox-cacheable-response';
+import { CacheFirst } from 'workbox-strategies';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { ExpirationPlugin } from 'workbox-expiration';
 import config from '../src/config.js';
 
 import {
-    pageCache,
+
     staticResourceCache,
     googleFontsCache,
     offlineFallback,
 } from 'workbox-recipes';
 
-
-pageCache();
 
 googleFontsCache();
 
@@ -29,30 +27,19 @@ self.skipWaiting()
 
 precacheAndRoute(self.__WB_MANIFEST)
 
-
-
-const matchCallback = ({ request }) => request.destination === 'image';
 registerRoute(
-    matchCallback,
-    new CacheFirst({
-        cacheName: 'images',
-        plugins: [
-            new CacheableResponsePlugin({
-                statuses: [0, 200],
-            }),
-            new ExpirationPlugin({
-                maxEntries: 200,
-                maxAgeSeconds: 180 * 24 * 60 * 60,
-            }),
-        ],
-    })
-);
+    new NavigationRoute(
+        createHandlerBoundToURL('/index.html'), {
+        }
+    )
+)
 
 
-const fileControllerURL = config.baseURLApi + '/file/'
-console.log('fileControllerURL', fileControllerURL)
+const fileControllerURL = config.baseURLApi + '/file'
 registerRoute(
-    ({ url }) => url.startsWith(fileControllerURL),
+    ({ url }) => {
+        return url.href.startsWith(fileControllerURL)
+    },
     new CacheFirst({
         cacheName: 'files',
         plugins: [
@@ -66,3 +53,5 @@ registerRoute(
         ],
     })
 );
+
+
