@@ -6,7 +6,7 @@
     box-shadow: var(--navbar-shadow);
     height: $navbar-height;
     transition: background-color .2s ease, margin .2s ease;
-
+    position:relative;
 
     &.navbarFloatingType {
         margin: $spacer $content-padding 0;
@@ -68,7 +68,12 @@
 }
 
 .offline {
- 
+ position: absolute;
+ bottom: -10px;
+ right: 0;
+ text-align: end;
+ font-size: $font-size-xs;
+ padding-right: 10px;
 }
 
 

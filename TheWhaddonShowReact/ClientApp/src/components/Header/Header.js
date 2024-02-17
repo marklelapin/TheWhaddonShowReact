@@ -9,8 +9,6 @@ import {
     Nav
 } from 'reactstrap';
 
-import { Icon } from '../../components/Icons/Icons'
-
 import { NavbarTypes } from '../../reducers/layout';
 
 import SyncDropdown from './components/SyncDropdown';
@@ -67,15 +65,15 @@ function Header() {
                  <div style={{ display: 'flex', alignItems: 'center' }}>
                     <SyncDropdown menuOpen={syncMenuOpen} onClick={toggleSyncMenu}></SyncDropdown>
                 </div>
-                {isServiceWorkerActivated && <div className={s.offline} style={{ display: 'flex', alignItems: 'center' }}>
-                    <Icon icon="offline" toolTip="available offline"></Icon>
-                </div>
-                }
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <AccountDropdown user={user} menuOpen={accountMenuOpen} onClick={toggleAccountMenu} />
                 </div>
             </Nav>
-
+            {isServiceWorkerActivated &&
+                <div className={s.offline}> 
+                available offline
+            </div>    
+            }
         </Navbar >
 
     );
