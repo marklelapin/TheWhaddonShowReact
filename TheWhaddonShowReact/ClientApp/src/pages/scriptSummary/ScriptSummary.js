@@ -69,7 +69,9 @@ const ScriptSummary = (props) => {
     console.log(showOrder)
 
     //SETUP SCENES
-    let scenes = showOrder.map(item => ({ ...currentScriptItems[item.id], sceneNumber: item.sceneNumber, act: item.act, curtainOpen: item.curtainOpen }))
+    let scenes = showOrder?.map(item => ({ ...currentScriptItems[item.id], sceneNumber: item.sceneNumber, act: item.act, curtainOpen: item.curtainOpen })) 
+
+    if (!scenes) return null
 
     const addParts = (scenes) => {
         return scenes.map(scene => ({ ...scene, parts: [...scene.partIds.map(partId => currentPartPersons[partId]).filter(part => part !== undefined)] }))

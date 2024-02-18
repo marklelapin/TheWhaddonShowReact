@@ -15,7 +15,6 @@ import {
 } from '../../../actions/scriptEditor';
 
 //Components
-import { Dropdown, DropdownItem, DropdownMenu } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons'
 
 
@@ -25,7 +24,7 @@ import { HEADER_TYPES } from '../../../dataAccess/scriptItemTypes';
 
 //utils
 import { log, SCRIPT_ITEM_CONTROLS as logType } from '../../../dataAccess/logging';
-
+import classnames from 'classnames';
 import { moveFocusToId } from '../scripts/utility';
 
 import s from '../ScriptItem.module.scss';
@@ -71,18 +70,21 @@ function ScriptItemControls(props) {
 
 
     //event handlers
-    const toggle = () => {
 
-        setDropdownOpen(prevState => !prevState);
-    }
     const handleTypeDropdownClick = (e, type) => {
         e.preventDefault()
+setDropdownOpen(false)
         dispatch(trigger(UPDATE_TYPE, { scriptItem, value: type }))
     }
 
     const goToComment = () => {
         dispatch(setShowComments(true))
         moveFocusToId(scriptItem.commentid);
+    }
+
+    const handleAddComment = () => {
+        dispatch(setShowComments(true))
+        dispatch(trigger(ADD_COMMENT, { scriptItem }))
     }
 
     if (readOnly) return null;
@@ -93,30 +95,32 @@ function ScriptItemControls(props) {
 
             <div className={`${s['header-controls']} ${header ? s['header-exists'] : ''}`}>
 
-                    {scriptItem && HEADER_TYPES.includes(scriptItem.type) === false &&
-                        < Dropdown isOpen={dropdownOpen} toggle={toggle} className={`${s['type-dropdown']}`} >
-                            <Icon id={changeTypeId} key={changeTypeId} icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} toolTip="Change Type to Action, Staging etc." />
-                            <DropdownMenu >
-                                {bodyScriptItemTypes.map((type) => {
-                                    return <DropdownItem key={type} onClick={(e) => handleTypeDropdownClick(e, type)}>{type}</DropdownItem>
-                                })
-                                }
-                            </DropdownMenu>
-                        </Dropdown>
-                    }
+                {scriptItem && HEADER_TYPES.includes(scriptItem.type) === false &&
+                    <div className={`${s['type-dropdown']}`} >
+
+                        <Icon id={changeTypeId} key={changeTypeId} icon="menu" onClick={() => setDropdownOpen(!dropdownOpen)} toolTip="Change Type to Action, Staging etc." />
+
+                        {dropdownOpen && <div className={s['type-dropdown-menu']}>
+                            {bodyScriptItemTypes.map((type) => {
+                                return <div className={classnames(s.type,'clickable')} key={type} onClick={(e) => handleTypeDropdownClick(e, type)}>{type}</div>
+                            })
+                            }
+                        </div>}
+                    </div>
+                }
 
 
-                    {(scriptItem && !hasComment && ![SHOW, ACT, SCENE].includes(scriptItem.type)) &&
-                        <Icon id={addCommentId} key={addCommentId} icon='comment-o' onClick={() => dispatch(trigger(ADD_COMMENT, { scriptItem }))} toolTip="Add comment" />
-                    }
-                    {(hasComment && ![SHOW, ACT, SCENE].includes(scriptItem.type)) &&
-                        <Icon id={viewCommentId} key={viewCommentId} icon='comment' onClick={() => goToComment()} toolTip="View comment" />
-                    }
-                    {scriptItem && attachTypes.includes(scriptItem.type) &&
-                        <>
-                            <Icon id={attachId} key={attachId} icon="attach" onClick={() => toggleMedia()} toolTip="Attach media" />
-                        </>
-                    }
+                {(scriptItem && !hasComment && ![SHOW, ACT, SCENE].includes(scriptItem.type)) &&
+                    <Icon id={addCommentId} key={addCommentId} icon='comment-o' onClick={handleAddComment} toolTip="Add comment" />
+                }
+                {(hasComment && ![SHOW, ACT, SCENE].includes(scriptItem.type)) &&
+                    <Icon id={viewCommentId} key={viewCommentId} icon='comment' onClick={() => goToComment()} toolTip="View comment" />
+                }
+                {scriptItem && attachTypes.includes(scriptItem.type) &&
+                    <>
+                        <Icon id={attachId} key={attachId} icon="attach" onClick={() => toggleMedia()} toolTip="Attach media" />
+                    </>
+                }
             </div>
 
 

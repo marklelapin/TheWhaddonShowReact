@@ -20,7 +20,7 @@ export function findScriptItem(element, scriptItems) {
     try {
         while (currentElement && scriptItemId === null) {
 
-            if (currentElement.classList.contains('script-item')) {
+            if (currentElement.classList?.contains('script-item')) {
 
                 scriptItemId = currentElement.id;
             }
