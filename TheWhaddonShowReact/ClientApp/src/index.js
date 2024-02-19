@@ -59,6 +59,8 @@ window.addEventListener("load", function () {
     });
 
 
+console.log('msalConfig', msalConfig)
+
 //Azure AdB2c
 const msalInstance = new PublicClientApplication(msalConfig)
 msalInstance.addEventCallback((event) => {
@@ -150,8 +152,9 @@ const initApp = async () => {
         </BrowserRouter>
     );
 
-    registerServiceWorker();
-
+    if (process.env.NODE_ENV === 'production') {
+        registerServiceWorker();
+    }
 
 }
 

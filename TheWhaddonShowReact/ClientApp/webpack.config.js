@@ -139,7 +139,7 @@ module.exports = (env, argv) => {
             },
             historyApiFallback: true,
             open: true,
-            port: 60001,
+            port: 40001,
             proxy: {
                 '/api': `http://localhost:50001`
             },
