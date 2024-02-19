@@ -111,6 +111,9 @@ $script-item-control-bottom: -30px;
 
                 .type-dropdown {
                     z-index: 1;
+                    position: relative;
+
+                    
                 }
 
                 @media print {
@@ -195,6 +198,25 @@ $script-item-control-bottom: -30px;
     }
     //script-item end
 }
+
+.type-dropdown-menu {
+    position: absolute;
+    background-color: $white;
+    border-color: black;
+    display: flex;
+    top: 100%;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 10;
+    padding: 15px;
+
+    @include dropdown-box;
+
+    .type:hover {
+        background-color: #f0f0f0;
+    }
+}
+
 
 .final-script-item {
     padding-bottom: 10px;
