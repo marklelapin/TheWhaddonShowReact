@@ -58,7 +58,7 @@ function Home() {
 
     const castingText = `You are currently cast in ${totalParts} parts across ${totalScenes} scenes and have ${totalLines} lines to learn!*`
 
-    const message = 'Next Rehearsal: Wednesday 7th Feb 8pm'
+    const message = 'Next Rehearsal: Wednesday 8pm'
 
 
     const daysToGo = () => {
