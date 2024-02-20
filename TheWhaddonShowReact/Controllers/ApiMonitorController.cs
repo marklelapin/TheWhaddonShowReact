@@ -4,6 +4,10 @@ using MyApiMonitorClassLibrary.Models;
 using MyClassLibrary.ChartJs;
 using MyClassLibrary.Tests.LocalServerMethods.Tests.DataAccess;
 using TheWhaddonShowReact.Models.ApiTests;
+using static TheWhaddonShowReact.Controllers.ApiMonitorController;
+using Xunit.Sdk;
+using MyExtensions;
+using System.Drawing;
 
 namespace TheWhaddonShowReact.Controllers
 {
@@ -20,82 +24,118 @@ namespace TheWhaddonShowReact.Controllers
             _dataProcessor = dataProcessor;
         }
 
+
         private Guid AvailabilityCollectionId = Guid.Parse("c8ecdb94-36a9-4dbb-a5db-e6e036bbba0f");
         private Guid PerformanceCollectionId = Guid.Parse("05b0adac-6ee4-4390-a83b-092ca92b040d");
-        private DateTime DefaultDateFrom = DateTime.UtcNow.AddDays(-7);
-        private DateTime DefaultDateTo = DateTime.UtcNow;
 
-        private async Task<(List<ApiTestData> records, int totalRecords)> AvailabilityData(Guid testOrCollectionId, DateTime dateFrom, DateTime dateTo, int skip = 0, int limit = 1000)
+        public class ChartColors
         {
-            var output = await _dataAccess.GetAllByCollectionId(testOrCollectionId, dateFrom, dateTo, skip, limit);
-            return output;
+            public string Text = "rgba(255, 255, 255, 1)";
+            public string TrafficGreen(double opacity = 1)
+            {
+                return $"rgba(0, 255, 0, {opacity.ToString()})";
+            }
+            public string TrafficOrange(double opacity = 1)
+            {
+                return $"rgba(255,165, 0, {opacity.ToString()})";
+            }
+            public string TrafficRed(double opacity = 1)
+            {
+                return $"rgba(255, 0, 0, {opacity.ToString()})";
+            }
+
         }
 
-        private async Task<(List<ApiTestData> records, int totalRecords)> PerformanceData(Guid testOrCollectinId, DateTime dateFrom, DateTime dateTo, int skip = 0, int limit = 1000)
+        
+        private ChartColors Colors = new ChartColors();
+
+
+
+        private class DataRequest
         {
-            var output = await _dataAccess.GetAllByCollectionId(testOrCollectinId, dateFrom, dateTo, skip, limit);
-            return output;
+            public Guid TestOrCollectionId { get; set; } = Guid.Empty;
+            public DateTime DateFrom { get; set; } = DateTime.UtcNow.AddDays(-7);
+            public DateTime DateTo { get; set; } = DateTime.UtcNow;
+            public int Skip { get; set; } = 0;
+            public int Limit { get; set; } = 1000;
+
+            public DataRequest(Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
+            {
+                if (testOrCollectionId != null) { TestOrCollectionId = (Guid)testOrCollectionId; }
+                if (dateFrom != null) { DateFrom = (DateTime)dateFrom; }
+                if (dateTo != null) { DateTo = (DateTime)dateTo; }
+                Skip = skip;
+                Limit = limit;
+            }
         }
+
+        public class DataAndTotalRecords
+        {
+            public List<ApiTestData> Data = new List<ApiTestData>();
+            public int TotalRecords = 0;
+
+            public DataAndTotalRecords(List<ApiTestData> data, int totalRecords)
+            {
+                Data = data;
+                TotalRecords = totalRecords;
+            }
+        }
+
+
 
         public List<TableData> ApiTestTableData { get; set; } = new List<TableData>();
 
         [HttpGet("tableData")]
         public async Task<IActionResult> Get([FromQuery] string type, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000, Guid? testOrCollectionId = null)
         {
-            dateFrom = dateFrom ?? DefaultDateFrom;
-            dateTo = dateTo ?? DefaultDateTo;
-            Guid testCollectionId = testOrCollectionId ?? type switch
+            DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
+            DataAndTotalRecords dataAndTotalRecords = type switch
             {
-                "Availability" => AvailabilityCollectionId,
-                "Performance" => PerformanceCollectionId,
-                _ => Guid.Empty
+                "Availability" => await GetAvailabilityData(dataRequest),
+                "Performance" => await GetPerformanceData(dataRequest),
+                _ => new DataAndTotalRecords(new List<ApiTestData>(), 0)
             };
 
-            (List<ApiTestData> draftData, int totalRecords) = await _dataAccess.GetAllByCollectionId(testCollectionId, dateFrom, dateTo, skip, limit);
-
-            if (totalRecords == 0)
-            { //if it can't find any using the guid passed in as collection Id then try using it as test Id.
-
-                (draftData, totalRecords) = await _dataAccess.GetAllByTestId(testCollectionId, dateFrom, dateTo, skip, limit);
-
-            }
-
-            ApiTestTableData = draftData
+            ApiTestTableData = dataAndTotalRecords.Data
                             .OrderByDescending(x => x.TestDateTime)
                             .Select(x => new TableData(x.TestTitle
                 , x.TestDateTime, x.WasSuccessful, x.TimeToComplete, x.FailureMessage, x.ExpectedResult, x.ActualResult)).ToList();
 
             return Ok(ApiTestTableData.ToArray());
-
         }
 
         [HttpGet("chartData")]
-        public async Task<IActionResult> Get([FromQuery] Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
+        public async Task<IActionResult> Get([FromQuery] string chartType, Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
         {
-            testOrCollectionId = testOrCollectionId ?? Guid.Parse("05b0adac-6ee4-4390-a83b-092ca92b040d");
-            dateFrom = dateFrom ?? DateTime.UtcNow.AddDays(-1);
-            dateTo = dateTo ?? DateTime.UtcNow;
-
-
+            DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
+            string chartConfiguration = chartType switch
+            {
+                "ResultByDateTime" => await GetResultChartConfiguration(dataRequest),
+                "SpeedsByDateTime" => await GetSpeedChartConfiguration(dataRequest),
+                "ResultAndSpeedByTest" => await GetResultAndSpeedChartConfiguration(dataRequest),
+                "AvailabilityByDateTime" => await GetAvailabilityChartConfiguration(dataRequest),
+                _ => throw new Exception("Invalid Chart Type")
+            };
             return Ok(ApiTestTableData.ToArray());
-
         }
 
 
-        private void ConfigureResultChart()
+        private async Task<string> GetResultChartConfiguration(DataRequest dataRequest)
         {
+            List<ChartData_ResultByDateTime> resultByDateTime = await ResultByDateTime(dataRequest);
+
             var builder = new ChartBuilder("bar");
 
-            builder.AddLabels(ResultByDateTime.Select(x => x.TestDateTime.ToString("o")).ToArray())
+            builder.AddLabels(resultByDateTime.Select(x => x.TestDateTime.ToString("o")).ToArray())
                    .ConfigureYAxis(options =>
                    {
                        options.Stacked("true")
-                       .AddTitle("No of Tests", chartWhite)
+                       .AddTitle("No of Tests", Colors.Text)
                        .AddAbsoluteScaleLimits(0, 50);
                    })
                    .ConfigureXAxis(options =>
                    {
-                       options.AddTitle("DateTime", chartWhite)
+                       options.AddTitle("DateTime", Colors.Text)
                        .Stacked("true")
                        .ConvertLabelToDateTime("MMM-DD")
                        .SetTickRotation(0);
@@ -107,28 +147,30 @@ namespace TheWhaddonShowReact.Controllers
                    .AddClickEventHandler("resultChartClickHandler")
                    .AddDataset("Successes", options =>
                    {
-                       options.AddValues(ResultByDateTime.Select(x => x.SuccessfulTests).ToList())
-                               .AddColors(new ColorSet(MyColors.TrafficGreen(), MyColors.TrafficGreen(0.6)))
+                       options.AddValues(resultByDateTime.Select(x => x.SuccessfulTests).ToList())
+                               .AddColors(new ColorSet(Colors.TrafficGreen(), Colors.TrafficGreen(0.6)))
                                .AddOrder(1)
                                .SpecifyAxes(null, "y")
-                               .AddHoverFormat(new ColorSet(MyColors.TrafficGreen(), MyColors.TrafficGreen()));
+                               .AddHoverFormat(new ColorSet(Colors.TrafficGreen(), Colors.TrafficGreen()));
 
                    })
 
                     .AddDataset("Failures", options =>
                     {
-                        options.AddValues(ResultByDateTime.Select(x => x.FailedTests).ToList())
-                                .AddColors(new ColorSet(MyColors.TrafficOrangeRed(), MyColors.TrafficOrangeRed(0.6)))
+                        options.AddValues(resultByDateTime.Select(x => x.FailedTests).ToList())
+                                .AddColors(new ColorSet(Colors.TrafficRed(), Colors.TrafficRed(0.6)))
                                 .AddOrder(2)
                                 .SpecifyAxes(null, "y")
-                                .AddHoverFormat(new ColorSet(MyColors.TrafficOrangeRed(), MyColors.TrafficOrangeRed()));
+                                .AddHoverFormat(new ColorSet(Colors.TrafficRed(), Colors.TrafficRed()));
                     });
 
-            ResultChartConfiguration = builder.BuildJson();
+            string output = builder.BuildJson();
+            return output;
         }
 
-        private void ConfigureAvailabilityChart()
+        private async Task<string> GetAvailabilityChartConfiguration(DataRequest dataRequest)
         {
+            List<ChartData_SpeedsByDateTime> availabilityByDateTime = await GetAvailabilityByDateTime(dataRequest);
             var builder = new ChartBuilder("scatter");
             builder.AddDefaultPointStyle(options =>
             {
@@ -137,57 +179,61 @@ namespace TheWhaddonShowReact.Controllers
             .AddDefaultLineStyle(options =>
             {
                 options.AddLineStyle(3, null)
-                .AddColors(new ColorSet(MyColors.TrafficGreen(), MyColors.TrafficGreen(0.5)));
+                .AddColors(new ColorSet(Colors.TrafficGreen(), Colors.TrafficGreen(0.5)));
             })
             .ConfigureYAxis(options =>
             {
-                options.AddTitle("Time to Complete (ms)", chartWhite)
+                options.AddTitle("Time to Complete (ms)", Colors.Text)
                 .AddAbsoluteScaleLimits(100, 500);
             })
             .ConfigureXAxis(options =>
             {
-                options.AddTitle("Time", chartWhite)
+                options.AddTitle("Time", Colors.Text)
                 .ConvertTickToDateTime("HH:mm:ss")
-                .AddAbsoluteScaleLimits(AvailabilityByDateTime.Select(x => x.TestDateTime).Min().ToJavascriptTimeStamp()
-                                        , AvailabilityByDateTime.Select(x => x.TestDateTime).Max().ToJavascriptTimeStamp());
+                .AddAbsoluteScaleLimits(availabilityByDateTime.Select(x => x.TestDateTime).Min().ToJavascriptTimeStamp()
+                                        , availabilityByDateTime.Select(x => x.TestDateTime).Max().ToJavascriptTimeStamp());
 
             })
             .HideLegend()
             .MaintainAspectRatio(false)
             .AddDataset("Availability", options =>
             {
-                options.AddCoordinates(AvailabilityByDateTime.Select(x => new Coordinate(x.TestDateTime, (double)x.AvgSpeed!)).ToList())
+                options.AddCoordinates(availabilityByDateTime.Select(x => new Coordinate(x.TestDateTime, (double)x.AvgSpeed!)).ToList())
                 .ShowLine()
                 ;
 
             });
 
-            AvailabilityChartConfiguration = builder.BuildJson();
+            string output = builder.BuildJson();
+            return output;
         }
 
-        private void ConfigureSpeedChart()
+        private async Task<string> GetSpeedChartConfiguration(DataRequest dataRequest)
         {
+
+            List<ChartData_SpeedsByDateTime> SpeedByDateTime = await SpeedsByDateTime(dataRequest);
+
             var builder = new ChartBuilder("line");
             builder.AddLabels(SpeedByDateTime.Select(x => x.TestDateTime.ToString("o")).ToArray())
 
                    .AddDefaultPointStyle(options =>
                    {
                        options.AddStyleAndRadius("circle", 0)
-                       .AddColors(new ColorSet(MyColors.TrafficGreen(), MyColors.TrafficGreen()))
+                       .AddColors(new ColorSet(Colors.TrafficGreen(), Colors.TrafficGreen()))
                        .AddHover(6, 6)
                        .AddHit(15);
                    })
                    .AddClickEventHandler("speedChartClickHandler")
                    .ConfigureXAxis(options =>
                    {
-                       options.AddTitle("DateTime", chartWhite)
+                       options.AddTitle("DateTime", Colors.Text)
                        .ConvertLabelToDateTime("MMM-DD")
                        .SetTickRotation(0)
                        .AutoSkipTicks(true, 5);
                    })
                    .ConfigureYAxis(options =>
                    {
-                       options.AddTitle("Time To Complete (ms)", MyColors.OffWhite());
+                       options.AddTitle("Time To Complete (ms)", Colors.Text);
                    })
                    .HideLegend()
                    .MaintainAspectRatio(false)
@@ -195,7 +241,7 @@ namespace TheWhaddonShowReact.Controllers
                    {
                        options.AddValues(SpeedByDateTime.Select(x => x.MinSpeed).ToList())
                                .AddArea("+1", 1)
-                               .AddColors(new ColorSet(MyColors.TrafficGreen(), MyColors.TrafficGreen(0.5)))
+                               .AddColors(new ColorSet(Colors.TrafficGreen(), Colors.TrafficGreen(0.5)))
                                .AddOrder(1)
                                .SpecifyAxes(null, "y");
                    })
@@ -212,50 +258,53 @@ namespace TheWhaddonShowReact.Controllers
                    {
                        options.AddValues(SpeedByDateTime.Select(x => x.MaxSpeed).ToList())
                                .AddArea("-1", 1)
-                               .AddColors(new ColorSet(MyColors.TrafficGreen(), MyColors.TrafficGreen(0.5)))
+                               .AddColors(new ColorSet(Colors.TrafficGreen(), Colors.TrafficGreen(0.5)))
                                .AddOrder(3)
                                 .SpecifyAxes(null, "y");
                    });
 
 
-            SpeedChartConfiguration = builder.BuildJson();
+            string output = builder.BuildJson();
+
+            return output;
         }
 
-        private void ConfigureResultAndSpeedChart()
+        private async Task<string> GetResultAndSpeedChartConfiguration(DataRequest dataRequest)
         {
+
             Dictionary<string, List<CategoryCoordinate>> chartSeries = new Dictionary<string, List<CategoryCoordinate>>();
 
-            chartSeries.Add("Always Successfull"
-                            , ResultAndSpeedByTest.Where(x => x.AverageResult == 100 && x.LatestResult == true).Select(x => new CategoryCoordinate(x.Controller, x.Test, x.AverageTimeToComplete, $"{x.Controller}-{x.Test}", x.TestId.ToString())).ToList());
-            chartSeries.Add("Latest Successfull"
-                            , ResultAndSpeedByTest.Where(x => x.AverageResult != 100 && x.LatestResult == true).Select(x => new CategoryCoordinate(x.Controller, x.Test, x.AverageTimeToComplete, $"{x.Controller}-{x.Test}", x.TestId.ToString())).ToList());
-            chartSeries.Add("Currently Failing"
-                            , ResultAndSpeedByTest.Where(x => x.LatestResult == false).Select(x => new CategoryCoordinate(x.Controller, x.Test, x.AverageTimeToComplete, $"{x.Controller}-{x.Test}", x.TestId.ToString())).ToList());
+            List<ChartData_ResultAndSpeedByTest> resultAndSpeedByTest = await ResultAndSpeedByDateTime(dataRequest);
 
+            chartSeries.Add("Always Successfull"
+                            , resultAndSpeedByTest.Where(x => x.AverageResult == 100 && x.LatestResult == true).Select(x => new CategoryCoordinate(x.Controller, x.Test, x.AverageTimeToComplete, $"{x.Controller}-{x.Test}", x.TestId.ToString())).ToList());
+            chartSeries.Add("Latest Successfull"
+                            , resultAndSpeedByTest.Where(x => x.AverageResult != 100 && x.LatestResult == true).Select(x => new CategoryCoordinate(x.Controller, x.Test, x.AverageTimeToComplete, $"{x.Controller}-{x.Test}", x.TestId.ToString())).ToList());
+            chartSeries.Add("Currently Failing"
+                            , resultAndSpeedByTest.Where(x => x.LatestResult == false).Select(x => new CategoryCoordinate(x.Controller, x.Test, x.AverageTimeToComplete, $"{x.Controller}-{x.Test}", x.TestId.ToString())).ToList());
 
             var bubbleData = new CategoryBubbleChartData(chartSeries, 30);
-
 
             var builder = new ChartBuilder("bubble");
 
             builder.AddDataset("Always Successful", options =>
             {
                 options.AddCoordinates(bubbleData.Coordinates["Always Successfull"]!)
-                .AddColors(new ColorSet(MyColors.TrafficGreen(), MyColors.TrafficGreen(0.5)));
+                .AddColors(new ColorSet(Colors.TrafficGreen(), Colors.TrafficGreen(0.5)));
             })
                 .AddDataset("Latest Successful", options =>
                 {
                     options.AddCoordinates(bubbleData.Coordinates["Latest Successfull"])
-                    .AddColors(new ColorSet(MyColors.TrafficOrange(), MyColors.TrafficOrange(0.5)));
+                    .AddColors(new ColorSet(Colors.TrafficOrange(), Colors.TrafficOrange(0.5)));
                 })
                 .AddDataset("Currently Failing", options =>
                 {
                     options.AddCoordinates(bubbleData.Coordinates["Currently Failing"])
-                    .AddColors(new ColorSet(MyColors.TrafficRed(), MyColors.TrafficRed(0.5)));
+                    .AddColors(new ColorSet(Colors.TrafficRed(), Colors.TrafficRed(0.5)));
                 })
                 .ConfigureYAxis(options =>
                 {
-                    options.AddTitle("Test", MyColors.OffWhite())
+                    options.AddTitle("Test", Colors.Text)
                     .AddAbsoluteScaleLimits(0, bubbleData.YLabels.Count + 1)
                     .OverrideTickValues(bubbleData.YLabels.Values.Select(x => (double)x).ToList())
                     .AddTickCategoryLabels(bubbleData.YLabels)
@@ -263,7 +312,7 @@ namespace TheWhaddonShowReact.Controllers
                 })
                 .ConfigureXAxis(options =>
                 {
-                    options.AddTitle("Controller", MyColors.OffWhite())
+                    options.AddTitle("Controller", Colors.Text)
                     .AddAbsoluteScaleLimits(0, bubbleData.XLabels.Count + 1)
                     .AddTickCategoryLabels(bubbleData.XLabels)
                     .AutoSkipTicks(false)
@@ -274,11 +323,73 @@ namespace TheWhaddonShowReact.Controllers
                 .MaintainAspectRatio(false)
                 .AddClickEventHandler("resultAndSpeedChartClickHandler");
 
-
-
-            ResultAndSpeedChartConfiguration = builder.BuildJson();
-
+            string output = builder.BuildJson();
+            return output;
         }
+
+
+
+
+        private async Task<DataAndTotalRecords> GetAvailabilityData(DataRequest dataRequest)
+        {
+            Guid testOrCollectionId = dataRequest.TestOrCollectionId == Guid.Empty ? AvailabilityCollectionId : dataRequest.TestOrCollectionId;
+            var draftOutput = await _dataAccess.GetAllByCollectionId(testOrCollectionId,
+                dataRequest.DateFrom,
+                dataRequest.DateTo,
+                dataRequest.Skip,
+                dataRequest.Limit
+                );
+            if (draftOutput.total == 0)
+            { //if it can't find any using the guid passed in as collection Id then try using it as test Id.
+                draftOutput = await _dataAccess.GetAllByTestId(testOrCollectionId, dataRequest.DateFrom, dataRequest.DateTo, dataRequest.Skip, dataRequest.Limit);
+            }
+
+            DataAndTotalRecords output = new DataAndTotalRecords(draftOutput.records, draftOutput.total);
+            return output;
+        }
+        private async Task<DataAndTotalRecords> GetPerformanceData(DataRequest dataRequest)
+        {
+            Guid testOrCollectionId = dataRequest.TestOrCollectionId == Guid.Empty ? PerformanceCollectionId : dataRequest.TestOrCollectionId;
+            var draftOutput = await _dataAccess.GetAllByCollectionId(testOrCollectionId,
+                dataRequest.DateFrom,
+                dataRequest.DateTo,
+            dataRequest.Skip,
+                dataRequest.Limit
+                );
+
+            if (draftOutput.total == 0)
+            { //if it can't find any using the guid passed in as collection Id then try using it as test Id.
+                draftOutput = await _dataAccess.GetAllByTestId(testOrCollectionId, dataRequest.DateFrom, dataRequest.DateTo, dataRequest.Skip, dataRequest.Limit);
+            }
+
+            DataAndTotalRecords output = new DataAndTotalRecords(draftOutput.records, draftOutput.total);
+            return output;
+        }
+        private async Task<List<ChartData_ResultByDateTime>> ResultByDateTime(DataRequest dataRequest)
+        {
+            DataAndTotalRecords dataAndTotalRecords = await GetPerformanceData(dataRequest);
+            List<ChartData_ResultByDateTime> output = _dataProcessor.ResultByDateTime(dataAndTotalRecords.Data);
+            return output;
+        }
+        private async Task<List<ChartData_SpeedsByDateTime>> SpeedsByDateTime(DataRequest dataRequest)
+        {
+            DataAndTotalRecords dataAndTotalRecords = await GetPerformanceData(dataRequest);
+            List<ChartData_SpeedsByDateTime> output = _dataProcessor.SpeedsByDateTime(dataAndTotalRecords.Data);
+            return output;
+        }
+        private async Task<List<ChartData_ResultAndSpeedByTest>> ResultAndSpeedByDateTime(DataRequest dataRequest)
+        {
+            DataAndTotalRecords dataAndTotalRecords = await GetPerformanceData(dataRequest);
+            List<ChartData_ResultAndSpeedByTest> output = _dataProcessor.ResultAndSpeedByTest(dataAndTotalRecords.Data);
+            return output;
+        }
+        private async Task<List<ChartData_SpeedsByDateTime>> GetAvailabilityByDateTime(DataRequest dataRequest)
+        {
+            DataAndTotalRecords dataAndTotalRecords = await GetAvailabilityData(dataRequest);
+            List<ChartData_SpeedsByDateTime> output = _dataProcessor.AvailabilityByDateTime(dataAndTotalRecords.Data);
+            return output;
+        }
+
 
     }
 }
