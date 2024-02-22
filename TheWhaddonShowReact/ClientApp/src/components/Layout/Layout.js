@@ -87,7 +87,7 @@ export const Layout = (props) => {
                 <Header />
                 {/*  <Hammer onSwipe={handleSwipe}>*/}
                 <main className={classnames(s.content,isMobileDevice ? s.isMobileDevice : null)}>
-                    <TransitionGroup className="flex-full-height">
+                    <TransitionGroup id="layout-window" className="flex-full-height">
                         <CSSTransition
                             key={location.key}
                             classNames="fade"

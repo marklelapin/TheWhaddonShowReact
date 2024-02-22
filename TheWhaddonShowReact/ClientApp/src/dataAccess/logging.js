@@ -5,6 +5,7 @@ const NONE = 'NONE'
 //logTypes
 export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdown' }
 
+export const API_MONITOR = { type: NONE, location: 'Component:ApiMonitor' }
 export const APP = { type: NONE, location: 'Component: App' }
 
 export const AVATAR = { type: NONE, location: 'Component:Avatar' }
@@ -16,6 +17,8 @@ export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 
 export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
+
+export const CHART = { type: DEBUG, location: 'Component:Chart' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 export const CONFIRM_CLICK = { type: NONE, location: 'Component:ConfirmClick' }
 

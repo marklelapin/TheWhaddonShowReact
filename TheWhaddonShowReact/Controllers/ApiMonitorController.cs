@@ -8,11 +8,13 @@ using static TheWhaddonShowReact.Controllers.ApiMonitorController;
 using Xunit.Sdk;
 using MyExtensions;
 using System.Drawing;
+using MongoDB.Bson.IO;
+using System.Text.Json;
 
 namespace TheWhaddonShowReact.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ApiMonitorController : ControllerBase
     {
         private readonly IApiTestDataAccess _dataAccess;
@@ -30,18 +32,22 @@ namespace TheWhaddonShowReact.Controllers
 
         public class ChartColors
         {
-            public string Text = "rgba(255, 255, 255, 1)";
+            public string Text = "rgba(0, 0, 0, 1)";
             public string TrafficGreen(double opacity = 1)
             {
-                return $"rgba(0, 255, 0, {opacity.ToString()})";
+                return $"rgba(38, 205, 95, {opacity.ToString()})";
             }
             public string TrafficOrange(double opacity = 1)
             {
-                return $"rgba(255,165, 0, {opacity.ToString()})";
+                return $"rgba(235,184, 52, {opacity.ToString()})";
             }
             public string TrafficRed(double opacity = 1)
             {
-                return $"rgba(255, 0, 0, {opacity.ToString()})";
+                return $"rgba(255,85, 116, {opacity.ToString()})";
+            }
+            public string TrafficOrangeRed(double opacity = 1)
+            {
+                return $"rgba(255, 125, 71, {opacity.ToString()})";
             }
 
         }
@@ -82,7 +88,6 @@ namespace TheWhaddonShowReact.Controllers
         }
 
 
-
         public List<TableData> ApiTestTableData { get; set; } = new List<TableData>();
 
         [HttpGet("tableData")]
@@ -108,6 +113,9 @@ namespace TheWhaddonShowReact.Controllers
         public async Task<IActionResult> Get([FromQuery] string chartType, Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
         {
             DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
+            
+            List<string> chartConfigurations = new List<string>();
+
             string chartConfiguration = chartType switch
             {
                 "ResultByDateTime" => await GetResultChartConfiguration(dataRequest),
@@ -116,9 +124,23 @@ namespace TheWhaddonShowReact.Controllers
                 "AvailabilityByDateTime" => await GetAvailabilityChartConfiguration(dataRequest),
                 _ => throw new Exception("Invalid Chart Type")
             };
-            return Ok(ApiTestTableData.ToArray());
+            return Ok(chartConfiguration);
         }
 
+        [HttpGet("values")]
+        public async Task<IActionResult> Get([FromQuery] Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
+        {
+            DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
+            DataAndTotalRecords dataAndTotalRecords = await GetPerformanceData(dataRequest);
+              
+            int reliability = (int)dataAndTotalRecords.Data.Select(x => x.WasSuccessful ? 100 : 0).Average();
+            int averageSpeed = (int)(dataAndTotalRecords.Data.Where(x=>x.WasSuccessful==true && x.TimeToComplete != null).Select(x => x.TimeToComplete).Average() ?? 0);
+         
+            var output = new { reliability, averageSpeed };
+            string jsonResult = JsonSerializer.Serialize(output);
+
+            return Ok(jsonResult);
+        }   
 
         private async Task<string> GetResultChartConfiguration(DataRequest dataRequest)
         {
@@ -144,7 +166,7 @@ namespace TheWhaddonShowReact.Controllers
                    })
                    .HideLegend()
                    .MaintainAspectRatio(false)
-                   .AddClickEventHandler("resultChartClickHandler")
+                   .AddClickEventHandler("onClick")
                    .AddDataset("Successes", options =>
                    {
                        options.AddValues(resultByDateTime.Select(x => x.SuccessfulTests).ToList())
@@ -207,7 +229,7 @@ namespace TheWhaddonShowReact.Controllers
             string output = builder.BuildJson();
             return output;
         }
-
+        
         private async Task<string> GetSpeedChartConfiguration(DataRequest dataRequest)
         {
 
@@ -223,10 +245,10 @@ namespace TheWhaddonShowReact.Controllers
                        .AddHover(6, 6)
                        .AddHit(15);
                    })
-                   .AddClickEventHandler("speedChartClickHandler")
+                   .AddClickEventHandler("onClick")
                    .ConfigureXAxis(options =>
                    {
-                       options.AddTitle("DateTime", Colors.Text)
+                       options.AddTitle("DateTime",Colors.Text)
                        .ConvertLabelToDateTime("MMM-DD")
                        .SetTickRotation(0)
                        .AutoSkipTicks(true, 5);
@@ -308,7 +330,7 @@ namespace TheWhaddonShowReact.Controllers
                     .AddAbsoluteScaleLimits(0, bubbleData.YLabels.Count + 1)
                     .OverrideTickValues(bubbleData.YLabels.Values.Select(x => (double)x).ToList())
                     .AddTickCategoryLabels(bubbleData.YLabels)
-                    .TickColor(Color.Gainsboro);
+                    .TickColor(Colors.Text);
                 })
                 .ConfigureXAxis(options =>
                 {
@@ -317,11 +339,11 @@ namespace TheWhaddonShowReact.Controllers
                     .AddTickCategoryLabels(bubbleData.XLabels)
                     .AutoSkipTicks(false)
                     .SetTickRotation(90)
-                    .TickColor(Color.Gainsboro);
+                    .TickColor(Colors.Text);
                 })
                 //.HideLegend()
                 .MaintainAspectRatio(false)
-                .AddClickEventHandler("resultAndSpeedChartClickHandler");
+                .AddClickEventHandler("onClick");
 
             string output = builder.BuildJson();
             return output;

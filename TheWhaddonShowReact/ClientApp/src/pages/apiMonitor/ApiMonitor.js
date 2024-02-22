@@ -1,5 +1,11 @@
-/*import React, { useState } from 'react';*/
-import { useSelector} from 'react-redux';
+import React, { useState, useEffect } from 'react';
+/*import { useSelector } from 'react-redux';*/
+import axios from 'axios';
+
+
+//Components
+import Chart from '../../components/Chart/Chart';
+import DashboardBox from './components/DashboardBox';
 //import {
 //    updateFromTo
 //    , toggleShowSuccess
@@ -9,29 +15,96 @@ import { useSelector} from 'react-redux';
 //} from '../../actions/apiMonitor';
 //import Datetime from 'react-datetime';
 
-//import {
-//    Row,
-//    Col,
-//    Button,
-//    Label,
-//    Input,
-//    FormGroup
-//} from 'reactstrap';
+//utilties
+import classnames from 'classnames';
+import { log, API_MONITOR as logType } from '../../dataAccess/logging'
 
-//import Widget from '../../components/Widget';
-
-
+import s from './ApiMonitor.module.scss';
 //import ResultsTable from './components/ResultsTable';
 
 const ApiMonitor = () => {
 
     //const dispatch = useDispatch();
 
-    const dateFrom = useSelector((state) => state.apiMonitor.dateFrom)
-    const dateTo = useSelector(state => state.apiMonitor.dateTo)
-    const search = useSelector(state => state.apiMonitor.search)
-    const showSuccess = useSelector(state => state.apiMonitor.showSuccess)
-    const showFailure = useSelector(state => state.apiMonitor.showFailure)
+    const dateFrom = null //useSelector((state) => state.apiMonitor.dateFrom) || null
+    const dateTo = null//useSelector(state => state.apiMonitor.dateTo) || null
+    //const search = useSelector(state => state.apiMonitor.search)
+    //const showSuccess = useSelector(state => state.apiMonitor.showSuccess)
+    //const showFailure = useSelector(state => state.apiMonitor.showFailure)
+
+
+    const [resultsChartConfig, setResultsChartConfig] = useState(null)
+    const [speedChartConfig, setSpeedChartConfig] = useState(null)
+    const [resultAndSpeedChartConfig, setResultAndSpeedChartConfig] = useState(null)
+    const [availabilityChartConfig, setAvailabilityChartConfig] = useState(null)
+    const [reliability, setReliability] = useState(null)
+    const [averageSpeed, setAverageSpeed] = useState(null)
+    //const layoutHeight = useSelector(state => state.device.layoutHeight);
+    //const layoutWidth = useSelector(state => state.device.layoutWidth);
+
+    //const [refreshTrigger, setRefreshTrigger] = useState(1)
+
+
+    //useEffect(() => {
+    //    setRefreshTrigger(refreshTrigger + 1)   
+    //}, [layoutHeight, layoutWidth]) //eslint-disable-line react-hooks/exhaustive-deps
+
+
+
+
+    useEffect(() => {
+        setChartConfigs()
+    }, []) //eslint-disable-line react-hooks/exhaustive-deps
+
+    const setChartConfigs = async () => {
+        const resultsChart = await getChartConfig('ResultByDateTime')
+        const speedChart = await getChartConfig('SpeedsByDateTime')
+        const resultAndSpeedChart = await getChartConfig('ResultAndSpeedByTest')
+        const availabilityChart = await getChartConfig('AvailabilityByDateTime')
+        const { reliability, averageSpeed } = await getValues()
+        setAverageSpeed(averageSpeed)
+        setReliability(reliability)
+        setResultsChartConfig(resultsChart)
+        setSpeedChartConfig(speedChart)
+        setResultAndSpeedChartConfig(resultAndSpeedChart)
+        setAvailabilityChartConfig(availabilityChart)
+    }
+
+    const getChartConfig = async (chartType) => {
+
+        try {
+            const response = await axios({
+                method: 'get',
+                url: 'apimonitor/chartdata',
+                params: {
+                    chartType: chartType,
+                    dateFrom: dateFrom,
+                    dateTo: dateTo
+                }
+            })
+
+            return response.data
+        } catch (error) {
+            console.error(`Error fetching ${chartType} config: ${error.message}`)
+        }
+    }
+
+    const getValues = async () => {
+
+        try {
+            const response = await axios.get('apimonitor/values')
+
+            const { reliability, averageSpeed } = response.data
+
+            return { reliability, averageSpeed }
+
+        } catch (error) {
+            console.error(`Error fetching values: ${error.message}`)
+        }
+
+    }
+
+
 
 
     //const [showUpdateButton, setShowUpdateButton] = useState(false)
@@ -39,7 +112,7 @@ const ApiMonitor = () => {
     //handleUpdateButtonClick = () => {
     //    dispatch(updateFromTo({ dateFrom, dateTo }))
     //    dispatch(updateIsLoading(true))
-    //    setShowUpdateButton(false) 
+    //    setShowUpdateButton(false)
     //}
 
     ////Show Success/Failure checkbox functions
@@ -56,12 +129,113 @@ const ApiMonitor = () => {
     //    dispatch(updateSearch({ search: e.target.value }))
     //}
 
+    const resultAndSpeedChartClickHandler = (event) => { //eslint-disable-line no-unused-vars
+
+        alert('resultAndSpeedChartClickHandler')
+        //const activeElements = resultChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true)
+
+        //if (activeElements.length) {
+        //    const firstElement = activeElements[0];
+        //    const id = resultAndSpeedChart.data.datasets[firstElement.datasetIndex].data[firstElement.index].Id;
 
 
-    console.log(`datePickedFrom: ${dateFrom} datePickedTo: ${dateTo} search: ${search} showSuccess: ${showSuccess} showFailure: ${showFailure}`)
+        //    window.location.href = '/Results/' + id + '/@Model.DateFrom.ToString("o")/@Model.DateTo.ToString("o")';
+        //}
+    }
+
+    function resultChartClickHandler(event) { //eslint-disable-line no-unused-vars
+
+        alert('resultChartClickHandler')
+        //const activeElements = resultChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true)
+
+        //if (activeElements.length) {
+        //    const firstElement = activeElements[0];
+        //    const testDateString = resultChart.data.labels[firstElement.index];
+
+        //    window.location.href = '/Results/@Model.CollectionId/' + testDateString + '/' + testDateString
+        //}
+
+    }
+
+    function speedChartClickHandler(event) { //eslint-disable-line no-unused-vars
+        alert('speedChartClickHandler')
+        // resultChartClickHandler(event)
+    }
+
+    log(logType, 'ResultsChartConfig', resultsChartConfig)
     return (
-        null
-        //<div>
+        <div className={s.apiMonitorPage}>
+            <h1>Api Monitor</h1>
+            <div className={classnames(s.dashboardContainer)}>
+
+                <div className={s.section}>
+                    <div className={s.column}>
+                        <div className={s.row}>
+
+                            <DashboardBox id="percentage-reliability"
+                                title="Reliability"
+                                note="Total successes and failures when controller test run every 4 hours."
+                                bigContent={`${reliability}%`} />
+
+                            <DashboardBox id="average-speed"
+                                title="Average Speed"
+                                note="The average speed of all succesful tests conducted in period."
+                                bigContent={`${averageSpeed}ms`} />
+
+                        </div>
+
+                        <DashboardBox id="availability-chart-box"
+                            title="Availability (last 30 minutes)"
+                            note="Chart shows speed of simple get call every 4 seconds.">
+                            <Chart id="availability-chart" config={availabilityChartConfig} />
+                        </DashboardBox>
+
+                    </div>
+
+                </div>
+
+                <div className={s.section}>
+                    <div className={s.column}>
+
+                        <DashboardBox id="result-chart-box"
+                            title="Reliability"
+                            note="Test Success and Failures for Controller Test Run every 4 hours"
+                            >
+                            <Chart id="result-chart" config={resultsChartConfig} onClick={resultChartClickHandler} />
+                        </DashboardBox>
+
+                        <DashboardBox id="speed-chart-dashboard-box"
+                            title="Speed"
+                            note="Shows the average time to complete test calls to the api(black line) and the range of times in green."
+                            >
+                            <Chart id="speedChart" config={speedChartConfig} onClick={speedChartClickHandler} />
+                        </DashboardBox>
+
+                    </div>
+                </div>
+
+                <div className={s.section}>
+                    <div className={s.row}>
+                        <DashboardBox id="result-speed-chart-box"
+                            title="Breakdown By Controller and Test"
+                            note="Shows average time (size of bubble) and reliability (color) for combinations of controller and test actions."
+                        >
+                            <Chart id="result-speed-chart" config={resultAndSpeedChartConfig} onClick={resultAndSpeedChartClickHandler} />
+                        </DashboardBox>
+
+                    </div>
+
+                </div>
+
+            </div >
+        </div>
+    )
+
+}
+
+export default ApiMonitor;
+
+   //<div>
         //    <h2 className="page-title">Api Monitor - <span className="fw-semi-bold">Test Results</span></h2>
 
         //    <>
@@ -153,9 +327,3 @@ const ApiMonitor = () => {
 
 
         //</div>
-    );
-
-}
-
-
-export default ApiMonitor;

@@ -1,0 +1,32 @@
+﻿@import '../../../styles/app';
+
+
+
+    .box {
+       height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+
+        .header {
+            flex: auto 30px;
+        }
+
+        .content {
+            flex: 1;
+
+            &.big {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 3em;
+                font-weight: $font-weight-bolder;
+            }
+        }
+
+        .footer {
+            flex :auto 30px;
+            font-size: $font-size-xs;
+        }
+    }
+
