@@ -1,0 +1,6 @@
+{
+  "name": "apiTestResults",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ApiTestResults.js"
+}

@@ -13,6 +13,7 @@ import ErrorPage from '../pages/error/ErrorPage';
 
 import {SHOW } from '../pages/scriptSummary/ScriptSummary'
 import ApiMonitor from '../pages/apiMonitor/ApiMonitor';
+import ApiDocumentation from '../pages/apiDocumentation/ApiDocumentation';
 
 
 const Routing = () => {
@@ -28,7 +29,9 @@ const Routing = () => {
             <Route path="/app/casting" element={<Casting />} />
             <Route path="/app/gallery" element={<UnderConstruction/>} />
             <Route path="/app/users" element={<Users/>} />
-            <Route path="/app/api" element={<ApiMonitor/>} />
+            <Route path="/app/api" element={<ApiDocumentation />} />
+            <Route path="/app/api/monitor" element={<ApiMonitor />} />
+            <Route path="/app/api/documentation" element={<ApiDocumentation />} />
             <Route path="/error" element={<ErrorPage />} />
             <Route path="*" element={<Navigate to="/app/home" />} />
         </Routes>
