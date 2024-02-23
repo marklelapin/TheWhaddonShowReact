@@ -1,122 +1,18 @@
 @import '../../styles/app';
 
 
-
-.apiMonitorPage {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-
-    h1 {
-        height: auto;
-    }
-}
-
-.dashboardContainer {
+.container {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    overflow:auto;
 
-    .section {
-        height: 100%;
-        flex: 1 350px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    .imgContainer {
+        width: 80%;
+        height: 80%;
     }
 
-    .column {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
+    img {
+        @include dropdown-box;
     }
-
-    .row {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        height: 100%;
-    }
-}
-
-
-.percentageReliability {
-}
-
-.averageSpeed {
-}
-
-.resultChart {
-}
-
-.resultSpeedChart {
-}
-
-.availabilityChart {
-}
-
-.speedChart {
-}
-
-.resultSpeedChart {
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.bootstrapTable {
-    border: none;
-
-    :global .table {
-        thead,
-        tbody {
-            th,
-            td {
-                border-right: none;
-                border-left: none;
-                vertical-align: middle;
-            }
-        }
-
-        thead th {
-            background: transparent;
-        }
-    }
-}
-
-.react-bs-table .react-bs-container-footer > table > thead > tr > th, .react-bs-table .react-bs-container-header > table > thead > tr > th {
-    border: none;
-    background: theme-color('inverse');
-    color: $gray-100;
-}
-
-.ReactTable .rt-thead.-filters {
-    border: none;
-}
-
-.ReactTable .rt-thead .rt-tr {
-    background: theme-color('inverse');
-    color: $gray-100;
 }
