@@ -40,14 +40,19 @@ const Chart = (props) => {
 
 
     useEffect(() => {
-        if (chartRef.current && config) {
+        if (chartRef.current) {
             const chartInstance = chartRef.current.chartInstance;
+      
             if (chartInstance) {
                 chartInstance.destroy();
             }
 
-            createChartInstance();
+            if (!config) return;
 
+            const newChartInstance = createChartInstance();
+
+            chartRef.current.chartInstance = newChartInstance
+       
         }
     }, [config]) //eslint-disable-line react-hooks/exhaustive-deps
 
@@ -77,15 +82,23 @@ const Chart = (props) => {
 
         const func = new Function('chartJs', 'chartRef', 'onClick', 'moment', `return new chartJs(chartRef.current, ${config})`);
         console.log('function', func)
-        func(chartJs, chartRef, onClick, moment)//eslint-disable-line no-new-func
-
+        const newChartInstance = func(chartJs, chartRef, onClick, moment)//eslint-disable-line no-new-func
+        return newChartInstance;
     }
 
     //div with height 100% is needed to stop chart.js from continually growing
 
     return (
-        <div style={{height: '100%',width:'100%',position:'relative'} }> 
-         <canvas id={id} ref={chartRef}></canvas>
+        <div style={{ height: '100%', width: '100%', position: 'relative' }}> 
+            {config &&
+                <canvas id={id} ref={chartRef}></canvas> 
+            }
+            {!config &&
+                <div>
+                    No data
+                </div>
+            
+            }
         </div>
        
     )

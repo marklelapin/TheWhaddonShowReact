@@ -27,10 +27,77 @@ import DataLoading from '../../../components/DataLoading/DataLoading';
 
 const ResultsTable = () => {
 
-    //const { open, sizePerPageList, currSizePerPage, toggleDropDown } = props;
+    //const { collectionType = null, dateFrom=null, dataTo=null,skip=null,limit = null,testOrCollectionId = null} = props;
 
+    //const getTableData = async () => {
+    //    const tableData = await getTableData()
+    //    setTotalRecords(tableData.totalRecords)
+    //    setTableData(tableData.data)
+    //}
 
+    //const getTableData = async () => {
+    //    try {
+    //        const response = await axios({
+    //            method: 'get',
+    //            url: 'apimonitor/tableData',
+    //            params: {
+    //                dateFrom: dateFrom,
+    //                dateTo: dateTo,
+    //                skip: 0,
+    //                limit: 10000,
+    //            }
+    //        })
 
+    //        return response.data
+    //    } catch (error) {
+    //        console.error(`Error fetching table data: ${error.message}`)
+    //    }
+    //}
+    //<div className={s.dateFilter}>
+    //                <div className={s.datePicker}>
+    //                    <Label for="fromdatetimepicker">From</Label>
+    //                    <Datetime
+    //                        value={dateFrom}
+    //                        id="fromdatetimepicker"
+    //                        //open={this.state.isDatePickerOpen}
+    //                        viewMode="time"
+    //                        timeFormat="HH:mm"
+    //                        onChange={changeDateFrom}
+    //                    />
+    //                </div>
+    //                <div className={s.datePicker}>
+    //                    <Label for="fromdatetimepicker">To</Label>
+    //                    <Datetime
+    //                        value={dateTo}
+    //                        id="fromdatetimepicker"
+    //                        //open={this.state.isDatePickerOpen}
+    //                        viewMode="time"
+    //                        timeFormat="HH:mm"
+    //                        onChange={changeDateTo}
+    //                    />
+    //                </div>
+    //            </div>
+
+    //            <div className="datepicker" style={{ display: 'flex' }}>
+
+    //                <span className="input-group-text" onClick={() => { refDatePicker.focus(); }}>
+    //                    <i className="glyphicon glyphicon-time" />
+    //                </span>
+    //            </div>
+
+    //            <Label for="todatetimepicker">To</Label>
+    //            <div className="datepicker" style={{ display: 'flex' }}>
+    //                <Datetime
+    //                    value={dateTo}
+    //                    id="todatetimepicker"
+    //                    //open={this.state.isTimePickerOpen}
+    //                    viewMode="time"
+    //                    timeFormat="HH:mm"
+    //                    onChange={handleDatePickedToChange}
+    //                    inputProps={{ ref: (input) => { refTimePicker = input; } }}
+    //                />
+    //                <span className="input-group-text" onClick={() => { refTimePicker.focus() }} ><i className="glyphicon glyphicon-time" /></span>
+    //            </div>
 
     //const dispatch = useDispatch()
 

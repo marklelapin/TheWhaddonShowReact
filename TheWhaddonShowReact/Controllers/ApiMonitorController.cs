@@ -10,6 +10,7 @@ using MyExtensions;
 using System.Drawing;
 using MongoDB.Bson.IO;
 using System.Text.Json;
+using Microsoft.Net.Http.Headers;
 
 namespace TheWhaddonShowReact.Controllers
 {
@@ -52,7 +53,7 @@ namespace TheWhaddonShowReact.Controllers
 
         }
 
-        
+
         private ChartColors Colors = new ChartColors();
 
 
@@ -91,10 +92,11 @@ namespace TheWhaddonShowReact.Controllers
         public List<TableData> ApiTestTableData { get; set; } = new List<TableData>();
 
         [HttpGet("tableData")]
-        public async Task<IActionResult> Get([FromQuery] string type, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000, Guid? testOrCollectionId = null)
+        public async Task<IActionResult> Get([FromQuery] string? collectionType = "Performance", DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000, Guid? testOrCollectionId = null)
         {
             DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
-            DataAndTotalRecords dataAndTotalRecords = type switch
+
+            DataAndTotalRecords dataAndTotalRecords = collectionType switch
             {
                 "Availability" => await GetAvailabilityData(dataRequest),
                 "Performance" => await GetPerformanceData(dataRequest),
@@ -106,45 +108,54 @@ namespace TheWhaddonShowReact.Controllers
                             .Select(x => new TableData(x.TestTitle
                 , x.TestDateTime, x.WasSuccessful, x.TimeToComplete, x.FailureMessage, x.ExpectedResult, x.ActualResult)).ToList();
 
-            return Ok(ApiTestTableData.ToArray());
+            var output = new { data = ApiTestTableData, totalRecords = dataAndTotalRecords.TotalRecords };
+            var jsonOutput = JsonSerializer.Serialize(output);
+            return Ok(output);
         }
 
         [HttpGet("chartData")]
         public async Task<IActionResult> Get([FromQuery] string chartType, Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
         {
             DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
-            
-            List<string> chartConfigurations = new List<string>();
+            DataAndTotalRecords dataAndTotalRecords;
 
-            string chartConfiguration = chartType switch
+            switch (chartType)
             {
-                "ResultByDateTime" => await GetResultChartConfiguration(dataRequest),
-                "SpeedsByDateTime" => await GetSpeedChartConfiguration(dataRequest),
-                "ResultAndSpeedByTest" => await GetResultAndSpeedChartConfiguration(dataRequest),
-                "AvailabilityByDateTime" => await GetAvailabilityChartConfiguration(dataRequest),
-                _ => throw new Exception("Invalid Chart Type")
+                case "performance":
+                    dataAndTotalRecords = await GetPerformanceData(dataRequest);
+                    var performanceData = dataAndTotalRecords.Data;
+
+                    string resultsChartConfig = await GetResultChartConfiguration(performanceData);
+                    string speedChartConfig = await GetSpeedChartConfiguration(performanceData);
+                    string resultAndSpeedChartConfig = await GetResultAndSpeedChartConfiguration(performanceData);
+
+                    int reliability = (int)dataAndTotalRecords.Data.Select(x => x.WasSuccessful ? 100 : 0).Average();
+                    int averageSpeed = (int)(dataAndTotalRecords.Data.Where(x => x.WasSuccessful == true && x.TimeToComplete != null).Select(x => x.TimeToComplete).Average() ?? 0);
+
+                    var output = new { reliability, averageSpeed, resultsChartConfig, speedChartConfig, resultAndSpeedChartConfig };
+                    string jsonOutput = JsonSerializer.Serialize(output);
+
+                    return Ok(jsonOutput);
+
+                  
+                case "availability":
+                    dataAndTotalRecords = await GetAvailabilityData(dataRequest);
+
+                    var availabilityData = dataAndTotalRecords.Data;
+                    string availabilityChartConfig = await GetAvailabilityChartConfiguration(availabilityData);
+                    return Ok(availabilityChartConfig);
+                    
+                default:
+                    return BadRequest("Invalid Chart Type");
+                    
             };
-            return Ok(chartConfiguration);
+
         }
 
-        [HttpGet("values")]
-        public async Task<IActionResult> Get([FromQuery] Guid? testOrCollectionId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000)
-        {
-            DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
-            DataAndTotalRecords dataAndTotalRecords = await GetPerformanceData(dataRequest);
-              
-            int reliability = (int)dataAndTotalRecords.Data.Select(x => x.WasSuccessful ? 100 : 0).Average();
-            int averageSpeed = (int)(dataAndTotalRecords.Data.Where(x=>x.WasSuccessful==true && x.TimeToComplete != null).Select(x => x.TimeToComplete).Average() ?? 0);
-         
-            var output = new { reliability, averageSpeed };
-            string jsonResult = JsonSerializer.Serialize(output);
 
-            return Ok(jsonResult);
-        }   
-
-        private async Task<string> GetResultChartConfiguration(DataRequest dataRequest)
+        private async Task<string> GetResultChartConfiguration(List<ApiTestData> performanceData)
         {
-            List<ChartData_ResultByDateTime> resultByDateTime = await ResultByDateTime(dataRequest);
+            List<ChartData_ResultByDateTime> resultByDateTime = await ResultByDateTime(performanceData);
 
             var builder = new ChartBuilder("bar");
 
@@ -190,9 +201,9 @@ namespace TheWhaddonShowReact.Controllers
             return output;
         }
 
-        private async Task<string> GetAvailabilityChartConfiguration(DataRequest dataRequest)
+        private async Task<string> GetAvailabilityChartConfiguration(List<ApiTestData> availabilityData)
         {
-            List<ChartData_SpeedsByDateTime> availabilityByDateTime = await GetAvailabilityByDateTime(dataRequest);
+            List<ChartData_SpeedsByDateTime> availabilityByDateTime = await GetAvailabilityByDateTime(availabilityData);
             var builder = new ChartBuilder("scatter");
             builder.AddDefaultPointStyle(options =>
             {
@@ -229,11 +240,11 @@ namespace TheWhaddonShowReact.Controllers
             string output = builder.BuildJson();
             return output;
         }
-        
-        private async Task<string> GetSpeedChartConfiguration(DataRequest dataRequest)
+
+        private async Task<string> GetSpeedChartConfiguration(List<ApiTestData> performanceData)
         {
 
-            List<ChartData_SpeedsByDateTime> SpeedByDateTime = await SpeedsByDateTime(dataRequest);
+            List<ChartData_SpeedsByDateTime> SpeedByDateTime = await SpeedsByDateTime(performanceData);
 
             var builder = new ChartBuilder("line");
             builder.AddLabels(SpeedByDateTime.Select(x => x.TestDateTime.ToString("o")).ToArray())
@@ -248,7 +259,7 @@ namespace TheWhaddonShowReact.Controllers
                    .AddClickEventHandler("onClick")
                    .ConfigureXAxis(options =>
                    {
-                       options.AddTitle("DateTime",Colors.Text)
+                       options.AddTitle("DateTime", Colors.Text)
                        .ConvertLabelToDateTime("MMM-DD")
                        .SetTickRotation(0)
                        .AutoSkipTicks(true, 5);
@@ -291,12 +302,12 @@ namespace TheWhaddonShowReact.Controllers
             return output;
         }
 
-        private async Task<string> GetResultAndSpeedChartConfiguration(DataRequest dataRequest)
+        private async Task<string> GetResultAndSpeedChartConfiguration(List<ApiTestData> performanceData)
         {
 
             Dictionary<string, List<CategoryCoordinate>> chartSeries = new Dictionary<string, List<CategoryCoordinate>>();
 
-            List<ChartData_ResultAndSpeedByTest> resultAndSpeedByTest = await ResultAndSpeedByDateTime(dataRequest);
+            List<ChartData_ResultAndSpeedByTest> resultAndSpeedByTest = await ResultAndSpeedByDateTime(performanceData);
 
             chartSeries.Add("Always Successfull"
                             , resultAndSpeedByTest.Where(x => x.AverageResult == 100 && x.LatestResult == true).Select(x => new CategoryCoordinate(x.Controller, x.Test, x.AverageTimeToComplete, $"{x.Controller}-{x.Test}", x.TestId.ToString())).ToList());
@@ -387,28 +398,24 @@ namespace TheWhaddonShowReact.Controllers
             DataAndTotalRecords output = new DataAndTotalRecords(draftOutput.records, draftOutput.total);
             return output;
         }
-        private async Task<List<ChartData_ResultByDateTime>> ResultByDateTime(DataRequest dataRequest)
+        private async Task<List<ChartData_ResultByDateTime>> ResultByDateTime(List<ApiTestData> performanceData)
         {
-            DataAndTotalRecords dataAndTotalRecords = await GetPerformanceData(dataRequest);
-            List<ChartData_ResultByDateTime> output = _dataProcessor.ResultByDateTime(dataAndTotalRecords.Data);
+            List<ChartData_ResultByDateTime> output = _dataProcessor.ResultByDateTime(performanceData);
             return output;
         }
-        private async Task<List<ChartData_SpeedsByDateTime>> SpeedsByDateTime(DataRequest dataRequest)
-        {
-            DataAndTotalRecords dataAndTotalRecords = await GetPerformanceData(dataRequest);
-            List<ChartData_SpeedsByDateTime> output = _dataProcessor.SpeedsByDateTime(dataAndTotalRecords.Data);
+        private async Task<List<ChartData_SpeedsByDateTime>> SpeedsByDateTime(List<ApiTestData> performanceData)
+        { 
+            List<ChartData_SpeedsByDateTime> output = _dataProcessor.SpeedsByDateTime(performanceData);
             return output;
         }
-        private async Task<List<ChartData_ResultAndSpeedByTest>> ResultAndSpeedByDateTime(DataRequest dataRequest)
-        {
-            DataAndTotalRecords dataAndTotalRecords = await GetPerformanceData(dataRequest);
-            List<ChartData_ResultAndSpeedByTest> output = _dataProcessor.ResultAndSpeedByTest(dataAndTotalRecords.Data);
+        private async Task<List<ChartData_ResultAndSpeedByTest>> ResultAndSpeedByDateTime(List<ApiTestData> performanceData)
+        { 
+            List<ChartData_ResultAndSpeedByTest> output = _dataProcessor.ResultAndSpeedByTest(performanceData);
             return output;
         }
-        private async Task<List<ChartData_SpeedsByDateTime>> GetAvailabilityByDateTime(DataRequest dataRequest)
+        private async Task<List<ChartData_SpeedsByDateTime>> GetAvailabilityByDateTime(List<ApiTestData> availabilityData)
         {
-            DataAndTotalRecords dataAndTotalRecords = await GetAvailabilityData(dataRequest);
-            List<ChartData_SpeedsByDateTime> output = _dataProcessor.AvailabilityByDateTime(dataAndTotalRecords.Data);
+            List<ChartData_SpeedsByDateTime> output = _dataProcessor.AvailabilityByDateTime(availabilityData);
             return output;
         }
 

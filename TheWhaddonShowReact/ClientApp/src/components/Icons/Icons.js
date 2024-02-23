@@ -117,9 +117,10 @@ export function Icon(props) {
     if (id === null) {
         return (
             <div className={classnames(s.iconContainer, (noMargin) ? s.noMargin : null, `${className}`)}>
-                <ConfirmClick type='circle' onClick={onClick}>
-                
-                    {label && labelPlacement==='left' && <div className="me-1">{label}</div>} 
+               
+                <ConfirmClick type={label ? 'rectangle' : 'circle'} onClick={onClick}>
+
+                    {label && labelPlacement === 'left' && <div className={classnames('me-1', s.label)}>{label}</div>}
                     <i
                         className={classnames(icon,
                             s.icon,
@@ -130,7 +131,7 @@ export function Icon(props) {
                         )}
                         style={style}
                     />
-                    {label && labelPlacement === 'right' && <div className="ms-1">{label}</div>} 
+                    {label && labelPlacement === 'right' && <div className={classnames("ms-1", s.label)}>{label}</div>} 
                 </ConfirmClick>
             </div>
         )
@@ -140,7 +141,8 @@ export function Icon(props) {
 
         return (
             <div className={s.iconContainer}>
-                <ConfirmClick type='circle' onClick={onClick}>
+                <ConfirmClick type={label ? 'rectangle' : 'circle'} onClick={onClick}>
+                    {label && labelPlacement === 'left' && <div className={classnames('me-1', s.label)}>{label}</div>} 
                     <i
                         id={id}
                         className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
@@ -148,7 +150,7 @@ export function Icon(props) {
                     />
 
                     {toolTip && isMouseAvailable() && <Tooltip placement={toolTipPlacement} isOpen={toolTipOpen === id} toggle={() => toggleToolTip(id)} target={id} delay={toolTipDelay}>{toolTip}</Tooltip>}
-
+                    {label && labelPlacement === 'right' && <div className={classnames("ms-1", s.label)}>{label}</div>} 
                 </ConfirmClick>
             </div>
         )

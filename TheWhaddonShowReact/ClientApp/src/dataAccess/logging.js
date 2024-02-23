@@ -18,7 +18,7 @@ export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 
-export const CHART = { type: DEBUG, location: 'Component:Chart' }
+export const CHART = { type: NONE, location: 'Component:Chart' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 export const CONFIRM_CLICK = { type: NONE, location: 'Component:ConfirmClick' }
 
