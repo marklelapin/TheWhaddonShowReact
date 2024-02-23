@@ -144,8 +144,9 @@ function Sidebar(props) {
                             onToolClick={() => handlePrint('large')}
                         />
                         <LinksGroup
-                            header="Refresh Script"
-                            onClick={() => handleRefresh()} />
+                        header="Refresh Script"
+                            iconElement={<Icon icon="refresh" />}
+                            onToolClick={() => handleRefresh()} />
                     </>
                 }
 
@@ -164,17 +165,17 @@ function Sidebar(props) {
                 {(userAccessToComponent(currentUser, 'ApiMonitor')) &&
 
                     <LinksGroup
-                        header="API"
                         link="/app/api"
+                        header="API"
                         iconElement={<Icon icon="api" />}
                         childrenLinks={[
                             {
-                                subHeader: 'Documentation',
+                                header: 'Documentation',
                                 link: '/app/api/documentation',
                                 iconElement: <Icon icon="document" />,
                             },
                             {
-                                subHeader: 'Monitor',
+                                header: 'Monitor',
                                 link: '/app/api/monitor',
                                 iconElement: <Icon icon="layout" />,
                             }

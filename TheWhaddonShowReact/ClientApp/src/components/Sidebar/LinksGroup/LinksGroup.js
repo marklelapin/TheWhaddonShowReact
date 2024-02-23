@@ -9,7 +9,7 @@ import CaretPin from './CaretPin'
 
 //utils
 import classnames from 'classnames';
-import { isScreenSmallerThan } from '../../../core/screenHelper';
+import { isMobileDevice } from '../../../core/screenHelper';
 import { closeSidebar } from '../../../actions/navigation';
 //css
 import s from './LinksGroup.module.scss';
@@ -17,11 +17,9 @@ import s from './LinksGroup.module.scss';
 const LinksGroup = (props) => {
     const {
         header = null,
-        subHeader = null,
-        link = '',
+        link = null,
         iconElement = null,
         className = '',
-        deep = 0,
         label = '',
         badge = null,
         childrenLinks = null,
@@ -48,77 +46,72 @@ const LinksGroup = (props) => {
         setIsCollapsed(!isCollapsed);
     }
 
-    const handleNavLinkClick = (childrenLinks) => {
-
-        if (!childrenLinks && isScreenSmallerThan('md')) {
+    const handleCloseSidebar = () => {
+        if (isMobileDevice) {
             dispatch(closeSidebar())
         }
-
     }
 
     const handleToolClick = (e) => {
         e.preventDefault();
         if (onToolClick) { onToolClick(); }
+        handleCloseSidebar()
     }
 
-    const titleJSX = (
+    const linkJSX = (link, header, childrenLinks, onToolClick, iconElement, label, badge, indent = 36, key = null) => (
         <>
-                <span className={classnames('icon', s.icon)}>
-                    {iconElement}
-                </span>
-                {header}
-                {subHeader}
-                {label && <sup className={s.headerLabel}>{label}</sup>}
+            {((link === null) || childrenLinks || onToolClick) &&
+                <div
+                    className={classnames(s.listItem, isCollapsed ? null : s.headerLinkActive)}
+                    onClick={(childrenLinks) ? () => toggleCollapse() : (onToolClick) ? (e) => handleToolClick(e) : () => handleCloseSidebar()}
+                    style={{ paddingLeft: `${indent}px` }}
+                >
+                    {linkContentJSX(header, childrenLinks, iconElement, label, badge)}
+                </div>
+
+            }
+            {link !== null && !childrenLinks && !onToolClick &&
+                <NavLink
+                    to={link}
+                    key={key ? key : header + (link)}
+                    onClick={() => handleCloseSidebar()}
+                    className={classnames(s.listItem,location.pathname ===link ? s.headerLinkActive : null)}
+                    activeClassName={s.headerLinkActive}
+                    style={{ paddingLeft: `${indent}px` }}
+                >
+                    {linkContentJSX(header, childrenLinks, iconElement, label, badge)}
+                </NavLink>
+            }
         </>
     )
 
+    const linkContentJSX = (header, childrenLinks, iconElement, label, badge) => (
+        <>
+            <div className={s.icon}>
+                {iconElement}
+            </div>
+            <div className={s.header}>
+                {header}
+                {label && <sup className={s.headerLabel}>{label}</sup>}
+                {badge && <Badge className={s.badge} pill color={"danger"}>{badge}</Badge>}
+            </div>
+            {childrenLinks && <CaretPin isCollapsed={isCollapsed} />}
 
+        </>
+    )
 
-
-    if (onToolClick !== null) return (
+    return (
         <li className={classnames('link-wrapper', s.headerLink, className)}>
-        <NavLink key={header} onClick={(e)=>handleToolClick(e)} >
-            {titleJSX}
-            </NavLink>
-        </li>
-        )
-    if (onToolClick === null) return (
-        <li className={classnames('link-wrapper', s.headerLink, className)}>
-            <NavLink
-                to={link}
-                key={link}
-                onClick={() => handleNavLinkClick(childrenLinks)}
-                className={({ isActive }) => isActive ? s.headerLinkActive : ''}
-            >
-                <span className={classnames('icon', s.icon)}>
-                    {iconElement}
-                </span>
-                {titleJSX}
-                {badge && <Badge className={s.badge} pill color={"danger"}>9</Badge>}
-                {childrenLinks && <CaretPin isCollapsed={isCollapsed} onClick={() => toggleCollapse()} />}
-            </NavLink>
+            {linkJSX(link, header, childrenLinks, onToolClick, iconElement, label, badge)}
             {childrenLinks &&
-                <Collapse className={s.panel} isOpen={!isCollapsed}>
+                <Collapse className={s.panel} isOpen={!isCollapsed || location.pathname.startsWith(link)}>
                     <ul>
-                        {childrenLinks.map((child, ind) => (
-                            <NavLink
-                                key={link + ind}
-                                to={child.link}
-                                onClick={() => handleNavLinkClick(childrenLinks)}
-                                className={({ isActive }) => isActive ? s.headerLinkActive : ''}
-                                style={{ paddingLeft: `${26 + (10 * (deep - 1))}px` }}
-                            >
-                                <span className={classnames('icon', s.icon)}>
-                                    {iconElement}
-                                </span>
-                                {titleJSX}
-                            </NavLink>
+                        {childrenLinks.map((child, index) => (
+                            linkJSX(child.link, child.header, child.childrenLinks, child.onToolClick, child.iconElement, child.label, child.badge, 36, index)
                         ))}
                     </ul>
                 </Collapse>
             }
-
-
         </li>
     );
 }

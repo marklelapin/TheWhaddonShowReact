@@ -2,7 +2,7 @@ import React from 'react';
 import {Icon} from '../../Icons/Icons';
 
 import s from './LinksGroup.module.scss';
-
+import classnames from 'classnames';
 export function CaretPin(props) {
 
 
@@ -11,10 +11,10 @@ export function CaretPin(props) {
     return (
        
 
-            <div className={`${[s.headerLinkActive]} ${isPinned ? s.pinned : ''} ${isCollapsed ? s.collapsed : ''} d-flex caret-pin`}
+            <div className={classnames(s.headerLinkActive,s.caret,isPinned ? s.pinned : null,isCollapsed ? s.collapsed : null,'d-flex')}
                 onClick={onClick}
             >
-            <Icon icon="caret" id={id} className={s.caret} toolTip={'Pin Sidebar'} />
+            <Icon icon="caret" id={id} className={s.caretPin} toolTip={'Pin Sidebar'} />
             </div>
          
        
