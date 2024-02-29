@@ -17,16 +17,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.5.0" />
     <PackageReference Include="MarkCarter.MyApiMonitorClassLibrary" Version="1.0.0" />
-    <PackageReference Include="MarkCarter.MyClassLibrary" Version="1.0.2" />
+    <PackageReference Include="MarkCarter.MyClassLibrary" Version="1.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.20" />
     <PackageReference Include="Microsoft.Office.Interop.Word" Version="15.0.4797.1004" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
     <PackageReference Include="MimeMapping" Version="2.0.0" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
-    <PackageReference Include="TheWhaddonShow.ClassLibrary" Version="1.0.6" />
+    <PackageReference Include="TheWhaddonShow.ClassLibrary" Version="1.0.8" />
   </ItemGroup>
 
   <ItemGroup>

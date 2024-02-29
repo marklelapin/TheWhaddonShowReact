@@ -12,17 +12,21 @@ using MyClassLibrary.LocalServerMethods.Interfaces;
 using MyClassLibrary.LocalServerMethods.Models;
 using MyClassLibrary.OpenAI;
 using System.IO.Abstractions;
+using System.Net.Http.Headers;
 using TheWhaddonShowClassLibrary.DataAccess;
 using TheWhaddonShowReact.Models.LocalServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.ConfigureMicrosoftIdentityWebAuthenticationAndUI("AzureAdB2C");
+////builder.ConfigureMicrosoftIdentityWebAuthenticationAndUI("AzureAdB2C");
 
-builder.RequireAuthorizationThroughoutAsFallbackPolicy();
+////builder.RequireAuthorizationThroughoutAsFallbackPolicy();
 
-//builder.ByPassAuthenticationIfInDevelopment();
-builder.Services.AddSingleton<IAuthorizationHandler, ByPassAuthorization>();
+////builder.ByPassAuthenticationIfInDevelopment();
+//builder.Services.AddSingleton<IAuthorizationHandler, ByPassAuthorization>();
+
+
+
 // Add services to the container.
 if (builder.Environment.IsDevelopment())
 {
@@ -36,7 +40,6 @@ if (builder.Environment.IsDevelopment())
                .AllowCredentials();
     });
     });
-
 }
 builder.Services.AddCors(options =>
 {
@@ -48,7 +51,16 @@ builder.Services.AddCors(options =>
                .AllowCredentials();
     });
 });
-builder.Services.AddDownstreamApi("TheWhaddonShowApi", builder.Configuration.GetSection("TheWhaddonShowApi"));
+//builder.Services.AddDownstreamApi("TheWhaddonShowApi", builder.Configuration.GetSection("TheWhaddonShowApi"));
+
+string token = await builder.GetTokenFromAzureAdClientCredentialsAsync("AzureAd:");
+
+builder.Services.AddHttpClient("TheWhaddonShowApi", options =>
+{
+    options.BaseAddress = new Uri(builder.Configuration.GetValue<string>("TheWhaddonShowApi:BaseUrl"));
+    options.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+});
+
 
 builder.Services.AddHttpClient("OpenAI", opts =>
 {
@@ -79,7 +91,7 @@ builder.Services.AddTransient<ILocalServerModelUpdate, LocalServerModelUpdate>()
 builder.Services.AddTransient(typeof(ILocalServerModel<>), typeof(LocalServerModel<>));
 builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddScoped(typeof(ILocalDataAccess<>), typeof(ReactLocalDataAccess<>));
-builder.Services.AddScoped(typeof(IServerDataAccess<>), typeof(APIServerDataAccess<>));
+builder.Services.AddScoped(typeof(IServerDataAccess<>), typeof(APIServerDataAccessInjectingHttpClientFactory<>));
 builder.Services.AddScoped(typeof(ILocalServerEngine<>), typeof(LocalServerEngine<>));
 builder.Services.AddTransient<IOpenAIControllerService, OpenAIControllerService>();
 // File uploading services
@@ -103,7 +115,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-//All file uploading from local host in development
+//Allow file uploading from local host in development
 if (app.Environment.IsDevelopment())
 {
     app.UseCors("AllowDevelopmentOrigin");
@@ -126,8 +138,8 @@ app.UseCookiePolicy();
 app.UseRouting();
 
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 
 app.MapControllerRoute(
