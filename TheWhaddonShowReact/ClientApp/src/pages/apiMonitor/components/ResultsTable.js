@@ -1,6 +1,7 @@
-//import React from 'react';
-//import { useDispatch, useSelector } from 'react-redux';
-//import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import moment from 'moment'
 //import DataLoading from '../../../components/DataLoading/DataLoading';
 //import { updateIsLoading } from '../../../actions/apiMonitor'
 
@@ -16,8 +17,14 @@
 //    DropdownItem,
 //} from 'reactstrap';
 
+//components
+import { Icon } from '../../../components/Icons/Icons';
 
-//import s from '../TestResults.modules.scss';
+//utilities
+
+//scss
+import classnames from 'classnames';
+import s from './ResultsTable.module.scss';
 
 //import { TickOrCross } from '../../../components/Icons/Icons'
 
@@ -25,293 +32,139 @@
 
 
 
-const ResultsTable = () => {
+const ResultsTable = (props) => {
 
-    //const { collectionType = null, dateFrom=null, dataTo=null,skip=null,limit = null,testOrCollectionId = null} = props;
+    const { collectionType = 'performance', dateFrom = null, dateTo = null, testOrCollectionId = null } = props;
 
-    //const getTableData = async () => {
-    //    const tableData = await getTableData()
-    //    setTotalRecords(tableData.totalRecords)
-    //    setTableData(tableData.data)
-    //}
+    const defaultLimit = 100;
+    const showAllLimit = 10000;
 
-    //const getTableData = async () => {
-    //    try {
-    //        const response = await axios({
-    //            method: 'get',
-    //            url: 'apimonitor/tableData',
-    //            params: {
-    //                dateFrom: dateFrom,
-    //                dateTo: dateTo,
-    //                skip: 0,
-    //                limit: 10000,
-    //            }
-    //        })
+    const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
-    //        return response.data
-    //    } catch (error) {
-    //        console.error(`Error fetching table data: ${error.message}`)
-    //    }
-    //}
-    //<div className={s.dateFilter}>
-    //                <div className={s.datePicker}>
-    //                    <Label for="fromdatetimepicker">From</Label>
-    //                    <Datetime
-    //                        value={dateFrom}
-    //                        id="fromdatetimepicker"
-    //                        //open={this.state.isDatePickerOpen}
-    //                        viewMode="time"
-    //                        timeFormat="HH:mm"
-    //                        onChange={changeDateFrom}
-    //                    />
-    //                </div>
-    //                <div className={s.datePicker}>
-    //                    <Label for="fromdatetimepicker">To</Label>
-    //                    <Datetime
-    //                        value={dateTo}
-    //                        id="fromdatetimepicker"
-    //                        //open={this.state.isDatePickerOpen}
-    //                        viewMode="time"
-    //                        timeFormat="HH:mm"
-    //                        onChange={changeDateTo}
-    //                    />
-    //                </div>
-    //            </div>
-
-    //            <div className="datepicker" style={{ display: 'flex' }}>
-
-    //                <span className="input-group-text" onClick={() => { refDatePicker.focus(); }}>
-    //                    <i className="glyphicon glyphicon-time" />
-    //                </span>
-    //            </div>
-
-    //            <Label for="todatetimepicker">To</Label>
-    //            <div className="datepicker" style={{ display: 'flex' }}>
-    //                <Datetime
-    //                    value={dateTo}
-    //                    id="todatetimepicker"
-    //                    //open={this.state.isTimePickerOpen}
-    //                    viewMode="time"
-    //                    timeFormat="HH:mm"
-    //                    onChange={handleDatePickedToChange}
-    //                    inputProps={{ ref: (input) => { refTimePicker = input; } }}
-    //                />
-    //                <span className="input-group-text" onClick={() => { refTimePicker.focus() }} ><i className="glyphicon glyphicon-time" /></span>
-    //            </div>
-
-    //const dispatch = useDispatch()
-
-    //const dateFrom = useSelector(state => state.apiMonitor.dateFrom)
-    //const dateTo = useSelector(state => state.apiMonitor.dateTo)
-    //const showSuccess = useSelector(state => state.apiMonitor.showSuccess)
-    //const showFailure = useSelector(state => state.apiMonitor.showFailure)
-    //const search = useSelector(state => state.apiMonitor.search)
-    //const isLoading = useSelector(state => state.apiMonitor.isLoading)
+    const [skip, setSkip] = useState(0);
+    const [limit, setLimit] = useState(defaultLimit);
+    const [tableData, setTableData] = useState([]);
+    const [noOfRecords, setNoOfRecords] = useState(0);
+    const [totalRecords, setTotalRecords] = useState(0);
 
 
-    //const [error, setError] = useState(null)
-    //const [data, setData] = useState([])
+    useEffect(() => {
+        refreshTableData();
+    }, [collectionType, dateFrom, dateTo, skip,limit, testOrCollectionId]) //eslint-disable-line react-hooks/exhaustive-deps
 
-    //useEffect(() => {
-    //    refreshTableData();
+    const refreshTableData = async () => {
+        try {
+            const response = await axios({
+                method: 'get',
+                url: 'apimonitor/tableData',
+                params: {
+                    collectionType,
+                    dateFrom,
+                    dateTo,
+                    skip,
+                    limit,
+                    testOrCollectionId
+                }
+            })
 
-    //}, [])
-
-    //useEffect(() => {
-    //    // Check if isLoading prop has changed from false to true
-    //    if (isLoading === true) {
-    //        refreshTableData();
-    //    }
-    //}, [isLoading]);
-
-
-    //refreshTableData = async () => {
-
-    //    dispatch(updateIsLoading(true))
-
-    //    const url = `/apimonitor/results/?dateFrom=${dateFrom.toISOString()}&dateTo=${dateTo.toISOString()}`
-
-    //    try {
-    //        const response = await axios.get(url)
-    //        this.setData(response.data)
-    //        dispatch(updateIsLoading(false))
-    //    }
-    //    catch (err) {
-    //        this.setError(`An error whilst loading data: ${err.message}`)
-    //        dispatch(updateIsLoading(false))
-    //    }
-
-    //}
-
-    //const renderSizePerPageDropDown = (props) => {
-
-    //    const limits = [];
-
-    //    sizePerPageList.forEach((limit) => {
-    //        limits.push(<DropdownItem key={limit} onClick={() => props.changeSizePerPage(limit)}>{limit}</DropdownItem>);
-    //    });
-
-    //    return (
-    //        <Dropdown isOpen={open} toggle={toggleDropDown}>
-    //            <DropdownToggle color="default" caret>
-    //                {currSizePerPage}
-    //            </DropdownToggle>
-    //            <DropdownMenu>
-    //                {limits}
-    //            </DropdownMenu>
-    //        </Dropdown>
-    //    );
-    //}
-
-    //const options = {
-    //    sizePerPage: 10,
-    //    paginationSize: 3,
-    //    sizePerPageDropDown: renderSizePerPageDropDown,
-    //};
+            if (response.status === 200) {
+             
+                setTableData(response.data.data)
+                setTotalRecords(response.data.totalRecords)
+                setNoOfRecords(Math.min(response.data.data.length, response.data.totalRecords))
+            } else {
+                throw new Error(`Error code ${response.status} from response. ${JSON.stringify({ collectionType, dateFrom, dateTo, skip, limit, testOrCollectionId })}`)
+            }
 
 
 
-    //function resultsFormatter(cell) {
-    //    if (cell.expected == null) { return <small>Matched</small> }
-    //    return (
-    //        <div>
-    //            <small>
-    //                Expected:&nbsp;<span className="fw-semi-bold">{cell.expected}</span>
-    //            </small>
-    //            <br />
-    //            <small>
-    //                Actual:&nbsp;<span className="fw-semi-bold">{cell.actual}</span>
-    //            </small>
-    //        </div>
-    //    );
-    //}
+        } catch (error) {
+            console.error(`Error fetching ${collectionType} table data: ${error.message}`)
+            return {}
+        }
+    }
 
-    //function dateFormatter(cell) {
+    const showAll = () => {
+        setSkip(0);
+        setLimit(showAllLimit)
+    }
+    const showLess = () => {
+        setSkip(0);
+        setLimit(defaultLimit);
 
-    //    const dateObj = new Date(cell);
-
-    //    // Format the date as 'd M yyyy' (e.g., '3 Jul 2023')
-    //    const options = { day: 'numeric', month: 'short', year: 'numeric' };
-    //    const formattedDate = dateObj.toLocaleDateString('en-US', options);
-
-    //    // Format the time as 'HH:mm' (e.g., '08:15')
-    //    const hours = String(dateObj.getHours()).padStart(2, '0');
-    //    const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-    //    const formattedTime = `${hours}:${minutes}`;
-
-    //    return (
-    //        <>
-    //            <Row>
-    //                <Col className="text-center">
-    //                    <small className="fw-semi-bold">{formattedDate}</small>
-    //                </Col>
-
-    //            </Row>
-    //            <Row>
-    //                <Col>
-    //                    <small>{formattedTime}</small>
-    //                </Col>
-
-    //            </Row>
-
-    //        </>
-
-
-    //    );
-    //}
-
-    //function timeToCompleteFormatter(cell) {
-    //    return (
-    //        <>
-    //            <small className="fw-semi-bold">{cell.speed}ms</small>
-    //            <Progress style={{ height: '15px' }} color={cell.type} value={cell.progress} />
-    //        </>
-
-    //    );
-    //}
-
-    //function progressSortFunc(a, b, order) {
-    //    if (order === 'asc') {
-    //        return a.timeToComplete.speed - b.timeToComplete.speed;
-    //    }
-    //    return b.timeToComplete.speed - a.timeToComplete.speed;
-    //}
-
-    //function dateSortFunc(a, b, order) {
-    //    if (order === 'asc') {
-    //        return new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime();
-    //    }
-    //    return new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime();
-    //}
-
-
-    //function filteredData(data) {
-
-    //    console.log(`count: ${data.length}, search: ${search}, showSuccess: ${showSuccess}, showFailure: ${showFailure}`)
-
-    //    //filter the data based on the search
-    //    const searchFilter = data.filter(x =>
-    //        (search ?? '') === ''
-    //        || x.title?.toLowerCase().includes(search.toLowerCase())
-    //        || x.failureMessage?.toLowerCase().includes(search.toLowerCase())
-    //        || x.expected?.toLowerCase().includes(search.toLowerCase())
-    //        || x.actual?.toLowerCase().includes(search.toLowerCase()))
-
-    //    // filter the data based on the success/failure checkboxes
-    //    const resultFilter = searchFilter.filter(x =>
-    //        ((x.success === true) && showSuccess)
-    //        || ((x.success === false) && showFailure))
-
-    //    console.log(`count: ${resultFilter.length}`)
-
-    //    return resultFilter;
-
-    //}
+    }
 
 
 
+    return (
+
+        <div className={s.resultsTableContainer}>
+
+            <div className={s.resultsTableTitle}>
+                <h2 className={s.left}>
+                    Test Results
+                </h2>
+                <div className={s.right}>
+
+                    <div className={s.pagination}>
+                        <div className={s.paginationText}>
+                            {limit !== showAllLimit && `${skip + 1}-${noOfRecords + skip} of ${totalRecords} records shown.`}
+                            {limit === showAllLimit && `All ${totalRecords} records shown.` }
+                        </div>
+
+                        {skip !== 0 &&
+                            <Icon icon="arrow-left" strapColor={'primary'} onClick={() => setSkip(Math.max(0, skip - limit))} label='previous' labelPlacement='right' />
+                        }
+                        {skip < (totalRecords - limit) &&
+                            <Icon icon="arrow-right" strapColor={'primary'} onClick={() => setSkip(Math.min(totalRecords - limit, skip + limit))} label='next' labelPlacement='left' />
+                        }
 
 
-    return ( null
-        //<DataLoading isLoading={isLoading} error={error !== null} errorText={`Error on loading: ${error}`} labelText="Loading...">
+                    </div>
+                    {limit !== showAllLimit && <Icon icon="arrow-down" strapColor={'primary'} onClick={showAll} label='show all' labelPlacement='left' />}
+                    {limit === showAllLimit && <Icon icon="arrow-up" strapColor={'primary'} onClick={showLess} label='show less' labelPlacement='left' />}
+                </div>
+            </div>
+            <div className={classnames(s.tableContainer, (isMobileDevice ? s.mobileDevice : null))}>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Test Title</th>
+                            <th>Test DateTime</th>
+                            <th className={s.centered}>Success or Failure</th>
+                            <th className={s.centered}>Time To Complete (ms)</th>
+                            <th className={s.hideOnMobile}>Failure Message</th>
+                            <th className={s.hideOnMobile}>Expected Result</th>
+                            <th className={s.hideOnMobile}>Actual Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tableData.map((row, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td className={s.testTitle}>{row.title}</td>
+                                    <td className={s.testDateTime}>{moment(row.dateTime).format('YY-MMM-DD hh:mm:ss')}</td>
+                                    <td className={s.success}>{row.success ? <Icon icon='tick' strapColor='success' /> : <Icon icon='cross' strapColor='danger' />}</td>
+                                    <td className={s.speed}>{row.timeToComplete.speed}</td>
+                                    <td className={classnames(s.failureMessage, s.hideOnMobile)}>{row.failureMessage}</td>
+                                    <td className={classnames(s.expectedResult, s.hideOnMobile)}>{row.results.expected}</td>
+                                    <td className={classnames(s.actualResult, s.hideOnMobile)}>{row.results.actual}</td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
+            </div>
 
-        //    <BootstrapTable
-        //        data={filteredData(data)}
-        //        version="4"
-        //        pagination
-        //        options={options}
-        //        hover
-        //        bordered={false}
-        //        tableContainerClass={`table-striped table-hover table-responsive ${s.bootstrapTable}`}
-        //    >
-        //        <TableHeaderColumn className={`width-50 ${s.columnHead}`} columnClassName="width-50" dataField="key" isKey hidden>
-        //            <span className="fs-sm" >Id</span>
-        //        </TableHeaderColumn>
-        //        <TableHeaderColumn className={`d-sm-table-cell ${s.columnHead}`} columnClassName="d-sm-table-cell align-middle text-wrap" dataField="title" dataSort>
-        //            <span className="fs-sm">Title</span>
-        //        </TableHeaderColumn>
-        //        <TableHeaderColumn className={`width-100 ${s.columnHead} text-center`} columnClassName="width-100 text-center align-middle" dataField="dateTime" dataFormat={dateFormatter} dataSort sortFunc={dateSortFunc}>
-        //            <span className="fs-sm">Date Time</span>
-        //        </TableHeaderColumn>
-        //        <TableHeaderColumn className={`width-100 ${s.columnHead} text-end`} columnClassName="width-100 align-middle text-end" dataField="success" dataFormat={TickOrCross}>
-        //            <span className="fs-sm">Success?</span>
-        //        </TableHeaderColumn>
-        //        <TableHeaderColumn className={`width-150 ${s.columnHead}`} columnClassName="width-150 align-middle" dataField="timeToComplete" dataFormat={timeToCompleteFormatter} dataSort sortFunc={progressSortFunc}>
-        //            <span className="fs-sm">Time to Complete</span>
-        //        </TableHeaderColumn>
-        //        <TableHeaderColumn className={`d-xs-table-cell ${s.columnHead}`} columnClassName="d-xs-table-cell align-middle text-wrap" dataField="failureMessage">
-        //            <span className="fs-sm text-wrap">Failure Message</span>
-        //        </TableHeaderColumn>
-        //        <TableHeaderColumn className={`d-md-table-cell ${s.columnHead}`} columnClassName="d-md-table-cell align-middle text-wrap" dataField="results" dataFormat={resultsFormatter}>
-        //            <span className="fs-sm">Expected vs Actual</span>
-        //        </TableHeaderColumn>
-        //    </BootstrapTable>
+        </div>
 
 
 
-        //</DataLoading>
+    )
 
-    );
-};
-
+}
 export default ResultsTable;
+
+
+
+

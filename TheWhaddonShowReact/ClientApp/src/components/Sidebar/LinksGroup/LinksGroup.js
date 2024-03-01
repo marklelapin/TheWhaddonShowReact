@@ -76,7 +76,6 @@ const LinksGroup = (props) => {
                     key={key ? key : header + (link)}
                     onClick={() => handleCloseSidebar()}
                     className={classnames(s.listItem,location.pathname ===link ? s.headerLinkActive : null)}
-                    activeClassName={s.headerLinkActive}
                     style={{ paddingLeft: `${indent}px` }}
                 >
                     {linkContentJSX(header, childrenLinks, iconElement, label, badge)}

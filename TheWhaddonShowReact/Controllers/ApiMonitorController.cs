@@ -92,14 +92,14 @@ namespace TheWhaddonShowReact.Controllers
         public List<TableData> ApiTestTableData { get; set; } = new List<TableData>();
 
         [HttpGet("tableData")]
-        public async Task<IActionResult> Get([FromQuery] string? collectionType = "Performance", DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000, Guid? testOrCollectionId = null)
+        public async Task<IActionResult> Get([FromQuery] string? collectionType = "performance", DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000, Guid? testOrCollectionId = null)
         {
             DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
 
             DataAndTotalRecords dataAndTotalRecords = collectionType switch
             {
-                "Availability" => await GetAvailabilityData(dataRequest),
-                "Performance" => await GetPerformanceData(dataRequest),
+                "availability" => await GetAvailabilityData(dataRequest),
+                "performance" => await GetPerformanceData(dataRequest),
                 _ => new DataAndTotalRecords(new List<ApiTestData>(), 0)
             };
 

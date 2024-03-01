@@ -98,8 +98,6 @@ const ApiMonitor = () => {
             setSpeedChartConfig(null)
             setResultAndSpeedChartConfig(null)
         } 
-
-        
     }
 
     const loadAvailabilityData = async () => {
@@ -109,10 +107,7 @@ const ApiMonitor = () => {
         } else {
             setAvailabilityChartConfig(null)
         }
-        
     }
-
-
 
     const getChartData = async (chartType) => {
         try {
@@ -124,13 +119,13 @@ const ApiMonitor = () => {
                     dateFrom: dateFrom,
                     dateTo: dateTo,
                     skip: 0,
-                    limit: 10000,
+                    limit: 10000
                 }
             })
             return response.data
         } catch (error) {
             console.error(`Error fetching ${chartType} config: ${error.message}`)
-            return {}
+            return null
         }
     }
 

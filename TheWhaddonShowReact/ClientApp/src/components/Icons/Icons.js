@@ -61,6 +61,8 @@ export function Icon(props) {
         "menu": 'fa-solid fa-bars',
         "arrow-left": 'fa-solid fa-arrow-left',
         "arrow-right": 'fa-solid fa-arrow-right',
+        "arrow-up": 'fa-solid fa-arrow-up',
+        "arrow-down": 'fa-solid fa-arrow-down',
         "chat-mode": 'fa-solid fa-comments',
         "classic-mode": 'fa-solid fa-align-center',
         "edit": 'fa-solid fa-edit',

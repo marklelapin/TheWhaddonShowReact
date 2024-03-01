@@ -178,6 +178,11 @@ function Sidebar(props) {
                                 header: 'Monitor',
                                 link: '/app/api/monitor',
                                 iconElement: <Icon icon="layout" />,
+                            },
+                            {
+                                header: 'Test Results',
+                                link: '/app/api/testresults',
+                                iconElement: <Icon icon="layout" />,
                             }
                         ]}
                     />
