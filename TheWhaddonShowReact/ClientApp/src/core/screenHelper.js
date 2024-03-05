@@ -68,11 +68,17 @@ export const addDeviceInfo = (object) => {
 
 export const getDeviceInfo = () => {
 
+    const layoutWindow = document.getElementById('layout-window');
+
     return {
 
         isMouseAvailable: isMouseAvailable(),
         isMobileDevice: isMobileDevice(),
         screenWidth: window.innerWidth,
+        screenHeight: window.innerHeight,
+        layoutWidth: layoutWindow ? layoutWindow.clientWidth : window.innerWidth,
+        layoutHeight: layoutWindow ? layoutWindow.clientHeight : window.innerHeight,
+
     }
 }
 

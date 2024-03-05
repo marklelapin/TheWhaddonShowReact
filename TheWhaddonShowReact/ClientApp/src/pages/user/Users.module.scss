@@ -188,7 +188,8 @@ flex-direction: column;
 align-items: center;
 justify-content: center;
 height: 450px;
-width: 100%;
+width: auto;
+max-width: 370px;
 padding-bottom: 20px;
 }
 

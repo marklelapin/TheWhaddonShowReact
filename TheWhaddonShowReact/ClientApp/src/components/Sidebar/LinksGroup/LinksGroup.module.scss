@@ -2,17 +2,20 @@
 
 .headerLink {
   overflow-x: hidden;
-  
+
   @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
     font-size: 13px;
   }
 
-  a {
-    display: block;
-    color: $gray-300; //var(--sidebar-color);
+  .listItem {
+    color: $gray-300;
     transition: all .35s ease;
     text-decoration: none;
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
 
     &:hover {
       text-decoration: none;
@@ -23,11 +26,11 @@
     }
   }
 
-  &:last-child > a {
+  &:last-child > .listItem {
     border-bottom: 1px solid $sidebar-item-border-color;
   }
 
-  > a {
+  > .listItem {
     position: relative;
     align-items: center;
     padding-left: 50px;
@@ -64,6 +67,7 @@
     text-align: center;
     border-radius: 0;
     opacity: .7;
+  
 
     @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
       top: 12px;
@@ -92,7 +96,7 @@
     color: var(--sidebar-hightlight)
   }
   
-  a.headerLinkActive {
+  .listItem.headerLinkActive {
     color: white; //var(--sidebar-item-active-color);
     font-weight: $font-weight-bold;
     white-space: nowrap;
@@ -117,15 +121,19 @@
   }
 }
 
+.header{
+    padding-left: 10px;
+}
+
 .headerLabel {
   font-weight: 600;
   color: var(--sidebar-item-active-color);
 }
 
-.collapsed .caret {
-  transform: rotate(-90deg);
+.collapsed  {
+  transform: rotate(90deg);
 }
-.pinned .caret {
+.pinned  {
   transform: rotate(-90deg);
 }
 
@@ -136,10 +144,11 @@
   font-size: 19px;
   margin-right: 15px;
   color: var(--sidebar-color);
+  
   @include transition(transform 0.3s ease-in-out);
 }
 
-.caret-pin {
+.caretPin {
     cursor: pointer;
 }
 
@@ -149,7 +158,7 @@
   margin: 0;
   border-radius: 0;
 
-  a.headerLinkActive {
+  .listItem.headerLinkActive {
     font-weight: $font-weight-semi-bold;
     color: var(--sidebar-color);
 
@@ -166,7 +175,7 @@
       list-style: none;
     }
 
-    a {
+    .listItem {
       padding: 10px 20px 10px 26px;
       font-size: $font-size-mini;
 

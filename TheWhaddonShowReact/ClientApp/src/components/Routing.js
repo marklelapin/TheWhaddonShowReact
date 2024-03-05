@@ -8,10 +8,14 @@ import ScriptSummaryPage from '../pages/scriptSummary/ScriptSummaryPage';
 import Casting from '../pages/casting/Casting';
 import UnderConstruction from '../pages/underConstruction/UnderConstruction';
 import Users from '../pages/user/Users';
-import TestResults from '../pages/apiMonitor/TestResults';
+
 import ErrorPage from '../pages/error/ErrorPage';
 
 import {SHOW } from '../pages/scriptSummary/ScriptSummary'
+import ApiMonitor from '../pages/apiMonitor/ApiMonitor';
+import ApiTestResults from '../pages/apiMonitor/ApiTestResults';
+import ApiDocumentation from '../pages/apiDocumentation/ApiDocumentation';
+
 
 
 const Routing = () => {
@@ -27,7 +31,10 @@ const Routing = () => {
             <Route path="/app/casting" element={<Casting />} />
             <Route path="/app/gallery" element={<UnderConstruction/>} />
             <Route path="/app/users" element={<Users/>} />
-            <Route path="/app/api" element={<TestResults/>} />
+            <Route path="/app/api" element={<ApiDocumentation />} />
+            <Route path="/app/api/monitor" element={<ApiMonitor />} />
+            <Route path="/app/api/documentation" element={<ApiDocumentation />} />
+            <Route path="/app/api/testresults" element={<ApiTestResults />} />
             <Route path="/error" element={<ErrorPage />} />
             <Route path="*" element={<Navigate to="/app/home" />} />
         </Routes>

@@ -10,18 +10,24 @@
     min-width: 35px;
     height: 35px;
 
+
     &.noMargin {
         width: auto;
         min-width: unset;
         height: auto;
     }
 
+    .label {
+        font-size: $font-size-base;
+    }
+
     .icon {
-        text-align: center;
         font-size: 18px !important;
 
         @media only screen and (max-width: breakpoint-max(sm)) {
             font-size: 26px !important;
         }
+
+        text-align: center;
     }
 }

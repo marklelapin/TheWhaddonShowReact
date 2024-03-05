@@ -1,39 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { NavLink, useLocation } from 'react-router-dom';
-
+import { useLocation } from 'react-router-dom';
+import Link from './Link';
 //Components
-import { Collapse, Badge } from 'reactstrap';
-import CaretPin from './CaretPin'
+import { Collapse } from 'reactstrap';
+
 
 
 //utils
 import classnames from 'classnames';
-import { isScreenSmallerThan } from '../../../core/screenHelper';
-import { closeSidebar } from '../../../actions/navigation';
+
 //css
 import s from './LinksGroup.module.scss';
 
 const LinksGroup = (props) => {
     const {
         header = null,
-        subHeader = null,
-        link = '',
+        link = null,
         iconElement = null,
         className = '',
-        deep = 0,
         label = '',
         badge = null,
         childrenLinks = null,
         onToolClick = null,
     } = props;
 
-    const dispatch = useDispatch();
-
     const location = useLocation();
 
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(null);
 
+    useEffect(() => {
+        setIsCollapsed(true);
+    },[])
 
     useEffect(() => {
         if (location.pathName === link) {
@@ -45,80 +42,46 @@ const LinksGroup = (props) => {
 
 
     const toggleCollapse = () => {
+        console.log('toggleCollapse before:', `${header}-isCollapsed`)
         setIsCollapsed(!isCollapsed);
     }
 
-    const handleNavLinkClick = (childrenLinks) => {
-
-        if (!childrenLinks && isScreenSmallerThan('md')) {
-            dispatch(closeSidebar())
-        }
-
-    }
-
-    const handleToolClick = (e) => {
-        e.preventDefault();
-        if (onToolClick) { onToolClick(); }
-    }
-
-    const titleJSX = (
-        <>
-                <span className={classnames('icon', s.icon)}>
-                    {iconElement}
-                </span>
-                {header}
-                {subHeader}
-                {label && <sup className={s.headerLabel}>{label}</sup>}
-        </>
-    )
-
-
-
-
-    if (onToolClick !== null) return (
+    console.log(`${header}-isCollapsed: `,isCollapsed)
+    return (
         <li className={classnames('link-wrapper', s.headerLink, className)}>
-        <NavLink key={header} onClick={(e)=>handleToolClick(e)} >
-            {titleJSX}
-            </NavLink>
-        </li>
-        )
-    if (onToolClick === null) return (
-        <li className={classnames('link-wrapper', s.headerLink, className)}>
-            <NavLink
-                to={link}
+            {<Link
                 key={link}
-                onClick={() => handleNavLinkClick(childrenLinks)}
-                className={({ isActive }) => isActive ? s.headerLinkActive : ''}
-            >
-                <span className={classnames('icon', s.icon)}>
-                    {iconElement}
-                </span>
-                {titleJSX}
-                {badge && <Badge className={s.badge} pill color={"danger"}>9</Badge>}
-                {childrenLinks && <CaretPin isCollapsed={isCollapsed} onClick={() => toggleCollapse()} />}
-            </NavLink>
+                link={link}
+                header={header}
+                childrenLinks={childrenLinks}
+                onToolClick={onToolClick}
+                iconElement={iconElement}
+                label={label}
+                badge={badge}
+                isCollapsed={isCollapsed }
+                toggleCollapse={toggleCollapse}
+            />
+            }
             {childrenLinks &&
-                <Collapse className={s.panel} isOpen={!isCollapsed}>
+                <Collapse className={s.panel} isOpen={!isCollapsed || location.pathname.startsWith(link)}>
                     <ul>
-                        {childrenLinks.map((child, ind) => (
-                            <NavLink
-                                key={link + ind}
-                                to={child.link}
-                                onClick={() => handleNavLinkClick(childrenLinks)}
-                                className={({ isActive }) => isActive ? s.headerLinkActive : ''}
-                                style={{ paddingLeft: `${26 + (10 * (deep - 1))}px` }}
-                            >
-                                <span className={classnames('icon', s.icon)}>
-                                    {iconElement}
-                                </span>
-                                {titleJSX}
-                            </NavLink>
+                        {childrenLinks.map((child, index) => (
+                            <Link
+                                key={index}
+                                link={child.link}
+                                header={child.header}
+                                childrenLinks={child.childrenLinks}
+                                onTooleClick={onToolClick}
+                                iconElement={iconElement}
+                                label={child.label}
+                                badge={child.badge}
+                                indent={36}
+                                index={index} />
+
                         ))}
                     </ul>
                 </Collapse>
             }
-
-
         </li>
     );
 }
