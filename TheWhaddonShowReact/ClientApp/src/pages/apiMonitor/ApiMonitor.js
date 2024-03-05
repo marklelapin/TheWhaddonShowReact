@@ -7,7 +7,8 @@ import axios from 'axios';
 import Chart from '../../components/Chart/Chart';
 import DashboardBox from './components/DashboardBox';
 import { Icon } from '../../components/Icons/Icons';
-
+import { Modal } from 'reactstrap';
+import ResultsTable from '../../pages/apiMonitor/components/ResultsTable';
 //utilties
 import classnames from 'classnames';
 import { log, API_MONITOR as logType } from '../../dataAccess/logging'
@@ -38,7 +39,7 @@ const ApiMonitor = () => {
         const refDate = new Date(dateTo)
         const newDateTo = new Date(refDate.setDate(refDate.getDate() - dashboardPeriod))
         const newDateFrom = calculateDateFrom(newDateTo)
-        console.log('goBack after', {newDateTo,newDateFrom})
+        console.log('goBack after', { newDateTo, newDateFrom })
         setDateTo(newDateTo)
         setDateFrom(newDateFrom)
     }
@@ -58,6 +59,8 @@ const ApiMonitor = () => {
     const [availabilityChartConfig, setAvailabilityChartConfig] = useState(null)
     const [reliability, setReliability] = useState(null)
     const [averageSpeed, setAverageSpeed] = useState(null)
+
+    const [resultsModal, setResultsModal] = useState(null)
     //const layoutHeight = useSelector(state => state.device.layoutHeight);
     //const layoutWidth = useSelector(state => state.device.layoutWidth);
 
@@ -74,6 +77,11 @@ const ApiMonitor = () => {
         setDateTo(new Date(defaultDateTo))
         loadPerformanceData()
         loadAvailabilityData()
+
+        const refreshInterval = setInterval(loadAvailabilityData, 4000)
+
+        return () => clearInterval(refreshInterval)
+
     }, []) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
@@ -97,10 +105,11 @@ const ApiMonitor = () => {
             setResultsChartConfig(null)
             setSpeedChartConfig(null)
             setResultAndSpeedChartConfig(null)
-        } 
+        }
     }
 
     const loadAvailabilityData = async () => {
+        log(logType, 'loadAvailabilityData')
         const chartData = await getChartData('availability')
         if (chartData) {
             setAvailabilityChartConfig(chartData)
@@ -129,41 +138,33 @@ const ApiMonitor = () => {
         }
     }
 
-    const resultAndSpeedChartClickHandler = (event) => { //eslint-disable-line no-unused-vars
-
-        alert('resultAndSpeedChartClickHandler')
-        //const activeElements = resultChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true)
-
-        //if (activeElements.length) {
-        //    const firstElement = activeElements[0];
-        //    const id = resultAndSpeedChart.data.datasets[firstElement.datasetIndex].data[firstElement.index].Id;
-
-
-        //    window.location.href = '/Results/' + id + '/@Model.DateFrom.ToString("o")/@Model.DateTo.ToString("o")';
-        //}
+    const resultAndSpeedChartClickHandler = (chartValues) => { //eslint-disable-line no-unused-vars
+        const { bubbleId } = chartValues
+        const testOrCollectionId = bubbleId
+        setResultsModal({ dateFrom, dateTo, testOrCollectionId })
     }
 
-    function resultChartClickHandler(event) { //eslint-disable-line no-unused-vars
+    function resultChartClickHandler(chartValues) { //eslint-disable-line no-unused-vars
 
-        alert('resultChartClickHandler')
-        //const activeElements = resultChart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true)
+        const { stackLabel, xValue } = chartValues
+        if (xValue && stackLabel) {
+            const dateFrom = new Date(xValue)
+            const dateTo = dateFrom
+            console.log('resultChartClickHandler', { xValue, dateFrom })
+            const result = stackLabel === 'Success'
 
-        //if (activeElements.length) {
-        //    const firstElement = activeElements[0];
-        //    const testDateString = resultChart.data.labels[firstElement.index];
-
-        //    window.location.href = '/Results/@Model.CollectionId/' + testDateString + '/' + testDateString
-        //}
+            setResultsModal({ dateFrom, dateTo, result })
+        }
 
     }
 
-    function speedChartClickHandler(event) { //eslint-disable-line no-unused-vars
-        alert('speedChartClickHandler')
-        // resultChartClickHandler(event)
+    function speedChartClickHandler(chartValues) { //eslint-disable-line no-unused-vars
+        alert('speedChartClickHandler' + JSON.stringify(chartValues))
     }
 
-
-
+    const toggleModal = () => {
+        setResultsModal(null)
+    }
 
     const isLatest = () => {
         return dateTo - defaultDateTo >= -200000
@@ -254,7 +255,7 @@ const ApiMonitor = () => {
 
                     <div className={s.section}>
                         <div className={s.row}>
-                            <DashboardBox id="result-speed-chart-box"
+                            <DashboardBox id="result-speed-chart-box" bs
                                 title="Breakdown By Controller and Test"
                                 note="Shows average time (size of bubble) and reliability (color) for combinations of controller and test actions."
                             >
@@ -267,6 +268,12 @@ const ApiMonitor = () => {
 
                 </div >
             </div >
+            <Modal isOpen={resultsModal !== null} toggle={toggleModal} className={s.modalResultsTable} >
+                <div className={s.modalResultsContainer}>
+                    <ResultsTable {...resultsModal} />
+                </div>
+
+            </Modal>
 
         </>
 

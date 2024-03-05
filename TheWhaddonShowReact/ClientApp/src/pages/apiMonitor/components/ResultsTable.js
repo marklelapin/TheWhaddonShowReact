@@ -53,7 +53,9 @@ const ResultsTable = (props) => {
     }, [collectionType, dateFrom, dateTo, skip,limit, testOrCollectionId]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const refreshTableData = async () => {
+        console.log('refreshTableData', {dateFrom,dateTo})
         try {
+            
             const response = await axios({
                 method: 'get',
                 url: 'apimonitor/tableData',

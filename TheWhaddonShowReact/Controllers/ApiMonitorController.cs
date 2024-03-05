@@ -94,7 +94,8 @@ namespace TheWhaddonShowReact.Controllers
         [HttpGet("tableData")]
         public async Task<IActionResult> Get([FromQuery] string? collectionType = "performance", DateTime? dateFrom = null, DateTime? dateTo = null, int skip = 0, int limit = 1000, Guid? testOrCollectionId = null)
         {
-            DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom, dateTo, skip, limit);
+                
+            DataRequest dataRequest = new DataRequest(testOrCollectionId, dateFrom , dateTo, skip, limit);
 
             DataAndTotalRecords dataAndTotalRecords = collectionType switch
             {
@@ -151,7 +152,6 @@ namespace TheWhaddonShowReact.Controllers
             };
 
         }
-
 
         private async Task<string> GetResultChartConfiguration(List<ApiTestData> performanceData)
         {
@@ -217,7 +217,7 @@ namespace TheWhaddonShowReact.Controllers
             .ConfigureYAxis(options =>
             {
                 options.AddTitle("Time to Complete (ms)", Colors.Text)
-                .AddAbsoluteScaleLimits(100, 500);
+                .AddAbsoluteScaleLimits(0, 200);
             })
             .ConfigureXAxis(options =>
             {
@@ -366,9 +366,12 @@ namespace TheWhaddonShowReact.Controllers
         private async Task<DataAndTotalRecords> GetAvailabilityData(DataRequest dataRequest)
         {
             Guid testOrCollectionId = dataRequest.TestOrCollectionId == Guid.Empty ? AvailabilityCollectionId : dataRequest.TestOrCollectionId;
+            DateTime defaultDateFrom = DateTime.UtcNow.AddMinutes(-5);
+            DateTime defaultDateTo = DateTime.UtcNow;
+
             var draftOutput = await _dataAccess.GetAllByCollectionId(testOrCollectionId,
-                dataRequest.DateFrom,
-                dataRequest.DateTo,
+                defaultDateFrom ,
+                defaultDateTo,
                 dataRequest.Skip,
                 dataRequest.Limit
                 );
