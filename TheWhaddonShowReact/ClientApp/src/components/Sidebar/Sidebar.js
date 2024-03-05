@@ -60,14 +60,14 @@ function Sidebar(props) {
     }
 
     const onMouseEnter = () => {
-        log(logType,`on mouse enter static: ${sidebarStatic} opened: ${sidebarOpened}`)
+        log(logType, `on mouse enter static: ${sidebarStatic} opened: ${sidebarOpened}`)
         if (!sidebarStatic) {
             dispatch(openSidebar());
         }
     }
 
     const onMouseLeave = () => {
-        log(logType,`on mouse leave static: ${sidebarStatic} opened: ${sidebarOpened}`)
+        log(logType, `on mouse leave static: ${sidebarStatic} opened: ${sidebarOpened}`)
         if (!sidebarStatic) {
             dispatch(closeStaticSidebar());
         }
@@ -101,26 +101,31 @@ function Sidebar(props) {
             <ul className={s.nav}>
 
                 <LinksGroup
+                    key="home"
                     header="Home"
                     link="/app/home"
                     iconElement={<Icon icon='home' />}
                 />
                 <LinksGroup
+                    key="script"
                     header="Script"
                     link="/app/script"
                     iconElement={<Icon icon='script' />}
                 />
                 <LinksGroup
+                    key="scriptsummary"
                     header="Script Summary"
                     link="/app/scriptsummary"
                     iconElement={<Icon icon='summary' />}
                 />
                 <LinksGroup
+                    key="casting"
                     header="Casting"
                     link="/app/casting"
                     iconElement={<Icon icon='casting' />}
                 />
                 <LinksGroup
+                    key="gallery"
                     header="Gallery"
                     link="/app/gallery"
                     iconElement={<Icon icon="gallery" />}
@@ -129,22 +134,25 @@ function Sidebar(props) {
                 {/*   TOOLS SECTION*/}
 
                 {showTools &&
-                    <h5 className={[s.navTitle, s.groupTitle].join(' ')}>TOOLS</h5>
+                    <h5 key="toolsTitle" className={[s.navTitle, s.groupTitle].join(' ')}>TOOLS</h5>
                 }
                 {showScriptTools &&
                     <>
                         <LinksGroup
+                            key="print"
                             header="Print Scene"
                             iconElement={<Icon icon="print" />}
                             onToolClick={() => handlePrint('regular')}
                         />
                         <LinksGroup
+                            key="printlarge"
                             header="Print (Large)"
                             iconElement={<Icon icon="glasses" />}
                             onToolClick={() => handlePrint('large')}
                         />
                         <LinksGroup
-                        header="Refresh Script"
+                            key="refresh"
+                            header="Refresh Script"
                             iconElement={<Icon icon="refresh" />}
                             onToolClick={() => handleRefresh()} />
                     </>
@@ -153,10 +161,11 @@ function Sidebar(props) {
                 {/*   ADIMN SECTION*/}
 
                 {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, 'ApiMonitor')) &&
-                    <h5 className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
+                    <h5 key="adminTitle" className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
                 }
                 {(userAccessToComponent(currentUser, 'Users')) &&
                     <LinksGroup
+                        key="users"
                         header="Users"
                         link="/app/users"
                         iconElement={<Icon icon="user" />}
@@ -165,6 +174,7 @@ function Sidebar(props) {
                 {(userAccessToComponent(currentUser, 'ApiMonitor')) &&
 
                     <LinksGroup
+                        key="api"
                         link="/app/api"
                         header="API"
                         iconElement={<Icon icon="api" />}
@@ -212,7 +222,7 @@ function Sidebar(props) {
 
         <div className={`${isSidebarOpen ? 'sidebarOpen' : s['sidebarClose']} ${s['sidebarWrapper']}`}>
             {sidebarOpened && sidebarStatic && !isMobileDevice &&
-                <div className={classnames(s.closeSidebarToggle,'clickable')} onClick={toggleCloseSidebar}>
+                <div className={classnames(s.closeSidebarToggle, 'clickable')} onClick={toggleCloseSidebar}>
                     <Icon icon="arrow-left" id="close-sidebar-toggle" toolTip="UnPin Sidebar" toolTipPlacement="right" />
                 </div>
             }
