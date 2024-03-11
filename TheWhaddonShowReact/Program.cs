@@ -53,20 +53,7 @@ builder.Services.AddCors(options =>
 });
 //builder.Services.AddDownstreamApi("TheWhaddonShowApi", builder.Configuration.GetSection("TheWhaddonShowApi"));
 
-string token = await builder.GetTokenFromAzureAdClientCredentialsAsync("AzureAd:");
 
-builder.Services.AddHttpClient("TheWhaddonShowApi", options =>
-{
-    options.BaseAddress = new Uri(builder.Configuration.GetValue<string>("TheWhaddonShowApi:BaseUrl"));
-    options.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-});
-
-
-builder.Services.AddHttpClient("OpenAI", opts =>
-{
-    opts.BaseAddress = new Uri(builder.Configuration.GetValue<string>("OpenAIApi:BaseUrl"));
-    opts.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration.GetValue<string>("OpenAIApi:ApiKey")}");
-});
 
 
 
@@ -101,7 +88,21 @@ builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProv
 builder.Services.AddTransient<IEmailClient, HotmailClient>();
 //Configuration services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddTransient<IAuthorizationMethods, AuthorizationMethods>();
+builder.Services.AddTransient<AuthorizationHeaderHandler>();
 
+
+builder.Services.AddHttpClient("TheWhaddonShowApi", options =>
+{
+    options.BaseAddress = new Uri(builder.Configuration.GetValue<string>("TheWhaddonShowApi:BaseUrl"));
+}).AddHttpMessageHandler<AuthorizationHeaderHandler>();
+
+
+builder.Services.AddHttpClient("OpenAI", opts =>
+{
+    opts.BaseAddress = new Uri(builder.Configuration.GetValue<string>("OpenAIApi:BaseUrl"));
+    opts.DefaultRequestHeaders.Add("Authorization", $"Bearer {builder.Configuration.GetValue<string>("OpenAIApi:ApiKey")}");
+});
 
 
 
