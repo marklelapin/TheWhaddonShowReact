@@ -3,7 +3,10 @@ import { isMobileDevice } from '../core/screenHelper';
 export const READ = 'READ'
 export const WRITE = 'WRITE'
 export const DEMOID = '96eedb3d-132e-432f-a0f4-b1cd73728774'
+export const DEMOPassword = 'TheWhadd0nSh0w' //this is going to be copied for user to make login as easy as possible. Ok to have in code as access restricted to demo user.
 export const REHEARSALID = '7d0e525b-cc4b-4ef8-bf22-f9e58a4a5c92'
+
+export const DEMO_VIEW_AS_PERSONID = '7836850e-bc32-424b-9cbf-8f3e2e032cc0' //Guy
 
 
 export const userAccessToComponent = (user = null, componentOrPage = null) => {

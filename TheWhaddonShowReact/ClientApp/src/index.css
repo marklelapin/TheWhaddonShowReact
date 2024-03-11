@@ -33,6 +33,7 @@ body {
 
 .modal-dialog .modal-content {
 width: auto;
+max-width: 100%;
     justify-self: center;
     padding: 1rem;
 
@@ -40,6 +41,7 @@ width: auto;
 
 .modal-content .modal-body{
     width: auto;
+    max-width:100%;
     justify-self: center;
 }
 

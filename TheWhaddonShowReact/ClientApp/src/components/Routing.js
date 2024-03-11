@@ -25,6 +25,7 @@ const Routing = () => {
     return (
         <Routes>
             <Route path="/app/home" element={<Home />} />
+            <Route path="/app/demo" element={<Home />}/>
             <Route path="/app/loginlink" element={<Home />} />
             <Route path="/app/script" element={<Script />} />
             <Route path="/app/scriptsummary" element={<ScriptSummaryPage summaryType={SHOW} />} />

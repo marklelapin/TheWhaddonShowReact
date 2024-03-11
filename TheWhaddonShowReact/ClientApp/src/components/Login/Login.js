@@ -6,7 +6,7 @@ import { UnauthenticatedTemplate, AuthenticatedTemplate, useMsal } from '@azure/
 import { loginRequest, msalConfig } from '../../authConfig';
 
 //Components
-import { Button } from 'reactstrap'
+import { Button, Modal } from 'reactstrap'
 import { Icon } from '../../components/Icons/Icons';
 import DataLoading from '../../components/DataLoading/DataLoading';
 import TheWhaddonShowHomeWide from '../../images/TheWhaddonShowHomeWide.png'
@@ -15,7 +15,7 @@ import TheWhaddonShowHomeWide from '../../images/TheWhaddonShowHomeWide.png'
 import { isScreenSmallerThan } from '../../core/screenHelper';
 import { PERSON } from '../../dataAccess/localServerModels';
 import { getLatest, prepareUpdate } from '../../dataAccess/localServerUtils.js';
-import { login} from '../../actions/user';
+import { login } from '../../actions/user';
 import { trigger, UPDATE_VIEW_AS_PART_PERSON } from '../../actions/scriptEditor';
 import { log, LOGIN as logType } from '../../dataAccess/logging.js';
 import classnames from 'classnames';
@@ -24,8 +24,7 @@ import { clearStateFromBrowserStorage } from '../../dataAccess/browserStorage'
 import s from './Login.module.scss'
 
 //constants
-import { REHEARSALID,  signOutAllUsers } from '../../dataAccess/userAccess'
-
+import { DEMOID, DEMO_VIEW_AS_PERSONID, DEMOPassword, REHEARSALID, signOutAllUsers } from '../../dataAccess/userAccess'
 function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -36,12 +35,17 @@ function Login() {
     const personHistory = useSelector(state => state.localServer.persons.history)
     const persons = getLatest(personHistory, true)
     const authenticatedUser = useSelector(state => state.user.authenticatedUser)
+    const demoViewAsPerson = persons.find(person => person.id === DEMO_VIEW_AS_PERSONID)
 
     const location = useLocation();
+
+    const isDemoLink = (location.pathname === '/app/demo') ? true : false
+
 
     const [welcomeBlockState, setWelcomeBlockState] = useState('fallen') //hung, toppling,falling,hidden
     const [curtainState, setCurtainState] = useState('closed') //open,closed
     const [hideAll, setHideAll] = useState(false)
+    const [isDemoModalOpen, setIsDemoModalOpen] = useState(false)
 
     log(logType, 'props', { welcomeBlockState, curtainState, authenticatedUser, syncInfo, })
 
@@ -150,7 +154,8 @@ function Login() {
                 }
                 log(logType, 'useEffect[instance,account]', { user })
                 dispatch(login(user))
-                dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: user }))
+                const viewAsPerson = (user.id === DEMOID) ? demoViewAsPerson : user
+                dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: viewAsPerson }))
                 navigate('/app/home', { replace: true })
             }
         }).catch(error => { log(logType, 'Authentication error: ' + error) })
@@ -175,23 +180,24 @@ function Login() {
 
 
 
-    const handleLogin = async () => {
+    const handleLogin = async (type = 'default') => {
+
+        const loginParams = {
+            ...loginRequest,
+            redirectUri: msalConfig.redirectUri,
+        }
+        if (type === 'demo') {
+            loginParams.loginHint = 'demo@thewhaddonentertainers.onmicrosoft.com';
+        }
+
         try { //attempt popup login first
-            await instance
-                .loginPopup({
-                    ...loginRequest,
-                    redirectUri: msalConfig.redirectUri,
-                })
-                .catch((error) => console.log(error));
+            console.log('handleLogin', loginParams)
+            await instance.loginPopup(loginParams)
         } catch (popupError) { //fall back to redirect if fails
             console.warn('Popup authentication failed. Redirecting...', popupError);
-
             try {
                 // Fallback to redirect-based authentication
-                await instance.loginRedirect({
-                    ...loginRequest,
-                    redirectUri: msalConfig.redirectUri,
-                });
+                await instance.loginRedirect(loginParams);
             } catch (redirectError) {
                 log(logType, 'Redirect authentication failed.', redirectError);
                 alert('Authentication failed. Please check your internet connection and try again.');
@@ -210,10 +216,23 @@ function Login() {
             dispatch(login(rehearsal))
             dispatch(trigger(UPDATE_VIEW_AS_PART_PERSON, { partPerson: null }))
         }
-
     }
- 
 
+    const loginDemo = async () => {
+        toggleDemoModal()
+        try {
+            await navigator.clipboard.writeText(DEMOPassword)
+        } catch (error) {
+            console.error('Failed to copy to clipboard', error)
+            alert(`Failed to copy to cliboard. Sorry you'll have to remember the password "${DEMOPassword}" yourself.`)
+        }
+        handleLogin('demo');
+    }
+
+
+    const toggleDemoModal = () => {
+        setIsDemoModalOpen(!isDemoModalOpen)
+    }
     const isLoading = syncInfo.isSyncing && (!persons || persons?.length === 0)
     const isErrorSyncing = syncInfo.error && (!persons || persons?.length === 0)
 
@@ -257,7 +276,8 @@ function Login() {
                                     <h3>Please Login:</h3>
                                     <div className={s.loginButtons}>
                                         <Button color='primary' onClick={handleLogin}>Cast & Crew</Button>
-                                        <Button color='primary' onClick={loginRehearsal}>Rehearsal</Button>
+                                        {!isDemoLink && <Button color='primary' onClick={loginRehearsal}>Rehearsal</Button>}
+                                        {isDemoLink && <Button color='primary' onClick={toggleDemoModal}>Demo</Button>}
                                     </div>
 
                                 </div>
@@ -289,6 +309,22 @@ function Login() {
                     </DataLoading >
                 </div>
             </div >
+            <Modal isOpen={isDemoModalOpen} toggle={toggleDemoModal}>
+                <div className={s.demoModal}>
+                    <h3>Demo Account</h3>
+                    <div className={s.demoMessage}>
+                        <h5>Account</h5>
+                        <div>The demo account allows you to fuly interact fully with The Whaddon Show App without saving to the Server.</div>
+                        <p><strong>Feel free to play about with script, recast people, and interact with the app! The show will not be affected nor will anyone else see your work!</strong></p>
+                    </div>
+                    <div className={s.demoCredentials}>
+                        <h5>Account Credentials:</h5>
+                        <div>Username: (prepopulated) <strong>demo@thewhaddonentertainers.onmicrosoft.com</strong> </div>
+                        <div>Password: (click to copy) <strong>TheWhadd0nSh0w</strong> </div>
+                        <Button color='primary' onClick={() => loginDemo()}>Copy Password and Go to Login</Button>
+                    </div>
+                </div>
+            </Modal>
         </>
 
     )
