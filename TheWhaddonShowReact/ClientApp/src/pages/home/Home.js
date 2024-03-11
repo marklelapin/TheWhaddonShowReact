@@ -14,23 +14,26 @@ import scriptPage from '../../images/script.png'
 import scriptSummary from '../../images/script-summary.png'
 import casting from '../../images/casting.png'
 import underConstruction from '../../images/under-construction-500.png'
-
+import users from '../../images/users.png'
+import apimonitor from '../../images/api-monitor.png'
 
 
 //utils
 import { REHEARSALID } from '../../dataAccess/userAccess';
+
 import { getLatest } from '../../dataAccess/localServerUtils';
 import { getCastWithPartsAndScenes } from '../casting/scripts'
 import { log, HOME as logType } from '../../dataAccess/logging';
 import classnames from 'classnames';
 
 import s from './Home.module.scss';
+import { DEMOID } from '../../dataAccess/userAccess';
 
 function Home() {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+    const authenticatedUser = useSelector(state => state.user.authenticatedUser)
     const currentUser = useSelector(state => state.user.currentUser)
     const personsHistory = useSelector(state => state.localServer.persons.history)
     const persons = getLatest(personsHistory)
@@ -43,8 +46,11 @@ function Home() {
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
     const isRehearsal = (currentUser?.id === REHEARSALID);
+    const isDemo = (authenticatedUser?.id === DEMOID);
 
-    const greetingUser = isRehearsal ? viewAsPartPerson : currentUser
+
+    const greetingUser = isRehearsal || isDemo ? viewAsPartPerson : currentUser
+
     log(logType, 'props', { currentUser, isRehearsal, greetingUser })
 
     const userPartsAndScenes = (greetingUser) ? getCastWithPartsAndScenes(persons, partPersons, scriptItems).find(item => item.person.id === greetingUser.id) : null
@@ -56,10 +62,9 @@ function Home() {
     const totalLines = userPartsAndScenes?.lineCount || 0
 
 
-    const castingText = `You are currently cast in ${totalParts} parts across ${totalScenes} scenes and have ${totalLines} lines to learn!*`
-
-    const message = 'Next Rehearsal: Wednesday 8pm'
-
+    const castingText = `You are currently cast in ${totalParts} parts across ${totalScenes} scenes and have ${totalLines} lines to learn!`;
+    
+    const message = 'Next Rehearsal: Wednesday 8pm';
 
     const daysToGo = () => {
         const now = new Date();
@@ -98,7 +103,7 @@ function Home() {
                         </h2>
 
                         <div className={s.daysToGo}>
-                            <span className={s.daysToGoNumber} >{daysToGo()}</span><span>days to go!</span>
+                            <span className={s.daysToGoNumber} >{daysToGo()}</span><span>days till opening night!</span>
                         </div>
                         {!greetingUser && <div className={s.viewAsPartPersonSelector}>
                             <p>Please select the person you wish to view as:</p>
@@ -107,19 +112,13 @@ function Home() {
                         }
                         {greetingUser &&
                             <>
-
                                 <h2 className={s.castingText}>
                                     {castingText}
                                 </h2>
-
-
                                 <h2 className={s.message}>
                                     {message}
                                 </h2>
-
                             </>
-
-
                         }
                         <div className={s.whaddonShowCowboy}>
                             <img src={whaddonShowCowboy} alt="The Whaddon Show Cowboy shouting into a speech bubble." className={s.logo} />
@@ -133,22 +132,30 @@ function Home() {
                 <div className={classnames(s.linksContainer, isMobileDevice ? s.mobile : null)}>
                     <div className={s.link}>
                         <h2>Script</h2>
-                        <img src={scriptPage} alt="Script" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/script')} />
+                        <img src={scriptPage} title="go to script" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/script')} />
                     </div>
 
                     <div className={s.link}>
                         <h2>Script Summary</h2>
-                        <img src={scriptSummary} alt="Script Summary" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/scriptsummary')} />
+                        <img src={scriptSummary} title="go to script summary" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/scriptsummary')} />
                     </div>
 
                     <div className={s.link}>
                         <h2>Casting</h2>
-                        <img src={casting} alt="Casting" className={s.linkImage} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                        <img src={casting} title="go to casting" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/casting')} />
+                    </div>
+                    <div className={s.link}>
+                        <h2>Users</h2>
+                        <img src={users} title="go to users" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/users')} />
+                    </div>
+                    <div className={s.link}>
+                        <h2>Api</h2>
+                        <img src={apimonitor} title="go to api" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/api/documentation')} />
                     </div>
 
                     <div className={s.link}>
                         <h2>Gallery</h2>
-                        <img src={underConstruction} alt="Casting" className={s.linkImage} onClick={(e) => handlePictureClick(e, '/app/gallery')} />
+                        <img src={underConstruction} title="go to gallery" className={classnames(s.linkImage, 'clickable')} onClick={(e) => handlePictureClick(e, '/app/gallery')} />
                     </div>
                 </div>
 
