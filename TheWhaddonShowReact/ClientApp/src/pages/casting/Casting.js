@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector} from 'react-redux';
 
 
@@ -13,7 +13,7 @@ import { addFriendlyName, getCastMembers } from '../../dataAccess/personScripts'
 //import { log, CASTING as logType } from '../../dataAccess/logging';
 import { getCastWithPartsAndScenes } from './scripts'
 import classnames from 'classnames';
-
+import {log, CASTING as logType } from '../../dataAccess/logging';
 //scss
 import s from './Casting.module.scss';
 
@@ -28,22 +28,42 @@ const Casting = () => {
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
     const [viewAsCastMember, setViewAsCastMember] = useState(null);
+    const [tempPerson, setTempPerson] = useState(false)
+    const [tempPartId,setTempPartId] = useState(null);
+    const [tempPartChange, setTempPartChange] = useState(null);
 
     const mobile = isMobileDevice ? 'mobile' : 'desktop'
 
     const cast = addFriendlyName(getCastMembers(persons))
 
-    const castPartScenes = getCastWithPartsAndScenes(cast, partPersons, scriptItems)
+    const castPartScenes = getCastWithPartsAndScenes(cast, partPersons, scriptItems,tempPartChange)
 
     const highestWordCount = Math.max(...castPartScenes.map(castMember => castMember.wordCount))
 
     const castSortedByWordCount = castPartScenes.sort((a, b) => b.wordCount - a.wordCount)
 
 
+    useEffect(() => {
+
+        document.addEventListener('dragend',handleDragEnd)
+
+        return () => document.removeEventListener('dragend', handleDragEnd)
+    },[])
+
+    useEffect(() => { 
+        log(logType, 'useEffect[tempPerson,tempPart]', {tempPerson,tempPartId})
+        if (tempPartId && tempPerson !== false) {
+            setTempPartChange({partId:tempPartId, person:tempPerson})
+        }
+    },[tempPerson,tempPartId])
 
    
 
-
+    const handleDragEnd = () => {
+        setTempPerson(false)
+        setTempPartId(null)
+        setTempPartChange(null)
+    }
     
   
 
@@ -64,6 +84,7 @@ const Casting = () => {
                                 highestWordCount={highestWordCount}
                                 onClick={() => setViewAsCastMember(castMember)}
                                 active={viewAsCastMember?.person.id === castMember.person.id}
+                                setTempPerson={setTempPerson }
                             />
                         )
                         }
@@ -83,6 +104,7 @@ const Casting = () => {
                             viewAsPerson={viewAsCastMember?.person}
                             allowPartAllocation={true}
                             allowSceneOrderChanges={true}
+                            setTempPartId={setTempPartId}
                         />
                     </div>
                 </div>

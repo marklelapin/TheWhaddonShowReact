@@ -71,9 +71,13 @@ const getCastWithParts = (cast, partPersons, scriptItems) => {
     return castParts;
 }
 
-export const getCastWithPartsAndScenes = (cast, partPersons, scriptItems) => {
+export const getCastWithPartsAndScenes = (cast, partPersons, scriptItems,tempPartChange) => {
 
-    const castWithParts = getCastWithParts(cast, partPersons, scriptItems)
+    const tempPartPersons = tempPartChange ? { ...partPersons, [tempPartChange.partId]: { ...partPersons[tempPartChange.partId], personId: tempPartChange.person.id} } : partPersons
+
+    log(logType,'tempPartPerson',tempPartPersons)
+
+    const castWithParts = getCastWithParts(cast, tempPartPersons, scriptItems)
 
     const sceneScriptItems = Object.values(scriptItems).filter(item => item.type === SCENE)
 

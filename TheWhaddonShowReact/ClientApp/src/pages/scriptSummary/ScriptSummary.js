@@ -32,7 +32,8 @@ const ScriptSummary = (props) => {
         viewAsPerson = null,
         //onDropPart = null, //TODO-implement drag and drop for parts
         allowPartAllocation = false,
-        allowSceneOrderChanges = false
+        allowSceneOrderChanges = false,
+        setTempPartId = null
     } = props
 
     const typeMap = new Map([
@@ -68,7 +69,6 @@ const ScriptSummary = (props) => {
         setTypes(typeMap.get(summaryType))
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-    log(logType, 'showOrder', showOrder)
 
     //SETUP SCENES
     let scenes = showOrder?.map(item => ({ ...currentScriptItems[item.id], sceneNumber: item.sceneNumber, act: item.act, curtainOpen: item.curtainOpen }))
@@ -127,6 +127,7 @@ const ScriptSummary = (props) => {
     const handleSceneDragStart = (e) => {
         log(logType, 'hadnleSCeneDragStart', e.currentTarget.dataset.sceneid)
         e.dataTransfer.setData("text/plain", `sceneid:${e.currentTarget.dataset.sceneid}`)
+        
     }
     const handleSceneDragOver = (e) => {
         e.preventDefault()
@@ -155,156 +156,164 @@ const ScriptSummary = (props) => {
 
     const handlePartDragStart = (e) => {
         e.dataTransfer.setData("text/plain", `partid:${e.currentTarget.dataset.partid}`)
+        if (setTempPartId) {
+            setTempPartId(e.currentTarget.dataset.partid)
+        }
     }
     const handlePartDragOver = (e) => {
+        log(logType,'handlePartDragOver')
         e.preventDefault()
         const allocateDiv = getAllocateDiv(e)
         if (allocateDiv) {
             allocateDiv.classList.add(s.dragOver)
-        }
-    }
-    const handlePartDragLeave = (e) => {
-        e.preventDefault()
-        const allocateDiv = getAllocateDiv(e)
-        if (allocateDiv) {
-            allocateDiv.classList.remove(s.dragOver)
-        }
-    }
-
-    const handlePartDrop = (e) => {
-        e.preventDefault()
-        const isPersonId = (e.dataTransfer.getData("text/plain").substring(0, 8) === "personid")
-        const allocateDiv = getAllocateDiv(e)
-
-        if (allocateDiv && isPersonId) {
-            allocateDiv.classList.remove(s.dragOver)
             const partId = allocateDiv.dataset.partid;
-            const personId = e.dataTransfer.getData("text/plain").substring(9)
-            log(logType, 'handlePartDrop', { partId, personId })
-            dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, personId }))
+            log(logType,'handlePartDragOver', { partId })
+            setTempPartId(partId)
+    }
+}
+const handlePartDragLeave = (e) => {
+    e.preventDefault()
+    const allocateDiv = getAllocateDiv(e)
+    if (allocateDiv) {
+        allocateDiv.classList.remove(s.dragOver)  
+    }
+    setTempPartId(null)
+}
 
+const handlePartDrop = (e) => {
+    e.preventDefault()
+    const isPersonId = (e.dataTransfer.getData("text/plain").substring(0, 8) === "personid")
+    const allocateDiv = getAllocateDiv(e)
+
+    if (allocateDiv && isPersonId) {
+        allocateDiv.classList.remove(s.dragOver)
+        const partId = allocateDiv.dataset.partid;
+        const personId = e.dataTransfer.getData("text/plain").substring(9)
+        log(logType, 'handlePartDrop', { partId, personId })
+        dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, personId }))
+        setTempPartId(null)
+    }
+}
+
+
+const getAllocateDiv = (e) => {
+    let allocateDiv = null
+    let currentElement = e.currentTarget
+    while (currentElement) {
+        if (currentElement.classList.contains('allocatePersonOnDrop')) {
+            allocateDiv = currentElement
+            break;
         }
+        currentElement = currentElement.parentElement
     }
+    return allocateDiv
+}
+//--END OF PART DRAG AND DROP------------------------------------------------------------------------------
 
 
-    const getAllocateDiv = (e) => {
-        let allocateDiv = null
-        let currentElement = e.currentTarget
-        while (currentElement) {
-            if (currentElement.classList.contains('allocatePersonOnDrop')) {
-                allocateDiv = currentElement
-                break;
-            }
-            currentElement = currentElement.parentElement
-        }
-        return allocateDiv
-    }
-    //--END OF PART DRAG AND DROP------------------------------------------------------------------------------
+const scriptSummarySceneId = (scene) => {
+    return `script-summary-scene-${scene.id}`
+}
+const scriptSummaryScenePartId = (scene, part) => {
+    return `script-summary-scene-part-${scene.id}-${part.id}`
+}
 
+const act1Scenes = scenes.filter(scene => scene.act === 1)
+const act2Scenes = scenes.filter(scene => scene.act === 2)
 
-    const scriptSummarySceneId = (scene) => {
-        return `script-summary-scene-${scene.id}`
-    }
-    const scriptSummaryScenePartId = (scene, part) => {
-        return `script-summary-scene-part-${scene.id}-${part.id}`
-    }
+const actJsx = (scenes) => (
+    scenes.map(scene => (
 
-    const act1Scenes = scenes.filter(scene => scene.act === 1)
-    const act2Scenes = scenes.filter(scene => scene.act === 2)
+        <div key={scene.id}
+            className={s.scene}
 
-    const actJsx = (scenes) => (
-        scenes.map(scene => (
+        >
+            {scene.type === ACT &&
+                <div className={s.actHeader}>
+                    <h3>{scene.text}</h3><span className={error()}>{unallocatedLineError(scene.id)}</span>
+                </div>}
+            {scene.type === SCENE &&
+                <>
+                    <div id={scriptSummarySceneId(scene)}
+                        className={classnames(s.sceneHeader, isSceneDraggable ? 'clickable' : null)}
+                        data-sceneid={scene.id}
+                        onDragOver={isSceneDraggable ? handleSceneDragOver : null}
+                        onDragLeave={isSceneDraggable ? handleSceneDragLeave : null}
+                        onDrop={isSceneDraggable ? handleSceneDrop : null}
+                        onDragStart={isSceneDraggable ? handleSceneDragStart : null}
+                        draggable={isSceneDraggable}
+                    >
+                        {`${scene.sceneNumber}. ${scene.text}`}
+                    </div>
+                    {allowSceneOrderChanges && <QuickToolTip id={scriptSummarySceneId(scene)} tip={'drag to move scene'} placement={'left'} />}
 
-            <div key={scene.id}
-                className={s.scene}
-
-            >
-                {scene.type === ACT &&
-                    <div className={s.actHeader}>
-                        <h3>{scene.text}</h3><span className={error()}>{unallocatedLineError(scene.id)}</span>
-                    </div>}
-                {scene.type === SCENE &&
-                    <>
-                        <div id={scriptSummarySceneId(scene)}
-                            className={classnames(s.sceneHeader, isSceneDraggable ? 'clickable' : null)}
-                            data-sceneid={scene.id}
-                            onDragOver={isSceneDraggable ? handleSceneDragOver : null}
-                            onDragLeave={isSceneDraggable ? handleSceneDragLeave : null}
-                            onDrop={isSceneDraggable ? handleSceneDrop : null}
-                            onDragStart={isSceneDraggable ? handleSceneDragStart : null}
-                            draggable={isSceneDraggable}
-                        >
-                            {`${scene.sceneNumber}. ${scene.text}`}
+                    {types.includes(SYNOPSIS) &&
+                        <div className={s.synopsis}>
+                            {scene.synopsis}
                         </div>
-                        {allowSceneOrderChanges && <QuickToolTip id={scriptSummarySceneId(scene)} tip={'drag to move scene'} placement={'left'} />}
+                    }
+                    {types.includes(PART) &&
+                        <div className={s.sceneParts} >
+                            {scene.parts.map((part, idx) => (
 
-                        {types.includes(SYNOPSIS) &&
-                            <div className={s.synopsis}>
-                                {scene.synopsis}
-                            </div>
-                        }
-                        {types.includes(PART) &&
-                            <div className={s.sceneParts} >
-                                {scene.parts.map((part, idx) => (
-
-                                    <div key={idx}>
-                                        <div id={scriptSummaryScenePartId(scene, part)}
-                                            className={classnames(
-                                                s.part,
-                                                s[partHighlight(scene, part)?.class],
-                                                isPartAllocatable ? 'clickable' : null,
-                                                'allocatePersonOnDrop'
-                                            )}
-                                            onClick={readOnly ? null : (e) => handlePartClick(e, scene, part)}
-                                            data-partid={part.id}
-                                            onDragOver={isPartAllocatable ? handlePartDragOver : null}
-                                            onDragLeave={isPartAllocatable ? handlePartDragLeave : null}
-                                            onDrop={isPartAllocatable ? handlePartDrop : null}
-                                            onDragStart={isPartAllocatable ? handlePartDragStart : null}
-                                            draggable={isPartAllocatable}
-                                        >
-                                            <div className={s.partAvatar}>
-                                                {part.personId && <Avatar partId={part.id} size='xs' />}
-                                            </div>
-                                            <div className={classnames(s.partName)} >
-                                                {part.name}
-                                                {(idx !== scene.parts.length - 1) ? ',' : ''}
-                                            </div>
-                                            <div className={classnames(s.highlightText, s[partHighlight(scene, part)?.class])}>
-                                                {partHighlight(scene, part)?.text}
-                                            </div>
+                                <div key={idx}>
+                                    <div id={scriptSummaryScenePartId(scene, part)}
+                                        className={classnames(
+                                            s.part,
+                                            s[partHighlight(scene, part)?.class],
+                                            isPartAllocatable ? 'clickable' : null,
+                                            'allocatePersonOnDrop'
+                                        )}
+                                        onClick={readOnly ? null : (e) => handlePartClick(e, scene, part)}
+                                        data-partid={part.id}
+                                        onDragOver={isPartAllocatable ? handlePartDragOver : null}
+                                        onDragLeave={isPartAllocatable ? handlePartDragLeave : null}
+                                        onDrop={isPartAllocatable ? handlePartDrop : null}
+                                        onDragStart={isPartAllocatable ? handlePartDragStart : null}
+                                        draggable={isPartAllocatable}
+                                    >
+                                        <div className={s.partAvatar}>
+                                            {part.personId && <Avatar partId={part.id} size='xs' />}
                                         </div>
-                                        {isPartAllocatable && <QuickToolTip id={scriptSummaryScenePartId(scene, part)} tip={'reallocate part'} placement={'top'} />}
+                                        <div className={classnames(s.partName)} >
+                                            {part.name}
+                                            {(idx !== scene.parts.length - 1) ? ',' : ''}
+                                        </div>
+                                        <div className={classnames(s.highlightText, s[partHighlight(scene, part)?.class])}>
+                                            {partHighlight(scene, part)?.text}
+                                        </div>
                                     </div>
+                                    {isPartAllocatable && <QuickToolTip id={scriptSummaryScenePartId(scene, part)} tip={'reallocate part'} placement={'top'} />}
+                                </div>
 
 
-                                ))}
+                            ))}
 
-                            </div>
-                        }
-                    </>
-                }
-            </div >
+                        </div>
+                    }
+                </>
+            }
+        </div >
 
-        ))
-    )
+    ))
+)
 
-    return (
-        <>
-            <div className={s.container}>
-                <div className={s.castSection}>
+return (
+    <>
+        <div className={s.container}>
+            <div className={s.castSection}>
+            </div>
+            <div className={s.programmeSection}>
+                <div id="Act1" key="Act1" className={s.act}>
+                    {actJsx(act1Scenes)}
                 </div>
-                <div className={s.programmeSection}>
-                    <div id="Act1" key="Act1" className={s.act}>
-                        {actJsx(act1Scenes)}
-                    </div>
-                    <div id="Act2" key="Act2" className={s.act}>
-                        {actJsx(act2Scenes)}
-                    </div>
+                <div id="Act2" key="Act2" className={s.act}>
+                    {actJsx(act2Scenes)}
                 </div>
             </div>
-        </>
-    )
+        </div>
+    </>
+)
 
 }
 export default ScriptSummary;

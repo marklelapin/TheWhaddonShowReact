@@ -13,9 +13,9 @@ export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
 export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
 export const CACHE_REDUCER = { type: NONE, location: 'Reducer:cache' }
 
-export const CAST_MEMBER = { type: DEBUG, location: 'Component:CastMember' }
+export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 
-export const CASTING = { type: NONE, location: 'Component:Casting' }
+export const CASTING = { type: DEBUG, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 
 export const CHART = { type: NONE, location: 'Component:Chart' }

@@ -19,7 +19,7 @@ const CastMember = (props) => {
     const dispatch = useDispatch();
 
     log(logType, 'props', { props })
-    const { castMember, highestWordCount, onClick, active = false } = props
+    const { castMember, highestWordCount, onClick, active = false, setTempPerson = null } = props
 
     const wordCount = castMember.wordCount
     const wordCountPercentage = (highestWordCount ? (castMember.wordCount / highestWordCount) * 100 : 0).toFixed(0)
@@ -33,17 +33,21 @@ const CastMember = (props) => {
 
     const handleDragStart = (e) => {
         e.dataTransfer.setData("text/plain", `personid:${castMember.person.id}`);
+        if (setTempPerson) {
+            setTempPerson(castMember.person)
+        }
     }
 
     const handleDragOver = (e) => {
         e.preventDefault()
 
         const deallocateDiv = getDeallocateDiv(e)
-        log(logType, 'dragOver1',e.dataTransfer.getData("text/plain"))
-
-        if (deallocateDiv) {
+        log(logType, 'dragOver1', e.dataTransfer.getData("text/plain"))
+        const isPartId = (e.dataTransfer.getData("text/plain").substring(0, 6) === "partid")
+        if (deallocateDiv && isPartId) {
             //log(logType,'dragOver2',deallocateDiv)
             deallocateDiv.classList.add(s.dragOver)
+            setTempPerson(null)
         }
     }
 
@@ -53,19 +57,21 @@ const CastMember = (props) => {
         const deallocateDiv = getDeallocateDiv(currentElement)
         if (deallocateDiv) {
             deallocateDiv.classList.remove(s.dragOver)
+            setTempPerson(false)
         }
 
     }
     const handleDrop = (e) => {
-        e.preventDefault()       
-        const deallocateDiv = getDeallocateDiv(e) 
+        e.preventDefault()
+        const deallocateDiv = getDeallocateDiv(e)
         const isPartId = (e.dataTransfer.getData("text/plain").substring(0, 6) === "partid")
-        
+
         if (deallocateDiv && isPartId) {
             const partId = e.dataTransfer.getData("text/plain").substring(7)
             const personId = null;
             log(logType, 'handlePartDrop', { partId, personId })
             dispatch(trigger(ALLOCATE_PERSON_TO_PART, { partId, personId: null }))
+            setTempPerson(false)
         }
 
     }
