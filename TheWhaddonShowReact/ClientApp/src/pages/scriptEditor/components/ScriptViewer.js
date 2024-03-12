@@ -106,13 +106,15 @@ function ScriptViewer(props) {
     }, [scenesToLoad, showOrder]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
+        log(logType, 'useEffect[loading]', loading)
         if ([CLASSIC, CHAT].includes(loading)) {
             const newViewStyle = loading
             dispatch(updateViewStyle(newViewStyle))
         }
-    }, [loading]) //eslint-disable-line react-hooks/exhaustive-deps
+     }, [loading]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
+        log(logType, 'useEffect[viewStyle]', viewStyle)
         if ([CLASSIC,CHAT].includes(loading))
         setLoading(false)
     }, [viewStyle]) //eslint-disable-line react-hooks/exhaustive-deps
@@ -161,7 +163,7 @@ function ScriptViewer(props) {
                 </div>
                 {(loading !== false) && !isMobileDevice &&
                     <div className={s.loader}>
-                        {<Loader size={60} text={loading === 'script' ? "Loading..." : `Changing to ${loading} mode...`} />}
+                        {<Loader size={30} text={loading === 'script' ? "Loading..." : `Switching to ${loading} mode...`} />}
                     </div>
                 }
             </div>

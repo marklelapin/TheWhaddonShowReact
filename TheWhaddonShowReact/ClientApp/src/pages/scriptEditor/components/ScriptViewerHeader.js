@@ -27,7 +27,7 @@ import { getShowBools } from '../scripts/layout';
 import classnames from 'classnames';
 
 //Constants
-import {CHAT,CLASSIC } from '../scripts/layout';
+import { CHAT, CLASSIC } from '../scripts/layout';
 
 //css
 import QuickToolTip from '../../../components/Forms/QuickToolTip';
@@ -69,7 +69,9 @@ function ScriptViewerHeader(props) {
     }, [printScript, viewStyle, dispatch]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleNavLink = (type) => {
-        setLoading(type)
+        if (viewStyle !== type) {
+            setLoading(type)
+        }
     }
 
 
@@ -135,7 +137,7 @@ function ScriptViewerHeader(props) {
                     {(!isMobileDevice || viewStyle === CLASSIC) &&
                         <>
                             <div id="chat-mode"
-                                className={`${s['script-viewer-navlink']} ${(viewStyle === CHAT) ? 'active' : ''}`}
+                                className={`${s['script-viewer-navlink']} ${(viewStyle === CHAT) ? s.active : ''}`}
                             >
                                 <ConfirmClick type='rectangle' onClick={() => handleNavLink(CHAT)}>
                                     <span>Chat</span><Icon icon="chat-mode" />
@@ -149,7 +151,7 @@ function ScriptViewerHeader(props) {
                     {(!isMobileDevice || viewStyle === CHAT) &&
                         <>
                             <div id="classic-mode"
-                                className={`${s['script-viewer-navlink']} ${isScreenSmallerThan('xl') ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? 'active' : ''}`}
+                                className={`${s['script-viewer-navlink']} ${isScreenSmallerThan('xl') ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? s.active : ''}`}
                             >
                                 <ConfirmClick type='rectangle' onClick={() => handleNavLink(CLASSIC)}>
                                     <span>Classic</span><Icon icon="classic-mode" />
