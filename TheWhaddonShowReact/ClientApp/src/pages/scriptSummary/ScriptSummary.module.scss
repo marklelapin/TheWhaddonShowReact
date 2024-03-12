@@ -41,12 +41,14 @@ $sub-scene-margin: 10px;
                 flex-direction: column;
                 margin-bottom: 10px;
 
+
+
                 @media Print {
                     page-break-inside: avoid;
                     margin-top: 40px;
                 }
 
-                &.dragOver{
+                &.dragOver {
                     margin-bottom: 40px;
                     background-color: $highlight;
                 }
@@ -60,6 +62,10 @@ $sub-scene-margin: 10px;
 
                 .sceneHeader {
                     font-weight: $font-weight-bolder;
+
+                    &:hover {
+                        background-color: $hover-bg;
+                    }
 
                     @media print {
                         font-size: 36px;
@@ -107,6 +113,15 @@ $sub-scene-margin: 10px;
                         margin-left: 10px;
                         font-size: $font-size-xs;
 
+                        &:hover {
+                            background-color: $hover-bg;
+                        }
+
+                        &.dragOver {
+                            background-color: $hover-bg;
+                            border-bottom:3px solid black;
+                        }
+
                         &:first-child {
                             margin-left: 0px;
                         }
@@ -115,6 +130,10 @@ $sub-scene-margin: 10px;
                             background-color: transparent;
                             border-color: $gray-400;
                             border-style: solid;
+
+                            &:hover {
+                                background-color: $hover-bg;
+                            }
                         }
 
                         &.viewAsPartPerson {

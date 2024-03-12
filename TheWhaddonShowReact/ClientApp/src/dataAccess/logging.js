@@ -13,12 +13,12 @@ export const BROWSER_STORAGE = { type: NONE, location: 'Script:browserStorage' }
 export const CACHE_PROCESSING = { type: NONE, location: 'Component:CacheProcessing' }
 export const CACHE_REDUCER = { type: NONE, location: 'Reducer:cache' }
 
-export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
+export const CAST_MEMBER = { type: DEBUG, location: 'Component:CastMember' }
 
 export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 
-export const CHART = { type: DEBUG, location: 'Component:Chart' }
+export const CHART = { type: NONE, location: 'Component:Chart' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 export const CONFIRM_CLICK = { type: NONE, location: 'Component:ConfirmClick' }
 
@@ -64,7 +64,8 @@ export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptIte
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 export const SCRIPT_ITEM_HEADER = { type: NONE, location: 'Component:ScriptItemHeader' }
 export const SCRIPT = { type: NONE, location: 'Component:Script' }
-export const SCRIPT_VIEWER = { type: DEBUG, location: 'Component:ScriptViewer' }
+export const SCRIPT_SUMMARY = { type: DEBUG, location: 'Component:ScriptSummary' }
+export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 export const SCRIPT_VIEWER_HEADER = { type: NONE, location: 'Component:ScriptViewerHeader' }
 
 export const SIDEBAR = { type: NONE, location: 'Component:Sidebar' }
