@@ -180,16 +180,19 @@ function Sidebar(props) {
                         iconElement={<Icon icon="api" />}
                         childrenLinks={[
                             {
+                                key: '/app/api/documentation',
                                 header: 'Documentation',
                                 link: '/app/api/documentation',
                                 iconElement: <Icon icon="document" />,
                             },
                             {
+                                key: '/app/api/monitor',
                                 header: 'Monitor',
                                 link: '/app/api/monitor',
                                 iconElement: <Icon icon="layout" />,
                             },
                             {
+                                key: '/app/api/testresults',
                                 header: 'Test Results',
                                 link: '/app/api/testresults',
                                 iconElement: <Icon icon="layout" />,
