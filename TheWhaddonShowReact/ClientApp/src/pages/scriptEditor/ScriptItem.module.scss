@@ -213,7 +213,7 @@ $script-item-control-bottom: -30px;
     @include dropdown-box;
 
     .type:hover {
-        background-color: #f0f0f0;
+        background-color: $hover-bg;
     }
 }
 
@@ -612,7 +612,7 @@ $script-item-control-bottom: -30px;
 }
 
 .part-selector-dropdown .part-avatar-name:hover {
-    background-color: #f0f0f0;
+    background-color: $hover-bg;
 }
 
 .part-selector-dropdown .part-avatar-name.selected {
@@ -925,6 +925,7 @@ $script-item-control-bottom: -30px;
         }
     }
 }
+
 
 .action,
 .sound,

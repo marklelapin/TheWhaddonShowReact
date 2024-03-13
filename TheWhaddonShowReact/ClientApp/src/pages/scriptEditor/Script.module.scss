@@ -352,6 +352,10 @@
         margin: 5px;
         cursor: pointer;
         align-items: center;
+
+        &:hover {
+            background-color: $hover-bg;
+        }
     }
 }
 

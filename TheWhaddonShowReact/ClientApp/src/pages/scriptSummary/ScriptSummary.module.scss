@@ -63,7 +63,7 @@ $sub-scene-margin: 10px;
                 .sceneHeader {
                     font-weight: $font-weight-bolder;
 
-                    &:hover {
+                    &.clickable:hover {
                         background-color: $hover-bg;
                     }
 
@@ -113,7 +113,7 @@ $sub-scene-margin: 10px;
                         margin-left: 10px;
                         font-size: $font-size-xs;
 
-                        &:hover {
+                        &.clickable:hover {
                             background-color: $hover-bg;
                         }
 
@@ -131,7 +131,7 @@ $sub-scene-margin: 10px;
                             border-color: $gray-400;
                             border-style: solid;
 
-                            &:hover {
+                            &.clickable:hover {
                                 background-color: $hover-bg;
                             }
                         }
@@ -165,4 +165,8 @@ $sub-scene-margin: 10px;
             }
         }
     }
+}
+
+.clickable{
+cursor: pointer;
 }

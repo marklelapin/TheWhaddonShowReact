@@ -235,7 +235,7 @@ const actJsx = (scenes) => (
             {scene.type === SCENE &&
                 <>
                     <div id={scriptSummarySceneId(scene)}
-                        className={classnames(s.sceneHeader, isSceneDraggable ? 'clickable' : null)}
+                        className={classnames(s.sceneHeader, isSceneDraggable ? s.clickable : null)}
                         data-sceneid={scene.id}
                         onDragOver={isSceneDraggable ? handleSceneDragOver : null}
                         onDragLeave={isSceneDraggable ? handleSceneDragLeave : null}
@@ -261,7 +261,7 @@ const actJsx = (scenes) => (
                                         className={classnames(
                                             s.part,
                                             s[partHighlight(scene, part)?.class],
-                                            isPartAllocatable ? 'clickable' : null,
+                                            isPartAllocatable ? s.clickable : null,
                                             'allocatePersonOnDrop'
                                         )}
                                         onClick={readOnly ? null : (e) => handlePartClick(e, scene, part)}
