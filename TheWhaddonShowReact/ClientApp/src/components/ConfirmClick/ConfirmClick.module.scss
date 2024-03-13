@@ -1,30 +1,39 @@
 ﻿@import '../../styles/app';
 
-
-.circle {
-    position: absolute;
-    top: 0;
-    left: 0;
+.confirmClickContainer {
+    position: relative;
+    z-index: 1;
+    display: flex;
     width: 100%;
     height: 100%;
+    justify-content: center;
+    align-items: center;
+
+    
+}
+
+.confirmClick {
+    width: 100%;
+    height: 100%;
+    transition: all 200ms ease-in-out;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+        background-color: $hover-bg;
+    }
+    
+    &.clicked {
+        background-color: $blue;
+    }
+}
+
+.circle {
     border-radius: 50%;
-    background-color: $gray-800;
-    opacity: 0;
-    transition: opacity 500ms ease-in-out;
 }
 
 .rectangle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     border-radius: 5%;
-    background-color: $gray-800;
-    opacity: 0;
-    transition: opacity 500ms ease-in-out;
-}
-
-.clicked {
-    opacity: 0.8;
 }

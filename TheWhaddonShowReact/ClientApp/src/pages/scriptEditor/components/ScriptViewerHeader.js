@@ -14,7 +14,6 @@ import {
 } from '../../../actions/navigation';
 
 //Components
-import { Nav } from 'reactstrap';
 import Avatar from '../../../components/Avatar/Avatar';
 import { Icon } from '../../../components/Icons/Icons';
 import ConfirmClick from '../../../components/ConfirmClick/ConfirmClick';
@@ -68,7 +67,7 @@ function ScriptViewerHeader(props) {
 
     }, [printScript, viewStyle, dispatch]) //eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleNavLink = (type) => {
+    const handleModeChange = (type) => {
         if (viewStyle !== type) {
             setLoading(type)
         }
@@ -132,52 +131,63 @@ function ScriptViewerHeader(props) {
 
             <div className={s['left-controls']}>
 
-                <Nav className="bg-light" tabs>
+                {(!isMobileDevice || viewStyle === CLASSIC) &&
 
-                    {(!isMobileDevice || viewStyle === CLASSIC) &&
-                        <>
-                            <div id="chat-mode"
-                                className={`${s['script-viewer-navlink']} ${(viewStyle === CHAT) ? s.active : ''}`}
-                            >
-                                <ConfirmClick type='rectangle' onClick={() => handleNavLink(CHAT)}>
-                                    <span>Chat</span><Icon icon="chat-mode" />
-                                </ConfirmClick>
-                            </div>
-                            <QuickToolTip id="chat-mode" tip="Fun, great on mobile and shows curtain more clearly." placement="top" />
-                        </>
+                    <div id="chat-mode"
+                        className={`${s['mode-button']} ${(viewStyle === CHAT) ? s.active : ''}`}
+                    >
+                        <Icon id="chat-mode-icon"
+                            icon="chat-mode"
+                            toolTip='Fun, great on mobile and shows curtain more clearly.'
+                            label="Chat"
+                            labelPlacement="left"
+                            onClick={() => handleModeChange(CHAT)}
+                        />
+
+                    </div>
 
 
-                    }
-                    {(!isMobileDevice || viewStyle === CHAT) &&
-                        <>
-                            <div id="classic-mode"
-                                className={`${s['script-viewer-navlink']} ${isScreenSmallerThan('xl') ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? s.active : ''}`}
-                            >
-                                <ConfirmClick type='rectangle' onClick={() => handleNavLink(CLASSIC)}>
-                                    <span>Classic</span><Icon icon="classic-mode" />
-                                </ConfirmClick>
-                            </div>
-                            <QuickToolTip id="classic-mode" tip="Smart, great for printing" placement="top" />
-                        </ >
-                    }
-                </Nav >
+
+                }
+                {(!isMobileDevice || viewStyle === CHAT) &&
+
+
+                    <div id="classic-mode"
+                        className={`${s['mode-button']} ${isScreenSmallerThan('xl') ? s['reduced-padding'] : ''} ${(viewStyle === CLASSIC) ? s.active : ''}`}
+                    >
+                        <Icon id="chat-mode-icon"
+                            icon="classic-mode"
+                            toolTip='Smart, great for printing'
+                            label="Classic"
+                            labelPlacement="left"
+                            onClick={() => handleModeChange(CLASSIC)}
+                        />
+                    </div>
+
+
+                }
+
             </div>
             <div className={s['center-controls']}>
-                <div id="view-as-control"
-                    className={classnames(s['view-as-control'], viewAsPartPerson ? s['selected'] : null, s[viewStyle], 'clickable')}
-                >
-                    <ConfirmClick type='rectangle' onClick={() => togglePersonSelector()} />
-                    <span>view as:
-                    </span>
 
-                    <Avatar
-                        size="sm"
-                        person={viewAsPartPerson}
-                        avatarInitials={(viewAsPartPerson === null) ? '?' : null}
-                    />
-                    <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
+                <ConfirmClick type='rectangle' onClick={() => togglePersonSelector()}>
+                    <div id="view-as-control"
+                        className={classnames(s['view-as-control'], viewAsPartPerson ? s['selected'] : null, s[viewStyle], 'clickable')}
+                    >
+                        <span>view as:
+                        </span>
 
-                </div>
+                        <Avatar
+                            size="sm"
+                            person={viewAsPartPerson}
+                            avatarInitials={(viewAsPartPerson === null) ? '?' : null}
+                        />
+                        <QuickToolTip id="view-as-control" tip="Highlight someones lines" placement="top" />
+                    </div>
+                </ConfirmClick>
+
+
+
                 {showSceneSelectorControls && <div id="scene-selector-control" className={classnames(s['scene-selector-control'])} >
                     {!isMobileDevice && <span>{`search `}
                     </span>}
@@ -192,8 +202,8 @@ function ScriptViewerHeader(props) {
 
                         {showCommentControls && !showComments && <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>}
 
-                        <Icon id="script-viewer-print" icon="print" onClick={() => handleClickPrint('regular')} toolTip="Print script" style={{ paddingLeft: '5px' }}></Icon>
-                        <Icon id="script-viewer-print-large" icon="glasses" onClick={() => handleClickPrint('large')} toolTip="Print script (large)" style={{ paddingRight: '5px' }}></Icon>
+                        <Icon id="script-viewer-print" icon="print" onClick={() => handleClickPrint('regular')} toolTip="Print script" ></Icon>
+                        <Icon id="script-viewer-print-large" icon="glasses" onClick={() => handleClickPrint('large')} toolTip="Print script (large)" ></Icon>
 
                         {!readOnly && isScreenLargerThan('lg') && <Icon id="script-viewer-close" icon="remove" onClick={() => dispatch(trigger(CLEAR_SCRIPT))} toolTip="Close script"></Icon>}
 

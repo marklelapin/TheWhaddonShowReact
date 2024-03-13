@@ -96,18 +96,27 @@
         flex-wrap: wrap;
         gap: 10px;
         justify-content: flex-start;
-align-items: center;
+        align-items: center;
         min-width: 300px;
         max-width: 600px;
 
 
         .link {
+            padding: 5px;
+            transition: all 0.3s ease-in-out;
+            
             h2 {
             }
 
             img {
                 height: 100px;
                 width: 200px;
+            }
+
+            &:hover {
+
+                @include dropdown-box();
+                border:none;
             }
         }
 
