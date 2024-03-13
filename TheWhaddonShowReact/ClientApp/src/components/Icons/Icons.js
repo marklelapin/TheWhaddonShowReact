@@ -100,7 +100,8 @@ export function Icon(props) {
         "casting": 'fa-solid fa-person-military-to-person',
         "glasses": 'fa-solid fa-glasses',
         "paper-plane": 'fa-solid fa-paper-plane',
-        "offline": 'fa-solid fa-cloud-arrow-down'
+        "offline": 'fa-solid fa-cloud-arrow-down',
+        "staging": "fa-solid fa-chair",
     };
 
 
@@ -158,7 +159,7 @@ export function Icon(props) {
                     {label && labelPlacement === 'left' && <div className={classnames('me-1', s.label)}>{label}</div>} 
                     <i
                         id={id}
-                        className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
+                        className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? s.clickable : null} ${className}`}
                         style={style}
                     />
 

@@ -101,6 +101,7 @@ const Casting = () => {
                             summaryType={CASTING}
                             showErrors={true}
                             showHighlights={true}
+                            showFilters={false}
                             viewAsPerson={viewAsCastMember?.person}
                             allowPartAllocation={true}
                             allowSceneOrderChanges={true}

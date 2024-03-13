@@ -9,7 +9,7 @@ export const CASTING = 'casting'
 
 const ScriptSummaryPage = (props) => {
 
-    const { summaryType = 'None' } = props
+    const { summaryType = 'SHOW' } = props
 
     return (
         <>
