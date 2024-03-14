@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 //Components
 import { Button } from 'reactstrap';
-import TagsInput from '../../../components/Forms/TagsInput';
+//import TagsInput from '../../../components/Forms/TagsInput';
 import { Input } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons';
 
@@ -11,9 +11,9 @@ import { Icon } from '../../../components/Icons/Icons';
 import { updateSearchParameters, setShowSceneSelector } from '../../../actions/scriptEditor';
 import classnames from 'classnames';
 import s from '../Script.module.scss'
-function ScriptSearch(props) {
+function ScriptSearch() {
 
-    const { isModal } = props;
+    //const { isModal } = props;
 
     const dispatch = useDispatch();
 
@@ -27,11 +27,11 @@ function ScriptSearch(props) {
 
     const highlightMessage = (viewAsPartPerson?.id === currentUser?.id) ? 'My scenes' : `${viewAsPartPersonName}'s scenes`
 
-    const tagOptions = ['Music', 'Comedy', 'Intro', 'Guy To Do', 'Mark B to Do', 'Mark C to Do', 'Heather to Do']
+  //  const tagOptions = ['Music', 'Comedy', 'Intro', 'Guy To Do', 'Mark B to Do', 'Mark C to Do', 'Heather to Do']
 
-    const tags = searchParameters.tags
+  //  const tags = searchParameters.tags
 
-    const unselectedTags = tagOptions.filter(tag => !tags.includes(tag))
+   // const unselectedTags = tagOptions.filter(tag => !tags.includes(tag))
 
 
     const handleChange = (type, value) => {
@@ -79,7 +79,7 @@ function ScriptSearch(props) {
                     onClick={() => handleChange('myScenes', true)}
                     className={classnames(s.scriptSearchMine, searchParameters.myScenes ? s.active : null)}
                 >
-                    <div className={classnames(isModal ? s.highlight : null)} >{highlightMessage}</div></Button>
+                    <div className={classnames(s.highlight)} >{highlightMessage}</div></Button>
             </div>
 
             {!isMobileDevice &&
@@ -95,14 +95,16 @@ function ScriptSearch(props) {
                         />
                     </div>
 
-                    <div className={s.scriptSearchTags}>
-                        <TagsInput
-                            tags={tags}
-                            tagOptions={unselectedTags}
-                            onClickAdd={(tag) => handleChange('addTag', tag)}
-                            onClickRemove={(tag) => handleChange('removeTag', tag)}
-                        />
-                    </div>
+                    {
+                        // <div className={s.scriptSearchTags}>
+                        //    <TagsInput
+                        //        tags={tags}
+                        //        tagOptions={unselectedTags}
+                        //        onClickAdd={(tag) => handleChange('addTag', tag)}
+                        //        onClickRemove={(tag) => handleChange('removeTag', tag)}
+                        //    />
+                        //</div>
+                    }
                 </>
 
 

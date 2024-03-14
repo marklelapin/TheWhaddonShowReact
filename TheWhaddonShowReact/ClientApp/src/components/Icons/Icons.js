@@ -35,7 +35,7 @@ export function Icon(props) {
     const { style = null,
         strapColor,
         strapBackgroundColor,
-        onClick,
+        onClick = null,
         id = null,
         toolTip,
         toolTipPlacement = 'top',
@@ -100,7 +100,8 @@ export function Icon(props) {
         "casting": 'fa-solid fa-person-military-to-person',
         "glasses": 'fa-solid fa-glasses',
         "paper-plane": 'fa-solid fa-paper-plane',
-        "offline": 'fa-solid fa-cloud-arrow-down'
+        "offline": 'fa-solid fa-cloud-arrow-down',
+        "staging": "fa-solid fa-chair",
     };
 
 
@@ -118,7 +119,12 @@ export function Icon(props) {
 
     if (id === null) {
         return (
-            <div className={classnames(s.iconContainer, (noMargin) ? s.noMargin : null, `${className}`)}>
+            <div className={classnames(
+                s.iconContainer,
+                (noMargin) ? s.noMargin : null,
+                `${className}`,
+                (onClick !== null) ? s.clickable : null
+            )}>
                
                 <ConfirmClick type={label ? 'rectangle' : 'circle'} onClick={onClick}>
 
@@ -142,12 +148,18 @@ export function Icon(props) {
     if (id !== null) {
 
         return (
-            <div className={s.iconContainer}>
+            <div className={classnames(
+                s.iconContainer,
+                (noMargin) ? s.noMargin : null,
+                `${className}`,
+                (onClick !== null) ? s.clickable : null
+            )}
+            >
                 <ConfirmClick type={label ? 'rectangle' : 'circle'} onClick={onClick}>
                     {label && labelPlacement === 'left' && <div className={classnames('me-1', s.label)}>{label}</div>} 
                     <i
                         id={id}
-                        className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? 'clickable' : ''} ${className}`}
+                        className={`${icon} ${s['icon']} ${(strapColor) ? 'text-' + strapColor : ''}  ${(strapBackgroundColor) ? 'bg-' + strapBackgroundColor : ''} ${(onClick) ? s.clickable : null} ${className}`}
                         style={style}
                     />
 

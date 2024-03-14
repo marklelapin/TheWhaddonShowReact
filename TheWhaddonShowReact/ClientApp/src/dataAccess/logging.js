@@ -5,7 +5,7 @@ const NONE = 'NONE'
 //logTypes
 export const ACCOUNT_DROPDOWN = { type: NONE, location: 'Component:AccountDropdown' }
 
-export const API_MONITOR = { type: DEBUG, location: 'Component:ApiMonitor' }
+export const API_MONITOR = { type: NONE, location: 'Component:ApiMonitor' }
 export const APP = { type: NONE, location: 'Component: App' }
 
 export const AVATAR = { type: NONE, location: 'Component:Avatar' }
@@ -18,7 +18,7 @@ export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 
-export const CHART = { type: DEBUG, location: 'Component:Chart' }
+export const CHART = { type: NONE, location: 'Component:Chart' }
 export const COMMENT = { type: NONE, location: 'Component:COMMENT' }
 export const CONFIRM_CLICK = { type: NONE, location: 'Component:ConfirmClick' }
 
@@ -64,10 +64,11 @@ export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptIte
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 export const SCRIPT_ITEM_HEADER = { type: NONE, location: 'Component:ScriptItemHeader' }
 export const SCRIPT = { type: NONE, location: 'Component:Script' }
+export const SCRIPT_SUMMARY = { type: NONE, location: 'Component:ScriptSummary' }
 export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 export const SCRIPT_VIEWER_HEADER = { type: NONE, location: 'Component:ScriptViewerHeader' }
 
-export const SIDEBAR = { type: NONE, location: 'Component:Sidebar' }
+export const SIDEBAR = { type: DEBUG, location: 'Component:Sidebar' }
 export const SYNC_DROPDOWN = { type: NONE, location: 'Component:SyncDropdown' }
 
 export const TEST = { type: NONE, location: 'Test: ' }

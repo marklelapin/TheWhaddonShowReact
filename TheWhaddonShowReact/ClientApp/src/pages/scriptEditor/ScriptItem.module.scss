@@ -55,7 +55,7 @@ $script-item-control-bottom: -30px;
 
     .script-item-parts {
         position: relative;
-        z-index: 3;
+        z-index: 4;
         width: auto;
     }
 
@@ -79,7 +79,7 @@ $script-item-control-bottom: -30px;
         position: relative;
         justify-content: center;
         max-width: 100%;
-        z-index: 2;
+        z-index: 3;
 
         &.classic {
             width: 100%;
@@ -213,7 +213,7 @@ $script-item-control-bottom: -30px;
     @include dropdown-box;
 
     .type:hover {
-        background-color: #f0f0f0;
+        background-color: $hover-bg;
     }
 }
 
@@ -306,6 +306,9 @@ $script-item-control-bottom: -30px;
 }
 //End of SCriptItemControls.
 
+.gapForNextArrow{
+    width: 30px;
+}
 
 .part-editor {
     padding: 0px 50px 0px 50px;
@@ -612,7 +615,7 @@ $script-item-control-bottom: -30px;
 }
 
 .part-selector-dropdown .part-avatar-name:hover {
-    background-color: #f0f0f0;
+    background-color: $hover-bg;
 }
 
 .part-selector-dropdown .part-avatar-name.selected {
@@ -925,6 +928,7 @@ $script-item-control-bottom: -30px;
         }
     }
 }
+
 
 .action,
 .sound,

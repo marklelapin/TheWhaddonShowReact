@@ -15,7 +15,7 @@ import { Table, Button } from 'reactstrap';
 import User from './User';
 import { PersonUpdate } from '../../../dataAccess/localServerModels';
 import { log } from '../../../dataAccess/logging';
-
+import { isDemoUser } from '../../../dataAccess/userAccess';
 
 export function UsersTable() {
 
@@ -25,12 +25,14 @@ export function UsersTable() {
     const [error, setError] = useState(null);
     const [userModalToOpen, setUserModalToOpen] = useState(null);
     const [newUser, setNewUser] = useState(null);
-
     const [showActive] = useState(null);
 
     //Access state from redux store
     const personsSync = useSelector((state) => state.localServer.persons.sync);
     const personsHistory = useSelector((state) => state.localServer.persons.history);
+    const authenticatedUser = useSelector((state) => state.user.currentUser);
+    const isDemo = isDemoUser(authenticatedUser)
+
     log(debug, 'UsersTable personsHistory', personsHistory)
 
     const persons = getLatest(personsHistory, true);
@@ -144,9 +146,7 @@ export function UsersTable() {
 
         <>
             <DataLoading isLoading={isLoading && (filteredPersons().length === 0)} isError={error !== null && (filteredPersons().length === 0)} loadingText="Loading..." errorText={`Error loading data: ${error}`}>
-                <Button color="primary" onClick={addNewUser}>Add New User</Button>
-
-
+                <Button color="primary" onClick={addNewUser} disabled={isDemo}>Add New User</Button>
                 <Table id="user-table" responsive className="table-hover">
                     <thead className="sticky">
                         <User type={headers} />

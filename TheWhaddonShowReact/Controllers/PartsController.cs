@@ -51,7 +51,6 @@ namespace TheWhaddonShowReact.Controllers
 
 				(DateTime? syncedDataTime, bool success) = _localServerEngine.TrySync().Result; //Can localserverEngine TrySync() be made async? (not sure)
 
-
 				if (success)
 				{
 					var serverToLocalSyncData = _localDataAccess.getServerToLocalSyncData();

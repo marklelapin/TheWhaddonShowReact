@@ -42,11 +42,10 @@ const LinksGroup = (props) => {
 
 
     const toggleCollapse = () => {
-        console.log('toggleCollapse before:', `${header}-isCollapsed`)
+    
         setIsCollapsed(!isCollapsed);
     }
 
-    console.log(`${header}-isCollapsed: `,isCollapsed)
     return (
         <li className={classnames('link-wrapper', s.headerLink, className)}>
             {<Link
@@ -66,17 +65,22 @@ const LinksGroup = (props) => {
                 <Collapse className={s.panel} isOpen={!isCollapsed || location.pathname.startsWith(link)}>
                     <ul>
                         {childrenLinks.map((child, index) => (
-                            <Link
+                            <li className={s.panelLink} key={index}>
+                             <Link
                                 key={index}
                                 link={child.link}
                                 header={child.header}
                                 childrenLinks={child.childrenLinks}
-                                onTooleClick={onToolClick}
-                                iconElement={iconElement}
+                                onTooleClick={child.onToolClick}
+                                iconElement={child.iconElement}
                                 label={child.label}
                                 badge={child.badge}
                                 indent={36}
                                 index={index} />
+                            
+                            
+                            </li>
+                           
 
                         ))}
                     </ul>

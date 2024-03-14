@@ -8,6 +8,7 @@ import { Button } from 'reactstrap';
 import { log, PART_SELECTOR_DROPDOWN as logType } from '../../../dataAccess/logging'
 import PartNameAndAvatar from './PartNameAndAvatar';
 
+
 //styles
 import s from '../ScriptItem.module.scss';
 
@@ -128,48 +129,57 @@ function PartSelectorDropdown(props) {
         return partsArray.some(part => part.selected === true)
     }
 
-    
+
 
     return (
 
-        partsArray.length  && (
-            
-        < div className={`${s['part-selector-dropdown']} ${(centered) ? s['centered'] : ''}`} >
+        partsArray.length && (
 
-            {(partsArray.length === 0) &&
-                <h3 onClick={(e) => toggle(e)} >No parts setup for this scene</h3>}
+            < div className={`${s['part-selector-dropdown']} ${(centered) ? s['centered'] : ''}`} >
 
-            {(partsArray.length > 0 && allowClear) &&
-                <>
-                    < PartNameAndAvatar partPerson={{ id: 0, name: 'Clear all parts', personId: null }} onClick={(e) => handleClickPart(e, null)} avatar partName />
-                    <div className="dropdown-divider"></div>
-                </>
+                {(partsArray.length === 0) &&
+                    <h3 onClick={(e) => toggle(e)} >No parts setup for this scene</h3>}
 
-            }
-            <div className={s['parts-container']}>
-                {partsArray.map(part => {
+                {(partsArray.length > 0 && allowClear) &&
+                    <>
+                        < PartNameAndAvatar partPerson={{ id: 0, name: 'Clear all parts', personId: null }} onClick={(e) => handleClickPart(e, null)} avatar partName />
+                        <div className="dropdown-divider"></div>
+                    </>
 
-                    return (
-                        <PartNameAndAvatar
-                            key={part.id}
-                            partId={part.id}
-                            onClick={(e) => handleClickPart(e, part.id)}
-                            selected={part.selected}
-                            avatar
-                            partName />
-                    )
-
-                })}
-
-                {isMultiSelect() &&
-                    <Button color="danger" size='sm' type="submit" onClick={(e) => handleClickConfirm(e)}>Confirm</Button>
                 }
-                {!isMultiSelect() && allowMultiSelect &&
-                    <small>(use Ctrl to multi-select)</small>
+                <div className={s['parts-container']}>
+                    {partsArray.map(part => {
+
+                        return (
+                            <PartNameAndAvatar
+                                key={part.id}
+                                partId={part.id}
+                                onClick={(e) => handleClickPart(e, part.id)}
+                                selected={part.selected}
+                                avatar
+                                partName />
+                        )
+
+                    })}
+                </div>
+                {allowMultiSelect &&
+                    <>
+                        <div className="dropdown-divider"></div>
+                        <div className="multi-select">
+
+                            {isMultiSelect() && <Button color="danger" size='sm' type="submit" onClick={(e) => handleClickConfirm(e)}>Confirm</Button>}
+
+                            {!isMultiSelect() && <small>(use Ctrl to multi-select)</small>}
+
+                        </div>
+                    </>
                 }
+
+
+
             </div>
 
-        </div>
+
         )
     )
 

@@ -1,8 +1,8 @@
 ﻿//React & Redux
 import classnames from 'classnames';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, updateScriptFilter, updateSceneInFocus } from '../../../actions/scriptEditor';
+import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, updateScriptFilter, updateSceneInFocus,MULTIPLE } from '../../../actions/scriptEditor';
 
 //Components
 
@@ -31,8 +31,9 @@ function SceneSelector(props) {
     const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
     const currentScriptFilter = useSelector(state => state.scriptEditor.scriptFilter)
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const viewMode = useSelector(state => state.scriptEditor.viewMode)
 
-    const [beingDragged, setBeingDragged] = useState(false)
+    const showSingleScene = (viewMode !== MULTIPLE) || isMobileDevice
 
     const noSearchParametersSet = (searchParameters.characters === '' && searchParameters.tags.length === 0 && searchParameters.myScenes === false)
 
@@ -88,10 +89,10 @@ function SceneSelector(props) {
 
 
     useEffect(() => {
-        if (!isMobileDevice) { //doesn't do it for mobile devices due to performance
+        if (!showSingleScene) { //doesn't do it for mobile devices due to performance
             handleUpdateScriptFilter()
         }
-    }, [searchParameters, isMobileDevice]) //eslint-disable-line react-hooks/exhaustive-deps
+    }, [searchParameters, showSingleScene]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleUpdateScriptFilter = () => {
         const newScriptFilter = (noSearchParametersSet) ? null : filteredShowOrder.map(scene => scene.id)
@@ -101,7 +102,6 @@ function SceneSelector(props) {
 
     const handleDragStart = (e) => {
         e.dataTransfer.setData("text/plain", `sceneId:${e.currentTarget.dataset.sceneid}`)
-        setBeingDragged(true)
     }
     const handleDragOver = (e) => {
         e.preventDefault()
@@ -115,7 +115,6 @@ function SceneSelector(props) {
     }
     const handleDrop = (e) => {
         e.preventDefault()
-        setBeingDragged(false)
         const newPreviousId = e.currentTarget.dataset.sceneid
 
         const sceneId = e.dataTransfer.getData("text/plain").substring(8)
@@ -126,7 +125,7 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                if (isMobileDevice) {
+                if (showSingleScene) {
                     dispatch(updateScriptFilter([id]))
                 } else if (currentScriptFilter === null || currentScriptFilter.includes(id)) {
                     dispatch(updateMovementInProgress(true))
@@ -153,12 +152,6 @@ function SceneSelector(props) {
     return (
         <div id="scene-selector" className={classnames(s.sceneSelector, (isModal) ? s.modal : null)} >
             <ScriptSearch isModal={isModal} />
-            {/*<DropdownItem divider />*/}
-            {/*{!isMobileDevice && !filteredShowOrderMatchesCurrentScriptFilter() &&*/}
-            {/*    <div className={classnames(s.applyFilterButton, 'clickable')} onClick={handleSetFilter} >*/}
-            {/*        Apply Filter <Icon icon="arrow-right" size="sm" />*/}
-            {/*    </div>*/}
-            {/*}*/}
 
             <h2>Scenes</h2>
             <div className="full-height-overflow">
@@ -175,7 +168,6 @@ function SceneSelector(props) {
                             onDrop={handleDrop}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
-                            beingDragged={beingDragged}
                             isInFocus={scene.id === sceneInFocus}
                             highlight={scene.isViewAsPartPerson}
                             isMobileDevice={isMobileDevice}

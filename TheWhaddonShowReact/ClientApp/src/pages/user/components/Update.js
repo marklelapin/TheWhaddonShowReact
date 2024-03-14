@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import CheckBox from '../../../components/Forms/CheckBox';
 import { Button } from 'reactstrap';
 import { Icon } from '../../../components/Icons/Icons';
@@ -14,12 +14,17 @@ import config from '../../../config';
 import classnames from 'classnames';
 import { log, USER_UPDATE as logType } from '../../../dataAccess/logging';
 import s from '../Users.module.scss';
+import { isDemoUser } from '../../../dataAccess/userAccess';
 function Update(props) {
 
     const { user, type, userChanged, onChange, className, onClickUpdate, onClickCancel, isNew } = props
 
     const dispatch = useDispatch()
     /*  const {userChanged,newUser } = props*/
+
+    const authenticatedUser = useSelector(state => state.user.currentUser)
+    const isDemo = isDemoUser(authenticatedUser)
+
 
     const [showSub, setShowSub] = React.useState(false)
 
@@ -79,7 +84,7 @@ function Update(props) {
                     < div className={s.updateSection}>
                         <div className={s.isActive}>isActive:</div>
                         <div className={s.isActiveCheckbox}>
-                            <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={(e) => onChange('isActive', e.target.checked)} />
+                            <CheckBox id={`isActive-${user.id}`} strapColor="primary" checked={user.isActive} onChange={(e) => onChange('isActive', e.target.checked)} disabled={isDemo} />
                         </div>
                         <div className={s.updateButtons}>
                             {(userChanged && !isNew) && <Button id="update" size='xs' color={'danger'} onClick={onClickUpdate}>Update</Button>}
@@ -87,16 +92,16 @@ function Update(props) {
                             {(isNew || userChanged) && <Button id="cancel" size='xs' color={'secondary'} onClick={onClickCancel}>Cancel</Button>}
                         </div>
                     </div>
-                    <div className={s.loginSection}>
+                    {!isDemo && <div className={s.loginSection}>
                         <div className='me-2'>loginLink:</div>
                         <Icon icon="search" onClick={onClickGetLoginLink} label='view' className='me-2' noMargin />
-                        <Icon icon="paper-plane" onClick={onClickSendLoginLink} label='send' className='me-2' noMargin/>
+                        <Icon icon="paper-plane" onClick={onClickSendLoginLink} label='send' className='me-2' noMargin />
                         <div className={classnames(s.linked, 'ms-2', 'clickable')} onClick={(e) => toggleShowSub(e)}>
                             {user.msalLink ? <Icon icon='tick' strapColor='success' noMargin /> : <Icon icon='add' strapColor='warning' noMargin />}
-                          
-                            </div>
 
-                    </div>
+                        </div>
+
+                    </div>}
                     { showSub &&
                         <div className={s.msalLinkSection}>
                             <InputText className={s.msalLink} label='sub' value={user.msalLink} onChange={(e) => onChange('msalLink', e.target.value)}></InputText>

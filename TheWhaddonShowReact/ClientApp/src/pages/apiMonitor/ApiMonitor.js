@@ -61,6 +61,9 @@ const ApiMonitor = () => {
     const [averageSpeed, setAverageSpeed] = useState(null)
 
     const [resultsModal, setResultsModal] = useState(null)
+
+    const [performanceLoading, setPerformanceLoading] = useState(true)
+    const [availabilityLoading, setAvailabilityLoading] = useState(true)
     //const layoutHeight = useSelector(state => state.device.layoutHeight);
     //const layoutWidth = useSelector(state => state.device.layoutWidth);
 
@@ -85,12 +88,15 @@ const ApiMonitor = () => {
     }, []) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
+        setPerformanceLoading(true)
         loadPerformanceData()
     }, [dateTo, dateFrom]) //eslint-disable-line react-hooks/exhaustive-deps
 
 
     const loadPerformanceData = async () => {
+
         const chartData = await getChartData('performance')
+        if (typeof chartData === 'string' && chartData.startsWith('error'))  { setPerformanceLoading(chartData); return; }
 
         if (chartData) {
             const { reliability = null, averageSpeed = null, resultsChartConfig = null, speedChartConfig = null, resultAndSpeedChartConfig = null } = chartData
@@ -99,22 +105,31 @@ const ApiMonitor = () => {
             setResultsChartConfig(resultsChartConfig)
             setSpeedChartConfig(speedChartConfig)
             setResultAndSpeedChartConfig(resultAndSpeedChartConfig)
+            setPerformanceLoading(false)
         } else {
             setAverageSpeed(null)
             setReliability(null)
             setResultsChartConfig(null)
             setSpeedChartConfig(null)
             setResultAndSpeedChartConfig(null)
+            setPerformanceLoading(false)
         }
+
+
+
     }
 
     const loadAvailabilityData = async () => {
         log(logType, 'loadAvailabilityData')
         const chartData = await getChartData('availability')
+        if (typeof chartData === 'string' && chartData.startsWith('error')) { setAvailabilityLoading(chartData); return; }
+
         if (chartData) {
             setAvailabilityChartConfig(chartData)
+            setAvailabilityLoading(false)
         } else {
             setAvailabilityChartConfig(null)
+            setAvailabilityLoading(false)
         }
     }
 
@@ -131,10 +146,18 @@ const ApiMonitor = () => {
                     limit: 10000
                 }
             })
+            if (response.status !== 200) throw new Error(`ResponseCode: ${response.status}`)
+
             return response.data
+
         } catch (error) {
             console.error(`Error fetching ${chartType} config: ${error.message}`)
-            return null
+
+            if (error.message?.startsWith('ResponseCode:')) {
+                return 'error:' + error.message;
+            }
+
+            return 'error'
         }
     }
 
@@ -175,8 +198,6 @@ const ApiMonitor = () => {
         <>
             <div className={s.apiMonitorPage}>
                 <h1>Api Monitor
-
-
                 </h1>
                 <div className={s.dateSelectors}>
                     <Icon icon="arrow-left"
@@ -214,18 +235,24 @@ const ApiMonitor = () => {
                                 <DashboardBox id="percentage-reliability"
                                     title="Reliability"
                                     note="Total successes and failures when controller test run every 4 hours."
-                                    bigContent={reliability ? `${reliability}%` : null} />
+                                    bigContent={reliability ? `${reliability}%` : null}
+                                    loading={performanceLoading}
+                                />
 
                                 <DashboardBox id="average-speed"
                                     title="Average Speed"
                                     note="The average speed of all succesful tests conducted in period."
-                                    bigContent={averageSpeed ? `${averageSpeed}ms` : null} />
+                                    bigContent={averageSpeed ? `${averageSpeed}ms` : null}
+                                    loading={performanceLoading}
+                                />
 
                             </div>
 
                             <DashboardBox id="availability-chart-box"
-                                title="Availability (last 30 minutes)"
-                                note="Chart shows speed of simple get call every 4 seconds.">
+                                title="Availability (last 5 minutes)"
+                                note="Chart shows speed of simple get call every 4 seconds."
+                                loading={availabilityLoading}
+                            >
                                 <Chart id="availability-chart" config={availabilityChartConfig} />
                             </DashboardBox>
 
@@ -239,6 +266,7 @@ const ApiMonitor = () => {
                             <DashboardBox id="result-chart-box"
                                 title="Reliability"
                                 note="Test Success and Failures for Controller Test Run every 4 hours"
+                                loading={performanceLoading}
                             >
                                 <Chart id="result-chart" config={resultsChartConfig} onClick={resultChartClickHandler} />
                             </DashboardBox>
@@ -246,6 +274,7 @@ const ApiMonitor = () => {
                             <DashboardBox id="speed-chart-dashboard-box"
                                 title="Speed"
                                 note="Shows the average time to complete test calls to the api(black line) and the range of times in green."
+                                loading={performanceLoading}
                             >
                                 <Chart id="speedChart" config={speedChartConfig} onClick={speedChartClickHandler} />
                             </DashboardBox>
@@ -258,6 +287,7 @@ const ApiMonitor = () => {
                             <DashboardBox id="result-speed-chart-box" bs
                                 title="Breakdown By Controller and Test"
                                 note="Shows average time (size of bubble) and reliability (color) for combinations of controller and test actions."
+                                loading={performanceLoading}
                             >
                                 <Chart id="result-speed-chart" config={resultAndSpeedChartConfig} onClick={resultAndSpeedChartClickHandler} />
                             </DashboardBox>
@@ -270,7 +300,7 @@ const ApiMonitor = () => {
             </div >
             <Modal isOpen={resultsModal !== null} toggle={toggleModal} className={s.modalResultsTable} >
                 <div className={s.modalResultsContainer}>
-                    <ResultsTable {...resultsModal} />
+                    <ResultsTable {...resultsModal} loading={performanceLoading} />
                 </div>
 
             </Modal>

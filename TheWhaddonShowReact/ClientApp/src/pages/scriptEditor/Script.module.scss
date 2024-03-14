@@ -6,6 +6,7 @@
 }
 
 .script-page {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -54,30 +55,40 @@
     z-index: 10;
     text-align: end;
     align-items: center;
+    justify-content: space-between;
     flex: 0 0 50px !important; //TODO: can get rid of important if flex-full-width is moved out of index.css to scss.
     overflow: visible !important;
 
     .left-controls {
         flex: 0 0 auto;
+        display: flex;
+        gap: 5px;
         justify-content: flex-start;
         align-items: center;
         margin-left: 10px;
     }
 
     .center-controls {
-        flex: 2;
+        flex: 0 0 auto;
         display: flex;
         flex-direction: row;
         justify-content: space-evenly;
         align-items: center;
     }
 
-    .script-viewer-navlink {
+    .mode-button {
+        flex: 0 0 auto;
         display: flex;
         align-items: center;
         padding: 5px 3px !important;
         position: relative;
         height: 35px;
+        color: gray;
+
+        &.active {
+            font-weight: bold;
+            color: black;
+        }
     }
 
     .view-as-control {
@@ -96,7 +107,7 @@
     }
 
     .right-controls {
-        flex: 1;
+        flex: 0 0 auto;
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
@@ -342,6 +353,10 @@
         margin: 5px;
         cursor: pointer;
         align-items: center;
+
+        &:hover {
+            background-color: $hover-bg;
+        }
     }
 }
 
@@ -435,6 +450,10 @@
     .sceneSelectorRow {
         padding: 3px;
 
+        &:hover {
+            background-color: $hover-bg;
+        }
+
         h5 {
             margin: 0px;
         }
@@ -443,6 +462,13 @@
             padding: 5px;
             margin-top: 8px;
             margin-bottom: 8px;
+        }
+
+        &.beingDragged {
+        }
+
+        &.beingDraggedOver {
+            border-bottom: 3px solid black;
         }
     }
 
@@ -463,4 +489,29 @@
     height: 100%;
     z-index: 1000;
     background-color: rgba(255,255,255,0.4);
+}
+
+.cowboyAlertContainer {
+    position:relative;
+    z-index: 1000;
+
+    .alert {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    li{
+list-style-type: disc;
+margin:20px;
+    }
+
+    .searchText {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        margin-bottom: 5px;
+    }
 }

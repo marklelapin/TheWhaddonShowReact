@@ -92,19 +92,31 @@
     .linksContainer {
         flex: 1;
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-start;
+        align-items: center;
         min-width: 300px;
-        max-width: 400px;
+        max-width: 600px;
 
 
         .link {
+            padding: 5px;
+            transition: all 0.3s ease-in-out;
+            
             h2 {
             }
 
             img {
                 height: 100px;
                 width: 200px;
+            }
+
+            &:hover {
+
+                @include dropdown-box();
+                border:none;
             }
         }
 

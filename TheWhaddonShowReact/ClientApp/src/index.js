@@ -35,9 +35,9 @@ import { log, INDEX as logType } from '../src/dataAccess/logging.js';
 import '../src/styles/theme.scss';
 
 
-import LogRocket from 'logrocket';
+//import LogRocket from 'logrocket';
 
-LogRocket.init('lirpcx/the-whaddon-show-app');
+//LogRocket.init('lirpcx/the-whaddon-show-app');
 
 
 window.addEventListener("load", function () {

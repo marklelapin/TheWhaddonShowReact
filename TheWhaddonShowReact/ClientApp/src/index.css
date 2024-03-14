@@ -15,6 +15,7 @@ body {
 }
 
 
+
 /*Icons*/
 
 .reverse-icon {
@@ -28,18 +29,25 @@ body {
 .modal-dialog {
     display: flex;
     justify-content: center;
-    align-items: center
+    align-items: center;
 }
 
-.modal-dialog .modal-content {
-width: auto;
-    justify-self: center;
-    padding: 1rem;
+    .modal-dialog .modal-content {
+        width: auto;
+        max-width: 100%;
+        justify-self: center;
+    }
 
+@media (max-width: 900px) {
+
+    .modal-dialog .modal-content {
+        min-width: 90%;
+    }
 }
 
-.modal-content .modal-body{
+.modal-content .modal-body {
     width: auto;
+    max-width: 100%;
     justify-self: center;
 }
 

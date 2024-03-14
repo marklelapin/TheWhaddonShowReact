@@ -308,3 +308,33 @@
         }
     }
 }
+
+.demoModal {
+ width: 100%;
+ padding: 10px;
+}
+
+.demoMessage {
+
+}
+
+.demoCredentials {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    p{
+        display: block;
+    }
+    strong{
+        display: inline-block;
+        word-wrap: break-word;
+        width:100%;
+    }
+
+    button{
+        margin-top: 10px;
+        align-self: center;
+    }
+}

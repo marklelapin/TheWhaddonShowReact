@@ -23,7 +23,8 @@ const Link = (props) => {
     const { link, header, childrenLinks, onToolClick, iconElement, label, badge, indent = 36, isCollapsed, toggleCollapse } = props;
 
     const handleCloseSidebar = () => {
-        if (isMobileDevice) {
+        if (isMobileDevice()) {
+            console.log('Linkhandleclosesidebar')
             dispatch(closeSidebar())
         }
     }

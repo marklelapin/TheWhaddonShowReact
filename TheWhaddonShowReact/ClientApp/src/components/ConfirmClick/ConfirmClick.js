@@ -24,12 +24,15 @@ const ConfirmClick = (props) => {
 
     return (
 
-        <>
-            {children}
-            <div className={classnames(s[type], 'clickable', (clicked) ? s.clicked : null)} onClick={(e)=>handleClick(e)} style={style}>
+        <div className={classnames(s.confirmClickContainer, 'clickable', )} onClick={(e) => handleClick(e)} style={style}>
+            <div className={classnames(s.confirmClick, s[type],(clicked) ? s.clicked : null)}>
 
+                    {children}
+               
             </div>
-        </>
+        </div>
+
+
 
     )
 

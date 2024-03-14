@@ -367,5 +367,11 @@ export const getTriggerUpdates = (trigger, currentScriptItems, sceneOrders, curr
 
 
 const copy = (object) => {
-    return JSON.parse(JSON.stringify(object))
+    try {
+return JSON.parse(JSON.stringify(object))
+    }
+    catch (error) {
+        console.error(error)
+        console.log('object', object)
+    }
 }

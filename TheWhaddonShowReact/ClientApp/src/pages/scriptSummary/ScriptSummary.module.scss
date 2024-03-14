@@ -2,6 +2,28 @@
 
 $sub-scene-margin: 10px;
 
+.filter {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+gap: 5px;
+}
+
+.summaryKey {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.curtainKey {
+    padding: 1px 5px;
+    margin-left: 10px;
+    border-radius: 3px;
+    font-size: $font-size-sm;
+    align-self: center;
+}
 
 .container {
     display: flex;
@@ -16,20 +38,17 @@ $sub-scene-margin: 10px;
         }
     }
 
-    .castSection {
-        display: none;
-    }
-
     .programmeSection {
         flex: 1;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+        gap: 10px;
 
         .act {
             flex: 1;
             display: block;
-            min-width: 400px;
+            min-width: 350px;
 
             @media Print {
                 display: block;
@@ -39,14 +58,14 @@ $sub-scene-margin: 10px;
                 flex: 1;
                 display: flex;
                 flex-direction: column;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
 
                 @media Print {
                     page-break-inside: avoid;
                     margin-top: 40px;
                 }
 
-                &.dragOver{
+                &.dragOver {
                     margin-bottom: 40px;
                     background-color: $highlight;
                 }
@@ -61,6 +80,10 @@ $sub-scene-margin: 10px;
                 .sceneHeader {
                     font-weight: $font-weight-bolder;
 
+                    &.clickable:hover {
+                        background-color: $hover-bg;
+                    }
+
                     @media print {
                         font-size: 36px;
                     }
@@ -69,19 +92,34 @@ $sub-scene-margin: 10px;
                 .synopsis {
                     font-size: $font-size-sm;
                     font-style: italic;
-                    margin-left: $sub-scene-margin;
+                    padding-left: $sub-scene-margin;
 
                     @media print {
                         font-size: 32px;
                     }
                 }
 
+                .scriptItem {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    &.error {
+                        color: red;
+                    }
+                }
+
+                .scriptItemIcon {
+                    flex: 0 0 auto;
+                }
+
+
                 .sceneParts {
                     display: flex;
                     flex-direction: row;
                     flex-wrap: wrap;
                     align-items: center;
-                    margin-left: $sub-scene-margin;
+                    padding-left: $sub-scene-margin;
 
                     .partAvatar {
                         margin-right: 2px;
@@ -107,6 +145,15 @@ $sub-scene-margin: 10px;
                         margin-left: 10px;
                         font-size: $font-size-xs;
 
+                        &.clickable:hover {
+                            background-color: $hover-bg;
+                        }
+
+                        &.dragOver {
+                            background-color: $hover-bg;
+                            border-bottom: 3px solid black;
+                        }
+
                         &:first-child {
                             margin-left: 0px;
                         }
@@ -115,6 +162,10 @@ $sub-scene-margin: 10px;
                             background-color: transparent;
                             border-color: $gray-400;
                             border-style: solid;
+
+                            &.clickable:hover {
+                                background-color: $hover-bg;
+                            }
                         }
 
                         &.viewAsPartPerson {
@@ -145,5 +196,28 @@ $sub-scene-margin: 10px;
                 }
             }
         }
+    }
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.curtainOpen.showCurtain {
+    background-color: $gray-inverse;
+    color: white;
+
+    @media print {
+        background-color: white;
+        color: black;
+    }
+}
+
+.curtainClosed.showCurtain {
+    background-color: $danger;
+
+    @media print {
+        background-color: white;
+        color: black;
     }
 }

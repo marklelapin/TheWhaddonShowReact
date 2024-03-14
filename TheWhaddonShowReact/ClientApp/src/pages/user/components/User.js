@@ -210,15 +210,15 @@ function User(props) {
                         <ModalHeader toggle={closeModal}>Edit User</ModalHeader>
                         <ModalBody className="bg-white">
                             <div className={s.modalContainer}>
-<div id="user-modal-body" className={s.modalBody}>
-                                {personalDetails('table')}
-                                {roles('table', true)}
-                                {tags('table', true)}
-                                {update('table', true)}
-                            </div>
+                                <div id="user-modal-body" className={s.modalBody}>
+                                    {personalDetails('table')}
+                                    {roles('table', true)}
+                                    {tags('table', true)}
+                                    {update('table', true)}
+                                </div>
 
                             </div>
-                            
+
                         </ModalBody>
                     </Modal>)}
 

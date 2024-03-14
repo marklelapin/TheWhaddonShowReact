@@ -10,7 +10,6 @@
     min-width: 35px;
     height: 35px;
 
-
     &.noMargin {
         width: auto;
         min-width: unset;
@@ -22,12 +21,15 @@
     }
 
     .icon {
-        font-size: 18px !important;
-
-        @media only screen and (max-width: breakpoint-max(sm)) {
-            font-size: 26px !important;
-        }
-
+        font-size: 18px;
         text-align: center;
+
+        .clickable {
+            cursor: pointer;
+
+            @media only screen and (max-width: breakpoint-max(sm)) {
+                font-size: 26px;
+            }
+        }
     }
 }
