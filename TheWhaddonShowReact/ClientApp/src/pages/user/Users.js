@@ -5,9 +5,7 @@ function UsersListPage() {
 
     return (
         <>
-            <div className="page-top">
-                <h2 className="page-title">User - <span className="fw-semi-bold">Management</span></h2>
-            </div>
+            <h1>Users</h1>
             <div className="page-content">
                 <UsersTable />
             </div>

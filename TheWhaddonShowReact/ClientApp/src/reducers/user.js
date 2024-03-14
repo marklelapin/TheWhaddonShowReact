@@ -1,5 +1,5 @@
 import {
-    LOGIN, LOGOUT, UPDATE_CURRENT_USER
+    LOGIN, LOGOUT, UPDATE_CURRENT_USER, ACKNOWLEDGE_USER_MESSAGE
 } from '../actions/user';
 
 
@@ -28,6 +28,12 @@ export default function userReducer(state = defaultState, action) {
                 ...state,
                 currentUser: action.person
             }
+        case ACKNOWLEDGE_USER_MESSAGE:
+            return {
+                ...state,
+                userMessages: [...state.userMessages, { message: action.message, authenticatedUser: action.authenticatedUser }]
+            };
+
         default:
             return state;
     }

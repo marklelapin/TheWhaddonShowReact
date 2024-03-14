@@ -1,6 +1,8 @@
 import React from 'react';
+import {useSelector} from 'react-redux'; 
 import CheckBox from '../../../components/Forms/CheckBox';
 import classnames from 'classnames';
+import { isDemoUser } from '../../../dataAccess/userAccess';
 import s from '../Users.module.scss';
 
 function Roles(props) {
@@ -8,6 +10,13 @@ function Roles(props) {
     const { person = {}, type, strapColor, onChange, className } = props
 
     const { isActor = false, isSinger = false, isWriter = false, isBand = false, isTechnical = false, isAdmin = false, id } = person
+
+
+    const authenticatedUser = useSelector(state => state.user.currentUser)
+
+    const isDemo = isDemoUser(authenticatedUser)
+
+
 
     const headers = () => {
 
@@ -23,7 +32,7 @@ function Roles(props) {
         )
     }
 
-
+    
 
     const row = () => {
 
@@ -41,7 +50,7 @@ function Roles(props) {
                 </td>
                 <td className={classnames(s.center, className)}>
                     <div className={s.checkboxContainer}>
-                        <CheckBox id={`isWriter-${id}`} strapColor={strapColor} checked={isWriter} onChange={(e) => onChange('isWriter', e.target.checked)} centered />
+                        <CheckBox id={`isWriter-${id}`} strapColor={strapColor} checked={isWriter} onChange={(e) => onChange('isWriter', e.target.checked)} centered disabled={isDemo} />
                     </div>
                 </td>
                 <td className={classnames(s.center, className)}>
@@ -56,7 +65,7 @@ function Roles(props) {
                 </td>
                 <td className={classnames(s.center, className)}>
                     <div className={s.checkboxContainer}>
-                        <CheckBox id={`isAdmin-${id}`} strapColor={strapColor} checked={isAdmin} onChange={(e) => onChange('isAdmin', e.target.checked)} centered />
+                        <CheckBox id={`isAdmin-${id}`} strapColor={strapColor} checked={isAdmin} onChange={(e) => onChange('isAdmin', e.target.checked)} centered disabled={isDemo} />
                     </div>
                 </td>
             </>

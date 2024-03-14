@@ -23,7 +23,7 @@ import {
     closePostBack,
     clearHasPostedBack,
 } from '../actions/localServer';
-
+import { DEMOID } from '../dataAccess/userAccess';
 import moment from 'moment';
 import { log, LOCAL_SERVER_UTILS as logType } from '../dataAccess/logging.js';
 
@@ -33,6 +33,7 @@ export async function useSync() {
 
     //Access state from redux store 
     const localCopyId = useSelector((state) => state.localServer.localCopyId);
+    const authenticatedUser = useSelector((state) => state.user.authenticatedUser);
     //**LSMTypeInCode**                                                                                
     const persons = useSelector((state) => state.localServer.persons)
     const scriptItems = useSelector((state) => state.localServer.scriptItems)
@@ -162,9 +163,9 @@ export async function useSync() {
             const syncData = new LocalToServerSyncData(
                 copyId  //identifies the local copy that the data is coming from
                 , postBacksFromLocal // confirmation back to server that updates in the post back have been added to Local.
-                , data.filter(x => x.updatedOnServer === null) //local data that hasn't yet been added to server
+                , data.filter(x => x.updatedOnServer === null && authenticatedUser.isWriter && authenticatedUser.id !== DEMOID) //local data that hasn't yet been added to server
             )
-
+        
             return syncData;
         } catch (error) {
             throw new Error(`Error creating sync data: ${error.message}`)
