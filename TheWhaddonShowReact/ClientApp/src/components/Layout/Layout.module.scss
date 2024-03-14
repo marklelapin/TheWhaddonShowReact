@@ -83,7 +83,7 @@
 
 
     &.isMobileDevice {
-        padding: 0px;
+        padding: 0 5px 5px 5px;
     }
     //@media (max-width: breakpoint-max(sm)) {
     //    padding: 20px $content-padding-sm ($content-padding + 30px);
