@@ -42,11 +42,10 @@ const LinksGroup = (props) => {
 
 
     const toggleCollapse = () => {
-        console.log('toggleCollapse before:', `${header}-isCollapsed`)
+    
         setIsCollapsed(!isCollapsed);
     }
 
-    console.log(`${header}-isCollapsed: `,isCollapsed)
     return (
         <li className={classnames('link-wrapper', s.headerLink, className)}>
             {<Link
