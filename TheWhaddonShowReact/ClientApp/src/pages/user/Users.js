@@ -7,7 +7,7 @@ function UsersListPage() {
         <>
             <h1>Users</h1>
             <div className="page-content">
-                <UsersTable />
+                    <UsersTable />
             </div>
 
         </>
