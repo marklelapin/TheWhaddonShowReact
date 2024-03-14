@@ -1,7 +1,8 @@
 //global actions
 export const LOGIN = 'LOGIN';
-export const LOGOUT = 'LOGOUT'; 
+export const LOGOUT = 'LOGOUT';
 export const UPDATE_CURRENT_USER = 'UPDATE_CURRENT_USER';
+export const ACKNOWLEDGE_USER_MESSAGE = 'ACKNOWLEDGE_USER_MESSAGE';
 
 export function login(person) {
     return {
@@ -11,7 +12,7 @@ export function login(person) {
 }
 
 export function logout() {
-    return {       
+    return {
         type: LOGOUT
     }
 }
@@ -20,5 +21,13 @@ export function updateCurrentUser(person) {
     return {
         type: UPDATE_CURRENT_USER,
         person
+    }
+}
+
+export function acknowledgeUserMessage(user, message) {
+    return {
+        type: ACKNOWLEDGE_USER_MESSAGE,
+        user: user,
+        message: message
     }
 }

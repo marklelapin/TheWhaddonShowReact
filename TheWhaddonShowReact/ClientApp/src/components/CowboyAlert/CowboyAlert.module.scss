@@ -1,0 +1,60 @@
+@import '../../styles/app';
+
+
+.container {
+    position: absolute;
+    right: 25px;
+    max-height: 300px;
+    max-width: 300px;
+    
+    @media (max-width: 400px) {
+        max-width: 90%;
+    }
+
+    &.visible{
+        bottom: 25px;
+        }
+
+    &.hidden,&.readyToComeOn {
+        bottom: -300px;
+    }
+    &.removed {
+        display: none;
+    }
+    transition: bottom 0.5s;
+
+    .speechBubble {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-color: $gray-700;
+        color: black !important;
+        border-radius: 20px 20px 0px 20px !important;
+        padding: 20px 20px;
+        color: $gray-100 !important;
+        background-color: $gray-inverse !important;
+        position: relative;
+        max-width: 400px;
+        
+        @include dropdown-box();
+        
+    }
+
+
+    .whaddonShowCowboy {
+        position: absolute;
+        bottom: -25px;
+        right: -30px;
+
+        img {
+            height: 100px;
+        }
+    }
+
+    .dismiss{
+        align-self: center;
+        padding-top: 10px;
+        font-weight: $font-weight-light;
+        font-size: $font-size-sm;
+    }
+}
