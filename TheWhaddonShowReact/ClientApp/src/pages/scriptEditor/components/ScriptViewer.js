@@ -32,12 +32,14 @@ function ScriptViewer(props) {
     const defaultShowSceneSelector = useSelector(state => state.scriptEditor.showSceneSelector)
     const showOrder = useSelector(state => state.scriptEditor.sceneOrders[show.id])
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
+    //const viewMode = useSelector(state => state.scriptEditor.viewMode)
     const showComments = useSelector(state => state.scriptEditor.showComments)
     const initialSyncProgress = useSelector(state => state.scriptEditor.initialSyncProgress)
     const initialSyncProgressTotal = initialSyncProgress.scriptItem * 70 + initialSyncProgress.person * 15 + initialSyncProgress.part * 15
     const maxWidthExists = useSelector(state => state.scriptEditor.maxWidthExists)
 
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+
 
 
     //internal state
@@ -111,12 +113,12 @@ function ScriptViewer(props) {
             const newViewStyle = loading
             dispatch(updateViewStyle(newViewStyle))
         }
-     }, [loading]) //eslint-disable-line react-hooks/exhaustive-deps
+    }, [loading]) //eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         log(logType, 'useEffect[viewStyle]', viewStyle)
-        if ([CLASSIC,CHAT].includes(loading))
-        setLoading(false)
+        if ([CLASSIC, CHAT].includes(loading))
+            setLoading(false)
     }, [viewStyle]) //eslint-disable-line react-hooks/exhaustive-deps
 
 
@@ -133,9 +135,9 @@ function ScriptViewer(props) {
     }
 
 
-    log(logType, 'render', { showOrderLength: showOrder?.length, scenesToLoad, initialSyncProgress, initialSyncProgressTotal, maxWidthExists })
+    // log(logType, 'render', { showOrderLength: showOrder?.length, scenesToLoad, initialSyncProgress, initialSyncProgressTotal, maxWidthExists })
 
-
+    log(logType, 'showOrder', showOrder)
 
     return (
         <>
@@ -153,6 +155,8 @@ function ScriptViewer(props) {
                                         id={scene.id}
                                         sceneNumber={scene.sceneNumber}
                                         zIndex={scene.zIndex}
+                                        nextSceneId={scene.nextId}
+                                        previousSceneId={scene.previousId}
                                     />
                             }
 
@@ -168,7 +172,7 @@ function ScriptViewer(props) {
                 }
             </div>
 
-           
+
 
 
 

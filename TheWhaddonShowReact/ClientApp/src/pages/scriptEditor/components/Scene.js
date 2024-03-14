@@ -3,7 +3,7 @@ import React, { memo } from 'react';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { trigger, ADD_SCENE, updateSceneLoaded, updateScriptFilter } from '../../../actions/scriptEditor'
+import { trigger, ADD_SCENE, updateSceneLoaded, updateScriptFilter, MULTIPLE } from '../../../actions/scriptEditor'
 
 //Components
 import ScriptItem from '../../../pages/scriptEditor/components/ScriptItem.js';
@@ -31,8 +31,11 @@ const Scene = memo((props) => {
     //utility constants
     const dispatch = useDispatch();
 
+  
+    //const MULTIPLE = 'multiple'
+
     //props
-    const { id, sceneNumber, zIndex } = props;
+    const { id, sceneNumber, zIndex, nextSceneId, previousSceneId } = props;
     log(logType, 'props:', props)
 
     //Redux state
@@ -40,23 +43,22 @@ const Scene = memo((props) => {
     const previousCurtainOpen = useSelector(state => state.scriptEditor.previousCurtainOpen[id])
     const sceneScriptItem = useSelector(state => state.scriptEditor.currentScriptItems[id]) || {}
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
+    const viewMode = useSelector(state => state.scriptEditor.viewMode)
     const currentUser = useSelector(state => state.user.currentUser)
     
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
-const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
+    const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
     const scene = (sceneScriptItem.type === ACT) ? { ...sceneScriptItem, nextSceneId: sceneScriptItem.nextId } : { ...sceneOrder.find(item => [SHOW, ACT, SCENE].includes(item.type)) } || {}
     const synopsis = { ...sceneOrder.find(item => item.type === SYNOPSIS) } || {}
     const staging = { ...sceneOrder.find(item => item.type === INITIAL_STAGING) } || {}
 
     const bodyOrder = [...sceneOrder].filter(item => ([SHOW, ACT, SCENE, SYNOPSIS, INITIAL_STAGING].includes(item.type) === false)) || []//returns the body scriptItems
 
-
-
     const scriptFilter = useSelector(state => state.scriptEditor.scriptFilter)
 
     let sceneFilter
     if (scriptFilter === null || scriptFilter === undefined) {
-        sceneFilter = isMobileDevice ? (sceneNumber === 1) : true
+        sceneFilter = (viewMode!==MULTIPLE) ? (sceneNumber === 1) : true
     } else {
         sceneFilter = scriptFilter.includes(scene.id)
     }
@@ -69,7 +71,7 @@ const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
     }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
-    log(logType, 'scene', scene)
+    log(logType, 'sceneOrder '+scene.sceneNumber, sceneOrder)
 
 
 
@@ -88,16 +90,16 @@ const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
 
 
     const moveToNextScene = () => {
-        if (scene.nextId) {
-            dispatch(updateScriptFilter([scene.nextSceneId]));
-            moveFocusToId(scene.nextSceneId);
+        if (nextSceneId) {
+            dispatch(updateScriptFilter([nextSceneId]));
+            moveFocusToId(nextSceneId);
         }
     }
 
     const moveToPreviousScene = () => {
-        if (sceneNumber !== 1) {
-            dispatch(updateScriptFilter([scene.previousId]));
-            moveFocusToId(scene.id);
+        if (previousSceneId && (sceneNumber !== 1)) {
+            dispatch(updateScriptFilter([previousSceneId]));
+            moveFocusToId(previousSceneId);
         }
     }
 
@@ -105,7 +107,7 @@ const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
     log(logType, 'scene', scene)
 
 
-    if ((scriptFilter) && sceneFilter !== true && isMobileDevice) return null
+    if ((scriptFilter) && sceneFilter !== true && viewMode!==MULTIPLE) return null
 
     return (
         <Hammer onSwipe={handleSwipe}>
@@ -113,9 +115,9 @@ const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
                 <div id={`scene-${scene.id}`} className={classnames(s[`scene-group`], s[scene.type.toLowerCase()], (sceneFilter) ? null : s['hide'])} style={{ zIndex: zIndex }}>
                     {(scriptFilter?.length === 1) &&
                         <>
-                            {(sceneNumber !== 1) && <div className={classnames(s.previousSceneIcon,'clickable',previousCurtainOpen ? s.curtainOpen : s.curtainClosed,s[viewStyle])} > <Icon icon='arrow-left' onClick={moveToPreviousScene} /></div>
+                            {(sceneNumber !== 1 && previousSceneId) && <div className={classnames(s.previousSceneIcon,'clickable',previousCurtainOpen ? s.curtainOpen : s.curtainClosed,s[viewStyle])} > <Icon icon='arrow-left' onClick={moveToPreviousScene} /></div>
                             }
-                        {(scene.nextSceneId !== null) && <div className={classnames(s.nextSceneIcon, 'clickable', previousCurtainOpen ? s.curtainOpen : s.curtainClosed,s[viewStyle])}  > <Icon icon='arrow-right' onClick={moveToNextScene} /></div>
+                        {(nextSceneId) && <div className={classnames(s.nextSceneIcon, 'clickable', previousCurtainOpen ? s.curtainOpen : s.curtainClosed,s[viewStyle])}  > <Icon icon='arrow-right' onClick={moveToNextScene} /></div>
                             }
                         </>
                     }
@@ -211,12 +213,12 @@ const readOnly = isScriptReadOnly(currentUser,isMobileDevice)
                                 (add new scene)
                             </div>
                         }
-                        {(scriptFilter?.length === 1) &&
+                        {( scriptFilter?.length === 1) &&
                             < div className={s['next-previous-scene-buttons']}>
-                                {sceneNumber !== 1 && < Button onClick={moveToPreviousScene}>Previous Scene</Button>}
+                                {(sceneNumber !== 1 && previousSceneId) && < Button onClick={moveToPreviousScene}>Previous Scene</Button>}
                                 {sceneNumber === 1 && <p>Start</p>}
-                                {(scene.nextSceneId) && <Button onClick={moveToNextScene}>Next Scene</Button>}
-                                {(!scene.nextSceneId) && <p>End</p>}
+                                {(nextSceneId) && <Button onClick={moveToNextScene}>Next Scene</Button>}
+                                {(!nextSceneId) && <p>End</p>}
                             </div>
                         }
 

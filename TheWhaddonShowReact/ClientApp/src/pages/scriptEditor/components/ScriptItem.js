@@ -26,7 +26,7 @@ import {
     trigger,
     REDO, UNDO, CONFIRM_UNDO,
     DELETE_SCENE, UPDATE_ATTACHMENTS,
-    UPDATE_PART_IDS, TOGGLE_CURTAIN
+    UPDATE_PART_IDS, TOGGLE_CURTAIN, MULTIPLE
 } from '../../../actions/scriptEditor';
 
 //styling
@@ -65,6 +65,8 @@ const ScriptItem = memo((props) => {
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle) || CHAT
     const currentUser = useSelector(state => state.user.currentUser)
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const viewMode = useSelector(state => state.scriptEditor.viewMode)
+const showSingleScene = (viewMode !== MULTIPLE) || isMobileDevice
     const readOnly = isScriptReadOnly(currentUser, isMobileDevice)
     log(logType, 'redux:', { focus, isUndoInProgress, scriptItem, readOnly })
 
@@ -203,6 +205,7 @@ const ScriptItem = memo((props) => {
                             icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />}
                     {/*    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>*/}
                     {!readOnly && <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />}
+                    {showSingleScene && !readOnly && <div className={s.gapForNextArrow} />}
 
                 </div>
             }

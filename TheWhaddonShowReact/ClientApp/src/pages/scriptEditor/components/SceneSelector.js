@@ -2,7 +2,7 @@
 import classnames from 'classnames';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, updateScriptFilter, updateSceneInFocus } from '../../../actions/scriptEditor';
+import { MOVE_SCENE, setShowSceneSelector, trigger, updateMovementInProgress, updateScriptFilter, updateSceneInFocus,MULTIPLE } from '../../../actions/scriptEditor';
 
 //Components
 
@@ -31,7 +31,9 @@ function SceneSelector(props) {
     const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
     const currentScriptFilter = useSelector(state => state.scriptEditor.scriptFilter)
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
+    const viewMode = useSelector(state => state.scriptEditor.viewMode)
 
+    const showSingleScene = (viewMode !== MULTIPLE) || isMobileDevice
 
     const noSearchParametersSet = (searchParameters.characters === '' && searchParameters.tags.length === 0 && searchParameters.myScenes === false)
 
@@ -87,10 +89,10 @@ function SceneSelector(props) {
 
 
     useEffect(() => {
-        if (!isMobileDevice) { //doesn't do it for mobile devices due to performance
+        if (!showSingleScene) { //doesn't do it for mobile devices due to performance
             handleUpdateScriptFilter()
         }
-    }, [searchParameters, isMobileDevice]) //eslint-disable-line react-hooks/exhaustive-deps
+    }, [searchParameters, showSingleScene]) //eslint-disable-line react-hooks/exhaustive-deps
 
     const handleUpdateScriptFilter = () => {
         const newScriptFilter = (noSearchParametersSet) ? null : filteredShowOrder.map(scene => scene.id)
@@ -123,7 +125,7 @@ function SceneSelector(props) {
     const handleClick = (type, id) => {
         switch (type) {
             case 'goto':
-                if (isMobileDevice) {
+                if (showSingleScene) {
                     dispatch(updateScriptFilter([id]))
                 } else if (currentScriptFilter === null || currentScriptFilter.includes(id)) {
                     dispatch(updateMovementInProgress(true))

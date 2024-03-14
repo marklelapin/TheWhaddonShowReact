@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 
-import { setShow, updateShowBools, updateScriptFilter } from '../../actions/scriptEditor';
+import { setShow, updateShowBools, updateScriptFilter, updateViewMode, SINGLE } from '../../actions/scriptEditor';
 
 //Components
 import SceneSelector from './components/SceneSelector';
@@ -14,7 +14,7 @@ import { Modal } from 'reactstrap';
 
 //Utils
 import { log, SCRIPT as logType } from '../../dataAccess/logging.js';
-import { isScreenSmallerThan } from '../../core/screenHelper';
+//import { isScreenSmallerThan } from '../../core/screenHelper';
 import { getShowBools } from './scripts/layout';
 import s from './Script.module.scss';
 
@@ -39,16 +39,16 @@ function Script() {
 
 
     useEffect(() => {
-        if (isScreenSmallerThan('lg')) {
-            const firstScene = showOrder?.find(scene => scene.sceneNumber === 1)
-            if (firstScene) {
-                dispatch(updateScriptFilter([firstScene.id]))
-            } else {
-                dispatch(updateScriptFilter([show.id]))
-            }
+        //set initial state to only show the first scene.
+        dispatch(updateViewMode(SINGLE))
+
+        const firstScene = showOrder?.find(scene => scene.sceneNumber === 1)
+        if (firstScene) {
+            dispatch(updateScriptFilter([firstScene.id]))
         } else {
-            dispatch(updateScriptFilter(null))
+            dispatch(updateScriptFilter([show.id]))
         }
+
     }, []) //eslint-disable-line react-hooks/exhaustive-deps
 
 
@@ -63,10 +63,6 @@ function Script() {
         if (showOrder?.length > 0 && scenesToLoad !== null && scenesToLoad >= showOrder?.length) {
             setScenesToLoad(null)
         }
-        //if (showOrder.length > 0 && scenesToLoad === null) {
-        //    dispatch(updateInitialProgress)
-        //}
-        //else do nothing
     }, [sceneLoaded, scenesToLoad, showOrder])
 
 

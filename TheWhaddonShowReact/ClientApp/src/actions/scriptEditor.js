@@ -27,6 +27,9 @@ export const RESET_UNDO = 'RESET_UNDO';
 
 
 export const UPDATE_VIEW_STYLE = 'UPDATE_VIEW_STYLE';
+export const UPDATE_VIEW_MODE = 'UPDATE_VIEW_MODE';
+export const SINGLE = 'SINGLE';
+export const MULTIPLE = 'MULTIPLE';
 export const SET_READ_ONLY = 'SET_READ_ONLY';
 export const UPDATE_SCENE_LOADED = 'UPDATE_SCENE_LOADED';
 export const UPDATE_INITIAL_SYNC_PROGRESS = 'INITIAL_SYNC_PROGRESS';
@@ -203,7 +206,12 @@ export function updateViewStyle(viewStyle) {
         viewStyle,
     }
 }
-
+export function updateViewMode(viewMode) {
+    return {
+        type: UPDATE_VIEW_MODE,
+        viewMode,
+    }
+}
 export function setReadOnly(readOnly) {
     return {
         type: SET_READ_ONLY,

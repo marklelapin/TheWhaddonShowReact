@@ -8,6 +8,7 @@ import {
     updatePersonSelectorConfig,
     updateShowBools,
     updatePrintScript,
+    updateViewMode, MULTIPLE, SINGLE
 } from '../../../actions/scriptEditor';
 import {
     openSidebar
@@ -52,6 +53,7 @@ function ScriptViewerHeader(props) {
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const personSelectorConfig = useSelector(state => state.scriptEditor.personSelectorConfig)
     const viewStyle = useSelector(state => state.scriptEditor.viewStyle)
+    const viewMode = useSelector(state => state.scriptEditor.viewMode)
     const printScript = useSelector(state => state.scriptEditor.printScript)
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
@@ -92,6 +94,12 @@ function ScriptViewerHeader(props) {
 
     log(logType, 'props', { sceneInFocus, viewStyle, readOnly })
 
+
+    const toggleViewMode = () => {
+
+        (viewMode !== MULTIPLE) ? dispatch(updateViewMode(MULTIPLE)) : dispatch(updateViewMode(SINGLE))
+
+    }
 
 
     const toggleShowComments = () => {
@@ -198,6 +206,15 @@ function ScriptViewerHeader(props) {
             <div className={s['right-controls']}>
                 {!isMobileDevice &&
                     <>
+                        {!isMobileDevice &&
+                            <div id="scene-mode-switch" className={s['scene-mode-switch']}>
+                                <ConfirmClick type='rectangle' onClick={() => toggleViewMode()}>
+                                    {(viewMode === MULTIPLE) ? 'single scene' : 'scroll scenes'}
+                                </ConfirmClick>
+                                <QuickToolTip id="scene-mode-switch" tip={viewMode === MULTIPLE ? "view 1 scene at a time" : "scroll through entire script"} placement="top" />
+                            </div>
+
+                        }
                         {showCommentControls && showComments && <Icon id="script-viewer-comments" icon="comment" onClick={() => toggleShowComments()} toolTip="Hide comments"></Icon>}
 
                         {showCommentControls && !showComments && <Icon id="script-viewer-comments" icon="comment-o" onClick={() => toggleShowComments()} toolTip="Show comments"></Icon>}

@@ -18,6 +18,7 @@ import {
     RESET_UNDO,
     UPDATE_PERSON_SELECTOR_CONFIG,
     UPDATE_VIEW_STYLE,
+    UPDATE_VIEW_MODE,
     SET_READ_ONLY,
     UPDATE_SCENE_LOADED,
     UPDATE_INITIAL_SYNC_PROGRESS,
@@ -27,7 +28,7 @@ import {
     UPDATE_SHOW_BOOLS,
     UPDATE_MOVEMENT_IN_PROGRESS,
     UPDATE_SCRIPT_FILTER,
-    PRINT_SCRIPT,
+    PRINT_SCRIPT,SINGLE
 } from '../actions/scriptEditor';
 
 import { SCENE } from '../dataAccess/scriptItemTypes';
@@ -36,9 +37,8 @@ import { log, SCRIPT_EDITOR_REDUCER as logType } from '../dataAccess/logging';
 import { SCRIPT_ITEM, PERSON, PART } from '../dataAccess/localServerModels';
 import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
-
 import { CHAT } from '../pages/scriptEditor/scripts/layout';
-
+ 
 export const initialState = {
     searchParameters: {
         tags: [],
@@ -69,6 +69,7 @@ export const initialState = {
     maxWidthExists: false,
     maxScriptItemTextWidth: null,
     viewStyle: CHAT,
+    sceneMode: SINGLE,
     readOnly: true,
     initialSyncProgress: { part: 0, person: 0, scriptItem: 0 },
     scriptItemTextWidths: {},
@@ -247,6 +248,11 @@ export default function scriptEditorReducer(state = initialState, action) {
             return {
                 ...state,
                 viewStyle: action.viewStyle
+            }
+        case UPDATE_VIEW_MODE:
+            return {
+                ...state,
+                viewMode: action.viewMode
             }
         case SET_READ_ONLY:
             return {

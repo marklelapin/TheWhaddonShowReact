@@ -15,7 +15,7 @@ export const CACHE_REDUCER = { type: NONE, location: 'Reducer:cache' }
 
 export const CAST_MEMBER = { type: NONE, location: 'Component:CastMember' }
 
-export const CASTING = { type: DEBUG, location: 'Component:Casting' }
+export const CASTING = { type: NONE, location: 'Component:Casting' }
 export const CASTING_SCRIPTS = { type: NONE, location: 'Script:casting' }
 
 export const CHART = { type: NONE, location: 'Component:Chart' }
@@ -48,7 +48,7 @@ export const PART_SELECTOR_DROPDOWN = { type: NONE, location: 'Component:PartSel
 export const PERSON = { type: NONE, location: 'Script:Person' }
 export const PERSON_SELECTOR = { type: NONE, location: 'Component:PersonSelector' }
 export const PERSONAL_DETAILS = { type: NONE, location: 'Component:PersonalDetails' }
-export const SCENE = { type: NONE, location: 'Component:Scene' }
+export const SCENE = { type: DEBUG, location: 'Component:Scene' }
 export const SCENE_SELECTOR = { type: NONE, location: 'Component:SceneSelector' }
 export const SCENE_SELECTOR_ROW = { type: NONE, location: 'Component:SceneSelectorRow' }
 
@@ -64,8 +64,8 @@ export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptIte
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 export const SCRIPT_ITEM_HEADER = { type: NONE, location: 'Component:ScriptItemHeader' }
 export const SCRIPT = { type: NONE, location: 'Component:Script' }
-export const SCRIPT_SUMMARY = { type: DEBUG, location: 'Component:ScriptSummary' }
-export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
+export const SCRIPT_SUMMARY = { type: NONE, location: 'Component:ScriptSummary' }
+export const SCRIPT_VIEWER = { type: DEBUG, location: 'Component:ScriptViewer' }
 export const SCRIPT_VIEWER_HEADER = { type: NONE, location: 'Component:ScriptViewerHeader' }
 
 export const SIDEBAR = { type: NONE, location: 'Component:Sidebar' }
