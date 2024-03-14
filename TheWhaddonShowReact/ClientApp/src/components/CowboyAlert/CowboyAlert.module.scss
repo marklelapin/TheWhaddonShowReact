@@ -4,8 +4,8 @@
 .container {
     position: absolute;
     right: 25px;
-    max-height: 300px;
-    max-width: 300px;
+    max-height: 500px;
+    max-width: 400px;
     
     @media (max-width: 400px) {
         max-width: 90%;
@@ -16,7 +16,7 @@
         }
 
     &.hidden,&.readyToComeOn {
-        bottom: -300px;
+        bottom: -500px;
     }
     &.removed {
         display: none;
@@ -38,6 +38,10 @@
         
         @include dropdown-box();
         
+        &.black{
+            background-color:rgb(28,29,44) !important;
+        }
+     
     }
 
 

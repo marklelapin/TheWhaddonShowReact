@@ -64,7 +64,7 @@ const CowboyAlert = (props) => {
     return (
 
         <div className={classnames(s.container, s[position], 'clickable')} onClick={() => hideMessage()}>
-            <div className={s.speechBubble} >
+            <div className={classnames(s.speechBubble,s.black)} >
                 {children}
 
                 <div className={s.dismiss}>

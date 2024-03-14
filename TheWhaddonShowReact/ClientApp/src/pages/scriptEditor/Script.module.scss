@@ -6,6 +6,7 @@
 }
 
 .script-page {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -448,11 +449,11 @@
 
     .sceneSelectorRow {
         padding: 3px;
-        
+
         &:hover {
             background-color: $hover-bg;
-           
         }
+
         h5 {
             margin: 0px;
         }
@@ -464,7 +465,6 @@
         }
 
         &.beingDragged {
-     
         }
 
         &.beingDraggedOver {
@@ -489,5 +489,29 @@
     height: 100%;
     z-index: 1000;
     background-color: rgba(255,255,255,0.4);
+}
 
+.cowboyAlertContainer {
+    position:relative;
+    z-index: 1000;
+
+    .alert {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    li{
+list-style-type: disc;
+margin:20px;
+    }
+
+    .searchText {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+        margin-bottom: 5px;
+    }
 }

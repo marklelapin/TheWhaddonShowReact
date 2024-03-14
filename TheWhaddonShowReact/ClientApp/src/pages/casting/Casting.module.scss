@@ -80,7 +80,19 @@
 
         &.mobile {
            height: unset;
-overflow-y: unset;
+            overflow-y: unset;
         }
+    }
+}
+
+.alert {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 10px;
+
+    span {
+    
+        text-decoration-line: underline;
     }
 }
