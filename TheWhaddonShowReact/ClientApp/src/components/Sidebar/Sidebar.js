@@ -56,6 +56,7 @@ function Sidebar(props) {
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const toggleCloseSidebar = () => {
+        log()
         dispatch(closeStaticSidebar())
     }
 
@@ -220,7 +221,7 @@ function Sidebar(props) {
 
     )
 
-
+    log(logType, 'sidebar', { isSidebarOpen, sidebarOpened, sidebarStatic, isMobileDevice })
     if (!isModal) return (
 
         <div className={`${isSidebarOpen ? 'sidebarOpen' : s['sidebarClose']} ${s['sidebarWrapper']}`}>
