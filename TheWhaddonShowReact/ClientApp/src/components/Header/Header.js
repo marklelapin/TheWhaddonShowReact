@@ -61,10 +61,10 @@ function Header() {
                 <SidebarToggle />
             </Nav>
 
-            <Nav className="justify-content-end align-middle">
-                 <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Nav className="justify-content-end align-middle" >
+                 
                     <SyncDropdown menuOpen={syncMenuOpen} onClick={toggleSyncMenu}></SyncDropdown>
-                </div>
+          
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <AccountDropdown user={user} menuOpen={accountMenuOpen} onClick={toggleAccountMenu} />
                 </div>

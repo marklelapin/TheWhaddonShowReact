@@ -24,7 +24,7 @@ function SyncDropdown() {
 
     //Set state relating to internal component
     const [syncOpen, setSyncOpen] = useState(false);
-    const [toggleRefresh,setToggleRefresh] = useState(true)
+    const [toggleRefresh, setToggleRefresh] = useState(true)
     log(logType, 'toggleRefresh', toggleRefresh)
 
     log(logType, 'SyncDropdown: syncOpen', syncOpen)
@@ -58,7 +58,7 @@ function SyncDropdown() {
             clearTimeout(timeoutId);
         };
 
-    },[])
+    }, [])
 
 
     const syncSummary = () => {
@@ -194,8 +194,10 @@ function SyncDropdown() {
 
             <>
 
-
-                {(target.isSyncing || target.isRefreshing) && <Loader size={16} />}
+                <div className={s.syncloader}>
+                    {(target.isSyncing || target.isRefreshing) && <Loader size={16} />}
+                </div>
+                <div className={s.syncText}>
                 {(target.isSyncing || target.isRefreshing) && target.historyCount === 0 && <>Syncing...</>}
 
                 {(!pauseSync && target.unsyncedUpdates === 0 && target.historyCount > 0) && <><Icon icon="tick" strapColor="success" />Synced</>}
@@ -212,16 +214,20 @@ function SyncDropdown() {
 
                 }
                 {!target.isSyncing && target.historyCount === 0 && <>Not synced!</>}
-                {pauseSync && <>{textTimeSince}</>}
+                    {pauseSync && <>{textTimeSince}</>}
+                </div>
+                <div className={s.syncRefresh}>
                 {pauseSync && target.isSyncing === false && target.isRefreshing === false &&
+
                     <>
                         <Icon icon="refresh"
                             id="refresh-sync"
                             //toolTip="Refresh Script"
                             onClick={(e) => { e.stopPropagation(); dispatch(refreshSync()) }}
                         />
-                    </>
-                }
+                        </>
+                    }
+</div>
 
             </>
         )
@@ -233,9 +239,9 @@ function SyncDropdown() {
     return (
         <Dropdown nav isOpen={syncOpen} toggle={toggleSync} id="basic-nav-dropdown" className={`${s['sync-dropdown']}`}>
             <DropdownToggle nav className={`${s.headerSvgFlipColor} text-center`} >
-
-                {syncText('Summary')}
-
+                <div className={s.syncSummary}>
+                    {syncText('Summary')}
+                </div>
             </DropdownToggle>
             <DropdownMenu end className={`py-0 animated animated-fast fadeInUp`}>
 

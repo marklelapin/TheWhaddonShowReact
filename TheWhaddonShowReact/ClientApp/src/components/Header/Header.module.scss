@@ -117,8 +117,28 @@
     ::after{
     margin-left: 0px !important;
     }
+
+    
 }
 
+.syncSummary{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    
+    .syncLoader{
+        flex: 0 1 auto;
+    }
+    .syncText{
+        flex: 1 1 auto;
+        display: flex;
+flex-direction: row;
+align-items: center;
+    }
+    .syncRefresh{
+        flex: 0 1 auto;
+    }
+}
 
 .headerTitle {
     color: var(--input-color)
