@@ -19,8 +19,12 @@ import s from './LinksGroup.module.scss';
 const Link = (props) => {
 
     const dispatch = useDispatch()
+    
+    const { link, header, childrenLinks, onToolClick, iconElement, label, badge, isCollapsed, toggleCollapse } = props;
 
-    const { link, header, childrenLinks, onToolClick, iconElement, label, badge, indent = 36, isCollapsed, toggleCollapse } = props;
+    
+
+
 
     const handleCloseSidebar = () => {
         if (isMobileDevice()) {
@@ -47,7 +51,7 @@ const Link = (props) => {
                 <NavLink
                     className={classnames(s.listItem, isCollapsed ? null : s.headerLinkActive)}
                     onClick={(childrenLinks) ? (e) => handleToggleCollapse(e) : (onToolClick) ? (e) => handleToolClick(e) : (e) => handleCloseSidebar(e)}
-                    style={{ paddingLeft: `${indent}px` }}
+                  
                 >
                     {linkContentJSX(header, childrenLinks, iconElement, label, badge, isCollapsed)}
                 </NavLink>
@@ -58,7 +62,7 @@ const Link = (props) => {
                     to={link}
                     onClick={() => handleCloseSidebar()}
                     className={classnames(s.listItem, location.pathname === link ? s.headerLinkActive : null)}
-                    style={{ paddingLeft: `${indent}px` }}
+                   
                 >
                     {linkContentJSX(header, childrenLinks, iconElement, label, badge, isCollapsed)}
                 </NavLink>
@@ -76,7 +80,7 @@ const linkContentJSX = (header, childrenLinks, iconElement, label, badge, isColl
         <div className={s.icon}>
             {iconElement}
         </div>
-        <div className={s.header}>
+        <div className={classnames(s.header,isMobileDevice() ? s.mobile : null)}>
             {header}
             {label && <sup className={s.headerLabel}>{label}</sup>}
             {badge && <Badge className={s.badge} pill color={"danger"}>{badge}</Badge>}

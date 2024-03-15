@@ -1,151 +1,153 @@
 @import '../../../styles/app';
 
 .headerLink {
-  overflow-x: hidden;
-
-  @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
-    font-size: 13px;
-  }
-
-  .listItem {
-    color: $gray-500;
-    transition: all .35s ease;
-    text-decoration: none;
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-
-    &:hover {
-      text-decoration: none;
-      color: $gray-900; //inherit;
-      .icon{
-          color:black;
-      }
-    }
-  }
-
-  &:last-child > .listItem {
-    border-bottom: 1px solid $sidebar-item-border-color;
-  }
-
-  > .listItem {
-    position: relative;
-    align-items: center;
-    padding-left: 50px;
-    line-height: 35px;
-    border-top: 1px solid $sidebar-item-border-color;
-
-    &:hover {
-      background-color: var(--sidebar-item-hover-bg-color);
-    }
-
-    > i {
-      margin-right: 7px;
-    }
+    overflow-x: hidden;
 
     @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
-      line-height: 55px;
+        font-size: 13px;
     }
-  }
 
-  .icon {
-    font-size: $font-size-larger;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all .35s ease;
-    color: $gray-100; //var(--sidebar-color);
-    background-color: transparent;
-    position: absolute;
-    top: 3px;
-    left: 11px;
-    width: 28px;
-    height: 28px;
-    line-height: 28px;
-    text-align: center;
-    border-radius: 0;
-    opacity: .7;
-  
+    .listItem {
+        color: $gray-500;
+        transition: all .35s ease;
+        text-decoration: none;
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
 
-    @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
-      top: 12px;
+
+        &:hover {
+            text-decoration: none;
+            color: $gray-900; //inherit;
+            .icon {
+                color: black;
+            }
+        }
     }
-  }
 
-  .badge {
-    float: right;
-    line-height: 8px;
-    margin-top: 9px;
-    margin-right: 15px;
-    padding: 0.5em 0.5em;
-    font-size: 0.875em;
-    //background: var(--sidebar-icon-bg);
-    color: var(--sidebar-badge-color);
-    @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
-      margin-top: 16px;
+    &:last-child > .listItem {
+        border-bottom: 1px solid $sidebar-item-border-color;
     }
-  }
 
-  .headerNode {
-    color: var(--sidebar-hightlight-two)
-  }
+    > .listItem {
+        position: relative;
+        align-items: center;
+        padding-left: 50px;
+        line-height: 35px;
+        border-top: 1px solid $sidebar-item-border-color;
 
-  .headerUpdate {
-    color: var(--sidebar-hightlight)
-  }
-  
-  .listItem.headerLinkActive {
-    color: white; //var(--sidebar-item-active-color);
-    font-weight: $font-weight-bold;
-    white-space: nowrap;
-    
-    &:hover {
-      color: var(--sidebar-icon-bg);
+        &:hover {
+            background-color: var(--sidebar-item-hover-bg-color);
+        }
+
+        > i {
+            margin-right: 7px;
+        }
+
+        @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
+            line-height: 55px;
+        }
     }
 
     .icon {
-      border-radius: 50%;
-      background-color: var(--sidebar-icon-bg);
-      opacity: 1;
-      display: flex;
-      justify-content: center;
-      transform: rotate(360deg);
-      align-items: center;
-      color: white; //var(--sidebar-bg-color);
-      i {
-        color: var(--sidebar-bg-color);
-      }
+        font-size: $font-size-larger;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all .35s ease;
+        color: $gray-100; //var(--sidebar-color);
+        background-color: transparent;
+        position: absolute;
+        top: 3px;
+        left: 11px;
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        text-align: center;
+        border-radius: 0;
+        opacity: .7;
+
+
+        @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
+            top: 12px;
+        }
     }
-  }
+
+    .badge {
+        float: right;
+        line-height: 8px;
+        margin-top: 9px;
+        margin-right: 15px;
+        padding: 0.5em 0.5em;
+        font-size: 0.875em;
+        //background: var(--sidebar-icon-bg);
+        color: var(--sidebar-badge-color);
+
+        @media (min-width: map_get($grid-breakpoints, lg)) and (min-height: $screen-lg-height), (max-width: map_get($grid-breakpoints, md) - 1px) {
+            margin-top: 16px;
+        }
+    }
+
+    .headerNode {
+        color: var(--sidebar-hightlight-two)
+    }
+
+    .headerUpdate {
+        color: var(--sidebar-hightlight)
+    }
+
+    .listItem.headerLinkActive {
+        color: white; //var(--sidebar-item-active-color);
+        font-weight: $font-weight-bold;
+        white-space: nowrap;
+
+        &:hover {
+            color: var(--sidebar-icon-bg);
+        }
+
+        .icon {
+            border-radius: 50%;
+            background-color: var(--sidebar-icon-bg);
+            opacity: 1;
+            display: flex;
+            justify-content: center;
+            transform: rotate(360deg);
+            align-items: center;
+            color: white; //var(--sidebar-bg-color);
+            i {
+                color: var(--sidebar-bg-color);
+            }
+        }
+    }
 }
 
-.header{
+.header {
     padding-left: 15px;
 }
 
 .headerLabel {
-  font-weight: 600;
-  color: var(--sidebar-item-active-color);
+    font-weight: 600;
+    color: var(--sidebar-item-active-color);
 }
 
-.collapsed  {
-  transform: rotate(90deg);
+.collapsed {
+    transform: rotate(90deg);
 }
-.pinned  {
-  transform: rotate(-90deg);
+
+.pinned {
+    transform: rotate(-90deg);
 }
 
 .caret {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  font-size: 19px;
-  margin-right: 15px;
-  color: var(--sidebar-color);
-  
-  @include transition(transform 0.3s ease-in-out);
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    font-size: 19px;
+    margin-right: 15px;
+    color: var(--sidebar-color);
+
+    @include transition(transform 0.3s ease-in-out);
 }
 
 .caretPin {
@@ -161,13 +163,18 @@
     .listItem.headerLinkActive {
         font-weight: $font-weight-bold;
         color: $gray-700;
-.icon {
-                display: none;
-            }
-        
+
+        .icon {
+            display: none;
+        }
+
         &:hover {
             color: $gray-700;
         }
+    }
+
+    .listItem.mobile{
+        padding-left: 0px;
     }
 
     ul {
@@ -185,7 +192,7 @@
             color: $gray-700;
             position: relative;
 
-            
+
 
 
             &:hover {
@@ -195,4 +202,3 @@
         }
     }
 }
-
