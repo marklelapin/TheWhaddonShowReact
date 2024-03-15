@@ -1,64 +1,103 @@
 @import '../../styles/app';
 
 
-.container {
+
+.curtainContainer {
     position: absolute;
-    right: 25px;
-    max-height: 500px;
-    max-width: 400px;
-    
-    @media (max-width: 400px) {
-        max-width: 90%;
-    }
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 1000;
 
-    &.visible{
-        bottom: 25px;
-        }
-
-    &.hidden,&.readyToComeOn {
-        bottom: -500px;
-    }
-    &.removed {
-        display: none;
-    }
-    transition: bottom 0.5s;
-
-    .speechBubble {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        border-color: $gray-700;
-        color: black !important;
-        border-radius: 20px 20px 0px 20px !important;
-        padding: 20px 20px;
-        color: $gray-100 !important;
-        background-color: $gray-inverse !important;
-        position: relative;
-        max-width: 400px;
-        
-        @include dropdown-box();
-        
-        &.black{
-            background-color:rgb(28,29,44) !important;
-        }
-     
-    }
-
-
-    .whaddonShowCowboy {
+    .curtain {
+        height: 150%;
+        width: 120%;
+        background-color: $danger;
         position: absolute;
-        bottom: -25px;
-        right: -30px;
+        top: -25%;
+        left: -10%;
+        z-index: 1;
+        transform: rotate(0deg);
+        transition: all ease-out 1.5s;
+    }
 
-        img {
-            height: 100px;
+    .hidden {
+
+        &.curtain {
+            transform: rotate(7deg);
+            left: 125%;
         }
     }
 
-    .dismiss{
-        align-self: center;
-        padding-top: 10px;
-        font-weight: $font-weight-light;
-        font-size: $font-size-sm;
+    .removed{
+        
+        display: none !important;
+    }
+
+    .container {
+        position: absolute;
+        top: 50%;
+        left:50%;
+        transform: translate(-50%,-50%);
+        max-height: 500px;
+        max-width: 400px;
+        z-index: 2;
+
+        @media (max-width: 400px) {
+            max-width: 90%;
+        }
+
+        &.visible {
+            top: 50%;
+        }
+
+        &.hidden, &.readyToComeOn {
+            top: 135%;
+        }
+
+        &.removed {
+            display: none;
+        }
+
+        transition: top 0.5s;
+
+        .speechBubble {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-color: $gray-700;
+            color: black !important;
+            border-radius: 20px 20px 0px 20px !important;
+            padding: 20px 20px;
+            color: $gray-100 !important;
+            background-color: $gray-inverse !important;
+            position: relative;
+            max-width: 400px;
+
+            @include dropdown-box();
+
+            &.black {
+                background-color: rgb(28,29,44) !important;
+            }
+        }
+
+
+        .whaddonShowCowboy {
+            position: absolute;
+            bottom: -25px;
+            right: -30px;
+
+            img {
+                height: 100px;
+            }
+        }
+
+        .dismiss {
+            align-self: center;
+            padding-top: 10px;
+            font-weight: $font-weight-light;
+            font-size: $font-size-sm;
+        }
     }
 }

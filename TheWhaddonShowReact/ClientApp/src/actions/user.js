@@ -24,10 +24,10 @@ export function updateCurrentUser(person) {
     }
 }
 
-export function acknowledgeUserMessage(user, message) {
+export function acknowledgeUserMessage(user, messageId) {
     return {
         type: ACKNOWLEDGE_USER_MESSAGE,
         user: user,
-        message: message
+        messageId: messageId
     }
 }

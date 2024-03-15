@@ -110,7 +110,8 @@ const Casting = () => {
                         />
                     </div>
                 </div>
-                <CowboyAlert demoOnly={true}>
+                
+                <CowboyAlert demoOnly={true} messageId='casting'>
                     {isMobileDevice &&
                         <div className={s.alert}>
                             <div>On mobiles this is readonly but on desktop you can drag and drop to change casting or the scene order.</div>

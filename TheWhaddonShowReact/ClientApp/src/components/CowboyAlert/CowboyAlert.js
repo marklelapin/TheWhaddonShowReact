@@ -1,34 +1,35 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import whaddonShowCowboy from '../../images/whaddon-show-logo.png'
 import { isDemoUser } from '../../dataAccess/userAccess';
 import s from './CowboyAlert.module.scss';
 import classnames from 'classnames';
+import { acknowledgeUserMessage } from '../../actions/user';
 
 
 const CowboyAlert = (props) => {
 
-    //const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
 
-    const { demoOnly = true, children } = props;
+    const { demoOnly = true, children, messageId } = props;
     console.log('demoOnly', demoOnly)
 
     const authenticatedUser = useSelector(state => state.user.authenticatedUser)
-    console.log(authenticatedUser)
+    const acknowledgedMessages = useSelector(state => state.user.acknowledgedMessages) || [];
+   
     const isDemo = isDemoUser(authenticatedUser)
 
-    const [position, setPosition] = useState('readyToComeOn')
-
-
+    const isAcknowledged = acknowledgedMessages.some(entry => entry.user.id === authenticatedUser.id && entry.messageId === messageId) 
+    console.log('acknowledgedMessages', acknowledgedMessages)
+    console.log('isAcknowledged', isAcknowledged)
+    const [status, setStatus] = useState('readyToComeOn')
 
     useEffect(() => {
         const popupTimer = setTimeout(() => {
-            setPosition('visible')
+            setStatus('visible')
         }
-            , 1000);
-
-
+            , 0);
 
         return () => {
             clearTimeout(popupTimer);
@@ -38,45 +39,51 @@ const CowboyAlert = (props) => {
 
     useEffect(() => {
         let timer
-        if (position === 'hidden') {
+        if (status === 'hidden') {
             timer = setTimeout(() => {
-                setPosition('removed')
-            }, 1000);
+                setStatus('removed')
+                dispatch(acknowledgeUserMessage(authenticatedUser, messageId))
+            }, 5000);
         }
 
         return () => clearTimeout(timer);
 
-    }), [position]
+    }), [status]
 
     const dismissCowboy = () => {
         setTimeout(() => {
-            setPosition('hidden')
+            setStatus('hidden')
         }, 1500)
     };
 
     const hideMessage = () => {
-        setPosition('hidden')
+        setStatus('hidden')
+       
     }
 
     console.log('isDemo', isDemo)
     if (demoOnly && !isDemo) return null;
-
+    if (isAcknowledged) return null;
     return (
+        <div className={classnames(s.curtainContainer, s[status])} onClick={() => hideMessage() }>
+            <div className={classnames(s.curtain,s[status])} />
+            <div className={classnames(s.container, s[status], 'clickable')} onClick={() => hideMessage()}>
+                <div className={classnames(s.speechBubble, s.black)} >
+                    {children}
 
-        <div className={classnames(s.container, s[position], 'clickable')} onClick={() => hideMessage()}>
-            <div className={classnames(s.speechBubble,s.black)} >
-                {children}
-
-                <div className={s.dismiss}>
-                    (click to dismiss)
+                    <div className={s.dismiss}>
+                        (click to dismiss)
+                    </div>
+                    < div className={s.whaddonShowCowboy}>
+                        <img src={whaddonShowCowboy} alt="The Whaddon Show Cowboy shouting into a speech bubble." className={s.logo} />
+                    </div>
                 </div>
-                < div className={s.whaddonShowCowboy}>
-                    <img src={whaddonShowCowboy} alt="The Whaddon Show Cowboy shouting into a speech bubble." className={s.logo} />
-                </div>
-            </div>
 
 
-        </div >
+            </div >
+
+        </div>
+
 
     )
 }

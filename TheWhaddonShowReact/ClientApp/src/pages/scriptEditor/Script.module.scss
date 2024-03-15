@@ -491,22 +491,19 @@
     background-color: rgba(255,255,255,0.4);
 }
 
-.cowboyAlertContainer {
-    position:relative;
-    z-index: 1000;
-
-    .alert {
+.cowboyAlert {
+    &.alert {
         display: flex;
         flex-direction: column;
         gap: 10px;
     }
 
-    li{
-list-style-type: disc;
-margin:20px;
+    li {
+        list-style-type: disc;
+        margin: 20px;
     }
 
-    .searchText {
+    &.searchText {
         display: flex;
         flex-direction: row;
         justify-content: space-between;

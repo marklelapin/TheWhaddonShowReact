@@ -6,9 +6,12 @@ import {
 export const defaultState = {
     authenticatedUser: null,
     currentUser: null,
+    acknowledgedMessages: [],
 }
-
+;
 export default function userReducer(state = defaultState, action) {
+
+    const acknowledgedMessages = state.acknowledgedMessages  //handles data change for existing users.
 
     switch (action.type) {
         case LOGIN:
@@ -29,9 +32,13 @@ export default function userReducer(state = defaultState, action) {
                 currentUser: action.person
             }
         case ACKNOWLEDGE_USER_MESSAGE:
+
+            console.log('acknowledgedMessages', { acknowledgedMessages, user: action.user, messageId: action.messageId })
+
             return {
                 ...state,
-                userMessages: [...state.userMessages, { message: action.message, authenticatedUser: action.authenticatedUser }]
+                acknowledgedMessages: (acknowledgedMessages) ? [...acknowledgedMessages, { messageId: action.messageId, user: action.user }]
+                : [{ messageId: action.messageId, user: action.user }]
             };
 
         default:
