@@ -184,8 +184,15 @@ const ScriptSummary = (props) => {
     const handleSceneDrop = (e) => {
         e.preventDefault()
         const newPreviousId = e.currentTarget.dataset.sceneid
+        const isSceneId = (e.dataTransfer.getData("text/plain").substring(0, 8) === "sceneid")
         const sceneId = e.dataTransfer.getData("text/plain").substring(8)
-        dispatch(trigger(MOVE_SCENE, { sceneId, value: newPreviousId }))
+        if (!isSceneId) {
+            alert(`Cant drop that against the scene. If you're trying to allocate cast member drop the cast member on the individual part.`)
+        }
+
+        if (isSceneId && sceneId && newPreviousId) {
+            dispatch(trigger(MOVE_SCENE, { sceneId, value: newPreviousId }))
+        }
     }
 
     //PART CLICK, DRAG AND DROP
@@ -225,7 +232,6 @@ const ScriptSummary = (props) => {
         e.preventDefault()
         const isPersonId = (e.dataTransfer.getData("text/plain").substring(0, 8) === "personid")
         const allocateDiv = getAllocateDiv(e)
-
         if (allocateDiv && isPersonId) {
             allocateDiv.classList.remove(s.dragOver)
             const partId = allocateDiv.dataset.partid;
