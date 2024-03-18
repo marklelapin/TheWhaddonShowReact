@@ -72,6 +72,8 @@ const Casting = () => {
     return (
         <>
             <h1 > Casting </h1>
+            <div className={s.castingPage}>
+
             <div className={classnames(s.castingContainer, s[mobile])}>
 
                 <div className={classnames(s.castSection, s[mobile], 'deallocatePartOnDrop')}>
@@ -131,6 +133,7 @@ const Casting = () => {
 
                 </CowboyAlert>
 
+                </div>
             </div>
             <PersonSelector />
         </>

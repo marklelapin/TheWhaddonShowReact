@@ -277,7 +277,7 @@ function Login() {
                                     <div className={s.loginButtons}>
                                         <Button color='primary' onClick={handleLogin}>Cast & Crew</Button>
                                         {!isDemoLink && <Button color='primary' onClick={loginRehearsal}>Rehearsal</Button>}
-                                        {isDemoLink && <Button color='primary' onClick={toggleDemoModal}>Demo</Button>}
+                                        <Button color='warning' onClick={toggleDemoModal}>Demo</Button>
                                     </div>
 
                                 </div>
