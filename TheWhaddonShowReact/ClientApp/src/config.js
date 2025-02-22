@@ -6,11 +6,11 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 console.log('IS_LOCAL_HOST', process.env.IS_LOCAL_HOST)
 console.log('isLocalHost', isLocalHost)
 
-const hostApi = isLocalHost ? "http://localhost" : "https://www.thewhaddonshow.org";
+const hostApi = isLocalHost ? "http://localhost" : "https://thewhaddonshowapi.azurewebsites.net";
 const portApi = isLocalHost ? 50001 : "";
 const baseURLApi = `${hostApi}${portApi ? `:${portApi}` : ``}/api`;
 
-const hostApp = isLocalHost ? "https://localhost" : "https://www.thewhaddonshow.org";
+const hostApp = isLocalHost ? "https://localhost" : "https://thewhaddonshowapp.azurewebsites.net";
 const portApp = isDevelopment ? 40001 : (isLocalHost ? 60001 : null);
 const baseURLApp = `${hostApp}${portApp ? `:${portApp}` : ``}`;
 
@@ -22,7 +22,7 @@ export default {
     portApi,
     baseURLApp,
     baseURLApi,
-    remote: "https://www.thewhaddonshow.org",
+    remote: "https://thewhaddonshowapp.azurewebsites.net",
   
     app: {
         sidebarColors: {
