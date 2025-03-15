@@ -63,8 +63,8 @@ export const SCRIPT_ITEM = { type: NONE, location: 'Component:ScriptItem' }
 export const SCRIPT_ITEM_CONTROLS = { type: NONE, location: 'Component:ScriptItemControls' }
 export const SCRIPT_ITEM_TEXT = { type: NONE, location: 'Component:ScriptItemText' }
 export const SCRIPT_ITEM_HEADER = { type: NONE, location: 'Component:ScriptItemHeader' }
-export const SCRIPT = { type: NONE, location: 'Component:Script' }
-export const SCRIPT_SUMMARY = { type: NONE, location: 'Component:ScriptSummary' }
+export const SCRIPT = { type: NONE, location: 'Component:ScriptSummary' }
+export const SCRIPT_SUMMARY =  { type: DEBUG, location: 'Component:ScriptSummary' }
 export const SCRIPT_VIEWER = { type: NONE, location: 'Component:ScriptViewer' }
 export const SCRIPT_VIEWER_HEADER = { type: NONE, location: 'Component:ScriptViewerHeader' }
 
