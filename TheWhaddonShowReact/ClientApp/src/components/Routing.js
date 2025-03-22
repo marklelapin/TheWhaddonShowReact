@@ -8,6 +8,7 @@ import ScriptSummaryPage from '../pages/scriptSummary/ScriptSummaryPage';
 import Casting from '../pages/casting/Casting';
 import UnderConstruction from '../pages/underConstruction/UnderConstruction';
 import Users from '../pages/user/Users';
+import Settings from '../pages/settings/Settings'
 
 import ErrorPage from '../pages/error/ErrorPage';
 
@@ -30,7 +31,8 @@ const Routing = () => {
             <Route path="/app/script" element={<Script />} />
             <Route path="/app/scriptsummary" element={<ScriptSummaryPage summaryType={SHOW} />} />
             <Route path="/app/casting" element={<Casting />} />
-            <Route path="/app/gallery" element={<UnderConstruction/>} />
+            <Route path="/app/gallery" element={<UnderConstruction />} />
+            <Route path="/app/settings" element={<Settings />}/>
             <Route path="/app/users" element={<Users/>} />
             <Route path="/app/api" element={<ApiDocumentation />} />
             <Route path="/app/api/monitor" element={<ApiMonitor />} />

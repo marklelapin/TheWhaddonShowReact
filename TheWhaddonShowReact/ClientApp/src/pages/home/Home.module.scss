@@ -53,29 +53,43 @@
             @include dropdown-box();
 
             .greeting {
+                font-size: 2em;
             }
 
             .daysToGo {
+                font-size: 1.5em;
+                padding: 5px 0px 5px 0px;
 
                 .daysToGoNumber {
-                    font-size: 6em;
+                    font-size: 3em;
                 }
             }
 
             .viewAsPartPersonSelector {
+                font-size: 1.5em;
+                color: $primary;
+                padding: 10px 0px 10px 0px;
             }
 
             .castingText {
-                margin-bottom: 30px;
+                font-size: 1.5em;
+                padding: 10px 0px 10px 0px;
             }
 
             .castingSubText {
                 margin-bottom: 30px;
             }
 
-            .message {
+            .additionalMessage {
+                font-size: 1.5em;
+                color: $warning;
+                padding: 10px 0px 10px 0px;
             }
 
+            .nextRhearsalMessage {
+                font-size: 1.5em;
+                padding: 10px 0px 10px 0px;
+            }
 
             .whaddonShowCowboy {
                 position: absolute;
@@ -104,7 +118,7 @@
         .link {
             padding: 5px;
             transition: all 0.3s ease-in-out;
-            
+
             h2 {
             }
 
@@ -116,7 +130,7 @@
             &:hover {
 
                 @include dropdown-box();
-                border:none;
+                border: none;
             }
         }
 

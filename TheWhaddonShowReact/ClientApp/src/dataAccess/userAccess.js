@@ -37,6 +37,8 @@ export const userAccessToComponent = (user = null, componentOrPage = null) => {
         case 'ApiDocumentation':
             if (user.id === DEMOID) return READ;
             return null;
+        case 'Settings':
+            return null; 
         default:
             return null;
     }

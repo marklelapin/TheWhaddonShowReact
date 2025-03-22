@@ -40,7 +40,7 @@ function App(props) {
             <CacheProcessing />
             <TextAreaContexts />
           <ErrorCatch>
-                <Layout>
+                <Layout doCurtain={true} >
                     <MSALErrorHandling >
                         <Routing />
                     </MSALErrorHandling>

@@ -161,7 +161,7 @@ function Sidebar(props) {
 
                 {/*   ADIMN SECTION*/}
 
-                {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, 'ApiMonitor')) &&
+                {(userAccessToComponent(currentUser, <User />) || userAccessToComponent(currentUser, 'ApiMonitor') || userAccessToComponent(currentUser,'Settings')) &&
                     <h5 key="adminTitle" className={[s.navTitle, s.groupTitle].join(' ')}>ADMIN</h5>
                 }
                 {(userAccessToComponent(currentUser, 'Users')) &&
@@ -170,6 +170,14 @@ function Sidebar(props) {
                         header="Users"
                         link="/app/users"
                         iconElement={<Icon icon="user" />}
+                    />
+                }
+                {(userAccessToComponent(currentUser, 'Settings')) &&
+                    <LinksGroup
+                        key="settings"
+                        header="Settings"
+                        link="/app/settings"
+                        iconElement={<Icon icon="settings" />}
                     />
                 }
                 {(userAccessToComponent(currentUser, 'ApiMonitor')) &&

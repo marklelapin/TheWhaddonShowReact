@@ -25,7 +25,9 @@ import s from './Login.module.scss'
 
 //constants
 import { DEMOID, DEMO_VIEW_AS_PERSONID, DEMOPassword, REHEARSALID, signOutAllUsers } from '../../dataAccess/userAccess'
-function Login() {
+function Login(props) {
+
+    const {doCurtain = true } = props;
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { instance, accounts } = useMsal();
@@ -40,7 +42,6 @@ function Login() {
     const location = useLocation();
 
     const isDemoLink = (location.pathname === '/app/demo') ? true : false
-
 
     const [welcomeBlockState, setWelcomeBlockState] = useState('fallen') //hung, toppling,falling,hidden
     const [curtainState, setCurtainState] = useState('closed') //open,closed
@@ -240,16 +241,18 @@ function Login() {
     //handle redirection of login link if the link has already been processed or doesn't matching existing person
 
 
-    if (hideAll) return null;
-
+    if (hideAll || doCurtain == false ) return null;
 
     return (
         <>
             <div className={s.loginContainer}>
+                {/*CURTAIN*/}
                 <div className={classnames(s.leftCurtain, s[curtainState])}>
                 </div>
                 <div className={classnames(s.rightCurtain, s[curtainState])}>
                 </div>
+                 
+                
                 <div className={s.content}>
                     <DataLoading isLoading={isLoading}
                         isError={isErrorSyncing}

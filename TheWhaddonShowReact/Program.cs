@@ -45,7 +45,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowTheWhaddonShow", builder =>
     {
-        builder.WithOrigins("https://www.thewhaddonshow.org")
+        builder.WithOrigins("https://thewhaddonshowapp.azurewebsites.net")
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials();

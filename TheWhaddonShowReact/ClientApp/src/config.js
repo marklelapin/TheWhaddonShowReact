@@ -6,7 +6,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 console.log('IS_LOCAL_HOST', process.env.IS_LOCAL_HOST)
 console.log('isLocalHost', isLocalHost)
 
-const hostApi = isLocalHost ? "http://localhost" : "https://thewhaddonshowapi.azurewebsites.net";
+const hostApi = isLocalHost ? "http://localhost" : "https://thewhaddonshowapp.azurewebsites.net";
 const portApi = isLocalHost ? 50001 : "";
 const baseURLApi = `${hostApi}${portApi ? `:${portApi}` : ``}/api`;
 
