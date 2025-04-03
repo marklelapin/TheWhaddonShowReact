@@ -13,7 +13,7 @@ const CowboyAlert = (props) => {
 
 
     const { demoOnly = true, children, messageId } = props;
-    console.log('demoOnly', demoOnly)
+    //console.log('demoOnly', demoOnly)
 
     const authenticatedUser = useSelector(state => state.user.authenticatedUser)
     const acknowledgedMessages = useSelector(state => state.user.acknowledgedMessages) || [];
@@ -21,8 +21,8 @@ const CowboyAlert = (props) => {
     const isDemo = isDemoUser(authenticatedUser)
 
     const isAcknowledged = acknowledgedMessages.some(entry => entry.user.id === authenticatedUser.id && entry.messageId === messageId) 
-    console.log('acknowledgedMessages', acknowledgedMessages)
-    console.log('isAcknowledged', isAcknowledged)
+    //console.log('acknowledgedMessages', acknowledgedMessages)
+    //console.log('isAcknowledged', isAcknowledged)
     const [status, setStatus] = useState('readyToComeOn')
 
     useEffect(() => {
@@ -61,7 +61,7 @@ const CowboyAlert = (props) => {
        
     }
 
-    console.log('isDemo', isDemo)
+    //console.log('isDemo', isDemo)
     if (demoOnly && !isDemo) return null;
     if (isAcknowledged) return null;
     return (

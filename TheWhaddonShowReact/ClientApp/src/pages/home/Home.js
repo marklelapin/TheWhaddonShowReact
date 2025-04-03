@@ -45,8 +45,10 @@ function Home() {
 
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
-    const cowboyShoutOut = useSelector(state => state.settings.cowboyShoutOut)
-    const showDates = useSelector(state => state.settings.showDates)
+    const settings = useSelector(state => state.settings)
+    const cowboyShoutOut = settings.cowboyShoutOut
+    const show = settings.shows.find(obj=>obj.isCurrent === true)
+
 
     const isRehearsal = (currentUser?.id === REHEARSALID);
     const isDemo = (authenticatedUser?.id === DEMOID);
@@ -83,7 +85,7 @@ function Home() {
 
     const daysToGo = () => {
         const now = new Date();
-        const openingNight = new Date(showDates.openingNight)
+        const openingNight = new Date(show.openingNight)
         const diff = (openingNight.getTime() - now.getTime());
 
         const diffDays = Math.ceil(diff / (1000 * 3600 * 24));

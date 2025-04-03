@@ -11,6 +11,7 @@ const debug = true;
 
 export function refreshSceneOrder(currentSceneOrder = [], newScriptItems = [], viewAsPartPerson, currentPartPersons) {
 
+
     const mergedSceneOrder = mergeSceneOrder(currentSceneOrder, newScriptItems)
 
     const { head, mergedSceneOrderWithUpdatedHead } = getHead(mergedSceneOrder)
@@ -81,15 +82,20 @@ export const getHead = (mergedSceneOrder) => {
 
     if (show) {
         head = show
+       log(logType,'headFromShow',head)
     }
     else if (scene) {
-        //this calculation is required as scene is part of both the show linked llist and its own linked list so needs a nextId swap.
+        //this calculation is required as scene is part of both the show linked list and the head of its own linked list so needs a nextId swap.
         head = copy(scene)
-        let headNextId = mergedSceneOrder.find((item) => item.previousId === head.id && item.type !== COMMENT).id;
-        head.nextSceneId = scene.nextId
-        head.nextId = headNextId
+        log(logType,'headfromScene',head)
+        if (head != undefined && head != null) {
+            let headNextId = mergedSceneOrder.find((item) => item.previousId === head.id && item.type !== COMMENT)?.id;
+            head.nextSceneId = scene.nextId
+            head.nextId = headNextId ?? null
+        }
+       
     }
-
+    console.log('finalhead',head)
 
     if (head === null || head === undefined) {
         log(debug, ('Script:SceneOrder getHead - no head found'))
@@ -208,7 +214,7 @@ export const updateZIndex = (sortedSceneOrder) => {
 
 
 export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
-
+ 
     const scene = copy(sceneOrder.find(item => item.type === SCENE))
     const partIds = newPartIds || scene.partIds
 
@@ -231,6 +237,7 @@ export const updateFocusOverrides = (sceneOrder, newPartIds = null) => {
         if (item.type === SYNOPSIS) return synopsis
         if (item.type === INITIAL_STAGING) return initialStaging
         if (item.id === finalScriptItem.id) return finalScriptItem
+        
         return copy(item)
     })
 
@@ -343,6 +350,10 @@ export const isSceneAffectedByViewAsPartPerson = (scene, viewAsPartPerson, previ
 
 
 const copy = (object) => {
+
+    if (object === undefined || object === null) {
+        return {}
+    }
     return JSON.parse(JSON.stringify(object))
 }
 

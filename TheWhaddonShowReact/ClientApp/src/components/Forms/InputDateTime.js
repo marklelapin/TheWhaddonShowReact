@@ -1,20 +1,24 @@
-import React from 'react';
+﻿import React from 'react';
 import { Input } from 'reactstrap';
 import classnames from 'classnames';
 import s from './Forms.module.scss';
 
-function InputDate(props) {
+
+function InputDateTime(props) {
     const { label, placeholder = '', onChange, value = '', className = '' } = props;
 
-    var date = new Date(value).toISOString().split('T')[0];
+    // Ensure the value is correctly formatted for "datetime-local" input
+    const dateTime = value
+        ? new Date(value).toISOString().slice(0, 16)  // Format YYYY-MM-DDTHH:MM
+        : '';
 
     return (
         <div className={classnames(s.inputDate, className)}>
             {label && <div className={s.label}>{`${label}:`}</div>}
             <Input
                 className={s.input}
-                type="date"
-                value={date || ''}
+                type="datetime-local"
+                value={dateTime}
                 onChange={onChange}
                 placeholder={placeholder}
             />
@@ -22,4 +26,5 @@ function InputDate(props) {
     );
 }
 
-export default InputDate;
+export default InputDateTime;
+

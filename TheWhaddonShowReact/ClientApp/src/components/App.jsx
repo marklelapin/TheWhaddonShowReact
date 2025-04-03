@@ -2,7 +2,6 @@
 //REact and REdux
 import React, { useEffect } from 'react';
 
-
 //dataAccess Components
 import LocalServerSyncing from '../dataAccess/LocalServerSyncing';
 import ScriptEditorProcessing from '../pages/scriptEditor/components/ScriptEditorProcessing';
@@ -21,17 +20,17 @@ import ErrorCatch from '../components/ErrorCatch/ErrorCatch';
 //Utils
 import { log, APP as logType } from '../dataAccess/logging.js';
 
+
 // Styles
 import '../styles/theme.scss';
 
 
 
 function App(props) {
-
+    
     log(logType, 'props', props)
-
     const { instance } = props
-
+    
     return (
 
         <MsalProvider instance={instance}>
@@ -40,7 +39,7 @@ function App(props) {
             <CacheProcessing />
             <TextAreaContexts />
           <ErrorCatch>
-                <Layout doCurtain={true} >
+                <Layout doCurtain={false} >
                     <MSALErrorHandling >
                         <Routing />
                     </MSALErrorHandling>

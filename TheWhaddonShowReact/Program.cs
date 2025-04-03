@@ -63,7 +63,7 @@ builder.Services.AddControllersWithViews(options =>
 {
     options.InputFormatters.Add(new TextPlainInputFormatter());
 });
-
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 //Api Monitor services
 builder.Services.AddTransient<IMongoDBDataAccess>(sp =>
@@ -86,11 +86,9 @@ builder.Services.AddSingleton<IFileSystem, FileSystem>();
 builder.Services.AddSingleton<IContentTypeProvider, FileExtensionContentTypeProvider>();
 //Email services
 builder.Services.AddTransient<IEmailClient, HotmailClient>();
-//Configuration services
-builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 builder.Services.AddTransient<IAuthorizationMethods, AuthorizationMethods>();
 builder.Services.AddTransient<AuthorizationHeaderHandler>();
-
 
 builder.Services.AddHttpClient("TheWhaddonShowApi", options =>
 {

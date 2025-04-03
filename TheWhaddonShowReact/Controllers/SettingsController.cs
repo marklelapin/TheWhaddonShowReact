@@ -1,69 +1,107 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using MyClassLibrary.DataAccessMethods;
 using System.Data;
 using System.Net;
 using System.Text.Json;
-using TheWhaddonShowClassLibrary.Models;
+using static TheWhaddonShowReact.Controllers.SettingsController;
 
 namespace TheWhaddonShowReact.Controllers
 {
-
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class SettingsController : ControllerBase
     {
-        private readonly SqlDataAccess _sqlDataAccess;
-        private readonly string connectionStringName = "SQLServer";
+        private readonly ISqlDataAccess _sqlDataAccess;
+        private readonly string connectionStringName = "ServerSQL";
 
-        public SettingsController(SqlDataAccess sqlDataAccess)
+        public SettingsController(ISqlDataAccess sqlDataAccess)
         {
             _sqlDataAccess = sqlDataAccess;
+        }
+
+        public class Show
+        {
+            public Guid id { get; set; }
+            public bool isCurrent { get; set; }
+            public string title { get; set; } = "";
+            public DateTime? openingNight { get; set; } = null;
+            public DateTime? lastNight { get; set; } = null;
+
+            public bool isActive = false;
+
+            public string type = "Show";
+            public Guid? nextId { get; set; } = null;
+            public Guid? previousId { get; set; } = null;
+
+            public Guid? parentId { get; set; } = null;
 
         }
 
-        [HttpPost("currentShow")]
-        public async Task<IActionResult> PostCurrentShow([FromRoute] Guid showId)
+        public class CowboyShoutOut
+        {
+            public bool showDaysTillOpeningNight { get; set; }
+            public bool showCastingStatistics { get; set; }
+            public DateTime? nextRehearsalDate { get; set; } = null;
+            public string? additionalMessage  { get; set; } = null;
+        }
+
+        public class Settings
+        {
+            public CowboyShoutOut cowboyShoutOut { get; set; }
+            public List<Show> shows { get; set; }
+            
+            public Settings(List<Show> _shows, CowboyShoutOut _cowboyShoutOut)
+            {
+                shows = _shows;
+                cowboyShoutOut = _cowboyShoutOut;
+            }
+
+        }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetSettings()
         {
             try
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("@ShowScriptItemId", showId, DbType.Guid, ParameterDirection.Input);
+                var showParameters = new DynamicParameters();
+                showParameters.Add("@Output", null, DbType.String, ParameterDirection.Output,-1); 
+                await _sqlDataAccess.ExecuteStoredProcedure("spGetShows", showParameters, connectionStringName);
+                var showsJson = showParameters.Get<string>("@Output");
 
-                await _sqlDataAccess.ExecuteStoredProcedure("spChangeCurrentShow", parameters, connectionStringName);
 
+                List<Show> shows = JsonSerializer.Deserialize<List<Show>>(showsJson) ?? new List<Show>();
 
-                return new ObjectResult("Success") { StatusCode = (int)HttpStatusCode.OK };
+                var cowboyParameters = new DynamicParameters();
+                cowboyParameters.Add("@Output", null, DbType.String, ParameterDirection.Output,-1);
+                await _sqlDataAccess.ExecuteStoredProcedure("spGetCowboyShoutOut", cowboyParameters, connectionStringName);
+                var cowboyJson = cowboyParameters.Get<string>("@Output");
 
+                CowboyShoutOut cowboyShoutOut;
+                if (cowboyJson != null)
+                {
+                    cowboyShoutOut = JsonSerializer.Deserialize<CowboyShoutOut>(cowboyJson);
+                }
+                else
+                {
+                    cowboyShoutOut = new CowboyShoutOut();
+                }
+
+                var settings = new Settings(shows, cowboyShoutOut);
+                
+                var jsonOutput = JsonSerializer.Serialize(settings);
+                return Ok(settings);  
+                
             }
             catch (Exception ex)
             {
-
                 return new ObjectResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
             }
         }
 
-        [HttpGet("currentShow")]
-        public async Task<IActionResult> GetCurrentShow()
-        {
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@ShowId", null, DbType.Guid, ParameterDirection.Output);
-
-                await _sqlDataAccess.ExecuteStoredProcedure("spGetCurrentShow", parameters, connectionStringName);
-
-                Guid? showId = parameters.Get<Guid?>("@ShowId");
-
-                if (showId != null) return new ObjectResult(showId) { StatusCode = (int)HttpStatusCode.OK };
-                return new ObjectResult(null) { StatusCode = (int)HttpStatusCode.NotFound };
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
-            }
-        }
+       
 
         [HttpPost("cowboyShoutOut")]
         public async Task<IActionResult> PostCowboyShoutOut([FromBody] CowboyShoutOut cowboyShoutOut)
@@ -72,14 +110,14 @@ namespace TheWhaddonShowReact.Controllers
             try
             {
                 var parameters = new DynamicParameters();
-                parameters.Add("@ShowDaysTillOpeningNight", cowboyShoutOut.ShowDaysTillOpeningNight, DbType.Boolean, ParameterDirection.Input);
-                parameters.Add("@ShowCastingStatistics", cowboyShoutOut.ShowCastingStatistics, DbType.Boolean, ParameterDirection.Input);
-                parameters.Add("@NextRehearsalDate", cowboyShoutOut.NextRehearsalDate, DbType.DateTime, ParameterDirection.Input);
-                parameters.Add("@AdditionalMessage", cowboyShoutOut.AdditionalMessage, DbType.String, ParameterDirection.Input);
+                parameters.Add("@ShowDaysTillOpeningNight", cowboyShoutOut.showDaysTillOpeningNight, DbType.Boolean, ParameterDirection.Input);
+                parameters.Add("@ShowCastingStatistics", cowboyShoutOut.showCastingStatistics, DbType.Boolean, ParameterDirection.Input);
+                parameters.Add("@NextRehearsalDate", cowboyShoutOut.nextRehearsalDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@AdditionalMessage", cowboyShoutOut.additionalMessage, DbType.String, ParameterDirection.Input,250);
 
                 await _sqlDataAccess.ExecuteStoredProcedure("spUpdateCowboyShoutOut", parameters, connectionStringName);
 
-                return new ObjectResult("SUCCESS") { StatusCode = (int)HttpStatusCode.OK };
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -88,22 +126,78 @@ namespace TheWhaddonShowReact.Controllers
 
         }
 
-        [HttpGet("cowboyShoutOut")]
-        public async Task<IActionResult> GetCowboyShoutOut()
+        [HttpPost("shows")]
+        public async Task<IActionResult> PostShows([FromBody] List<Show> shows)
         {
+          var showsToComplete = shows.Count();
+            try
+             {
+                foreach (var show in shows)
+                {
 
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@ShowId", show.id, DbType.Guid, ParameterDirection.Input);
+                    parameters.Add("@Title", show.title, DbType.String, ParameterDirection.Input,250);
+                    parameters.Add("@OpeningNight", show.openingNight, DbType.DateTime, ParameterDirection.Input);
+                    parameters.Add("@LastNight", show.lastNight, DbType.DateTime, ParameterDirection.Input);
+                    parameters.Add("@IsCurrent", show.isCurrent, DbType.Boolean, ParameterDirection.Input);
+                    parameters.Add("@Completed", false, DbType.Boolean, ParameterDirection.Output);
+                    _sqlDataAccess.ExecuteStoredProcedure("spUpdateShow", parameters, connectionStringName).GetAwaiter().GetResult();
+
+                    var completed = parameters.Get<bool>("@Completed");
+                    if (completed) showsToComplete = showsToComplete - 1; 
+                }
+                if (showsToComplete == 0)
+                {
+                    return Ok();
+                }
+                throw new Exception("Failed to complete update of all shows");
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+            }
+
+           
+
+        }
+
+
+        [HttpPost("createNewShow")]
+        public async Task<IActionResult> CreateNewShow()
+        {
+            try
+            {
+              var parameters = new DynamicParameters();
+              parameters.Add("@NewShowId", null, DbType.Guid, ParameterDirection.Output);
+              
+                _sqlDataAccess.ExecuteStoredProcedure("spCreateNewShow", parameters, connectionStringName).GetAwaiter().GetResult();
+
+              var newShowId = parameters.Get<Guid>("@NewShowId");
+               
+              return await GetSettings();
+              
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
+            }
+
+        }
+
+
+
+        [HttpPost("showSnapshot")]
+        public async Task<IActionResult> CreateNewShow([FromQuery] Guid showId,string description )
+        {
             try
             {
                 var parameters = new DynamicParameters();
-                parameters.Add("@Output", null, DbType.String, ParameterDirection.Output);
+                parameters.Add("@ShowId", showId, DbType.Guid, ParameterDirection.Input);
+                parameters.Add("@Description", description, DbType.String, ParameterDirection.Input, 250);
+                _sqlDataAccess.ExecuteStoredProcedure("spTakeShowSnapshot", parameters, connectionStringName).GetAwaiter().GetResult();
 
-                await _sqlDataAccess.ExecuteStoredProcedure("spGetCowboyShoutOut", parameters, connectionStringName);
-
-                var output = parameters.Get<string>("@Output");
-                CowboyShoutOut? cowboyShoutOut = JsonSerializer.Deserialize<CowboyShoutOut>(output);
-                if (cowboyShoutOut == null) return new ObjectResult("Not Found") { StatusCode = (int)HttpStatusCode.NotFound };
-
-                return new ObjectResult(cowboyShoutOut) { StatusCode = (int)HttpStatusCode.OK };
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -111,56 +205,8 @@ namespace TheWhaddonShowReact.Controllers
             }
 
         }
-
-
-
-        [HttpPost("showDates")]
-        [Authorize]
-        public async Task<IActionResult> PostShowDates([FromBody] ShowDates showDates)
-        {
-
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@OpeningNight", showDates.OpeningNight, DbType.DateTime, ParameterDirection.Input);
-                parameters.Add("@LastNight", showDates.LastNight, DbType.DateTime, ParameterDirection.Input);
-
-                await _sqlDataAccess.ExecuteStoredProcedure("spChangeShowDates", parameters, connectionStringName);
-
-                return new ObjectResult("SUCCESS") { StatusCode = (int)HttpStatusCode.OK };
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
-            }
-
-        }
-
-
-        [HttpGet("showDates")]
-        public async Task<IActionResult> GetShowDates()
-        {
-
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@Output", null, DbType.String, ParameterDirection.Output);
-
-                await _sqlDataAccess.ExecuteStoredProcedure("spGetShowDates", parameters, connectionStringName);
-
-                var output = parameters.Get<string>("@Output");
-                ShowDates? showDates = JsonSerializer.Deserialize<ShowDates>(output);
-                if (showDates == null) return new ObjectResult("Not Found") { StatusCode = (int)HttpStatusCode.NotFound };
-
-                return new ObjectResult(showDates) { StatusCode = (int)HttpStatusCode.OK };
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
-            }
-
-        }
-
     }
+
 }
+
    

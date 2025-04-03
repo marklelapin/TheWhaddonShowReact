@@ -1,12 +1,20 @@
 @import '../../styles/app';
 
 
+.settingsPage {
+   overflow-y: auto;
+}
 
+.sectionHeader{
+    margin-top: 30px;
+}
 
 .setting{
     display: flex;
     flex-direction:row;
     flex-wrap: wrap;
+    align-items: center;
+    padding: 5px 0px 5px 0px;
 }
 
 .settingLabel{
@@ -15,4 +23,8 @@
 
 .settingInput{
 
+}
+
+.newShowButton{
+    margin-left: 25px;
 }

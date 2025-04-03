@@ -19,14 +19,16 @@ import registerServiceWorker from '../src/serviceWorkerRegistration.js';
 import axios from 'axios';
 import _ from 'lodash';
 import { saveStateToBrowserStorage, loadStateFromBrowserStorage } from '../src/dataAccess/browserStorage.js';
-import { NO_INDEXED_DB } from '../src/dataAccess/indexedDB.js'
+import { NO_INDEXED_DB, clearState } from '../src/dataAccess/indexedDB.js'
 import { defaultState as defaultUserState } from '../src/reducers/user.js'
+import { defaultState as defaultSettingsState } from '../src/reducers/settings.js'
+import { defaultState as defaultScriptEditorState } from '../src/reducers/scriptEditor.js'
 import App from '../src/components/App.jsx';
 import ErrorPage from '../src/pages/error/ErrorPage';
 import config from '../src/config.js';
 import createRootReducer from '../src/reducers';
 
-
+import { getSettings } from '../src/dataAccess/settingsAccess'
 
 import { log, INDEX as logType } from '../src/dataAccess/logging.js';
 
@@ -115,26 +117,42 @@ const initApp = async () => {
         preloadedState.localServer.sync.pauseSync = false
         //ensure correct device details
         // addDeviceInfo(preloadedState)
+    } else {
+        preloadedState = {}
     }
 
 
-    if (preloadedState === undefined) {
-        store = createStore(
-            createRootReducer(),
-            compose(
-                window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-            )
-        );
+
+
+    console.log('Checking for change in show')
+  
+    const currentSettings = await getSettings();
+
+    const storedShow = preloadedState?.scriptEditor?.show || null
+    const currentShow = currentSettings?.shows?.find(obj => obj.isCurrent === true) || null
+
+    console.log('storedShow', storedShow)
+    console.log('currentShow',currentShow)
+    if ((storedShow?.id ?? null) !== (currentShow?.id ?? null)) {
+        console.log('clear preloaded state and state saved in browser storage')
+        clearState()
+        preloadedState = {}
+        preloadedState.scriptEditor = defaultScriptEditorState
+        preloadedState.scriptEditor.show = currentShow
     }
-    else {
-        store = createStore(
+
+    preloadedState.settings = currentSettings ?? defaultSettingsState
+    
+    
+
+    store = createStore(
             createRootReducer(),
             preloadedState,
             compose(
                 window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
             )
         )
-    }
+    
 
     log(logType, 'store created. localCopyID: ', store.getState().localServer.localCopyId)
 
