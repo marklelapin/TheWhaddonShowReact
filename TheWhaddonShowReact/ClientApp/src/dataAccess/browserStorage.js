@@ -48,8 +48,8 @@ export const clearStateFromBrowserStorage = (dispatch) => {
 
 const getStateToPersist = (state) => {
     try {
-        //properties identified separately are exlcuded from ...stateToSaveToLocalStorage
-        let { localServer, layout, scriptEditor } = state;
+        //properties identified separately are excluded from ...stateToSaveToLocalStorage
+        let { localServer, layout, scriptEditor, settings } = state;
 
         //ensure isSyncing is set to false before saving to local storage (otherwise it will be set to true on load and never change)
         localServer = {
@@ -63,7 +63,7 @@ const getStateToPersist = (state) => {
             ...layout, maxScriptItemTextWidth: null
         }
 
-        const stateToPersist = { localServer, layout, scriptEditor }
+        const stateToPersist = { localServer, layout, scriptEditor, settings }
         return stateToPersist
     } catch (err) {
         log(logType, 'Error in getStateToPersist', err)

@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
     <PackageReference Include="MimeMapping" Version="2.0.0" />
     <PackageReference Include="System.IO.Abstractions" Version="19.2.69" />
-    <PackageReference Include="TheWhaddonShow.ClassLibrary" Version="1.0.9" />
+    <PackageReference Include="TheWhaddonShow.ClassLibrary" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>

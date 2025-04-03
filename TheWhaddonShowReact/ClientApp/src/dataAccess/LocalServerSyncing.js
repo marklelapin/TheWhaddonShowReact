@@ -14,6 +14,7 @@ export function LocalServerSyncing() {
     log(logType, 'pauseSync:', pauseSync)
 
 
+    //this bit just determines if syncing is paused
     const syncWithServer = (pauseSync) => {
         log(logType, 'syncWithServer pauseSync:', pauseSync)
         if (!pauseSync) {
@@ -24,8 +25,11 @@ export function LocalServerSyncing() {
 
     }
 
+    //this is where the actual sync process is run
     useSync();
 
+
+    //A sync is fired every 10 second unless pauseSync changes
     useEffect(() => {
 
         syncWithServer(pauseSync);

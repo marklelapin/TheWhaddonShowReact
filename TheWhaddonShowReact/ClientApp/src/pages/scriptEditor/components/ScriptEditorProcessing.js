@@ -54,7 +54,7 @@ export function ScriptEditorProcessing() {
 
 
     //scriptEditor (handles data for display)
-    const show = useSelector(state => state.scriptEditor.show)
+   
     const viewAsPartPerson = useSelector(state => state.scriptEditor.viewAsPartPerson)
     const previousViewAsPartPerson = useSelector(state => state.scriptEditor.previousViewAsPartPerson)
     const scriptItemInFocus = useSelector(state => state.scriptEditor.scriptItemInFocus)
@@ -72,6 +72,8 @@ export function ScriptEditorProcessing() {
     const currentScriptItems = useSelector(state => state.scriptEditor.currentScriptItems)
     const currentPartPersons = useSelector(state => state.scriptEditor.currentPartPersons)
 
+    //Get ShowScriptItem
+    const show = useSelector(state => state.scriptEditor.show)
 
     //undo process
     const currentUndo = useSelector(state => state.scriptEditor.currentUndo) || {}
@@ -97,7 +99,8 @@ export function ScriptEditorProcessing() {
 
     }, [scriptItemInFocus]) //eslint-disable-line react-hooks/exhaustive-deps
 
-
+    log(logType,'show', show)
+    log(logType,'sceneOrders',sceneOrders)
 
     useEffect(() => {
         const scenes = sceneOrders[show.id]

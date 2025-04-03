@@ -29,7 +29,7 @@ function Update(props) {
     const [showSub, setShowSub] = React.useState(false)
 
     const onClickGetLoginLink = () => {
-        alert('https://www.thewhaddonshow.org/app/loginlink?id=' + user.id)
+        alert('https://thewhaddonshowapp.azurewebsites.net/app/loginlink?id=' + user.id)
     }
     const onClickRemoveMsalLink = () => {
         const newUser = { ...user, msalLink: null }

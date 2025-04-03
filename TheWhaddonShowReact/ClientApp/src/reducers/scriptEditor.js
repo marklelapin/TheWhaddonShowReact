@@ -39,21 +39,13 @@ import { IMPORT_GUID } from '../pages/scriptEditor/ScriptImporter';
 import { getMaxScriptItemTextWidth, getTextAreaWidth } from '../pages/scriptEditor/scripts/layout';
 import { CHAT } from '../pages/scriptEditor/scripts/layout';
  
-export const initialState = {
+export const defaultState = {
     searchParameters: {
         tags: [],
         characters: '',
         myScenes: false,
     },
-    show: {
-        id: '3c2277bd-b117-4d7d-ba4e-2b686b38883a',
-        parentId: '3c2277bd-b117-4d7d-ba4e-2b686b38883a',
-        nextId: '54163921-3598-4cbe-96af-84da38cf2642',
-        previousId: null,
-        type: 'SHOW',
-        isActive: true
-    }
-    ,
+    show: {},
     viewAsPartPerson: null,
     currentPartPersons: {},
     currentScriptItems: {},
@@ -86,7 +78,7 @@ export const initialState = {
     printScript: false,
 }
 
-export default function scriptEditorReducer(state = initialState, action) {
+export default function scriptEditorReducer(state = defaultState, action) {
     // log(logType, 'action:', action)
 
 
@@ -154,7 +146,7 @@ export default function scriptEditorReducer(state = initialState, action) {
         case CLEAR_SCRIPT_EDITOR_STATE:
 
             return {
-                ...initialState
+                ...defaultState
             }
         case UPDATE_PREVIOUS_CURTAIN:
             return {

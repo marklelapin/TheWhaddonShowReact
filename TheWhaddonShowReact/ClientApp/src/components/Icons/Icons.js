@@ -96,6 +96,7 @@ export function Icon(props) {
         "summary": 'fa-solid fa-rectangle-list',
         "power-off": 'fa-solid fa-power-off',
         "gear": 'fa-solid fa-gear',
+        "settings": 'fa-solid fa-gear',
         "gallery": 'fa-solid fa-panorama',
         "casting": 'fa-solid fa-person-military-to-person',
         "glasses": 'fa-solid fa-glasses',

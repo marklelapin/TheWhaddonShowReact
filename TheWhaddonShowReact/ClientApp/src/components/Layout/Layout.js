@@ -20,7 +20,7 @@ import classnames from 'classnames';
 
 export const Layout = (props) => {
 
-    const { children } = props
+    const { children, doCurtain = true } = props
 
     const location = useLocation();
     const dispatch = useDispatch();
@@ -100,7 +100,7 @@ export const Layout = (props) => {
                 </main>
                 {/*     </Hammer>*/}
             </div>
-            <Login />
+            <Login doCurtain={doCurtain} />
         </div>
     );
 }

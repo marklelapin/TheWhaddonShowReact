@@ -45,6 +45,11 @@ function Home() {
 
     const isMobileDevice = useSelector(state => state.device.isMobileDevice)
 
+    const settings = useSelector(state => state.settings)
+    const cowboyShoutOut = settings.cowboyShoutOut
+    const show = settings.shows.find(obj=>obj.isCurrent === true)
+
+
     const isRehearsal = (currentUser?.id === REHEARSALID);
     const isDemo = (authenticatedUser?.id === DEMOID);
 
@@ -63,19 +68,33 @@ function Home() {
 
 
     const castingText = `You are currently cast in ${totalParts} parts across ${totalScenes} scenes and have ${totalLines} lines to learn!`;
-    
-    const message = 'Next Rehearsal: Wednesday 8pm';
+
+    const weekdayAndTime = (date) => {
+
+        date = new Date(date)
+        
+        return date.toLocaleString('en-GB', {
+            weekday: 'short', // Full day name (e.g., Wednesday)
+            hour: 'numeric', // Hour (e.g., 8)
+            minute: '2-digit', // Ensure two-digit minutes (e.g., 00)
+            hour12: true // Use 12-hour format with AM/PM
+        }).replace(':00', ''); 
+    }
+
+    const nextRehearsalMessage = cowboyShoutOut.nextRehearsalDate == null ? null : `Next Rehearsal: ${weekdayAndTime(cowboyShoutOut.nextRehearsalDate)}`;
 
     const daysToGo = () => {
         const now = new Date();
-        const showDate = new Date("2024-05-17T20:00:00");
-        const diff = (showDate.getTime() - now.getTime());
+        const openingNight = new Date(show.openingNight)
+        const diff = (openingNight.getTime() - now.getTime());
 
         const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
 
         return diffDays;
     }
 
+
+    
 
     const togglePersonSelector = () => {
         if (personSelectorConfig) {
@@ -102,24 +121,33 @@ function Home() {
                             {`${!greetingUser ? 'Hi!' : ''}${greetingUser ? 'Hi ' + greetingUser?.firstName + '!' : ''}`}
                         </h2>
 
+                        {cowboyShoutOut.showDaysTillOpeningNight &&
                         <div className={s.daysToGo}>
                             <span className={s.daysToGoNumber} >{daysToGo()}</span><span>days till opening night!</span>
                         </div>
+                        }
+                       
                         {!greetingUser && <div className={s.viewAsPartPersonSelector}>
                             <p>Please select the person you wish to view as:</p>
-                            <Button className={s.viewAsButton} color="primary" size="sm" onClick={() => togglePersonSelector()}>View As</Button>
+                            <Button className={s.viewAsButton} color="primary" size="m" onClick={() => togglePersonSelector()}>View As</Button>
                         </div>
                         }
-                        {greetingUser &&
-                            <>
-                                <h2 className={s.castingText}>
-                                    {castingText}
-                                </h2>
-                                <h2 className={s.message}>
-                                    {message}
-                                </h2>
-                            </>
+                        {greetingUser && cowboyShoutOut.showCastingStatistics &&
+                            <h2 className={s.castingText}>
+                                {castingText}
+                            </h2>
                         }
+                        {cowboyShoutOut.additionalMessage != null &&
+                            <h2 className={s.additionalMessage}>
+                                {cowboyShoutOut.additionalMessage}
+                            </h2>
+                        }
+                        {nextRehearsalMessage != null && 
+                            <h2 className={s.nextRehearsalMessage}>
+                                {nextRehearsalMessage}
+                            </h2>
+                        }
+                       
                         <div className={s.whaddonShowCowboy}>
                             <img src={whaddonShowCowboy} alt="The Whaddon Show Cowboy shouting into a speech bubble." className={s.logo} />
                         </div>

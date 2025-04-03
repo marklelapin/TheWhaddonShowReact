@@ -8,6 +8,8 @@ import scriptEditor from './scriptEditor';
 import cache from './cache';
 import user from './user';
 import device from './device';
+import settings from './settings';
+
 //import { connectRouter } from 'connected-react-router';
 
 export default () =>
@@ -22,4 +24,5 @@ export default () =>
         cache,
         user,
         device,
+        settings,
     });

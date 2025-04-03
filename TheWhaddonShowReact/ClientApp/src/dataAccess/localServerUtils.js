@@ -28,6 +28,7 @@ import moment from 'moment';
 import { log, LOCAL_SERVER_UTILS as logType } from '../dataAccess/logging.js';
 
 
+//The is the key hook that does the syncing process.
 export async function useSync() {
 
 

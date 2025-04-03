@@ -70,7 +70,7 @@ const ScriptSummary = (props) => {
     const isPartAllocatable = (allowPartAllocation && !readOnly)
     // const isPartDraggable = (!readOnly) //TODO-implement drag and drop for parts
 
-
+    log(logType,'currentPartPersons',currentPartPersons)
 
     useEffect(() => {
         resetFilter(summaryType)
@@ -337,7 +337,7 @@ const ScriptSummary = (props) => {
                                                 {part.personId && <Avatar partId={part.id} size='xs' />}
                                             </div>
                                             <div className={classnames(s.partName)} >
-                                                {part.name}
+                                                {currentPartPersons[part.id].personName}
                                                 {(idx !== scene.parts.length - 1) ? ',' : ''}
                                             </div>
                                             <div className={classnames(s.highlightText, s[partHighlight(scene, part)?.class])}>
