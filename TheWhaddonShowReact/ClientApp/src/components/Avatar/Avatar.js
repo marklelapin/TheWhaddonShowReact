@@ -25,24 +25,29 @@ export function Avatar(props) {
     const partPersonFromId = useSelector(state => state.scriptEditor.currentPartPersons[partId]) || null
     const person = draftPerson || partPersonFromId || {}
     const { email = null, pictureRef = null } = person;
-
+   
     const firstName = (person.personName) ? person.personName.split(' ')[0] : person.firstName
+    const lastName = (person.personName) ? person.personName.split(' ')[1] : person.lastName
+
+    let personsInitials
+    if (firstName && lastName) {
+        personsInitials = `${firstName[0].toUpperCase()}${(lastName[0].toUpperCase())}`
+    } else if (firstName) {
+        personsInitials = `${firstName[0].toUpperCase()}${firstName[1].toLowerCase()}`;
+    } else {
+        personsInitials = '?'
+    }
+    const avatarText = avatarInitials ?? person.avatarInitials ?? personsInitials
+
+    const avatarTitle = person && (firstName || email)
+
 
     //get storedObjectUrl of create one.
     const storedObjectURL = useSelector(state => state.cache[AVATARS][pictureRef])
 
     log(logType, 'props', { storedObjectURL })
-    //if (storedObjectURL === undefined && pictureRef) {
-    //    createAvatarObjectURL(pictureRef, dispatch)
-    //}
-    //log(logType, 'Component:Avatar props', props)
-    //log(logType, 'Component:Avatar person', { person, draftPerson, partPersonFromId })
 
-    const firstUserLetters = (person && firstName) ? `${firstName[0].toUpperCase()}${(firstName[1]) ? firstName[1].toLowerCase() : ''}` : '?'
 
-    const avatarText = avatarInitials ? avatarInitials : firstUserLetters
-
-    const avatarTitle = person && (firstName || email)
 
     const inputId = `avatar-image-upload-${person.id}`
 
