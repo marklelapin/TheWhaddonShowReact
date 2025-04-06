@@ -23,6 +23,7 @@ import { MEDIA } from '../../dataAccess/storageContainerNames';
 
 //css
 import s from './Uploaders.module.scss';
+//import { isFunction } from 'lodash';
 
 function MediaDropzone(props) {
 
@@ -50,7 +51,7 @@ function MediaDropzone(props) {
 
     const [newMediaFiles, setNewMediaFiles] = useState([]);
     const [mediaFiles, setMediaFiles] = useState([]);
-    const [youTubeUrl, setYouTubeUrl] = useState('');
+    const [url, setUrl] = useState('');
 
     useEffect(() => {
         log(logType, 'useEffect[]')
@@ -64,12 +65,16 @@ function MediaDropzone(props) {
 
     const refreshMediaFiles = async () => {
 
-        const youTubeURLs = existingMediaURLs.filter(url => url.includes('youtube.com')) || []
-        const fileURLs = existingMediaURLs.filter(url => !youTubeURLs.includes(url)) || []
-
+        const youTubeURLs = existingMediaURLs.filter(url => isYouTube(url)) || []
+        const webURLs = existingMediaURLs.filter(url => isWebUrl(url)) || []
+        const fileURLs = existingMediaURLs.filter(url => isFileUrl(url)) || []
+      
+        console.log('youTubeUrls', youTubeURLs)
+        console.log('webUrls', webURLs)
+        console.log('fileURLS',fileURLs)
         const existingFiles = await fetchFiles(MEDIA, fileURLs) || []
 
-        const newFiles = [...youTubeURLs, ...existingFiles, ...newMediaFiles]
+        const newFiles = [...youTubeURLs,...webURLs, ...existingFiles, ...newMediaFiles]
         if (newFiles && newFiles.length > 0) { setMediaFiles(newFiles) }
         log(logType, 'refreshMediaFiles setMediaFiles:', newFiles)
     }
@@ -95,21 +100,8 @@ function MediaDropzone(props) {
 
         if (!Array.isArray(urls)) { urls = [urls] }
 
-        //split urls into youtube and file urls
-        const youTubeURLs = urls.filter(url => {
-            try {
-                if (url.includes('youtube.com')) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            catch {
-                return false;
-            }
-        })
-
-        const fileURLs = urls.filter(url => !youTubeURLs.includes(url))
+        const fileURLs = urls.filter(url => isFileUrl(url))
+        const otherURLs = urls.filter(url => fileURLs.includes(url)===false)
 
         //process file urls
         if (fileURLs.length > 0) {
@@ -121,8 +113,8 @@ function MediaDropzone(props) {
 
 
         //process youtube urls
-        if (youTubeURLs.length > 0) {
-            addMedia(youTubeURLs)
+        if (otherURLs.length > 0) {
+            addMedia(otherURLs)
         }
 
         setNewMediaFiles([])
@@ -149,7 +141,7 @@ function MediaDropzone(props) {
                 }
                 setNewMediaFiles(updatedURLs)
                 break;
-            case 'submitYouTube':
+            case 'submitUrl':
                 e.stopPropagation()
                 e.preventDefault()
                 if (autoLoad === true) {
@@ -157,31 +149,44 @@ function MediaDropzone(props) {
                 } else {
                     setNewMediaFiles([...newMediaFiles, value])
                 }
-                setYouTubeUrl('')
+                setUrl('')
                 break;
             default: return;
         }
     }
 
-    const handleYouTubeInputChange = (e) => {
+    const handleUrlInputChange = (e) => {
         e.preventDefault()
-        setYouTubeUrl(e.target.value)
+        setUrl(e.target.value)
     }
 
     const isYouTube = (url) => {
         try {
-            if (url.includes('youtube.com')) {
-                return true;
-            } else {
-                return false;
-            }
+            if (url.includes('youtube.com')) return true;
+            return false;
         }
         catch {
             return false;
         }
     }
 
+    const isWebUrl = (url) => {
+        console.log('isWebUrl',url)
+        try {
+            if (isYouTube(url)) return false;
+            if (url.includes("www") || url.includes("https://")) return true;
+            return false
+        }
+        catch {
+            return false;
+        }
+    }
 
+    const isFileUrl = (url) => {
+        if (isYouTube(url)) return false;
+        if (isWebUrl(url)) return false;
+        return true
+    }
 
     const dropZoneText = (mediaFiles.length > 0)
         ? 'drag or click to add more media...'
@@ -202,8 +207,9 @@ function MediaDropzone(props) {
                             <div key={idx} className={s['media-dropzone-item']}>
                                 <div className={s['media-dropzone-item-display']}>
                                     <MediaDisplay
-                                        file={isYouTube(media) ? null : media}
+                                        file={isFileUrl(media) ? media : null}
                                         youTubeUrl={isYouTube(media) ? media : null}
+                                        webUrl={isWebUrl(media) ? media : null }
                                         key={`drop-id-${idx}`}
 
                                         width={width}
@@ -230,13 +236,13 @@ function MediaDropzone(props) {
                                     name="youTubeUrl"
                                     id="youTubeUrl"
                                     placeholder="or enter YouTube URL"
-                                    value={youTubeUrl}
-                                    onChange={(e) => handleYouTubeInputChange(e)}
+                                    value={url}
+                                    onChange={(e) => handleUrlInputChange(e)}
                                     onClick={(e) => e.stopPropagation()}
                                 />
-                                <Button onClick={(e) => handleClick(e, 'submitYouTube', youTubeUrl)}
+                                <Button onClick={(e) => handleClick(e, 'submitUrl', url)}
                                     color="primary"
-                                    disabled={youTubeUrl.length === 0}
+                                    disabled={url.length === 0}
                                 >Submit</Button>
                             </div>
 

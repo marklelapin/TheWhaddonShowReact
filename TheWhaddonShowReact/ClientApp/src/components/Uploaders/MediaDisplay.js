@@ -4,7 +4,7 @@ import {log, MEDIA_DISPLAY as logType} from '../../dataAccess/logging'
 
 function MediaDisplay(props) {
 
-    const { file = null, youTubeUrl = null, width = null, height = null, alt, title } = props
+    const { file = null, youTubeUrl = null,webUrl = null, width = null, height = null, alt, title } = props
 
     const youTubeVideoId = getVideoIdFromURL(youTubeUrl);
     const videoObjectURL = file?.type.startsWith('video/') ? URL.createObjectURL(file) : null;
@@ -127,6 +127,16 @@ function MediaDisplay(props) {
 
         )
     }
+
+    if (webUrl) {
+
+        return (
+            <div className="media-display webUrl">
+                <a href={webUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>{webUrl}</a>
+            </div>
+        )
+    }
+
     return (
         <div className="media-display unsupported">
             <p>{`Unsupported media type - ${(file) ? file.type : 'unknown'}`}</p>
