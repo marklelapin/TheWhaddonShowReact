@@ -64,6 +64,9 @@ function User(props) {
     const handleClickUpdate = async () => {
 
         const userUpdate = (user.isActive === false) ? { ...user, msalLink: null } : user
+        if (userUpdate.newUser === true) {
+            userUpdate.newUser = false
+        }
         const preparedUpdate = prepareUpdate(userUpdate)
         dispatch(addUpdates(preparedUpdate, PERSON))  //saves the user to the redux store where it will be synced separately.
         setUserChanged(false)

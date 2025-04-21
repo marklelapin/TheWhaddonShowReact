@@ -33,7 +33,7 @@ export function Avatar(props) {
     if (firstName && lastName) {
         personsInitials = `${firstName[0].toUpperCase()}${(lastName[0].toUpperCase())}`
     } else if (firstName) {
-        personsInitials = `${firstName[0].toUpperCase()}${firstName[1].toLowerCase()}`;
+        personsInitials = `${firstName[0].toUpperCase()}${firstName[1]?.toLowerCase()}`;
     } else {
         personsInitials = '?'
     }

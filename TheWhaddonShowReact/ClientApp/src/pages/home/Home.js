@@ -85,8 +85,10 @@ function Home() {
 
     const daysToGo = () => {
         const now = new Date();
-        const openingNight = new Date(show.openingNight)
-        const diff = (openingNight.getTime() - now.getTime());
+        console.log('show.openingnight',show.openingNight)
+        const openingNight = show.openingNight ? new Date(show.openingNight) : now
+        console.log('openingnight',openingNight)
+        const diff = (openingNight.getTime()  - now.getTime());
 
         const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
 
