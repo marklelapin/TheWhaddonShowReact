@@ -9,8 +9,8 @@ import {
     ADD_SCRIPT_ITEM,
     DELETE_SCRIPT_ITEM,
     DELETE_NEXT_SCRIPT_ITEM,
-    UNDO,
-    REDO,
+  //  UNDO,
+  //  REDO,
     updateMovementInProgress
 } from '../../../actions/scriptEditor';
 
@@ -274,21 +274,15 @@ function ScriptItemText(props) {
         }
 
         if (e.ctrlKey && e.key === 'z' && (tempTextValue === null || tempTextValue === '')) {
-            //if (tempTextValue !== null) {
-            //    setRedoTempTextValue(tempTextValue)
-            //    setTempTextValue(null)
-            //} else {
-            dispatch(trigger(UNDO, { sceneId: scriptItem.parentId }))
-            //}
+            //Removed as wasnt working reliably -  lead to break in link list under some circumstances
+          //  dispatch(trigger(UNDO, { sceneId: scriptItem.parentId }))
+           
         }
 
         if (e.ctrlKey && e.key === 'y' && undoInProgress) {
-            //if (undoNotInProgress && redoTempTextValue !== null) {
-            //    setTempTextValue(redoTempTextValue)
-            //    setRedoTempTextValue(null)
-            //} else {
-            dispatch(trigger(REDO, { sceneId: scriptItem.parentId }))
-            //}
+          //removed as wasnt working reliably - lead to break in link list removing scenes.
+           // dispatch(trigger(REDO, { sceneId: scriptItem.parentId }))
+       
 
         }
 

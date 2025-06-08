@@ -337,7 +337,7 @@ const ScriptSummary = (props) => {
                                                 {part.personId && <Avatar partId={part.id} size='xs' />}
                                             </div>
                                             <div className={classnames(s.partName)} >
-                                                {currentPartPersons[part.id].personName}
+                                                {currentPartPersons[part.id].name}
                                                 {(idx !== scene.parts.length - 1) ? ',' : ''}
                                             </div>
                                             <div className={classnames(s.highlightText, s[partHighlight(scene, part)?.class])}>

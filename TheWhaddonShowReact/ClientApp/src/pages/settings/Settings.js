@@ -131,8 +131,15 @@ const Settings = () => {
         try {
 
             await postCowboyShoutOut(cowboyShoutOut);
-            console.log('postshows', shows);
-            const response = await postShows(shows);
+
+            const newShows = shows.map(x => {
+                if (x.id === currentShow.id) return currentShow;
+                return x
+            })
+
+
+            console.log('postshows', newShows);
+            const response = await postShows(newShows);
 
             if (response === null) {
                 throw new Error("Failed to post show information - see console for more details.");

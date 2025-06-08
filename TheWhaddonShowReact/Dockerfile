@@ -20,7 +20,7 @@ RUN apt-get install -y nodejs
 WORKDIR /src
 COPY ["TheWhaddonShowReact/TheWhaddonShowReact.csproj", "TheWhaddonShowReact/"]
 RUN dotnet restore "TheWhaddonShowReact/TheWhaddonShowReact.csproj"
-COPY . .
+COPY ["TheWhaddonShowReact/", "TheWhaddonShowReact/"]
 WORKDIR "/src/TheWhaddonShowReact"
 RUN dotnet build "TheWhaddonShowReact.csproj" -c Release -o /app/build
 

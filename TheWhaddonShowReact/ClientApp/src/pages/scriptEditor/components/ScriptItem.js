@@ -9,7 +9,7 @@ import Comment from './Comment';
 import ScriptItemText from './ScriptItemText';
 import PartSelector from './PartSelector';
 import { Icon } from '../../../components/Icons/Icons';
-import { Button } from 'reactstrap';
+//import { Button } from 'reactstrap';
 import CheckBox from '../../../components/Forms/CheckBox';
 import MediaDropzone from '../../../components/Uploaders/MediaDropzone';
 import CurtainBackground from './CurtainBackground';
@@ -24,7 +24,7 @@ import { CHAT, CLASSIC } from '../scripts/layout';
 //trigger types
 import {
     trigger,
-    REDO, UNDO, CONFIRM_UNDO,
+   // REDO, UNDO, CONFIRM_UNDO,
     DELETE_SCENE, UPDATE_ATTACHMENTS,
     UPDATE_PART_IDS, TOGGLE_CURTAIN, MULTIPLE
 } from '../../../actions/scriptEditor';
@@ -78,12 +78,12 @@ const showSingleScene = (viewMode !== MULTIPLE) || isMobileDevice
     //icon ids
     const curtainCheckboxId = `curtain-checkbox-${scriptItem?.id}`;
     const partSelectorId = `part-selector-${scriptItem?.id}`
-    const confirmUndoId = `confirm-undo-${sceneId}`;
-    const undoId = `undo-${sceneId}`
-    const redoId = `redo-${sceneId}`
+//const confirmUndoId = `confirm-undo-${sceneId}`;
+//    const undoId = `undo-${sceneId}`
+//    const redoId = `redo-${sceneId}`
     const deleteSceneId = `delete-scene-${sceneId}`
 
-    //calculations functions
+    //calculations functions 
     const showParts = () => {
         switch (type) {
             case DIALOGUE: return true;
@@ -194,15 +194,19 @@ const showSingleScene = (viewMode !== MULTIPLE) || isMobileDevice
 
             {(type === SCENE) && (readOnly === false) &&
                 <div className={s['scene-controls']}>
-                    {isUndoInProgress &&
-                        <Button id={confirmUndoId} key={confirmUndoId} size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>
-                    }
-                    {!readOnly && <Icon id={undoId} key={undoId} icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} toolTip="Undo" />}
-                    {!readOnly &&
-                        <Icon id={redoId}
-                            key={redoId}
-                            className={isUndoInProgress ? s['show-redo'] : s['hide-redo']}
-                            icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />}
+
+                    {/*COMMENTED OUT AS WASNT WORKING*/}
+                    {/*{isUndoInProgress &&*/}
+                    {/*    <Button id={confirmUndoId} key={confirmUndoId} size='xs' color="primary" onClick={() => dispatch(trigger(CONFIRM_UNDO))} >confirm undo</Button>*/}
+                    {/*}*/}
+                    {/*{!readOnly && <Icon id={undoId} key={undoId} icon="undo" onClick={() => dispatch(trigger(UNDO, { sceneId: scriptItem.id }))} toolTip="Undo" />}*/}
+                    {/*{!readOnly &&*/}
+                    {/*    <Icon id={redoId}*/}
+                    {/*        key={redoId}*/}
+                    {/*        className={isUndoInProgress ? s['show-redo'] : s['hide-redo']}*/}
+                    {/*        icon="redo" onClick={() => dispatch(trigger(REDO, { sceneId: scriptItem.id }))} toolTip="Redo" />}*/}
+
+
                     {/*    <Icon id={printSceneId} key={printSceneId} icon="print" onClick={() => handlePrint()} toolTip="Print scene"></Icon>*/}
                     {!readOnly && <Icon id={deleteSceneId} key={deleteSceneId} icon="trash" onClick={() => dispatch(trigger(DELETE_SCENE, { scriptItem }))} toolTip="Delete scene" />}
                     {showSingleScene && !readOnly && <div className={s.gapForNextArrow} />}
